@@ -12,7 +12,6 @@ type Mutation {
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
   createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUser @create
   createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
-
   createRole(input: CreateRoleInput @spread): CreateRoleResponse!
     @field(resolver: "QruzMemberRegister@resolve")
   qruzMemberLogin(input: LoginInput @spread): AuthPayload! 
