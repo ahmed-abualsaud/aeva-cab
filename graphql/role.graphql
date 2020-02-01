@@ -1,8 +1,9 @@
 input CreateRoleInput {
   first_name: String! @rules(apply: ["required"])
   last_name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["email"])
-  password: String! @rules(apply: ["required","min:8"]) @bcrypt
+  email: String! @rules(apply: ["required", "email", "unique:roles,email"])
+  password: String! @rules(apply: ["required", "confirmed", "min:8"])
+  password_confirmation: String!
   phone: String
   role_type_id: ID! @rules(apply: ["required"])
   dashboard: Boolean
@@ -16,6 +17,34 @@ input CreateRoleInput {
   fleet: Boolean
   payment: Boolean
   cancellation: Boolean
+}
+
+input LoginInput {
+  username: String!
+  password: String!
+}
+
+type CreateRoleResponse {
+  tokens: AuthPayload
+  status: RegisterStatuses!
+}
+
+enum RegisterStatuses {
+  MUST_VERIFY_EMAIL
+  SUCCESS
+}
+
+type LogoutResponse {
+  status: String!
+  message: String
+}
+
+type AuthPayload {
+  access_token: String
+  refresh_token: String
+  expires_in: Int
+  token_type: String
+  role: Role
 }
 
 type Role {
