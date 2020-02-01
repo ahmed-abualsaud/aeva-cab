@@ -1,0 +1,32 @@
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+input CreatePartnerInput {
+  name: String! @rules(apply: ["required"])
+  email: String! @rules(apply: ["email"])
+  password: String! @rules(apply: ["required","min:8"]) @bcrypt
+  type: String
+  phone1: String
+  phone2: String
+  logo: String
+  size: String @rules(apply: ["in:Small,Medium,Large,Enterprise"])
+  license_expires_on: Date
+  insurance_expires_on: Date
+  max_no_of_trips: Int
+}
+
+type Partner {
+  id: ID!
+  name: String!
+  email: String!
+  type: String
+  phone1: String
+  phone2: String
+  logo: String
+  size: String 
+  license_expires_on: Date
+  insurance_expires_on: Date
+  max_no_of_trips: Int
+  users: [PartnerUser] @hasMany
+  drivers: [Driver] @belongsToMany
+  trips: [PartnerTrip] @hasMany
+}

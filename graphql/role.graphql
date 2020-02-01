@@ -1,0 +1,41 @@
+input CreateRoleInput {
+  first_name: String! @rules(apply: ["required"])
+  last_name: String! @rules(apply: ["required"])
+  email: String! @rules(apply: ["email"])
+  password: String! @rules(apply: ["required","min:8"]) @bcrypt
+  phone: String
+  role_type_id: ID! @rules(apply: ["required"])
+  dashboard: Boolean
+  roles: Boolean
+  archive: Boolean
+  communication: Boolean
+  promocodes: Boolean
+  business: Boolean
+  commute: Boolean
+  ondemand: Boolean
+  fleet: Boolean
+  payment: Boolean
+  cancellation: Boolean
+}
+
+type Role {
+  id: ID!
+  first_name: String!
+  last_name: String!
+  email: String!
+  phone: String
+  role_type: RoleType! @belongsTo
+  dashboard: Boolean
+  roles: Boolean
+  archive: Boolean
+  communication: Boolean
+  promocodes: Boolean
+  business: Boolean
+  commute: Boolean
+  ondemand: Boolean
+  fleet: Boolean
+  payment: Boolean
+  cancellation: Boolean
+  employee_id: String
+  status: Boolean
+}

@@ -1,0 +1,10 @@
+input CreateFleetCarModelInput {
+  fleet_id: ID! @rules(apply: ["required"])
+  car_model_id: ID! @rules(apply: ["required"])
+}
+
+type FleetCarModel {
+  id: ID!
+  fleet_id: ID!
+  car_model_id: ID!
+}

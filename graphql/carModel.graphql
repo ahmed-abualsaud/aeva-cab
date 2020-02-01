@@ -1,0 +1,8 @@
+input CreateCarModelInput {
+  name: String! @rules(apply: ["required"])
+}
+
+type CarModel {
+  id: ID!
+  name: String!
+}

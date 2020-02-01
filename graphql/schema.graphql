@@ -1,0 +1,57 @@
+type Mutation {
+  createFleet(input: CreateFleetInput! @spread): Fleet @create
+  createDriver(input: CreateDriverInput! @spread): Driver @create
+  createCarType(input: CreateCarTypeInput! @spread): CarType @create
+  createCarModel(input: CreateCarModelInput! @spread): CarModel @create
+  createFleetCarType(input: CreateFleetCarTypeInput! @spread): FleetCarType @create
+  createFleetCarModel(input: CreateFleetCarModelInput! @spread): FleetCarModel @create
+  createPartner(input: CreatePartnerInput! @spread): Partner @create
+  createPartnerUser(input: CreatePartnerUserInput! @spread): PartnerUser @create
+  createPartnerDriver(input: CreatePartnerDriverInput! @spread): PartnerDriver @create
+  createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip @create
+  createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
+  createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUser @create
+  createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
+  createRole(input: CreateRoleInput! @spread): Role @create
+}
+
+type Query {
+  fleets: [Fleet!]! @all
+  fleet(id: ID @eq): Fleet @find
+
+  drivers: [Driver!]! @all
+  driver(id: ID @eq): Driver @find
+
+  carTypes: [CarType!]! @all
+  carType(id: ID @eq): CarType @find
+
+  carModels: [CarModel!]! @all
+  carModel(id: ID @eq): CarModel @find
+
+  partners: [Partner!]! @all
+  partner(id: ID @eq): Partner @find
+
+  trips: [PartnerTrip!]! @all
+  trip(id: ID @eq): PartnerTrip @find
+
+  roleTypes: [RoleType!]! @all
+  roleType(id: ID @eq): RoleType @find
+
+  roles: [Role!]! @all
+  role(id: ID @eq): Role @find
+}
+
+#import fleet.graphql
+#import driver.graphql
+#import carType.graphql
+#import carModel.graphql
+#import fleetCarType.graphql
+#import fleetCarModel.graphql
+#import partner.graphql
+#import partnerUser.graphql
+#import partnerDriver.graphql
+#import partnerTrip.graphql
+#import partnerTripStation.graphql
+#import partnerTripUser.graphql
+#import roleType.graphql
+#import role.graphql

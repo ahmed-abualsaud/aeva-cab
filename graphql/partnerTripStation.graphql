@@ -1,0 +1,13 @@
+input CreatePartnerTripStationInput {
+  name: String
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+  partner_trip_id: ID! @rules(apply: ["required"])
+}
+
+type PartnerTripStation {
+  id: ID!
+  name: String
+  latitude: String!
+  longitude: String!
+}

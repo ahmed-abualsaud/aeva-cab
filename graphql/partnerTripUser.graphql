@@ -1,0 +1,15 @@
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+input CreatePartnerTripUserInput {
+  partner_trip_id: ID! @rules(apply: ["required"])
+  partner_user_id: ID! @rules(apply: ["required"])
+  subscription_expires_on: Date
+  send_subscription_code: Boolean
+}
+
+type PartnerTripUser {
+  id: ID!
+  partner_trip_id: ID!
+  partner_user_id: ID!
+  subscription_expires_on: Date
+}
