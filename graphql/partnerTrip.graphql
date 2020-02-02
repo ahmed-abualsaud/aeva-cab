@@ -7,6 +7,15 @@ input CreatePartnerTripInput {
   time: String
 }
 
+input UpdatePartnerTripInput {
+  id: ID!
+  name: String
+  driver_id: ID
+  ride_car_share: Boolean
+  location: String
+  time: String
+}
+
 type PartnerTrip {
   id: ID!
   name: String!

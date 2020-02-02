@@ -3,8 +3,22 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 input CreateDriverInput {
   first_name: String! @rules(apply: ["required"])
   last_name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["email"])
+  email: String! @rules(apply: ["email", "unique:drivers,email"])
   fleet_id: ID! @rules(apply: ["required"])
+  phone: String
+  car_no: String
+  license_no: String
+  license_expires_on: Date
+  avatar: String
+  status: String @rules(apply: ["in:active,inactive"])
+}
+
+input UpdateDriverInput {
+  id: ID!
+  first_name: String
+  last_name: String
+  email: String
+  fleet_id: ID
   phone: String
   car_no: String
   license_no: String

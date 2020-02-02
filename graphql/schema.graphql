@@ -1,27 +1,66 @@
 type Mutation {
   createFleet(input: CreateFleetInput! @spread): Fleet @create
+  updateFleet(input: UpdateFleetInput! @spread): Fleet @update @updateFleetValidation
+  deleteFleet(id: ID!): Fleet @delete
+
   createDriver(input: CreateDriverInput! @spread): Driver @create
+  updateDriver(input: UpdateDriverInput! @spread): Driver @update @updateDriverValidation
+  deleteDriver(id: ID!): Driver @delete
+
   createCarType(input: CreateCarTypeInput! @spread): CarType @create
+  updateCarType(input: UpdateCarTypeInput! @spread): CarType @update @updateCarTypeValidation
+  deleteCarType(id: ID!): CarType @delete
+
   createCarModel(input: CreateCarModelInput! @spread): CarModel @create
+  updateCarModel(input: UpdateCarModelInput! @spread): CarModel @update @updateCarModelValidation
+  deleteCarModel(id: ID!): CarModel @delete
+
   createFleetCarType(input: CreateFleetCarTypeInput! @spread): FleetCarType @create
+  deleteFleetCarType(id: ID!): FleetCarType @delete
+
   createFleetCarModel(input: CreateFleetCarModelInput! @spread): FleetCarModel @create
+  deleteFleetCarModel(id: ID!): FleetCarModel @delete
+
   createPartner(input: CreatePartnerInput! @spread): Partner @create
+  updatePartner(input: UpdatePartnerInput! @spread): Partner @update @updatePartnerValidation
+  deletePartner(id: ID!): Partner @delete
+
   createPartnerUser(input: CreatePartnerUserInput! @spread): PartnerUser @create
+  updatePartnerUser(input: UpdatePartnerUserInput! @spread): PartnerUser @update @updatePartnerUserValidation
+  deletePartnerUser(id: ID!): PartnerUser @delete
+
   createPartnerDriver(input: CreatePartnerDriverInput! @spread): PartnerDriver @create
+  deletePartnerDriver(id: ID!): PartnerDriver @delete
+
   createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip @create
+  updatePartnerTrip(input: UpdatePartnerTripInput! @spread): PartnerTrip @update
+  deletePartnerTrip(id: ID!): PartnerTrip @delete
+
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
+  updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
+  deletePartnerTripStation(id: ID!): PartnerTripStation @delete
+
   createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUser @create
+  updatePartnerTripUser(input: UpdatePartnerTripUserInput! @spread): PartnerTripUser @update
+  deletePartnerTripUser(id: ID!): PartnerTripUser @delete
+
   createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
-  createRole(input: CreateRoleInput @spread): CreateRoleResponse!
+  updateRoleType(input: UpdateRoleTypeInput! @spread): RoleType @update @updateRoleTypeValidation
+  deleteRoleType(id: ID!): RoleType @delete
+
+  createRole(input: CreateRoleInput! @spread): CreateRoleResponse!
     @field(resolver: "QruzMemberRegister@resolve")
-  qruzMemberLogin(input: LoginInput @spread): AuthPayload! 
+  updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
+  deleteRole(id: ID!): Role @delete
+
+  qruzMemberLogin(input: LoginInput! @spread): AuthPayload! 
     @field(resolver: "QruzMemberLogin@resolve")
   qruzMemberLogout: LogoutResponse! 
     @field(resolver: "QruzMemberLogout@resolve")
 }
 
 type Query {
-  fleets: [Fleet!]! @all
+  fleets: [Fleet!]! @all 
   fleet(id: ID @eq): Fleet @find
 
   drivers: [Driver!]! @all

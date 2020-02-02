@@ -1,5 +1,10 @@
 input CreateRoleTypeInput {
-  name: String! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required", "unique:role_types, name"])
+}
+
+input UpdateRoleTypeInput {
+  id: ID!
+  name: String
 }
 
 type RoleType {

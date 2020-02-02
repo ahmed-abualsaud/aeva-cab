@@ -1,8 +1,19 @@
 input CreatePartnerUserInput {
   first_name: String! @rules(apply: ["required"])
   last_name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["email"])
+  email: String! @rules(apply: ["email", "unique:partner_users, email"])
   partner_id: ID! @rules(apply: ["required"])
+  phone: String
+  position: String
+  avatar: String
+}
+
+input UpdatePartnerUserInput {
+  id: ID!
+  first_name: String
+  last_name: String
+  email: String
+  partner_id: ID
   phone: String
   position: String
   avatar: String

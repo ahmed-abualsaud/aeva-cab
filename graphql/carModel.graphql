@@ -1,5 +1,10 @@
 input CreateCarModelInput {
-  name: String! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required", "unique:car_models,name"])
+}
+
+input UpdateCarModelInput {
+  id: ID!
+  name: String
 }
 
 type CarModel {

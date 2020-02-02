@@ -3,13 +3,26 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 input CreateFleetInput {
   first_name: String! @rules(apply: ["required"])
   last_name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["email"])
+  email: String! @rules(apply: ["email", "unique:fleets,email"])
   phone: String
   avatar: String
   status: String @rules(apply: ["in:active,inactive"])
   expires_on: Date
   max_no_of_cars: Int
 }
+
+input UpdateFleetInput {
+  id: ID!
+  first_name: String
+  last_name: String
+  email: String
+  phone: String
+  avatar: String
+  status: String @rules(apply: ["in:active,inactive"])
+  expires_on: Date
+  max_no_of_cars: Int
+}
+
 
 type Fleet {
   id: ID!

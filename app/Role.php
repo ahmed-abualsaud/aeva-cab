@@ -10,6 +10,8 @@ class Role extends Authenticatable
     use HasApiTokens;
     use Notifiable; 
 
+    protected $guard = 'qruzMember';
+
     protected $guarded = [];
 
     protected $hidden = ['password'];

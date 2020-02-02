@@ -7,6 +7,11 @@ input CreatePartnerTripUserInput {
   send_subscription_code: Boolean
 }
 
+input UpdatePartnerTripUserInput {
+  id: ID!
+  subscription_expires_on: Date
+}
+
 type PartnerTripUser {
   id: ID!
   partner_trip_id: ID!

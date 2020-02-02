@@ -19,6 +19,27 @@ input CreateRoleInput {
   cancellation: Boolean
 }
 
+input UpdateRoleInput {
+  id: ID!
+  first_name: String
+  last_name: String
+  email: String
+  phone: String
+  role_type_id: ID
+  dashboard: Boolean
+  roles: Boolean
+  archive: Boolean
+  communication: Boolean
+  promocodes: Boolean
+  business: Boolean
+  commute: Boolean
+  ondemand: Boolean
+  fleet: Boolean
+  payment: Boolean
+  cancellation: Boolean
+  status: Boolean
+}
+
 input LoginInput {
   username: String!
   password: String!
