@@ -30,7 +30,10 @@ return [
          * so you have to take extra care to return spec-compliant error responses.
          * To apply middleware on a field level, use the @middleware directive.
          */
-        'middleware' => [\Fruitcake\Cors\HandleCors::class],
+        'middleware' => [
+            \Nuwave\Lighthouse\Support\Http\Middleware\AcceptJson::class,
+            \Barryvdh\Cors\HandleCors::class,
+        ],
 
         /*
          * The `prefix` and `domain` configuration options are optional.
