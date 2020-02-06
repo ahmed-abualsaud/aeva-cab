@@ -1,4 +1,11 @@
 type Mutation {
+  qruzMemberLogin(input: LoginInput! @spread): AuthPayload! 
+    @field(resolver: "QruzMemberLogin@resolve")
+  qruzMemberLogout: LogoutResponse! 
+    @field(resolver: "QruzMemberLogout@resolve")
+}
+
+extend type Mutation {
   createFleet(input: CreateFleetInput! @spread): Fleet @create
   updateFleet(input: UpdateFleetInput! @spread): Fleet @update @updateFleetValidation
   deleteFleet(id: ID!): Fleet @delete
@@ -53,14 +60,10 @@ type Mutation {
   updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
   deleteRole(id: ID!): Role @delete
 
-  qruzMemberLogin(input: LoginInput! @spread): AuthPayload! 
-    @field(resolver: "QruzMemberLogin@resolve")
-  qruzMemberLogout: LogoutResponse! 
-    @field(resolver: "QruzMemberLogout@resolve")
 }
 
 type Query {
-  fleets: [Fleet!]! @all 
+  fleets: [Fleet!]! @all
   fleet(id: ID @eq): Fleet @find
 
   drivers: [Driver!]! @all
