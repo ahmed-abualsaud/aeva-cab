@@ -26,5 +26,6 @@ type PartnerUser {
   email: String!
   phone: String
   avatar: String
+  position: String
   partner: Partner! @belongsTo
 }
