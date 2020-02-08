@@ -19,8 +19,12 @@ input UpdatePartnerTripInput {
 type PartnerTrip {
   id: ID!
   name: String!
-  subscription_code: String!
-  driver: Driver! @belongsTo
+  ride_car_share: Boolean
+  location: String
+  time: String
+  subscription_code: String
+  partner: Partner @belongsTo
+  driver: Driver @belongsTo
   stations: [PartnerTripStation] @hasMany
   subbedUsers: [PartnerUser] @belongsToMany
 }

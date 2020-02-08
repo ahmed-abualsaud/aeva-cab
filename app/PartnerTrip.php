@@ -11,6 +11,11 @@ class PartnerTrip extends Model
     
     protected $guarded = [];
 
+    public function partner()
+    {
+        return $this->belongsTo(Partner::class);
+    }
+
     public function driver()
     {
         return $this->belongsTo(Driver::class);
