@@ -86,6 +86,9 @@ type Query {
 
   roles: [Role!]! @all
   role(id: ID @eq): Role @find
+
+  partnerDrivers(partnerID: ID!, assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
+  partnerTripUsers(tripID: ID!, subscribed: Boolean!): [PartnerUser] @field(resolver: "PartnerTripUsers")
 }
 
 #import fleet.graphql
