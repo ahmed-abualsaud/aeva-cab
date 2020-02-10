@@ -23,9 +23,11 @@ class PartnerTripUsers
         $partnerTripUsers = PartnerTripUser::where('partner_trip_id', $args['tripID'])->get()->pluck('partner_user_id');
 
         if ($args['subscribed']) {
-            $users = PartnerUser::whereIn('id', $partnerTripUsers)->get();
+            $users = PartnerUser::where('partner_id', $args['partnerID'])
+                ->whereIn('id', $partnerTripUsers)->get();
         } else {
-            $users = PartnerUser::whereNotIn('id', $partnerTripUsers)->get();
+            $users = PartnerUser::where('partner_id', $args['partnerID'])
+                ->whereNotIn('id', $partnerTripUsers)->get();
         }
 
         return $users;
