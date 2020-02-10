@@ -37,7 +37,7 @@ extend type Mutation {
   deletePartnerUser(id: ID!): PartnerUser @delete
 
   createPartnerDriver(input: CreatePartnerDriverInput! @spread): PartnerDriver @create
-  deletePartnerDriver(id: ID!): PartnerDriver @delete
+  deletePartnerDriver(partner_id: ID!, driver_id: ID!): PartnerDriver @field(resolver: "DeletePartnerDriver")
 
   createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip @create
   updatePartnerTrip(input: UpdatePartnerTripInput! @spread): PartnerTrip @update
@@ -49,7 +49,7 @@ extend type Mutation {
 
   createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUser @create
   updatePartnerTripUser(input: UpdatePartnerTripUserInput! @spread): PartnerTripUser @update
-  deletePartnerTripUser(id: ID!): PartnerTripUser @delete
+  deletePartnerTripUser(trip_id: ID!, user_id: ID!): PartnerTripUser @field(resolver: "DeletePartnerTripUser")
 
   createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
   updateRoleType(input: UpdateRoleTypeInput! @spread): RoleType @update @updateRoleTypeValidation
