@@ -59,7 +59,6 @@ extend type Mutation {
     @field(resolver: "QruzMemberRegister@resolve")
   updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
   deleteRole(id: ID!): Role @delete
-
 }
 
 type Query {
@@ -68,6 +67,7 @@ type Query {
 
   drivers: [Driver!]! @all
   driver(id: ID @eq): Driver @find
+  fleetDrivers(fleet_id: ID @eq): [Driver] @all
 
   carTypes: [CarType!]! @all
   carType(id: ID @eq): CarType @find
