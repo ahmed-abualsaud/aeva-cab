@@ -1,8 +1,6 @@
 type Mutation {
   qruzMemberLogin(input: LoginInput! @spread): AuthPayload! 
     @field(resolver: "QruzMemberLogin@resolve")
-  qruzMemberLogout: LogoutResponse! 
-    @field(resolver: "QruzMemberLogout@resolve")
 }
 
 extend type Mutation {
@@ -55,10 +53,11 @@ extend type Mutation {
   updateRoleType(input: UpdateRoleTypeInput! @spread): RoleType @update @updateRoleTypeValidation
   deleteRoleType(id: ID!): RoleType @delete
 
-  createRole(input: CreateRoleInput! @spread): CreateRoleResponse!
-    @field(resolver: "QruzMemberRegister@resolve")
+  createRole(input: CreateRoleInput! @spread): Role @create
   updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
   deleteRole(id: ID!): Role @delete
+  qruzMemberLogout: LogoutResponse! 
+    @field(resolver: "QruzMemberLogout@resolve")
 }
 
 type Query {
