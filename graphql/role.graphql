@@ -2,8 +2,7 @@ input CreateRoleInput {
   first_name: String! @rules(apply: ["required"])
   last_name: String! @rules(apply: ["required"])
   email: String! @rules(apply: ["required", "email", "unique:roles,email"])
-  password: String! @rules(apply: ["required", "confirmed", "min:8"])
-  password_confirmation: String!
+  password: String! @rules(apply: ["required", "min:8"])
   phone: String
   role_type_id: ID! @rules(apply: ["required"])
   dashboard: Boolean
@@ -21,9 +20,9 @@ input CreateRoleInput {
 
 input UpdateRoleInput {
   id: ID!
-  first_name: String
-  last_name: String
-  email: String
+  first_name: String!
+  last_name: String!
+  email: String!
   phone: String
   role_type_id: ID
   dashboard: Boolean
