@@ -22,8 +22,8 @@ class QruzMemberLogin extends BaseAuthResolver
         $credentials = $this->buildCredentials($args);
         $response = $this->makeRequest($credentials);
         $model = app(config('auth.providers.users.model'));
-        $user = $model->where('email', $args['username'])->firstOrFail();
-        $response['user'] = $user;
+        $role = $model->where('email', $args['username'])->firstOrFail();
+        $response['role'] = $role;
 
         return $response; 
     }
