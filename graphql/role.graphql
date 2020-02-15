@@ -2,7 +2,7 @@ input CreateRoleInput {
   first_name: String! @rules(apply: ["required"])
   last_name: String! @rules(apply: ["required"])
   email: String! @rules(apply: ["required", "email", "unique:roles,email"])
-  password: String! @rules(apply: ["required", "min:8"])
+  password: String! @rules(apply: ["required", "min:8"]) @bcrypt
   phone: String
   role_type_id: ID! @rules(apply: ["required"])
   dashboard: Boolean
