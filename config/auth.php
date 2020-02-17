@@ -41,10 +41,14 @@ return [
             'provider' => 'users',
         ],
 
-        'api' => [
-            'driver' => 'passport',
-            'provider' => 'users',
-            'hash' => false,
+        'role' => [
+            'driver' => 'jwt',
+            'provider' => 'users'
+        ],
+
+        'partner' => [
+            'driver' => 'jwt',
+            'provider' => 'partners',
         ],
 
     ],
@@ -71,11 +75,11 @@ return [
             'driver' => 'eloquent',
             'model' => App\Role::class,
         ],
-  
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+
+        'partners' => [
+            'driver' => 'eloquent',
+            'model' => App\Partner::class,
+        ]
     ],
 
     /*

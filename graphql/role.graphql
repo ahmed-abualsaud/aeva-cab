@@ -39,27 +39,12 @@ input UpdateRoleInput {
   status: Boolean
 }
 
-input LoginInput {
-  username: String!
+input QruzMemberLoginInput { 
+  email: String!
   password: String!
 }
 
-type CreateRoleResponse {
-  tokens: AuthPayload
-  status: RegisterStatuses!
-}
-
-enum RegisterStatuses {
-  MUST_VERIFY_EMAIL
-  SUCCESS
-}
-
-type LogoutResponse {
-  status: String!
-  message: String
-}
-
-type AuthPayload {
+type QruzMemberAuthPayload {
   access_token: String
   refresh_token: String
   expires_in: Int

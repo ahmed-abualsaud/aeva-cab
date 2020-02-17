@@ -28,6 +28,16 @@ input UpdatePartnerInput {
   max_no_of_trips: Int
 }
 
+input PartnerLoginInput {
+  email: String!
+  password: String!
+}
+
+type PartnerAuthPayload {
+  access_token: String
+  partner: Partner
+}
+
 type Partner {
   id: ID!
   name: String!
