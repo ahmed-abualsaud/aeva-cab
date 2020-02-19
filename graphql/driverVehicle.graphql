@@ -1,0 +1,10 @@
+input CreateDriverVehicleInput {
+  driver_id: ID! @rules(apply: ["required"])
+  vehicle_id: ID! @rules(apply: ["required"])
+}
+
+type DriverVehicle {
+  id: ID!
+  driver_id: ID!
+  vehicle_id: ID!
+}
