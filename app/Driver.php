@@ -20,4 +20,4 @@ class Driver extends Model
     {
         return $this->hasMany(PartnerTrip::class);
     }
-}
+} 

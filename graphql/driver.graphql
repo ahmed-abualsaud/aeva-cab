@@ -40,4 +40,5 @@ type Driver {
   avatar: String
   status: String
   trips: [PartnerTrip] @hasMany
+  vehicles: [Vehicle] @hasMany
 }

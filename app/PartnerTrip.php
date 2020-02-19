@@ -21,6 +21,11 @@ class PartnerTrip extends Model
         return $this->belongsTo(Driver::class);
     }
 
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class);
+    }
+
     public function stations()
     {
         return $this->hasMany(PartnerTripStation::class);

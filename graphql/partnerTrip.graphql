@@ -2,6 +2,7 @@ input CreatePartnerTripInput {
   name: String! @rules(apply: ["required"])
   partner_id: ID! @rules(apply: ["required"])
   driver_id: ID! @rules(apply: ["required"])
+  vehicle_id: ID! @rules(apply: ["required"])
   ride_car_share: Boolean
   location: String
   time: String
@@ -11,6 +12,7 @@ input UpdatePartnerTripInput {
   id: ID!
   name: String
   driver_id: ID
+  vehicle_id: ID
   ride_car_share: Boolean
   location: String
   time: String
@@ -25,6 +27,7 @@ type PartnerTrip {
   subscription_code: String
   partner: Partner @belongsTo
   driver: Driver @belongsTo
+  vehicle: Vehicle @belongsTo
   stations: [PartnerTripStation] @hasMany
   subbedUsers: [PartnerUser] @belongsToMany
 }
