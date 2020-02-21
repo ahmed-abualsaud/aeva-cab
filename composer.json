@@ -9,8 +9,10 @@
     "require": {
         "php": "^7.2",
         "barryvdh/laravel-cors": "^0.11.2",
+        "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.2",
+        "laravel/socialite": "^4.3",
         "laravel/tinker": "^2.0",
         "mll-lab/laravel-graphql-playground": "^2.0",
         "nuwave/lighthouse": "^4.8",

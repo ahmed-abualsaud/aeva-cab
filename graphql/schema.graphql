@@ -4,6 +4,15 @@ type Mutation {
 
   partnerLogin(input: PartnerLoginInput! @spread): PartnerAuthPayload! 
     @field(resolver: "PartnerLogin@resolve")
+
+  partnerUserLogin(input: PartnerUserLoginInput! @spread): PartnerUserAuthPayload! 
+    @field(resolver: "PartnerUserLogin@resolve")
+
+  partnerUserSocialLogin(input: PartnerUserSocialLoginInput! @spread): PartnerUserAuthPayload! 
+    @field(resolver: "PartnerUserSocialLogin@resolve")
+
+  partnerUserPhoneVerification(input: PartnerUserPhoneVerificationInput! @spread): String!
+    @field(resolver: "PartnerUserPhoneVerification")
 }
 
 extend type Mutation {
