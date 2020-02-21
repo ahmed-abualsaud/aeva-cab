@@ -1,3 +1,5 @@
+## Partner User Authentication Schema
+
 ```js
 input CreatePartnerUserInput {
   name: String! @rules(apply: ["required"])
