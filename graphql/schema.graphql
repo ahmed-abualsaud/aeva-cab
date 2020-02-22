@@ -56,7 +56,8 @@ extend type Mutation {
   createPartnerDriver(input: CreatePartnerDriverInput! @spread): PartnerDriver @create
   deletePartnerDriver(partner_id: ID!, driver_id: ID!): PartnerDriver @field(resolver: "DeletePartnerDriver")
 
-  createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip @create
+  createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip 
+    @field(resolver: "CreatePartnerTrip")
   updatePartnerTrip(input: UpdatePartnerTripInput! @spread): PartnerTrip @update
   deletePartnerTrip(id: ID!): PartnerTrip @delete
 
@@ -65,8 +66,9 @@ extend type Mutation {
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
 
   createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUser @create
-  updatePartnerTripUser(input: UpdatePartnerTripUserInput! @spread): PartnerTripUser @update
   deletePartnerTripUser(trip_id: ID!, user_id: ID!): PartnerTripUser @field(resolver: "DeletePartnerTripUser")
+  confirmPartnerTripUser(input: confirmPartnerTripUserInput! @spread): PartnerTrip
+    @field(resolver: "ConfirmPartnerTripUser")
 
   createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
   updateRoleType(input: UpdateRoleTypeInput! @spread): RoleType @update @updateRoleTypeValidation
@@ -104,14 +106,14 @@ type Query {
   roleType(id: ID @eq): RoleType @find
 
   roles: [Role!]! @all
-  role(id: ID @eq): Role @find
+  role(id: ID @eq): Role @find 
 
-  partnerTrips(partner_id: ID @eq): [PartnerTrip] @all
-  partnerUsers(partner_id: ID @eq): [PartnerUser] @all
-  partnerUser(id: ID @eq): PartnerUser @find
+  partnerTrips(partner_id: ID! @eq): [PartnerTrip] @all
+  partnerUsers(partner_id: ID! @eq): [PartnerUser] @all
+  partnerUser(id: ID! @eq): PartnerUser @find
   partnerDrivers(partner_id: ID!, assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
-  partnerTripUsers(partner_id: ID!, trip_id: ID!, subscribed: Boolean!): [PartnerUser] @field(resolver: "PartnerTripUsers")
-  partnerTripStations(partner_trip_id: ID @eq): [PartnerTripStation] @all
+  partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [PartnerUser] @field(resolver: "PartnerTripUsers")
+  partnerTripStations(partner_trip_id: ID! @eq): [PartnerTripStation] @all
 }
 
 #import fleet.graphql 

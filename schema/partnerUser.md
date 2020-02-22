@@ -14,7 +14,7 @@ input CreatePartnerUserInput {
 }
 
 input UpdatePartnerUserInput {
-  id: ID!
+  id: ID! @rules(apply: ["required"])
   name: String
   email: String
   partner_id: ID
@@ -22,6 +22,12 @@ input UpdatePartnerUserInput {
   position: String
   avatar: String
   phone_verified_at: DateTime
+}
+
+input GetPartnerTripUsersInput {
+  partner_id: ID! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+  status: String! @rules(apply: ["required", "in:subscribed,notSubscribed,notVerified"])
 }
 
 input PartnerUserPhoneVerificationInput {
@@ -64,7 +70,7 @@ type mutation {
 
 type query {
   partnerUser(id: ID): PartnerUser
-  partnerTripUsers(partner_id: ID!, trip_id: ID!, subscribed: Boolean!): [PartnerUser]
+  partnerTripUsers(input: GetPartnerTripUsersInput): [PartnerUser]
   partnerTripStations(partner_trip_id: ID): [PartnerTripStation]
 }
 ```
@@ -80,5 +86,5 @@ type query {
 ### Queries
 
 - **partnerUser:** Find a single user by his ID.
-- **partnerTripUsers:** Return collection of all users subscribed or not subscribed for a specific trip.
+- **partnerTripUsers:** Return collection of all users subscribed, not subscribed, or not verified for a specific trip.
 - **partnerTripStations:** Return collection of all stations associated with a specific trip.

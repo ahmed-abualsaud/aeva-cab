@@ -20,14 +20,33 @@ class PartnerTripUsers
      */
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $partnerTripUsers = PartnerTripUser::where('partner_trip_id', $args['trip_id'])->get()->pluck('partner_user_id');
+        $status = $args['status'];
 
-        if ($args['subscribed']) {
-            $users = PartnerUser::where('partner_id', $args['partner_id'])
-                ->whereIn('id', $partnerTripUsers)->get();
-        } else {
-            $users = PartnerUser::where('partner_id', $args['partner_id'])
-                ->whereNotIn('id', $partnerTripUsers)->get();
+        switch($status) {
+            case 'subscribed':
+                $partnerTripUsers = PartnerTripUser::where('partner_trip_id', $args['trip_id'])
+                    ->whereNotNull('subscription_verified_at')
+                    ->get()->pluck('partner_user_id');
+
+                $users = PartnerUser::where('partner_id', $args['partner_id'])
+                    ->whereIn('id', $partnerTripUsers)->get();
+                break;
+            case 'notSubscribed':
+                $partnerTripUsers = PartnerTripUser::where('partner_trip_id', $args['trip_id'])
+                    ->get()->pluck('partner_user_id');
+
+                $users = PartnerUser::where('partner_id', $args['partner_id'])
+                    ->whereNotIn('id', $partnerTripUsers)->get();
+                break;
+            case 'notVerified':
+                $partnerTripUsers = PartnerTripUser::where('partner_trip_id', $args['trip_id'])
+                    ->whereNull('subscription_verified_at')
+                    ->get()->pluck('partner_user_id');
+
+                $users = PartnerUser::where('partner_id', $args['partner_id'])
+                    ->whereIn('id', $partnerTripUsers)->get();
+                break;
+
         }
 
         return $users;

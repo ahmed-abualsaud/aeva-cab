@@ -1,20 +1,23 @@
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
 input CreatePartnerTripUserInput {
   partner_trip_id: ID! @rules(apply: ["required"])
   partner_user_id: ID! @rules(apply: ["required"])
+  subscription_verified_at: DateTime
   subscription_expires_on: Date
-  send_subscription_code: Boolean
 }
 
-input UpdatePartnerTripUserInput {
-  id: ID!
-  subscription_expires_on: Date
+input GetPartnerTripUsersInput {
+  partner_id: ID! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+  status: String! @rules(apply: ["required", "in:subscribed,notSubscribed,notVerified"])
 }
 
 type PartnerTripUser {
   id: ID!
   partner_trip_id: ID!
   partner_user_id: ID!
+  subscription_verified_at: DateTime
   subscription_expires_on: Date
 }
