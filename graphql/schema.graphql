@@ -108,12 +108,13 @@ type Query {
 
   partnerTrips(partner_id: ID @eq): [PartnerTrip] @all
   partnerUsers(partner_id: ID @eq): [PartnerUser] @all
-  partnerDrivers(partnerID: ID!, assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
-  partnerTripUsers(partnerID: ID!, tripID: ID!, subscribed: Boolean!): [PartnerUser] @field(resolver: "PartnerTripUsers")
+  partnerUser(id: ID @eq): PartnerUser @find
+  partnerDrivers(partner_id: ID!, assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
+  partnerTripUsers(partner_id: ID!, trip_id: ID!, subscribed: Boolean!): [PartnerUser] @field(resolver: "PartnerTripUsers")
   partnerTripStations(partner_trip_id: ID @eq): [PartnerTripStation] @all
 }
 
-#import fleet.graphql
+#import fleet.graphql 
 #import driver.graphql
 #import vehicle.graphql
 #import driverVehicle.graphql

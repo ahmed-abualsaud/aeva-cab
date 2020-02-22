@@ -1,4 +1,4 @@
-## Partner User Authentication Schema
+## Partner User Schema
 
 ```js
 input CreatePartnerUserInput {
@@ -56,18 +56,29 @@ type PartnerUser {
 
 type mutation {
   createPartnerUser(input: CreatePartnerUserInput): PartnerUser
-
   updatePartnerUser(input: UpdatePartnerUserInput): PartnerUser
-
   partnerUserLogin(input: PartnerUserLoginInput): PartnerUserAuthPayload
-
   partnerUserSocialLogin(input: PartnerUserSocialLoginInput): PartnerUserAuthPayload
-
   partnerUserPhoneVerification(input: PartnerUserPhoneVerificationInput): String
 }
+
+type query {
+  partnerUser(id: ID): PartnerUser
+  partnerTripUsers(partner_id: ID!, trip_id: ID!, subscribed: Boolean!): [PartnerUser]
+  partnerTripStations(partner_trip_id: ID): [PartnerTripStation]
+}
 ```
+
+### Mutations
+
 - **createPartnerUser:** Create new user (Sign up).
 - **updatePartnerUser:** Edit an existing user (each field could be updated independently).
 - **partnerUserLogin:** Log in using the traditional sign in form.
 - **partnerUserSocialLogin:** Log in using social network.
 - **partnerUserPhoneVerification:** Verify user phone number through SMS verification code.
+
+### Queries
+
+- **partnerUser:** Find a single user by his ID.
+- **partnerTripUsers:** Return collection of all users subscribed or not subscribed for a specific trip.
+- **partnerTripStations:** Return collection of all stations associated with a specific trip.

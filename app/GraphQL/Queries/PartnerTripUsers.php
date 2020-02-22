@@ -20,13 +20,13 @@ class PartnerTripUsers
      */
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $partnerTripUsers = PartnerTripUser::where('partner_trip_id', $args['tripID'])->get()->pluck('partner_user_id');
+        $partnerTripUsers = PartnerTripUser::where('partner_trip_id', $args['trip_id'])->get()->pluck('partner_user_id');
 
         if ($args['subscribed']) {
-            $users = PartnerUser::where('partner_id', $args['partnerID'])
+            $users = PartnerUser::where('partner_id', $args['partner_id'])
                 ->whereIn('id', $partnerTripUsers)->get();
         } else {
-            $users = PartnerUser::where('partner_id', $args['partnerID'])
+            $users = PartnerUser::where('partner_id', $args['partner_id'])
                 ->whereNotIn('id', $partnerTripUsers)->get();
         }
 

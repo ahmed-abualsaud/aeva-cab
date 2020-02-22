@@ -20,7 +20,7 @@ class PartnerDrivers
      */
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $partnerDrivers = PartnerDriver::where('partner_id', $args['partnerID'])->get()->pluck('driver_id');
+        $partnerDrivers = PartnerDriver::where('partner_id', $args['partner_id'])->get()->pluck('driver_id');
 
         if ($args['assigned']) {
             $drivers = Driver::whereIn('id', $partnerDrivers)->get();
