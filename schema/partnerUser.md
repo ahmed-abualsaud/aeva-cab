@@ -44,6 +44,11 @@ input PartnerUserSocialLoginInput {
   token: String! @rules(apply: ["required"])
 }
 
+input confirmPartnerTripUserInput {
+  user_id: ID! @rules(apply: ["required"])
+  subscription_code: String! @rules(apply: ["required"])
+}
+
 type PartnerUserAuthPayload {
   access_token: String
   user: PartnerUser
@@ -66,6 +71,7 @@ type mutation {
   partnerUserLogin(input: PartnerUserLoginInput): PartnerUserAuthPayload
   partnerUserSocialLogin(input: PartnerUserSocialLoginInput): PartnerUserAuthPayload
   partnerUserPhoneVerification(input: PartnerUserPhoneVerificationInput): String
+  confirmPartnerTripUser(input: confirmPartnerTripUserInput): PartnerTrip
 }
 
 type query {
@@ -82,6 +88,7 @@ type query {
 - **partnerUserLogin:** Log in using the traditional sign in form.
 - **partnerUserSocialLogin:** Log in using social network.
 - **partnerUserPhoneVerification:** Verify user phone number through SMS verification code.
+- **confirmPartnerTripUser:** Subscribe for a trip using the previously sent subscription code.
 
 ### Queries
 
