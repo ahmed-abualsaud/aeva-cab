@@ -65,6 +65,8 @@ extend type Mutation {
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
 
+  createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUser @create
+
   createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUser @create
   deletePartnerTripUser(trip_id: ID!, user_id: ID!): PartnerTripUser @field(resolver: "DeletePartnerTripUser")
   confirmPartnerTripUser(input: confirmPartnerTripUserInput! @spread): PartnerTrip
@@ -129,6 +131,7 @@ type Query {
 #import partnerDriver.graphql
 #import partnerTrip.graphql
 #import partnerTripStation.graphql
+#import partnerTripStationUser.graphql
 #import partnerTripUser.graphql
 #import roleType.graphql
 #import role.graphql
