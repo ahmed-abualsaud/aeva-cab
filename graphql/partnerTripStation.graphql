@@ -5,6 +5,7 @@ input CreatePartnerTripStationInput {
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
   partner_trip_id: ID! @rules(apply: ["required"])
+  created_by: ID
   accepted_at: DateTime
 }
 
@@ -16,10 +17,21 @@ input UpdatePartnerTripStationInput {
   accepted_at: DateTime
 }
 
+input GetPartnerTripStationsInput {
+  partner_trip_id: ID! @rules(apply: ["required"])
+  status: String! @rules(apply: ["required", "in:accepted,notAccepted"])
+}
+
+input AcceptPartnerTripStationInput {
+  trip_id: ID! @rules(apply: ["required"])
+  station_id: ID! @rules(apply: ["required"])
+}
+
 type PartnerTripStation {
-  id: ID!
+  id: ID
   name: String
-  latitude: String!
-  longitude: String!
+  latitude: String
+  longitude: String
+  created_by: ID
   accepted_at: DateTime
 }

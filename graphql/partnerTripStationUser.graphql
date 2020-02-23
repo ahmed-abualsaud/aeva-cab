@@ -1,10 +1,12 @@
 input CreatePartnerTripStationUserInput {
+  trip_id: ID! @rules(apply: ["required"])
   station_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
 }
 
 type PartnerTripStationUser {
   id: ID!
+  trip_id: ID!
   station_id: ID!
   user_id: ID!
 }

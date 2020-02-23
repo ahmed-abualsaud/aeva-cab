@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddAcceptedAtToStationsTable extends Migration
+class AddCreatedByToStationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,9 @@ class AddAcceptedAtToStationsTable extends Migration
     public function up()
     {
         Schema::table('partner_trip_stations', function (Blueprint $table) {
-            $table->timestamp('accepted_at')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+
+            $table->foreign('created_by')->references('id')->on('partner_users')->onDelete('cascade');
         });
     }
 
@@ -26,7 +28,7 @@ class AddAcceptedAtToStationsTable extends Migration
     public function down()
     {
         Schema::table('partner_trip_stations', function (Blueprint $table) {
-            $table->dropColumn('accepted_at');
-        }); 
+            $table->dropColumn('created_by');
+        });
     }
 }

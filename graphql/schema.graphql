@@ -64,6 +64,8 @@ extend type Mutation {
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
+  acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): PartnerTripStation 
+    @field(resolver: "AcceptPartnerTripStation")
 
   createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUser @create
 
@@ -115,7 +117,8 @@ type Query {
   partnerUser(id: ID! @eq): PartnerUser @find
   partnerDrivers(partner_id: ID!, assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
   partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [PartnerUser] @field(resolver: "PartnerTripUsers")
-  partnerTripStations(partner_trip_id: ID! @eq): [PartnerTripStation] @all
+  partnerTripStations(input: GetPartnerTripStationsInput! @spread): [PartnerTripStation]
+    @field(resolver: "PartnerTripStations") 
 }
 
 #import fleet.graphql 
