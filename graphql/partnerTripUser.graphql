@@ -8,6 +8,11 @@ input CreatePartnerTripUserInput {
   subscription_expires_on: Date
 }
 
+input confirmPartnerTripUserInput {
+  user_id: ID! @rules(apply: ["required"])
+  subscription_code: String! @rules(apply: ["required"])
+}
+
 input GetPartnerTripUsersInput {
   partner_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])

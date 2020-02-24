@@ -10,4 +10,9 @@ class PartnerTripStation extends Model
     use SoftDeletes;
     
     protected $guarded = [];
+
+    public function created_by()
+    {
+        return $this->belongsTo(PartnerUser::class, 'created_by');
+    }
 }
