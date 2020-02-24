@@ -119,6 +119,8 @@ type Query {
   partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [PartnerUser] @field(resolver: "PartnerTripUsers")
   partnerTripStations(input: GetPartnerTripStationsInput! @spread): [PartnerTripStation]
     @field(resolver: "PartnerTripStations") 
+  partnerTripStationUsers(station_id: ID!): [PartnerUser] 
+    @field(resolver: "PartnerTripStationUsers")
 }
 
 #import fleet.graphql 

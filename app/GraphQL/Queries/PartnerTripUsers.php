@@ -46,7 +46,6 @@ class PartnerTripUsers
                 $users = PartnerUser::where('partner_id', $args['partner_id'])
                     ->whereIn('id', $partnerTripUsers)->get();
                 break;
-
         }
 
         return $users;
