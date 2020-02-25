@@ -5,7 +5,6 @@ input CreatePartnerTripUsersInput {
   partner_trip_id: ID! @rules(apply: ["required"])
   partner_user_id: [ID!]! @rules(apply: ["required"])
   partner_user_phone: [String!]! @rules(apply: ["required"])
-  partner_user_email: [String!]! @rules(apply: ["required"])
   subscription_code: String! @rules(apply: ["required"])
 }
 

@@ -5,8 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\PartnerTripUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use Illuminate\Support\Facades\Notification;
-use App\Notifications\NewPartnerTripSubscription;
+use App\Exceptions\CustomException;
 
 class CreatePartnerTripUsers
 {
@@ -24,17 +23,22 @@ class CreatePartnerTripUsers
         $data = [];
         $arr = [];
 
-        foreach($args['partner_user_id'] as $key => $val) {
+        foreach($args['partner_user_id'] as $val) {
             $arr['partner_trip_id'] = $args['partner_trip_id'];
             $arr['partner_user_id'] = $val;
 
             array_push($data, $arr);
         } 
 
-        PartnerTripUser::insert($data);
-
-        Notification::route('mail', $args['partner_user_email'])
-            ->notify(new NewPartnerTripSubscription($args['subscription_code']));
+        try {
+            PartnerTripUser::insert($data);
+        } catch (\Exception $e) {
+            throw new CustomException(
+              'Subscription faild.',
+              'Each user is allowed to subscribe for a trip once.',
+              'Integrity constraint violation.'
+            );
+        }
 
         return "Subscription code sent";
     }
