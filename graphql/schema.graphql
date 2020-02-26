@@ -50,7 +50,8 @@ extend type Mutation {
   updatePartnerUser(input: UpdatePartnerUserInput! @spread): PartnerUser @update @updatePartnerUserValidation
   deletePartnerUser(id: ID!): PartnerUser @delete
 
-  createPartnerDriver(input: CreatePartnerDriverInput! @spread): PartnerDriver @create
+  createPartnerDriver(input: CreatePartnerDriverInput! @spread): String!
+    @field(resolver: "CreatePartnerDriver")
   deletePartnerDriver(partner_id: ID!, driver_id: ID!): PartnerDriver @field(resolver: "DeletePartnerDriver")
 
   createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip 
