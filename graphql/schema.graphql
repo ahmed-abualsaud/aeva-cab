@@ -13,6 +13,9 @@ type Mutation {
 
   partnerUserPhoneVerification(input: PartnerUserPhoneVerificationInput! @spread): String!
     @field(resolver: "PartnerUserPhoneVerification")
+
+  driverLogin(input: DriverLoginInput! @spread): DriverAuthPayload! 
+    @field(resolver: "DriverLogin@resolve")
 }
 
 extend type Mutation {
@@ -38,12 +41,6 @@ extend type Mutation {
 
   createDriverVehicle(input: CreateDriverVehicleInput! @spread): DriverVehicle @create
   deleteDriverVehicle(driver_id: ID!, vehicle_id: ID!): DriverVehicle @field(resolver: "DeleteDriverVehicle")
-
-  createFleetCarType(input: CreateFleetCarTypeInput! @spread): FleetCarType @create
-  deleteFleetCarType(id: ID!): FleetCarType @delete
-
-  createFleetCarModel(input: CreateFleetCarModelInput! @spread): FleetCarModel @create
-  deleteFleetCarModel(id: ID!): FleetCarModel @delete
 
   createPartner(input: CreatePartnerInput! @spread): Partner @create
   updatePartner(input: UpdatePartnerInput! @spread): Partner @update @updatePartnerValidation
@@ -130,8 +127,6 @@ type Query {
 #import driverVehicle.graphql
 #import carType.graphql
 #import carModel.graphql
-#import fleetCarType.graphql
-#import fleetCarModel.graphql
 #import partner.graphql
 #import partnerUser.graphql
 #import partnerDriver.graphql

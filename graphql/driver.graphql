@@ -1,44 +1,49 @@
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
 input CreateDriverInput {
-  first_name: String! @rules(apply: ["required"])
-  last_name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["email", "unique:drivers,email"])
+  name: String! @rules(apply: ["required"])
   fleet_id: ID! @rules(apply: ["required"])
-  phone: String
-  car_no: String
+  phone: String! @rules(apply: ["required", "unique:drivers,phone"])
+  password: String! @rules(apply: ["required"]) @bcrypt
+  email: String  @rules(apply: ["email", "unique:drivers,email"])
   license_no: String
   license_expires_on: Date
   avatar: String
-  status: String @rules(apply: ["in:active,inactive"])
+  status: Boolean
 }
 
 input UpdateDriverInput {
   id: ID!
-  first_name: String
-  last_name: String
+  name: String
   email: String
-  fleet_id: ID
   phone: String
-  car_no: String
+  fleet_id: ID
   license_no: String
   license_expires_on: Date
   avatar: String
-  status: String @rules(apply: ["in:active,inactive"])
+  status: Boolean
+}
+
+input DriverLoginInput {
+  emailOrPhone: String! @rules(apply: ["required"])
+  password: String! @rules(apply: ["required"])
+}
+
+type DriverAuthPayload {
+  access_token: String
+  driver: Driver
 }
 
 type Driver {
-  id: ID!
-  first_name: String!
-  last_name: String!
-  email: String!
-  fleet: Fleet! @belongsTo
+  id: ID
+  name: String
+  email: String
   phone: String
-  car_no: String
   license_no: String
   license_expires_on: Date
   avatar: String
-  status: String
+  status: Boolean
+  fleet: Fleet! @belongsTo
   trips: [PartnerTrip] @hasMany
   vehicles: [Vehicle] @hasMany
 }

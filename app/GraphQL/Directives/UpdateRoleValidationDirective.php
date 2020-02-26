@@ -14,6 +14,7 @@ class UpdateRoleValidationDirective extends ValidationDirective
   {
     return [
       'id' => ['required'],
+      'phone' => ['sometimes', Rule::unique('roles', 'phone')->ignore($this->args['id'], 'id')],
       'email' => ['sometimes', Rule::unique('roles', 'email')->ignore($this->args['id'], 'id')],
     ];
   }
@@ -24,6 +25,7 @@ class UpdateRoleValidationDirective extends ValidationDirective
   public function messages(): array
   {
     return [
+      'phone.unique' => 'The chosen phone is not available',
       'email.unique' => 'The chosen email is not available',
     ];
   }

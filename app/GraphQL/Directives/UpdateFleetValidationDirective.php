@@ -14,6 +14,7 @@ class UpdateFleetValidationDirective extends ValidationDirective
   {
     return [
       'id' => ['required'],
+      'phone' => ['sometimes', Rule::unique('fleets', 'phone')->ignore($this->args['id'], 'id')],
       'email' => ['sometimes', Rule::unique('fleets', 'email')->ignore($this->args['id'], 'id')],
     ];
   }
@@ -24,6 +25,7 @@ class UpdateFleetValidationDirective extends ValidationDirective
   public function messages(): array
   {
     return [
+      'phone.unique' => 'The chosen phone is not available',
       'email.unique' => 'The chosen email is not available',
     ];
   }

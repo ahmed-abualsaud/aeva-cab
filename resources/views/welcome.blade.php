@@ -45,7 +45,7 @@
             }
 
             .title {
-                font-size: 84px;
+                font-size: 50px;
             }
 
             .links > a {
@@ -67,7 +67,7 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <div class="title m-b-md">
-                    Qruz Business Microservice
+                    Qruz Transportation Solution
                 </div>
             </div>
         </div>

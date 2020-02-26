@@ -56,6 +56,11 @@ return [
             'provider' => 'partner_users',
         ],
 
+        'driver' => [
+            'driver' => 'jwt',
+            'provider' => 'drivers',
+        ],
+
     ],
 
     /*
@@ -89,6 +94,11 @@ return [
         'partner_users' => [
             'driver' => 'eloquent',
             'model' => App\PartnerUser::class,
+        ],
+
+        'drivers' => [
+            'driver' => 'eloquent',
+            'model' => App\Driver::class,
         ]
     ],
 

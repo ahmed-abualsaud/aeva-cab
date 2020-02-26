@@ -15,14 +15,4 @@ class Fleet extends Model
     {
         return $this->hasMany(Driver::class);
     }
-
-    public function carTypes()
-    {
-        return $this->belongsToMany(CarType::class, 'fleet_car_types');
-    }
-
-    public function carModels()
-    {
-        return $this->belongsToMany(CarModel::class, 'fleet_car_models');
-    }
 }
