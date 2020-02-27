@@ -1,12 +1,17 @@
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 
-input CreatePartnerTripUsersInput {
+input CreatePartnerTripUserInput {
   partner_trip_id: ID! @rules(apply: ["required"])
   partner_user_id: [ID!]! @rules(apply: ["required"])
   partner_user_phone: [String!]! @rules(apply: ["required"])
   subscription_code: String! @rules(apply: ["required"])
-}
+} 
+
+input DeletePartnerTripUserInput {
+  partner_trip_id: ID! @rules(apply: ["required"])
+  partner_user_id: [ID!]! @rules(apply: ["required"])
+} 
 
 input confirmPartnerTripUserInput {
   user_id: ID! @rules(apply: ["required"])

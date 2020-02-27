@@ -5,6 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\DriverVehicle;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use App\Exceptions\CustomException; 
 
 class DeleteDriverVehicle
 {
@@ -19,12 +20,17 @@ class DeleteDriverVehicle
    */
   public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
   {
-    $driverVehicle = DriverVehicle::where('driver_id', $args['driver_id'])
-      ->where('vehicle_id', $args['vehicle_id'])
-      ->first();
-        
-    $driverVehicle->delete();
-
-    return $driverVehicle;
+    try {
+      DriverVehicle::where('driver_id', $args['driver_id'])
+        ->whereIn('vehicle_id', $args['vehicle_id'])
+        ->delete();
+    } catch (\Exception $e) {
+      throw new CustomException(
+        'Assignment cancellation faild.',
+        'Something went wrong.',
+        'Unknown.'
+      );
     }
+    return "Selected assignments have been cancelled successfully.";
+  }
 }

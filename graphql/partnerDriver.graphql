@@ -1,4 +1,4 @@
-input CreatePartnerDriverInput {
+input PartnerDriverInput {
   partner_id: ID! @rules(apply: ["required"])
   driver_id: [ID!]! @rules(apply: ["required"])
 }

@@ -2,12 +2,12 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\PartnerDriver;
+use App\DriverVehicle;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use App\Exceptions\CustomException;
 
-class CreatePartnerDriver
+class CreateDriverVehicle
 {
     /**
      * Return a value for the field.
@@ -23,23 +23,23 @@ class CreatePartnerDriver
         $data = [];
         $arr = [];
 
-        foreach($args['driver_id'] as $val) {
-            $arr['partner_id'] = $args['partner_id'];
-            $arr['driver_id'] = $val;
+        foreach($args['vehicle_id'] as $val) {
+            $arr['driver_id'] = $args['driver_id'];
+            $arr['vehicle_id'] = $val;
 
             array_push($data, $arr);
         } 
 
         try {
-            PartnerDriver::insert($data);
+            DriverVehicle::insert($data);
         } catch (\Exception $e) {
             throw new CustomException(
               'Assignment faild.',
-              'Driver can not be assigned to the same partner more than once.',
+              'Vehicle can not be assigned to the same driver more than once.',
               'Integrity constraint violation.'
             );
         }
  
-        return "Selected drivers have been assigned successfully.";
+        return "Selected vehicles have been assigned successfully.";
     }
 }

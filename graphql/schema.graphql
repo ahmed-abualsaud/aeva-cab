@@ -39,8 +39,10 @@ extend type Mutation {
   updateVehicle(input: UpdateVehicleInput! @spread): Vehicle @update @updateVehicleValidation
   deleteVehicle(id: ID!): Vehicle @delete
 
-  createDriverVehicle(input: CreateDriverVehicleInput! @spread): DriverVehicle @create
-  deleteDriverVehicle(driver_id: ID!, vehicle_id: ID!): DriverVehicle @field(resolver: "DeleteDriverVehicle")
+  createDriverVehicle(input: DriverVehicleInput! @spread): String! 
+    @field(resolver: "CreateDriverVehicle")
+  deleteDriverVehicle(input: DriverVehicleInput! @spread): String! 
+    @field(resolver: "DeleteDriverVehicle")
 
   createPartner(input: CreatePartnerInput! @spread): Partner @create
   updatePartner(input: UpdatePartnerInput! @spread): Partner @update @updatePartnerValidation
@@ -50,9 +52,10 @@ extend type Mutation {
   updatePartnerUser(input: UpdatePartnerUserInput! @spread): PartnerUser @update @updatePartnerUserValidation
   deletePartnerUser(id: ID!): PartnerUser @delete
 
-  createPartnerDriver(input: CreatePartnerDriverInput! @spread): String!
+  createPartnerDriver(input: PartnerDriverInput! @spread): String!
     @field(resolver: "CreatePartnerDriver")
-  deletePartnerDriver(partner_id: ID!, driver_id: ID!): PartnerDriver @field(resolver: "DeletePartnerDriver")
+  deletePartnerDriver(input: PartnerDriverInput! @spread): String! 
+    @field(resolver: "DeletePartnerDriver") 
 
   createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip 
     @field(resolver: "CreatePartnerTrip")
@@ -67,9 +70,10 @@ extend type Mutation {
 
   createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUser @create
 
-  createPartnerTripUsers(input: CreatePartnerTripUsersInput! @spread): String! 
+  createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): String! 
     @field(resolver: "CreatePartnerTripUsers")
-  deletePartnerTripUser(trip_id: ID!, user_id: ID!): PartnerTripUser @field(resolver: "DeletePartnerTripUser")
+  deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): String! 
+    @field(resolver: "DeletePartnerTripUser")
   confirmPartnerTripUser(input: confirmPartnerTripUserInput! @spread): PartnerTrip
     @field(resolver: "ConfirmPartnerTripUser")
 

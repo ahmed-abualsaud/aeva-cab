@@ -5,6 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\PartnerTripUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use App\Exceptions\CustomException;
 
 class DeletePartnerTripUser
 {
@@ -19,12 +20,17 @@ class DeletePartnerTripUser
      */
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $partnerTripUser = PartnerTripUser::where('partner_trip_id', $args['trip_id'])
-          ->where('partner_user_id', $args['user_id'])
-          ->first();
-            
-        $partnerTripUser->delete();
-
-        return $partnerTripUser;
+      try {
+        PartnerTripUser::where('partner_trip_id', $args['partner_trip_id'])
+        ->whereIn('partner_user_id', $args['partner_user_id'])
+        ->delete();
+      } catch (\Exception $e) {
+        throw new CustomException(
+          'Subscription cancellation faild.',
+          'Something went wrong.',
+          'Unknown.'
+        );
+      }
+      return "Selected subscriptions have been cancelled successfully.";
     }
 }
