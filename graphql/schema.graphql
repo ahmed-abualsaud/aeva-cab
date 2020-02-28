@@ -103,12 +103,13 @@ type Query {
 
   carTypes: [CarType!]! @all
   carType(id: ID @eq): CarType @find
-
+  
   carMakes: [CarMake!]! @all
   carMake(id: ID @eq): CarMake @find
 
   carModels: [CarModel!]! @all
   carModel(id: ID @eq): CarModel @find
+  carMakeModels(make_id: ID @eq): [CarModel] @all
 
   partners: [Partner!]! @all
   partner(id: ID @eq): Partner @find
