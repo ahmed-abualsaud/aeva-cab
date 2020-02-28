@@ -5,14 +5,14 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class CarModel extends Model
+class CarMake extends Model
 {
     use SoftDeletes;
     
     protected $guarded = [];
 
-    public function make()
+    public function models()
     {
-        return $this->belongsTo(CarMake::class);
+        return $this->hasMany(CarModel::class, 'make_id');
     }
 }

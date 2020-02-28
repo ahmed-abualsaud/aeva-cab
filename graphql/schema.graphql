@@ -31,8 +31,12 @@ extend type Mutation {
   updateCarType(input: UpdateCarTypeInput! @spread): CarType @update @updateCarTypeValidation
   deleteCarType(id: ID!): CarType @delete
 
+  createCarMake(input: CreateCarMakeInput! @spread): CarMake @create
+  updateCarMake(input: UpdateCarMakeInput! @spread): CarMake @update @updateCarMakeValidation
+  deleteCarMake(id: ID!): CarMake @delete
+
   createCarModel(input: CreateCarModelInput! @spread): CarModel @create
-  updateCarModel(input: UpdateCarModelInput! @spread): CarModel @update @updateCarModelValidation
+  updateCarModel(input: UpdateCarModelInput! @spread): CarModel @update
   deleteCarModel(id: ID!): CarModel @delete
 
   createVehicle(input: CreateVehicleInput! @spread): Vehicle @create
@@ -100,6 +104,9 @@ type Query {
   carTypes: [CarType!]! @all
   carType(id: ID @eq): CarType @find
 
+  carMakes: [CarMake!]! @all
+  carMake(id: ID @eq): CarMake @find
+
   carModels: [CarModel!]! @all
   carModel(id: ID @eq): CarModel @find
 
@@ -131,6 +138,7 @@ type Query {
 #import vehicle.graphql
 #import driverVehicle.graphql
 #import carType.graphql
+#import carMake.graphql
 #import carModel.graphql
 #import partner.graphql
 #import partnerUser.graphql
