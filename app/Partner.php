@@ -38,7 +38,7 @@ class Partner extends Authenticatable implements JWTSubject
 
     public function users()
     {
-        return $this->hasMany(PartnerUser::class);
+        return $this->hasMany(User::class);
     }
 
     public function drivers()

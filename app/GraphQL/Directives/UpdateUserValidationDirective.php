@@ -5,7 +5,7 @@ namespace App\GraphQL\Directives;
 use Illuminate\Validation\Rule;
 use Nuwave\Lighthouse\Schema\Directives\ValidationDirective;
 
-class UpdatePartnerUserValidationDirective extends ValidationDirective
+class UpdateUserValidationDirective extends ValidationDirective
 {
   /**
    * @return mixed[]
@@ -14,7 +14,8 @@ class UpdatePartnerUserValidationDirective extends ValidationDirective
   {
     return [
       'id' => ['required'],
-      'email' => ['sometimes', Rule::unique('partner_users', 'email')->ignore($this->args['id'], 'id')],
+      'phone' => ['sometimes', Rule::unique('users', 'phone')->ignore($this->args['id'], 'id')],
+      'email' => ['sometimes', Rule::unique('users', 'email')->ignore($this->args['id'], 'id')],
     ];
   }
 
@@ -24,6 +25,7 @@ class UpdatePartnerUserValidationDirective extends ValidationDirective
   public function messages(): array
   {
     return [
+      'phone.unique' => 'The chosen phone is not available',
       'email.unique' => 'The chosen email is not available',
     ];
   }

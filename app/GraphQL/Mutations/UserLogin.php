@@ -7,7 +7,7 @@ use Illuminate\Support\Arr;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
-class PartnerUserLogin
+class UserLogin
 {
   /**
    * Return a value for the field.
@@ -23,7 +23,7 @@ class PartnerUserLogin
     
     $credentials = Arr::only($args, ['email', 'password']);
 
-    if (! $token = auth('partner_user')->attempt($credentials)) {
+    if (! $token = auth('user')->attempt($credentials)) {
       throw new CustomException(
         'Authentication Faild',
         'The provided authentication credentials are invalid.',
@@ -31,10 +31,10 @@ class PartnerUserLogin
       );
     }
 
-    $partner_user = auth('partner_user')->user();
+    $user = auth('user')->user();
     
     $response['access_token'] = $token;
-    $response['user'] = $partner_user;
+    $response['user'] = $user;
 
     return $response;
 

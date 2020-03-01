@@ -32,6 +32,6 @@ type PartnerTripStation {
   name: String
   latitude: String
   longitude: String
-  created_by: PartnerUser @belongsTo
+  created_by: User @belongsTo
   accepted_at: DateTime
 }

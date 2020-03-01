@@ -31,8 +31,8 @@ class PartnerTrip extends Model
         return $this->hasMany(PartnerTripStation::class);
     }
 
-    public function subbedUsers()
+    public function users()
     {
-        return $this->belongsToMany(PartnerUser::class, 'partner_trip_users');
+        return $this->belongsToMany(User::class, 'partner_trip_users');
     }
 }

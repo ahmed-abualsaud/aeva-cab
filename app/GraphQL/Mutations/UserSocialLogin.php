@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\PartnerUser;
+use App\User;
 use App\Exceptions\CustomException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use JWTAuth;
 
-class PartnerUserSocialLogin
+class UserSocialLogin
 {
   /**
    * Return a value for the field.
@@ -37,9 +37,9 @@ class PartnerUserSocialLogin
     }
 
     try {
-      $user = PartnerUser::where('provider', Str::lower($args['provider']))->where('provider_id', $userData->getId())->firstOrFail();
+      $user = User::where('provider', Str::lower($args['provider']))->where('provider_id', $userData->getId())->firstOrFail();
     } catch (ModelNotFoundException $e) {
-      $user = PartnerUser::create([
+      $user = User::create([
         'name'        => $userData->getName(),
         'email'       => $userData->getEmail(),
         'provider'    => $args['provider'],

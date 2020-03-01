@@ -50,7 +50,7 @@ type Partner {
   license_expires_on: Date
   insurance_expires_on: Date
   max_no_of_trips: Int
-  users: [PartnerUser] @hasMany
+  users: [User] @hasMany
   drivers: [Driver] @belongsToMany
   trips: [PartnerTrip] @hasMany
 }

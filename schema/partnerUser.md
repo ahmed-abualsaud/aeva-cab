@@ -1,19 +1,19 @@
 ## Partner User Schema
 
 ```js
-input CreatePartnerUserInput {
+input CreateUserInput {
   name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["required", "email", "unique:partner_users,email"])
+  email: String! @rules(apply: ["required", "email", "unique:users,email"])
+  phone: String @rules(apply: ["unique:users,phone"])
   password: String @bcrypt
   provider: String
   provider_id: String
   partner_id: ID
-  phone: String
   position: String
   avatar: String
 }
 
-input UpdatePartnerUserInput {
+input UpdateUserInput {
   id: ID! @rules(apply: ["required"])
   name: String
   email: String
@@ -30,31 +30,31 @@ input GetPartnerTripUsersInput {
   status: String! @rules(apply: ["required", "in:subscribed,notSubscribed,notVerified"])
 }
 
-input PartnerUserPhoneVerificationInput {
+input UserPhoneVerificationInput {
   phone: String! @rules(apply: ["required"])
 }
 
-input PartnerUserLoginInput {
+input UserLoginInput {
   email: String! @rules(apply: ["required", "email"])
   password: String! @rules(apply: ["required"])
 }
 
-input PartnerUserSocialLoginInput {
+input UserSocialLoginInput {
   provider: String! @rules(apply: ["required", "in:facebook,google"])
   token: String! @rules(apply: ["required"])
 }
 
-input confirmPartnerTripUserInput {
+input ConfirmPartnerTripUserInput {
   user_id: ID! @rules(apply: ["required"])
   subscription_code: String! @rules(apply: ["required"])
 }
 
-type PartnerUserAuthPayload {
+type UserAuthPayload {
   access_token: String
-  user: PartnerUser
+  user: User
 }
 
-type PartnerUser {
+type User {
   id: ID
   name: String
   email: String
@@ -66,32 +66,30 @@ type PartnerUser {
 }
 
 type mutation {
-  createPartnerUser(input: CreatePartnerUserInput): PartnerUser
-  updatePartnerUser(input: UpdatePartnerUserInput): PartnerUser
-  partnerUserLogin(input: PartnerUserLoginInput): PartnerUserAuthPayload
-  partnerUserSocialLogin(input: PartnerUserSocialLoginInput): PartnerUserAuthPayload
-  partnerUserPhoneVerification(input: PartnerUserPhoneVerificationInput): String
+  createUser(input: CreateUserInput): User
+  updateUser(input: UpdateUserInput): User
+  userLogin(input: UserLoginInput): UserAuthPayload
+  userSocialLogin(input: UserSocialLoginInput): UserAuthPayload
+  userPhoneVerification(input: UserPhoneVerificationInput): String
   confirmPartnerTripUser(input: confirmPartnerTripUserInput): PartnerTrip
 }
 
 type query {
-  partnerUser(id: ID): PartnerUser
-  partnerTripUsers(input: GetPartnerTripUsersInput): [PartnerUser]
+  partnerTripUsers(input: GetPartnerTripUsersInput): [User]
   partnerTripStations(partner_trip_id: ID): [PartnerTripStation]
 }
 ```
 
 ### Mutations
 
-- **createPartnerUser:** Create new user (Sign up).
-- **updatePartnerUser:** Edit an existing user (each field could be updated independently).
-- **partnerUserLogin:** Log in using the traditional sign in form.
-- **partnerUserSocialLogin:** Log in using social network.
-- **partnerUserPhoneVerification:** Verify user phone number through SMS verification code.
+- **createUser:** Create new user (Sign up).
+- **updateUser:** Edit an existing user (each field could be updated independently).
+- **userLogin:** Log in using the traditional sign in form.
+- **userSocialLogin:** Log in using social network.
+- **userPhoneVerification:** Verify user phone number through SMS verification code.
 - **confirmPartnerTripUser:** Subscribe for a trip using the previously sent subscription code.
 
 ### Queries
 
-- **partnerUser:** Find a single user by his ID.
 - **partnerTripUsers:** Return collection of all users subscribed, not subscribed, or not verified for a specific trip.
 - **partnerTripStations:** Return collection of all stations associated with a specific trip.

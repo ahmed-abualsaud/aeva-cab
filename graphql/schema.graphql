@@ -5,14 +5,14 @@ type Mutation {
   partnerLogin(input: PartnerLoginInput! @spread): PartnerAuthPayload! 
     @field(resolver: "PartnerLogin@resolve")
 
-  partnerUserLogin(input: PartnerUserLoginInput! @spread): PartnerUserAuthPayload! 
-    @field(resolver: "PartnerUserLogin@resolve")
+  userLogin(input: UserLoginInput! @spread): UserAuthPayload! 
+    @field(resolver: "UserLogin@resolve")
 
-  partnerUserSocialLogin(input: PartnerUserSocialLoginInput! @spread): PartnerUserAuthPayload! 
-    @field(resolver: "PartnerUserSocialLogin@resolve")
+  userSocialLogin(input: UserSocialLoginInput! @spread): UserAuthPayload! 
+    @field(resolver: "UserSocialLogin@resolve")
 
-  partnerUserPhoneVerification(input: PartnerUserPhoneVerificationInput! @spread): String!
-    @field(resolver: "PartnerUserPhoneVerification")
+  userPhoneVerification(input: UserPhoneVerificationInput! @spread): String!
+    @field(resolver: "UserPhoneVerification")
 
   driverLogin(input: DriverLoginInput! @spread): DriverAuthPayload! 
     @field(resolver: "DriverLogin@resolve")
@@ -52,9 +52,9 @@ extend type Mutation {
   updatePartner(input: UpdatePartnerInput! @spread): Partner @update @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
 
-  createPartnerUser(input: CreatePartnerUserInput! @spread): PartnerUser @create
-  updatePartnerUser(input: UpdatePartnerUserInput! @spread): PartnerUser @update @updatePartnerUserValidation
-  deletePartnerUser(id: ID!): PartnerUser @delete
+  createUser(input: CreateUserInput! @spread): User @create
+  updateUser(input: UpdateUserInput! @spread): User @update @updateUserValidation
+  deleteUser(id: ID!): User @delete
 
   createPartnerDriver(input: PartnerDriverInput! @spread): String!
     @field(resolver: "CreatePartnerDriver")
@@ -69,7 +69,7 @@ extend type Mutation {
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
-  acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): PartnerTripStation 
+  acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): String! 
     @field(resolver: "AcceptPartnerTripStation") 
 
   createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUser @create
@@ -78,7 +78,7 @@ extend type Mutation {
     @field(resolver: "CreatePartnerTripUsers")
   deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): String! 
     @field(resolver: "DeletePartnerTripUser")
-  confirmPartnerTripUser(input: confirmPartnerTripUserInput! @spread): PartnerTrip
+  confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): PartnerTrip
     @field(resolver: "ConfirmPartnerTripUser")
 
   createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
@@ -124,13 +124,12 @@ type Query {
   role(id: ID @eq): Role @find 
 
   partnerTrips(partner_id: ID! @eq): [PartnerTrip] @all
-  partnerUsers(partner_id: ID! @eq): [PartnerUser] @all
-  partnerUser(id: ID! @eq): PartnerUser @find
+  partnerUsers(partner_id: ID! @eq): [User] @all
   partnerDrivers(partner_id: ID!, assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
-  partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [PartnerUser] @field(resolver: "PartnerTripUsers")
+  partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [User] @field(resolver: "PartnerTripUsers")
   partnerTripStations(input: GetPartnerTripStationsInput! @spread): [PartnerTripStation]
     @field(resolver: "PartnerTripStations") 
-  partnerTripStationUsers(station_id: ID!): [PartnerUser] 
+  partnerTripStationUsers(station_id: ID!): [User] 
     @field(resolver: "PartnerTripStationUsers")
 }
 
@@ -142,7 +141,7 @@ type Query {
 #import carMake.graphql
 #import carModel.graphql
 #import partner.graphql
-#import partnerUser.graphql
+#import user.graphql
 #import partnerDriver.graphql
 #import partnerTrip.graphql
 #import partnerTripStation.graphql

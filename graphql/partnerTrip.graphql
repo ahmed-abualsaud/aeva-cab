@@ -20,8 +20,8 @@ input UpdatePartnerTripInput {
 }
 
 type PartnerTrip {
-  id: ID!
-  name: String!
+  id: ID
+  name: String
   ride_car_share: Boolean
   location: String
   time: String
@@ -30,5 +30,5 @@ type PartnerTrip {
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
   stations: [PartnerTripStation] @hasMany
-  subbedUsers: [PartnerUser] @belongsToMany
+  users: [User] @belongsToMany
 }

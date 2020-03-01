@@ -6,6 +6,8 @@ use App\PartnerTripStation;
 use App\PartnerTripStationUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Exceptions\CustomException;
 
 class AcceptPartnerTripStation
 {
@@ -20,13 +22,28 @@ class AcceptPartnerTripStation
      */
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $station = PartnerTripStation::where('id', $args['station_id'])->first();
+        try {
+            $station = PartnerTripStation::where('id', $args['station_id'])->firstOrFail();
+            $station->update(['accepted_at' => now()]);
+        } catch (\Exception $e) {
+            throw new CustomException(
+              'Not Accepted.',
+              'No station with this id is found.',
+              'Model Not Found.'
+            );
+        }
 
-        $station->update(['accepted_at' => now()]);
+        try {
+            $userCurrentStation = PartnerTripStationUser::where('trip_id', $args['trip_id'])->where('user_id', $station['created_by'])->firstOrFail();
+            $userCurrentStation->update(['station_id' => $args['station_id']]);
+        } catch (ModelNotFoundException $e) {
+            PartnerTripStationUser::create([
+                'trip_id' => $args['trip_id'],
+                'station_id' => $args['station_id'],
+                'user_id' => $station['created_by']
+            ]);
+        }
 
-        PartnerTripStationUser::where('trip_id', $args['trip_id'])
-            ->where('user_id', $station['created_by'])->update(['station_id' => $args['station_id']]);
-            
-        return $station;
+        return "Selected station has been accepted.";
     }
 }

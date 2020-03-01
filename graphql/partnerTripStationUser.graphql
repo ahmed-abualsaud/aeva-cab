@@ -5,8 +5,8 @@ input CreatePartnerTripStationUserInput {
 }
 
 type PartnerTripStationUser {
-  id: ID!
-  trip_id: ID!
-  station_id: ID!
-  user_id: ID!
+  id: ID
+  trip_id: ID
+  station_id: ID
+  user_id: ID
 }

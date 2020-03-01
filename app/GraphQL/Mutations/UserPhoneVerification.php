@@ -5,7 +5,7 @@ namespace App\GraphQL\Mutations;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
-class PartnerUserPhoneVerification
+class UserPhoneVerification
 {
     /**
      * Return a value for the field.

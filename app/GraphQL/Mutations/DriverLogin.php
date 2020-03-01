@@ -7,7 +7,7 @@ use Illuminate\Support\Arr;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
-class DriverLogin
+class DriverLogin 
 {
   /**
    * Return a value for the field.

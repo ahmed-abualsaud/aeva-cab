@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Queries;
 
-use App\PartnerUser;
+use App\User;
 use App\PartnerTripUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -28,14 +28,14 @@ class PartnerTripUsers
                     ->whereNotNull('subscription_verified_at')
                     ->get()->pluck('partner_user_id');
 
-                $users = PartnerUser::where('partner_id', $args['partner_id'])
+                $users = User::where('partner_id', $args['partner_id'])
                     ->whereIn('id', $partnerTripUsers)->get();
                 break;
             case 'notSubscribed':
                 $partnerTripUsers = PartnerTripUser::where('partner_trip_id', $args['trip_id'])
                     ->get()->pluck('partner_user_id');
 
-                $users = PartnerUser::where('partner_id', $args['partner_id'])
+                $users = User::where('partner_id', $args['partner_id'])
                     ->whereNotIn('id', $partnerTripUsers)->get();
                 break;
             case 'notVerified':
@@ -43,7 +43,7 @@ class PartnerTripUsers
                     ->whereNull('subscription_verified_at')
                     ->get()->pluck('partner_user_id');
 
-                $users = PartnerUser::where('partner_id', $args['partner_id'])
+                $users = User::where('partner_id', $args['partner_id'])
                     ->whereIn('id', $partnerTripUsers)->get();
                 break;
         }

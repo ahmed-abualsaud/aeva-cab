@@ -3,7 +3,7 @@
 namespace App\GraphQL\Mutations;
 
 use App\PartnerTrip;
-use App\PartnerUser;
+use App\User;
 use App\PartnerTripUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -43,7 +43,7 @@ class ConfirmPartnerTripUser
                 'partner_user_id' => $args['user_id'],
                 'subscription_verified_at' => now()
             ]);
-            PartnerUser::where('id', $args['user_id'])->update(['partner_id' => $trip['partner_id']]);
+            User::where('id', $args['user_id'])->update(['partner_id' => $trip['partner_id']]);
         } else if ($tripUser && !$tripUser->subscription_verified_at) {
             $tripUser->update(['subscription_verified_at' => now()]);
         } else {

@@ -1,18 +1,18 @@
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 
-input CreatePartnerUserInput {
+input CreateUserInput {
   name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["required", "email", "unique:partner_users,email"])
+  email: String! @rules(apply: ["required", "email", "unique:users,email"])
+  phone: String @rules(apply: ["unique:users,phone"])
   password: String @bcrypt
   provider: String
   provider_id: String
   partner_id: ID
-  phone: String
   position: String
   avatar: String
 }
 
-input UpdatePartnerUserInput {
+input UpdateUserInput {
   id: ID!
   name: String
   email: String
@@ -23,26 +23,26 @@ input UpdatePartnerUserInput {
   phone_verified_at: DateTime
 }
 
-input PartnerUserPhoneVerificationInput {
+input UserPhoneVerificationInput {
   phone: String! @rules(apply: ["required"])
 }
 
-input PartnerUserLoginInput {
+input UserLoginInput {
   email: String! @rules(apply: ["required", "email"])
   password: String! @rules(apply: ["required"])
 }
 
-input PartnerUserSocialLoginInput {
+input UserSocialLoginInput {
   provider: String! @rules(apply: ["required", "in:facebook,google"])
   token: String! @rules(apply: ["required"])
 }
 
-type PartnerUserAuthPayload {
+type UserAuthPayload {
   access_token: String
-  user: PartnerUser
+  user: User
 }
 
-type PartnerUser {
+type User {
   id: ID
   name: String
   email: String

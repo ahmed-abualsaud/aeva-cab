@@ -51,9 +51,9 @@ return [
             'provider' => 'partners',
         ],
 
-        'partner_user' => [
+        'user' => [
             'driver' => 'jwt',
-            'provider' => 'partner_users',
+            'provider' => 'users',
         ],
 
         'driver' => [
@@ -91,9 +91,9 @@ return [
             'model' => App\Partner::class,
         ],
 
-        'partner_users' => [
+        'users' => [
             'driver' => 'eloquent',
-            'model' => App\PartnerUser::class,
+            'model' => App\User::class,
         ],
 
         'drivers' => [
