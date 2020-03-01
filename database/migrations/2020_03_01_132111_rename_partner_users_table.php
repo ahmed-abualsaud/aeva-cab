@@ -23,7 +23,6 @@ class RenamePartnerUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->unique('email');
-            $table->unique('phone');
         });
     }
 
@@ -37,7 +36,6 @@ class RenamePartnerUsersTable extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign('users_partner_id_foreign');
             $table->dropUnique('users_email_unique');
-            $table->dropUnique('users_phone_unique');
         });
 
         Schema::rename('users', 'partner_users');
