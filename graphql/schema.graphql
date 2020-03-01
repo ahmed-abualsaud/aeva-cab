@@ -78,9 +78,9 @@ extend type Mutation {
     @field(resolver: "CreatePartnerTripUsers")
   deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): String! 
     @field(resolver: "DeletePartnerTripUser")
-  confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): PartnerTrip
+  confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): String!
     @field(resolver: "ConfirmPartnerTripUser")
-
+ 
   createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
   updateRoleType(input: UpdateRoleTypeInput! @spread): RoleType @update @updateRoleTypeValidation
   deleteRoleType(id: ID!): RoleType @delete
