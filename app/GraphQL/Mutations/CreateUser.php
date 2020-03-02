@@ -2,10 +2,12 @@
 
 namespace App\GraphQL\Mutations;
 
+use App\User;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use Illuminate\Support\Facades\Hash;
 
-class UserPhoneVerification
+class CreateUser
 {
     /**
      * Return a value for the field.
@@ -18,11 +20,12 @@ class UserPhoneVerification
      */
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $verification_code = '';
-        for($i = 0; $i < 4; $i++) {
-            $verification_code .= mt_rand(0, 9);
-        }
-
-        return ["verificationCode" => $verification_code];
+        $model = new User();
+        $input = collect($args)->except('directive')->toArray();
+        $input['password'] = Hash::make($input['password']);
+        $model->fill($input);
+        $model->save();
+        
+        return ['user' => $model];
     }
 }

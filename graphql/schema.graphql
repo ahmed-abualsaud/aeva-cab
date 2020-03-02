@@ -11,7 +11,7 @@ type Mutation {
   userSocialLogin(input: UserSocialLoginInput! @spread): UserAuthPayload! 
     @field(resolver: "UserSocialLogin@resolve")
 
-  userPhoneVerification(input: UserPhoneVerificationInput! @spread): String!
+  userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
     @field(resolver: "UserPhoneVerification")
 
   driverLogin(input: DriverLoginInput! @spread): DriverAuthPayload! 
@@ -52,8 +52,10 @@ extend type Mutation {
   updatePartner(input: UpdatePartnerInput! @spread): Partner @update @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
 
-  createUser(input: CreateUserInput! @spread): User @create
-  updateUser(input: UpdateUserInput! @spread): User @update @updateUserValidation
+  createUser(input: CreateUserInput! @spread): UserPayload 
+    @field(resolver: "CreateUser")
+  updateUser(input: UpdateUserInput! @spread): UserPayload 
+    @field(resolver: "UpdateUser") @updateUserValidation
   deleteUser(id: ID!): User @delete
 
   createPartnerDriver(input: PartnerDriverInput! @spread): String!

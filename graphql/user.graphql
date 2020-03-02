@@ -4,7 +4,7 @@ input CreateUserInput {
   name: String! @rules(apply: ["required"])
   email: String! @rules(apply: ["required", "email", "unique:users,email"])
   phone: String @rules(apply: ["unique:users,phone"])
-  password: String @bcrypt
+  password: String
   provider: String
   provider_id: String
   partner_id: ID
@@ -37,9 +37,17 @@ input UserSocialLoginInput {
   token: String! @rules(apply: ["required"])
 }
 
+type UserPayload {
+  user: User
+}
+
 type UserAuthPayload {
   access_token: String
   user: User
+}
+
+type UserPhoneVerifyPayload {
+  verificationCode: String
 }
 
 type User {
