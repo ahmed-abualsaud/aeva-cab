@@ -6,6 +6,8 @@ use App\User;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+use JWTAuth;
 
 class CreateUser
 {
@@ -20,12 +22,19 @@ class CreateUser
      */
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $model = new User();
+        $user = new User();
         $input = collect($args)->except('directive')->toArray();
         $input['password'] = Hash::make($input['password']);
-        $model->fill($input);
-        $model->save();
-        
-        return ['user' => $model];
+        $user->fill($input);
+        $user->save();
+
+        Auth::onceUsingId($user->id);
+
+        $token = JWTAuth::fromUser($user);
+    
+        $response['access_token'] = $token;
+        $response['user'] = $user;
+
+        return $response;
     }
 }

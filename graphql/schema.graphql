@@ -5,10 +5,10 @@ type Mutation {
   partnerLogin(input: PartnerLoginInput! @spread): PartnerAuthPayload! 
     @field(resolver: "PartnerLogin@resolve")
 
-  userLogin(input: UserLoginInput! @spread): UserAuthPayload! 
+  userLogin(input: UserLoginInput! @spread): UserPayload! 
     @field(resolver: "UserLogin@resolve")
 
-  userSocialLogin(input: UserSocialLoginInput! @spread): UserAuthPayload! 
+  userSocialLogin(input: UserSocialLoginInput! @spread): UserPayload! 
     @field(resolver: "UserSocialLogin@resolve")
 
   userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!

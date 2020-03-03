@@ -38,10 +38,6 @@ input UserSocialLoginInput {
 }
 
 type UserPayload {
-  user: User
-}
-
-type UserAuthPayload {
   access_token: String
   user: User
 }
