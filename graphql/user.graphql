@@ -46,6 +46,16 @@ type UserPhoneVerifyPayload {
   verificationCode: String
 }
 
+input OrderByClause{
+  field: String!
+  order: SortOrder!
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
 type User {
   id: ID
   name: String

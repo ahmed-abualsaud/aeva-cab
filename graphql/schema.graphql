@@ -93,14 +93,14 @@ extend type Mutation {
 }
 
 type Query {
-  fleets: [Fleet!]! @all
+  fleets(orderBy: [OrderByClause] @orderBy): [Fleet!]! @paginate
   fleet(id: ID @eq): Fleet @find
 
   drivers: [Driver!]! @all
   driver(id: ID @eq): Driver @find
-  fleetDrivers(fleet_id: ID @eq): [Driver] @all
+  fleetDrivers(fleet_id: ID @eq orderBy: [OrderByClause] @orderBy): [Driver] @paginate
 
-  vehicles: [Vehicle!]! @all
+  vehicles(orderBy: [OrderByClause] @orderBy): [Vehicle!]! @paginate
   driverVehicles(driver_id: ID!, assigned: Boolean!): [Vehicle] @field(resolver: "DriverVehicles")
 
   carTypes: [CarType!]! @all
@@ -109,7 +109,7 @@ type Query {
   carMakes: [CarMake!]! @all
   carMake(id: ID @eq): CarMake @find
 
-  carModels: [CarModel!]! @all
+  carModels(orderBy: [OrderByClause] @orderBy): [CarModel!]! @paginate
   carModel(id: ID @eq): CarModel @find
   carMakeModels(make_id: ID @eq): [CarModel] @all
 
