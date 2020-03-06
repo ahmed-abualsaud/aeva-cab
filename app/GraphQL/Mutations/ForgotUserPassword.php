@@ -2,13 +2,15 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\User;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use App\Exceptions\CustomException;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Support\Facades\Password;
 
-class UpdateUser
+class ForgotUserPassword
 {
+    use SendsPasswordResetEmails;
+
     /**
      * Return a value for the field.
      *
@@ -20,19 +22,17 @@ class UpdateUser
      */
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-      $input = collect($args)->except(['id', 'directive'])->toArray();
-      
-      try {
-        $user = User::findOrFail($args['id']);
-        $user->update($input);
-      } catch (\Exception $e) {
-        throw new CustomException(
-          'User Not Updated.',
-          'The provided user ID is not found.',
-          'ModelNotFound.'
-        );
-      }
-      
-      return ['user' => $user];
+        $response = $this->broker()->sendResetLink(['email' => $args['email']]);
+        if ($response == Password::RESET_LINK_SENT) {
+            return [
+                'status'  => 'EMAIL_SENT',
+                'message' => trans($response),
+            ];
+        }
+
+        return [
+            'status'  => 'EMAIL_NOT_SENT',
+            'message' => trans($response),
+        ];
     }
 }

@@ -16,6 +16,12 @@ type Mutation {
 
   driverLogin(input: DriverLoginInput! @spread): DriverAuthPayload! 
     @field(resolver: "DriverLogin@resolve")
+
+  forgotUserPassword(input: ForgotPasswordInput! @spread): UpdatePasswordResponse! @field(resolver: "ForgotUserPassword")
+
+  updateUserForgottenPassword(input: NewPasswordWithCodeInput @spread): UpdatePasswordResponse! @field(resolver: "ResetUserPassword")
+
+  changeUserPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! @field(resolver: "ChangeUserPassword")
 }
 
 extend type Mutation {
@@ -101,7 +107,8 @@ type Query {
   fleetDrivers(fleet_id: ID @eq orderBy: [OrderByClause] @orderBy): [Driver] @paginate
 
   vehicles(orderBy: [OrderByClause] @orderBy): [Vehicle!]! @paginate
-  driverVehicles(driver_id: ID!, assigned: Boolean!): [Vehicle] @field(resolver: "DriverVehicles")
+  driverVehicles(driver_id: ID! assigned: Boolean! orderBy: [OrderByClause] @orderBy): [Vehicle] 
+    @paginate(scopes: ["assignedOrNot"])
 
   carTypes: [CarType!]! @all
   carType(id: ID @eq): CarType @find
@@ -127,7 +134,7 @@ type Query {
 
   partnerTrips(partner_id: ID! @eq): [PartnerTrip] @all
   partnerUsers(partner_id: ID! @eq): [User] @all
-  partnerDrivers(partner_id: ID!, assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
+  partnerDrivers(partner_id: ID! assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
   partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [User] @field(resolver: "PartnerTripUsers")
   partnerTripStations(input: GetPartnerTripStationsInput! @spread): [PartnerTripStation]
     @field(resolver: "PartnerTripStations") 
