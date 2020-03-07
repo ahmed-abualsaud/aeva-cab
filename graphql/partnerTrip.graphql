@@ -29,6 +29,5 @@ type PartnerTrip {
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
-  stations: [PartnerTripStation] @hasMany
-  users: [User] @belongsToMany
+  stations: [PartnerTripStation] @hasMany 
 }
