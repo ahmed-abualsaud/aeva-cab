@@ -40,6 +40,9 @@ class CreateDriverVehicle
             );
         }
  
-        return "Selected vehicles have been assigned successfully.";
+        return [
+            "status" => "SUCCESS",
+            "message" => "Selected vehicles have been assigned successfully."
+        ];
     }
 }

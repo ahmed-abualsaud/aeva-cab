@@ -5,6 +5,9 @@ type Mutation {
   partnerLogin(input: PartnerLoginInput! @spread): PartnerAuthPayload! 
     @field(resolver: "PartnerLogin@resolve")
 
+  createUser(input: CreateUserInput! @spread): UserPayload 
+    @field(resolver: "CreateUser")
+
   userLogin(input: UserLoginInput! @spread): UserPayload! 
     @field(resolver: "UserLogin@resolve")
 
@@ -49,24 +52,22 @@ extend type Mutation {
   updateVehicle(input: UpdateVehicleInput! @spread): Vehicle @update @updateVehicleValidation
   deleteVehicle(id: ID!): Vehicle @delete
 
-  createDriverVehicle(input: DriverVehicleInput! @spread): String! 
+  createDriverVehicle(input: DriverVehicleInput! @spread): DriverVehicleResponse! 
     @field(resolver: "CreateDriverVehicle")
-  deleteDriverVehicle(input: DriverVehicleInput! @spread): String! 
+  deleteDriverVehicle(input: DriverVehicleInput! @spread): DriverVehicleResponse! 
     @field(resolver: "DeleteDriverVehicle")
 
   createPartner(input: CreatePartnerInput! @spread): Partner @create
   updatePartner(input: UpdatePartnerInput! @spread): Partner @update @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
 
-  createUser(input: CreateUserInput! @spread): UserPayload 
-    @field(resolver: "CreateUser")
   updateUser(input: UpdateUserInput! @spread): UserPayload 
     @field(resolver: "UpdateUser") @updateUserValidation
   deleteUser(id: ID!): User @delete
 
-  createPartnerDriver(input: PartnerDriverInput! @spread): String!
+  createPartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse!
     @field(resolver: "CreatePartnerDriver")
-  deletePartnerDriver(input: PartnerDriverInput! @spread): String! 
+  deletePartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse! 
     @field(resolver: "DeletePartnerDriver") 
 
   createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip 
@@ -77,16 +78,16 @@ extend type Mutation {
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
-  acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): String! 
+  acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): AcceptPartnerTripStationResponse! 
     @field(resolver: "AcceptPartnerTripStation") 
 
   createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUser @create
 
-  createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): String! 
-    @field(resolver: "CreatePartnerTripUsers")
-  deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): String! 
+  createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUserResponse! 
+    @field(resolver: "CreatePartnerTripUser")
+  deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): PartnerTripUserResponse! 
     @field(resolver: "DeletePartnerTripUser")
-  confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): String!
+  confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): PartnerTrip!
     @field(resolver: "ConfirmPartnerTripUser")
  
   createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create

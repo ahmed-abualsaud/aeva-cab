@@ -26,7 +26,7 @@ class AddTimestampsToDriverVehiclesTbl extends Migration
     public function down()
     {
         Schema::table('driver_vehicles', function (Blueprint $table) {
-            $table->dropColumns(['created_at', 'updated_at']);
+            $table->dropColumn(['created_at', 'updated_at']);
         });
     }
 }

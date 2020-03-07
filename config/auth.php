@@ -43,7 +43,7 @@ return [
 
         'role' => [
             'driver' => 'jwt',
-            'provider' => 'users'
+            'provider' => 'roles'
         ],
 
         'partner' => [
@@ -81,7 +81,7 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'roles' => [
             'driver' => 'eloquent',
             'model' => App\Role::class,
         ],

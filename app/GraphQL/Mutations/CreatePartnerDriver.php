@@ -40,6 +40,9 @@ class CreatePartnerDriver
             );
         }
  
-        return "Selected drivers have been assigned successfully.";
+        return [
+            "status" => "SUCCESS",
+            "message" => "Selected drivers have been assigned successfully."
+        ];
     }
 }

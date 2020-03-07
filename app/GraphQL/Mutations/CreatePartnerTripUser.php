@@ -7,7 +7,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use App\Exceptions\CustomException;
 
-class CreatePartnerTripUsers
+class CreatePartnerTripUser
 {
     /**
      * Return a value for the field.
@@ -40,6 +40,9 @@ class CreatePartnerTripUsers
             );
         }
 
-        return "Subscription code sent";
+        return [
+            "status" => "SUCCESS",
+            "message" => "Subscription code has been sent."
+        ];
     }
 }

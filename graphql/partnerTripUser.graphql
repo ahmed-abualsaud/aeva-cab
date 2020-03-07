@@ -6,7 +6,7 @@ input CreatePartnerTripUserInput {
   partner_user_id: [ID!]! @rules(apply: ["required"])
   partner_user_phone: [String!]! @rules(apply: ["required"])
   subscription_code: String! @rules(apply: ["required"])
-} 
+}
 
 input DeletePartnerTripUserInput {
   partner_trip_id: ID! @rules(apply: ["required"])
@@ -22,6 +22,11 @@ input GetPartnerTripUsersInput {
   partner_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
   status: String! @rules(apply: ["required", "in:subscribed,notSubscribed,notVerified"])
+}
+
+type PartnerTripUserResponse {
+  status: String!
+  message: String
 }
 
 type PartnerTripUser {

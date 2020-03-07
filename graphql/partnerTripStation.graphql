@@ -27,6 +27,11 @@ input AcceptPartnerTripStationInput {
   station_id: ID! @rules(apply: ["required"])
 }
 
+type AcceptPartnerTripStationResponse {
+  status: String!
+  message: String
+}
+
 type PartnerTripStation {
   id: ID
   name: String

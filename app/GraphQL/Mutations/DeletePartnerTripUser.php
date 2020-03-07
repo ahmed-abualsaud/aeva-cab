@@ -31,6 +31,10 @@ class DeletePartnerTripUser
           'Unknown.'
         );
       }
-      return "Selected subscriptions have been cancelled successfully.";
+
+      return [
+        "status" => "SUCCESS",
+        "message" => "Selected subscriptions have been cancelled successfully."
+      ];
     }
 }

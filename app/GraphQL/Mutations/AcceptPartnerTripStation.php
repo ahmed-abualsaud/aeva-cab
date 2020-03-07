@@ -44,6 +44,9 @@ class AcceptPartnerTripStation
             ]);
         }
 
-        return "Selected station has been accepted.";
+        return [
+            "status" => "SUCCESS",
+            "message" => "Selected station has been accepted."
+        ];
     }
 }

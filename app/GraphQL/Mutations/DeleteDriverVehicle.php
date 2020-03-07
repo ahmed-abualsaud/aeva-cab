@@ -31,6 +31,10 @@ class DeleteDriverVehicle
         'Unknown.'
       );
     }
-    return "Selected assignments have been cancelled successfully.";
+
+    return [
+      "status" => "SUCCESS",
+      "message" => "Selected vehicles have been unassigned successfully."
+    ];
   }
 }

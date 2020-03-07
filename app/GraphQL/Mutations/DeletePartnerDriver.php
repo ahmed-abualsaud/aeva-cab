@@ -32,6 +32,10 @@ class DeletePartnerDriver
       );
     }
 
-    return "Selected assignments have been cancelled successfully.";
+    return [
+      "status" => "SUCCESS",
+      "message" => "Selected drivers have been unassigned successfully."
+    ];
+
   }
 }
