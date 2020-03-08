@@ -144,6 +144,9 @@ type Query {
     @field(resolver: "PartnerTripStations") 
   partnerTripStationUsers(station_id: ID!): [User] 
     @field(resolver: "PartnerTripStationUsers")
+  
+  userTrips(user_id: ID!): [PartnerTrip] 
+    @field(resolver: "UserTrips")
 }
 
 #import fleet.graphql 
