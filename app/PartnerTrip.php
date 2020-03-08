@@ -35,4 +35,9 @@ class PartnerTrip extends Model
     {
         return $this->belongsToMany(User::class, 'partner_trip_users');
     }
+
+    public function schedules()
+    {
+        return $this->hasMany(PartnerTripSchedule::class);
+    }
 }

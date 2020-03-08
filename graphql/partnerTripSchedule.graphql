@@ -1,0 +1,33 @@
+input CreatePartnerTripScheduleInput {
+  partner_trip_id: ID! @rules(apply: ["required"])
+  saturday: String
+  sunday: String
+  monday: String
+  tuesday: String
+  wednesday: String
+  thursday: String
+  friday: String
+}
+
+input UpdatePartnerTripScheduleInput {
+  id: ID!
+  saturday: String
+  sunday: String
+  monday: String
+  tuesday: String
+  wednesday: String
+  thursday: String
+  friday: String
+}
+
+type PartnerTripSchedule{
+    id: ID
+    partner_trip_id: ID
+    saturday: String
+    sunday: String
+    monday: String
+    tuesday: String
+    wednesday: String
+    thursday: String
+    friday: String
+}
