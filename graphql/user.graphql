@@ -46,7 +46,30 @@ type UserPhoneVerifyPayload {
   verificationCode: String
 }
 
-input OrderByClause{
+input ForgotPasswordInput {
+  email: String! @rules(apply: ["required", "email"])
+}
+
+type UpdatePasswordResponse {
+  status: String!
+  message: String
+}
+
+input NewPasswordWithCodeInput {
+  email: String! @rules(apply: ["required", "email"])
+  token: String! @rules(apply: ["required", "string"])
+  password: String! @rules(apply: ["required", "confirmed", "min:8"])
+  password_confirmation: String!
+}
+
+input ChangePasswordInput {
+  id: ID! @rules(apply: ["required"])
+  current_password: String! @rules(apply: ["required"])
+  new_password: String! @rules(apply: ["required", "confirmed", "min:8"])
+  new_password_confirmation: String!
+}
+
+input OrderByClause {
   field: String!
   order: SortOrder!
 }

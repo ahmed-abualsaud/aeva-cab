@@ -5,6 +5,9 @@ type Mutation {
   partnerLogin(input: PartnerLoginInput! @spread): PartnerAuthPayload! 
     @field(resolver: "PartnerLogin@resolve")
 
+  createUser(input: CreateUserInput! @spread): UserPayload 
+    @field(resolver: "CreateUser")
+
   userLogin(input: UserLoginInput! @spread): UserPayload! 
     @field(resolver: "UserLogin@resolve")
 
@@ -16,6 +19,12 @@ type Mutation {
 
   driverLogin(input: DriverLoginInput! @spread): DriverAuthPayload! 
     @field(resolver: "DriverLogin@resolve")
+
+  forgotUserPassword(input: ForgotPasswordInput! @spread): UpdatePasswordResponse! @field(resolver: "ForgotUserPassword")
+
+  updateUserForgottenPassword(input: NewPasswordWithCodeInput @spread): UpdatePasswordResponse! @field(resolver: "ResetUserPassword")
+
+  changeUserPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! @field(resolver: "ChangeUserPassword")
 }
 
 extend type Mutation {
@@ -43,24 +52,22 @@ extend type Mutation {
   updateVehicle(input: UpdateVehicleInput! @spread): Vehicle @update @updateVehicleValidation
   deleteVehicle(id: ID!): Vehicle @delete
 
-  createDriverVehicle(input: DriverVehicleInput! @spread): String! 
+  createDriverVehicle(input: DriverVehicleInput! @spread): DriverVehicleResponse! 
     @field(resolver: "CreateDriverVehicle")
-  deleteDriverVehicle(input: DriverVehicleInput! @spread): String! 
+  deleteDriverVehicle(input: DriverVehicleInput! @spread): DriverVehicleResponse! 
     @field(resolver: "DeleteDriverVehicle")
 
   createPartner(input: CreatePartnerInput! @spread): Partner @create
   updatePartner(input: UpdatePartnerInput! @spread): Partner @update @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
 
-  createUser(input: CreateUserInput! @spread): UserPayload 
-    @field(resolver: "CreateUser")
   updateUser(input: UpdateUserInput! @spread): UserPayload 
     @field(resolver: "UpdateUser") @updateUserValidation
   deleteUser(id: ID!): User @delete
 
-  createPartnerDriver(input: PartnerDriverInput! @spread): String!
+  createPartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse!
     @field(resolver: "CreatePartnerDriver")
-  deletePartnerDriver(input: PartnerDriverInput! @spread): String! 
+  deletePartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse! 
     @field(resolver: "DeletePartnerDriver") 
 
   createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip 
@@ -71,19 +78,22 @@ extend type Mutation {
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
-  acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): String! 
+  acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): AcceptPartnerTripStationResponse! 
     @field(resolver: "AcceptPartnerTripStation") 
 
-  createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUser @create
+  createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
+    @field(resolver: "PartnerTripStationUserResolver@create") 
+  deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
+    @field(resolver: "PartnerTripStationUserResolver@destroy") 
 
   createPartnerTripSchedule(input: CreatePartnerTripScheduleInput! @spread): PartnerTripSchedule @create
   updatePartnerTripSchedule(input: UpdatePartnerTripScheduleInput! @spread): PartnerTripSchedule @update
 
-  createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): String! 
-    @field(resolver: "CreatePartnerTripUsers")
-  deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): String! 
+  createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUserResponse! 
+    @field(resolver: "CreatePartnerTripUser")
+  deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): PartnerTripUserResponse! 
     @field(resolver: "DeletePartnerTripUser")
-  confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): String!
+  confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): PartnerTrip!
     @field(resolver: "ConfirmPartnerTripUser")
  
   createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
@@ -104,7 +114,8 @@ type Query {
   fleetDrivers(fleet_id: ID @eq orderBy: [OrderByClause] @orderBy): [Driver] @paginate
 
   vehicles(orderBy: [OrderByClause] @orderBy): [Vehicle!]! @paginate
-  driverVehicles(driver_id: ID!, assigned: Boolean!): [Vehicle] @field(resolver: "DriverVehicles")
+  driverVehicles(driver_id: ID! assigned: Boolean! orderBy: [OrderByClause] @orderBy): [Vehicle] 
+    @paginate(scopes: ["assignedOrNot"])
 
   carTypes: [CarType!]! @all
   carType(id: ID @eq): CarType @find
@@ -130,7 +141,7 @@ type Query {
 
   partnerTrips(partner_id: ID! @eq): [PartnerTrip] @all
   partnerUsers(partner_id: ID! @eq): [User] @all
-  partnerDrivers(partner_id: ID!, assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
+  partnerDrivers(partner_id: ID! assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
   partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [User] @field(resolver: "PartnerTripUsers")
   partnerTripStations(input: GetPartnerTripStationsInput! @spread): [PartnerTripStation]
     @field(resolver: "PartnerTripStations") 

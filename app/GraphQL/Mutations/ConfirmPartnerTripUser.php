@@ -53,6 +53,7 @@ class ConfirmPartnerTripUser
                 'Trip Confirmation'
             );
         }
-        return "Subscription done.";
+        
+        return $trip;
     }
 }

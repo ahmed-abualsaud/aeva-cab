@@ -2,12 +2,12 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\PartnerDriver;
+use App\PartnerTripUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use App\Exceptions\CustomException;
 
-class CreatePartnerDriver
+class CreatePartnerTripUser
 {
     /**
      * Return a value for the field.
@@ -23,26 +23,26 @@ class CreatePartnerDriver
         $data = [];
         $arr = [];
 
-        foreach($args['driver_id'] as $val) {
-            $arr['partner_id'] = $args['partner_id'];
-            $arr['driver_id'] = $val;
+        foreach($args['partner_user_id'] as $val) {
+            $arr['partner_trip_id'] = $args['partner_trip_id'];
+            $arr['partner_user_id'] = $val;
 
             array_push($data, $arr);
         } 
 
         try {
-            PartnerDriver::insert($data);
+            PartnerTripUser::insert($data);
         } catch (\Exception $e) {
             throw new CustomException(
-              'Assignment faild.',
-              'Driver can not be assigned to the same partner more than once.',
+              'Subscription faild.',
+              'Each user is allowed to subscribe for a trip once.',
               'Integrity constraint violation.'
             );
         }
- 
+
         return [
             "status" => "SUCCESS",
-            "message" => "Selected drivers have been assigned successfully."
+            "message" => "Subscription code has been sent."
         ];
     }
 }

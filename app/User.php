@@ -5,10 +5,11 @@ namespace App;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
- 
+use Illuminate\Notifications\Notifiable;
+
 class User extends Authenticatable implements JWTSubject
 {
-    use SoftDeletes;
+    use SoftDeletes, Notifiable;
     
     protected $guarded = [];
 

@@ -3,6 +3,11 @@ input DriverVehicleInput {
   vehicle_id: [ID!]! @rules(apply: ["required"])
 }
 
+type DriverVehicleResponse {
+  status: String!
+  message: String
+}
+
 type DriverVehicle {
   id: ID
   driver_id: ID

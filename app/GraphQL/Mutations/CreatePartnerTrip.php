@@ -6,7 +6,6 @@ use App\PartnerTrip;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 class CreatePartnerTrip
 {
@@ -25,7 +24,7 @@ class CreatePartnerTrip
 
         $newTrip = PartnerTrip::create($inputData);
 
-        $subscriptionCode = Str::random(10) . 'T' . $newTrip->id;
+        $subscriptionCode = 'PRTNR' . $newTrip->partner_id . 'TRP' . $newTrip->id;
 
         $newTrip->update(['subscription_code' => $subscriptionCode]);
 

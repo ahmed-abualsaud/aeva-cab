@@ -3,6 +3,11 @@ input PartnerDriverInput {
   driver_id: [ID!]! @rules(apply: ["required"])
 }
 
+type PartnerDriverResponse {
+  status: String!
+  message: String
+}
+
 type PartnerDriver {
   id: ID
   partner_id: ID

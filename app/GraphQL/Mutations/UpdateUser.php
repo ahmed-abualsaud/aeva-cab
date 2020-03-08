@@ -23,13 +23,13 @@ class UpdateUser
       $input = collect($args)->except(['id', 'directive'])->toArray();
       
       try {
-        $user = User::where('id', $args['id'])->firstOrFail();
+        $user = User::findOrFail($args['id']);
         $user->update($input);
       } catch (\Exception $e) {
         throw new CustomException(
-          'User Not Created.',
+          'User Not Updated.',
           'The provided user ID is not found.',
-          'Model Not Found.'
+          'ModelNotFound.'
         );
       }
       

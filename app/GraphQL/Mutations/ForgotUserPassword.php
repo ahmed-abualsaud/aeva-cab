@@ -2,13 +2,15 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\PartnerTripUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use App\Exceptions\CustomException;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Support\Facades\Password;
 
-class CreatePartnerTripUsers
+class ForgotUserPassword
 {
+    use SendsPasswordResetEmails;
+
     /**
      * Return a value for the field.
      *
@@ -20,26 +22,17 @@ class CreatePartnerTripUsers
      */
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $data = [];
-        $arr = [];
-
-        foreach($args['partner_user_id'] as $val) {
-            $arr['partner_trip_id'] = $args['partner_trip_id'];
-            $arr['partner_user_id'] = $val;
-
-            array_push($data, $arr);
-        } 
-
-        try {
-            PartnerTripUser::insert($data);
-        } catch (\Exception $e) {
-            throw new CustomException(
-              'Subscription faild.',
-              'Each user is allowed to subscribe for a trip once.',
-              'Integrity constraint violation.'
-            );
+        $response = $this->broker()->sendResetLink(['email' => $args['email']]);
+        if ($response == Password::RESET_LINK_SENT) {
+            return [
+                'status'  => 'EMAIL_SENT',
+                'message' => trans($response),
+            ];
         }
 
-        return "Subscription code sent";
+        return [
+            'status'  => 'EMAIL_NOT_SENT',
+            'message' => trans($response),
+        ];
     }
 }

@@ -7,6 +7,4 @@ use Illuminate\Database\Eloquent\Model;
 class DriverVehicle extends Model
 {
     protected $guarded = [];
-
-    public $timestamps = false;
 }
