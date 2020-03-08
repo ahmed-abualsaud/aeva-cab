@@ -4,6 +4,16 @@ input CreatePartnerTripStationUserInput {
   user_id: ID! @rules(apply: ["required"])
 }
 
+input DeletePartnerTripStationUserInput {
+  station_id: ID! @rules(apply: ["required"])
+  user_id: ID! @rules(apply: ["required"])
+}
+
+type PartnerTripStationUserResponse {
+  status: String!
+  message: String
+}
+
 type PartnerTripStationUser {
   id: ID
   trip_id: ID

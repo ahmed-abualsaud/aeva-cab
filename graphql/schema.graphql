@@ -81,7 +81,10 @@ extend type Mutation {
   acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): AcceptPartnerTripStationResponse! 
     @field(resolver: "AcceptPartnerTripStation") 
 
-  createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUser @create
+  createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
+    @field(resolver: "PartnerTripStationUserResolver@create") 
+  deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
+    @field(resolver: "PartnerTripStationUserResolver@destroy") 
 
   createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUserResponse! 
     @field(resolver: "CreatePartnerTripUser")
