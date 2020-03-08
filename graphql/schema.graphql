@@ -86,6 +86,9 @@ extend type Mutation {
   deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
     @field(resolver: "PartnerTripStationUserResolver@destroy") 
 
+  createPartnerTripSchedule(input: CreatePartnerTripScheduleInput! @spread): PartnerTripSchedule @create
+  updatePartnerTripSchedule(input: UpdatePartnerTripScheduleInput! @spread): PartnerTripSchedule @update
+
   createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUserResponse! 
     @field(resolver: "CreatePartnerTripUser")
   deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): PartnerTripUserResponse! 
@@ -144,9 +147,10 @@ type Query {
     @field(resolver: "PartnerTripStations") 
   partnerTripStationUsers(station_id: ID!): [User] 
     @field(resolver: "PartnerTripStationUsers")
-  
+
   userTrips(user_id: ID!): [PartnerTrip] 
     @field(resolver: "UserTrips")
+
 }
 
 #import fleet.graphql 
@@ -161,6 +165,7 @@ type Query {
 #import partnerDriver.graphql
 #import partnerTrip.graphql
 #import partnerTripStation.graphql
+#import partnerTripSchedule.graphql
 #import partnerTripStationUser.graphql
 #import partnerTripUser.graphql
 #import roleType.graphql

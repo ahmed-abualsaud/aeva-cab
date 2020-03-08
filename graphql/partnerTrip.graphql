@@ -6,6 +6,8 @@ input CreatePartnerTripInput {
   ride_car_share: Boolean
   location: String
   time: String
+  startDate: Date! @rules(apply: ["required"])
+  endDate: Date! @rules(apply: ["required"])
 }
 
 input UpdatePartnerTripInput {
@@ -17,6 +19,8 @@ input UpdatePartnerTripInput {
   ride_car_share: Boolean
   location: String
   time: String
+  startDate: Date
+  endDate: Date
 }
 
 type PartnerTrip {
@@ -25,9 +29,13 @@ type PartnerTrip {
   ride_car_share: Boolean
   location: String
   time: String
+  startDate: Date
+  endDate: Date
   subscription_code: String
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
-  stations: [PartnerTripStation] @hasMany 
+  stations: [PartnerTripStation] @hasMany
+  schedules: [PartnerTripSchedule] @hasMany
+  users: [User] @belongsToMany
 }
