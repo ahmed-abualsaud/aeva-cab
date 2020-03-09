@@ -71,8 +71,9 @@ extend type Mutation {
     @field(resolver: "DeletePartnerDriver") 
 
   createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip 
-    @field(resolver: "CreatePartnerTrip")
-  updatePartnerTrip(input: UpdatePartnerTripInput! @spread): PartnerTrip @update
+    @field(resolver: "PartnerTripResolver@create")
+  updatePartnerTrip(input: UpdatePartnerTripInput! @spread): PartnerTrip 
+    @field(resolver: "PartnerTripResolver@update")
   deletePartnerTrip(id: ID!): PartnerTrip @delete
 
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
@@ -85,9 +86,6 @@ extend type Mutation {
     @field(resolver: "PartnerTripStationUserResolver@create") 
   deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
     @field(resolver: "PartnerTripStationUserResolver@destroy") 
-
-  createPartnerTripSchedule(input: CreatePartnerTripScheduleInput! @spread): PartnerTripSchedule @create
-  updatePartnerTripSchedule(input: UpdatePartnerTripScheduleInput! @spread): PartnerTripSchedule @update
 
   createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUserResponse! 
     @field(resolver: "CreatePartnerTripUser")
