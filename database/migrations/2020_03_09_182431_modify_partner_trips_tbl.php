@@ -15,8 +15,6 @@ class ModifyPartnerTripsTbl extends Migration
     {
         Schema::table('partner_trips', function (Blueprint $table) {
             $table->renameColumn('time', 'return_time');
-            $table->renameColumn('startDate', 'start_date');
-            $table->renameColumn('endDate', 'end_date');
         });
     }
 
@@ -29,8 +27,6 @@ class ModifyPartnerTripsTbl extends Migration
     {
         Schema::table('partner_trips', function (Blueprint $table) {
             $table->renameColumn('return_time', 'time');
-            $table->renameColumn('start_date', 'startDate');
-            $table->renameColumn('end_date', 'endDate');
         });
     }
 }
