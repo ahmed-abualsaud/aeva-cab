@@ -7,6 +7,7 @@ use App\PartnerTripSchedule;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PartnerTripResolver
 {
@@ -55,8 +56,9 @@ class PartnerTripResolver
             $scheduleInput = Arr::only($args, ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
             $tripSchedule = PartnerTripSchedule::findOrFail($trip->schedule->id);
             $tripSchedule->update($scheduleInput);
-        } catch (\Exception $e) {
-            throw new \Exception('Trip schedule not updated. Something went wrong.');
+        } catch (ModelNotFoundException $e) {
+            $scheduleInput['partner_trip_id'] = $trip->id;
+            PartnerTripSchedule::create($scheduleInput);
         }
     
         return $trip;
