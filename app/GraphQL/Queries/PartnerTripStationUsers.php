@@ -20,8 +20,8 @@ class PartnerTripStationUsers
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $users = PartnerTripStationUser::where('station_id', $args['station_id'])
-            ->join('partner_users', 'partner_users.id', '=', 'partner_trip_station_users.user_id')
-            ->select('partner_users.*')
+            ->join('users', 'users.id', '=', 'partner_trip_station_users.user_id')
+            ->select('users.*')
             ->get();
 
         return $users;
