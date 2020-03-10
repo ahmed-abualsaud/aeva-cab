@@ -33,7 +33,7 @@ class PartnerTripStationUserResolver
         }
  
         return [
-            "status" => "SUCCESS",
+            "status" => true,
             "message" => "You've successfully assigned to this station."
         ];
     }
@@ -52,7 +52,7 @@ class PartnerTripStationUserResolver
         }
  
         return [
-            "status" => "SUCCESS",
+            "status" => true,
             "message" => "You've successfully unassigned from this station."
         ];
     }

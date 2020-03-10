@@ -51,11 +51,11 @@ class UserSocialLogin
     Auth::onceUsingId($user->id);
 
     $token = JWTAuth::fromUser($user);
-  
-    $response['access_token'] = $token;
-    $response['user'] = $user;
 
-    return $response;
+    return [
+      'access_token' => $token,
+      'user' => $user
+    ];
 
   }
 }

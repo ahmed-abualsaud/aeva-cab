@@ -32,11 +32,11 @@ class UserLogin
     }
 
     $user = auth('user')->user();
-    
-    $response['access_token'] = $token;
-    $response['user'] = $user;
 
-    return $response;
+    return [
+      'access_token' => $token,
+      'user' => $user
+    ];
 
   }
 }

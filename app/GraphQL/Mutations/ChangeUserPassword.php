@@ -25,21 +25,21 @@ class ChangeUserPassword
             $user = User::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
             return [
-                'status' => 'FAILED',
+                'status' => false, 
                 'message' => 'The provided user ID is not found.'
             ];
         }
 
         if (!(Hash::check($args['current_password'], $user->password))) {
             return [
-                'status' => 'FAILED',
+                'status' => false,
                 'message' => 'Your current password does not matches with the password you provided.'
             ];
         }
 
         if (strcmp($args['current_password'], $args['new_password']) == 0) {
             return [
-                'status' => 'FAILED',
+                'status' => false,
                 'message' => 'New Password cannot be same as your current password. Please choose a different password.'
             ];
         }
@@ -48,7 +48,7 @@ class ChangeUserPassword
         $user->save();
 
         return [
-            'status' => 'SUCCESS',
+            'status' => true,
             'message' => 'Password changed successfully.'
         ];
 

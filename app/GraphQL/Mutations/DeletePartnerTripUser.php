@@ -33,7 +33,7 @@ class DeletePartnerTripUser
       }
 
       return [
-        "status" => "SUCCESS",
+        "status" => true,
         "message" => "Selected subscriptions have been cancelled successfully."
       ];
     }

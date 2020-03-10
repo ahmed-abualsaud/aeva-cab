@@ -33,7 +33,7 @@ class DeletePartnerDriver
     }
 
     return [
-      "status" => "SUCCESS",
+      "status" => true,
       "message" => "Selected drivers have been unassigned successfully."
     ];
 

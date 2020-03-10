@@ -25,7 +25,7 @@ input GetPartnerTripUsersInput {
 }
 
 type PartnerTripUserResponse {
-  status: String!
+  status: Boolean!
   message: String
 }
 

@@ -41,7 +41,7 @@ class CreatePartnerTripUser
         }
 
         return [
-            "status" => "SUCCESS",
+            "status" => true,
             "message" => "Subscription code has been sent."
         ];
     }

@@ -25,13 +25,13 @@ class ForgotUserPassword
         $response = $this->broker()->sendResetLink(['email' => $args['email']]);
         if ($response == Password::RESET_LINK_SENT) {
             return [
-                'status'  => 'EMAIL_SENT',
+                'status'  => true,
                 'message' => trans($response),
             ];
         }
-
+ 
         return [
-            'status'  => 'EMAIL_NOT_SENT',
+            'status'  => false,
             'message' => trans($response),
         ];
     }

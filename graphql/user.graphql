@@ -51,8 +51,8 @@ input ForgotPasswordInput {
 }
 
 type UpdatePasswordResponse {
-  status: String!
-  message: String
+  status: Boolean!
+  message: String 
 }
 
 input NewPasswordWithCodeInput {

@@ -41,7 +41,7 @@ class CreateDriverVehicle
         }
  
         return [
-            "status" => "SUCCESS",
+            "status" => true,
             "message" => "Selected vehicles have been assigned successfully."
         ];
     }

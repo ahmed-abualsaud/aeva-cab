@@ -32,10 +32,10 @@ class QruzMemberLogin
         }
 
         $role = auth('role')->user();
-        
-        $response['access_token'] = $token;
-        $response['role'] = $role;
 
-        return $response;
+        return [
+            'access_token' => $token,
+            'role' => $role
+        ];
     }
 }

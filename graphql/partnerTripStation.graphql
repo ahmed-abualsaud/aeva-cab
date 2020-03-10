@@ -28,7 +28,7 @@ input AcceptPartnerTripStationInput {
 }
 
 type AcceptPartnerTripStationResponse {
-  status: String!
+  status: Boolean!
   message: String
 }
 

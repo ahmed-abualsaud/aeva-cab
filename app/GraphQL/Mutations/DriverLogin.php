@@ -41,11 +41,11 @@ class DriverLogin
     }
 
     $driver = auth('driver')->user();
-    
-    $response['access_token'] = $token;
-    $response['driver'] = $driver;
 
-    return $response;
+    return [
+      'access_token' => $token,
+      'driver' => $driver
+    ];
 
   }
 }

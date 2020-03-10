@@ -45,7 +45,7 @@ class AcceptPartnerTripStation
         }
 
         return [
-            "status" => "SUCCESS",
+            "status" => true,
             "message" => "Selected station has been accepted."
         ];
     }

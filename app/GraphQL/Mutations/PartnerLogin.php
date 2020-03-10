@@ -32,11 +32,11 @@ class PartnerLogin
     }
 
     $partner = auth('partner')->user();
-    
-    $response['access_token'] = $token;
-    $response['partner'] = $partner;
 
-    return $response;
+    return [
+      'access_token' => $token,
+      'partner' => $partner
+    ];
 
   }
 }

@@ -33,7 +33,7 @@ class DeleteDriverVehicle
     }
 
     return [
-      "status" => "SUCCESS",
+      "status" => true,
       "message" => "Selected vehicles have been unassigned successfully."
     ];
   }

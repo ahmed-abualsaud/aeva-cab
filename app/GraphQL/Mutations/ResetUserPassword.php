@@ -33,13 +33,13 @@ class ResetUserPassword
 
         if ($response === Password::PASSWORD_RESET) {
             return [
-                'status'  => 'PASSWORD_UPDATED',
+                'status'  => true,
                 'message' => trans($response),
             ];
         }
 
         return [
-            'status'  => 'PASSWORD_NOT_UPDATED',
+            'status'  => false,
             'message' => trans($response),
         ];
     }
