@@ -10,7 +10,7 @@ input CreatePartnerTripStationInput {
 }
 
 input UpdatePartnerTripStationInput {
-  id: ID!
+  id: ID! @rules(apply: ["required"])
   name: String
   latitude: String
   longitude: String

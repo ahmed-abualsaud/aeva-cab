@@ -101,6 +101,21 @@ extend type Mutation {
   createRole(input: CreateRoleInput! @spread): Role @create
   updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
   deleteRole(id: ID!): Role @delete
+
+  startTrip(input: TripLogInput! @spread): String 
+    @field(resolver: "TripLogResolver@startTrip")
+
+  endTrip(input: TripLogInput! @spread): String
+    @field(resolver: "TripLogResolver@endTrip")
+
+  pickUsersUp(input: TripLogPickUpInput! @spread): String
+    @field(resolver: "TripLogResolver@pickUsersUp")
+
+  changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
+    @field(resolver: "TripLogResolver@changeTripUserStatus")
+
+  updateDriverLocation(input: TripLogInput! @spread): String 
+    @field(resolver: "TripLogResolver@updateDriverLocation")
 }
 
 type Query {
@@ -149,6 +164,9 @@ type Query {
   userTrips(user_id: ID!): [PartnerTrip] 
     @field(resolver: "UserTrips")
 
+  getDriverLocation(trip_id: ID!): GetDriverLocationResponse!
+    @field(resolver: "TripLogResolver@getDriverLocation")
+
 }
 
 #import fleet.graphql 
@@ -168,3 +186,4 @@ type Query {
 #import partnerTripUser.graphql
 #import roleType.graphql
 #import role.graphql
+#import tripLog.graphql
