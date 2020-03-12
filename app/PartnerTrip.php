@@ -26,14 +26,9 @@ class PartnerTrip extends Model
         return $this->belongsTo(Vehicle::class);
     }
 
-    public function stations()
+    public function stations() 
     {
-        return $this->hasMany(PartnerTripStation::class);
-    }
-
-    public function users()
-    {
-        return $this->belongsToMany(User::class, 'partner_trip_users');
+        return $this->hasMany(PartnerTripStation::class)->whereNotNull('accepted_at');
     }
 
     public function schedule()

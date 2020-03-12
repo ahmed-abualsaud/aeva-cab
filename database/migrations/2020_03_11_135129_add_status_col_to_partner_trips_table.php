@@ -15,6 +15,7 @@ class AddStatusColToPartnerTripsTable extends Migration
     {
         Schema::table('partner_trips', function (Blueprint $table) {
             $table->boolean('status')->default(0);
+            $table->string('log_id')->nullable();
         });
     }
 
@@ -26,7 +27,7 @@ class AddStatusColToPartnerTripsTable extends Migration
     public function down()
     {
         Schema::table('partner_trips', function (Blueprint $table) {
-            $table->dropColumn('status');
+            $table->dropColumn(['status', 'log_id']);
         });
     }
 }

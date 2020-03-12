@@ -51,5 +51,6 @@ type PartnerTrip {
   vehicle: Vehicle @belongsTo
   schedule: PartnerTripSchedule @hasOne
   stations: [PartnerTripStation] @hasMany
-  users: [User] @belongsToMany
+  log_id: String
+  status: Boolean
 }

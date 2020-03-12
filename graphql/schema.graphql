@@ -7,13 +7,10 @@ type Mutation {
 
   createUser(input: CreateUserInput! @spread): UserPayload 
     @field(resolver: "CreateUser")
-
   userLogin(input: UserLoginInput! @spread): UserPayload! 
     @field(resolver: "UserLogin@resolve")
-
   userSocialLogin(input: UserSocialLoginInput! @spread): UserPayload! 
     @field(resolver: "UserSocialLogin@resolve")
-
   userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
     @field(resolver: "UserPhoneVerification")
 
@@ -21,9 +18,7 @@ type Mutation {
     @field(resolver: "DriverLogin@resolve")
 
   forgotUserPassword(input: ForgotPasswordInput! @spread): UpdatePasswordResponse! @field(resolver: "ForgotUserPassword")
-
   updateUserForgottenPassword(input: NewPasswordWithCodeInput @spread): UpdatePasswordResponse! @field(resolver: "ResetUserPassword")
-
   changeUserPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! @field(resolver: "ChangeUserPassword")
 }
 
@@ -102,20 +97,16 @@ extend type Mutation {
   updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
   deleteRole(id: ID!): Role @delete
 
-  startTrip(input: TripLogInput! @spread): String 
+  startTrip(input: StartTripLogInput! @spread): PartnerTrip 
     @field(resolver: "TripLogResolver@startTrip")
-
-  endTrip(input: TripLogInput! @spread): String
-    @field(resolver: "TripLogResolver@endTrip")
-
-  pickUsersUp(input: TripLogPickUpInput! @spread): String
-    @field(resolver: "TripLogResolver@pickUsersUp")
-
-  changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
-    @field(resolver: "TripLogResolver@changeTripUserStatus")
-
   updateDriverLocation(input: TripLogInput! @spread): String 
     @field(resolver: "TripLogResolver@updateDriverLocation")
+  endTrip(input: TripLogInput! @spread): String
+    @field(resolver: "TripLogResolver@endTrip")
+  pickUsersUp(input: PickUsersUpInput! @spread): String
+    @field(resolver: "TripLogResolver@pickUsersUp")
+  changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
+    @field(resolver: "TripLogResolver@changeTripUserStatus")
 }
 
 type Query {
@@ -160,13 +151,15 @@ type Query {
     @field(resolver: "PartnerTripStations") 
   partnerTripStationUsers(station_id: ID!): [User] 
     @field(resolver: "PartnerTripStationUsers")
-
   userTrips(user_id: ID!): [PartnerTrip] 
     @field(resolver: "UserTrips")
 
-  getDriverLocation(trip_id: ID!): GetDriverLocationResponse!
+  getDriverLocation(log_id: String!): GetDriverLocationResponse!
     @field(resolver: "TripLogResolver@getDriverLocation")
-
+  getPickedUsers(log_id: String!): [User]
+    @field(resolver: "TripLogResolver@getPickedUsers")
+  getPickedAndNotpickedUsers(log_id: String!, station_id: ID!): [User]
+    @field(resolver: "TripLogResolver@getPickedAndNotpickedUsers")
 }
 
 #import fleet.graphql 

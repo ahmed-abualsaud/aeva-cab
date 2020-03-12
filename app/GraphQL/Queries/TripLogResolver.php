@@ -3,6 +3,7 @@
 namespace App\GraphQL\Queries;
 
 use \App\TripLog;
+use \App\PartnerTripStationUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,12 +23,11 @@ class TripLogResolver
     {
         try {
             $location = TripLog::select(['latitude', 'longitude'])
-                ->where('trip_id', $args['trip_id'])
-                ->whereDate('created_at', now()->toDateString())
+                ->where('log_id', $args['log_id'])
                 ->latest()
                 ->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('No data for the provided trip ID at this moment. ' . $e->getMessage());
+            throw new \Exception('No data for the provided trip log ID.');
         }
 
         return [
@@ -35,4 +35,32 @@ class TripLogResolver
             'longitude' => $location->longitude
         ];
     }
+
+    public function getPickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $users = TripLog::where('log_id', $args['log_id'])
+            ->where('status', 'PICKED_UP')
+            ->join('users', 'users.id', '=', 'trip_logs.user_id')
+            ->select('users.*')
+            ->get();
+
+        return $users;
+    }
+
+    public function getPickedAndNotpickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $users = PartnerTripStationUser::where('station_id', $args['station_id'])
+            ->join('users', 'users.id', '=', 'partner_trip_station_users.user_id')
+            ->leftJoin('trip_logs', function ($join) use ($args) {
+                $join->on('users.id', '=', 'trip_logs.user_id')
+                    ->where('trip_logs.log_id', $args['log_id'])
+                    ->where('status', 'PICKED_UP');
+            })
+            ->selectRaw('users.*, (CASE WHEN trip_logs.status IS NULL THEN 0 ELSE 1 END) AS is_picked_up
+            ')
+            ->get();
+
+        return $users;
+    }
+
 }

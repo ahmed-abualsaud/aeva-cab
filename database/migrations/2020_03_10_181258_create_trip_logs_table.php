@@ -15,6 +15,7 @@ class CreateTripLogsTable extends Migration
     {
         Schema::create('trip_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('log_id');
             $table->unsignedBigInteger('trip_id');
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8);
@@ -29,6 +30,7 @@ class CreateTripLogsTable extends Migration
                 'ARRIVED'
             ])->default('MOVING');
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('updated_at')->nullable();
 
             $table->foreign('trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
