@@ -15,7 +15,7 @@ class CreateTripLogsTable extends Migration
     {
         Schema::create('trip_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('log_id');
+            $table->string('log_id')->index();
             $table->unsignedBigInteger('trip_id');
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8);

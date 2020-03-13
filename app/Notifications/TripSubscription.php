@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewPartnerTripSubscription extends Notification
+class TripSubscription extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -43,8 +43,7 @@ class NewPartnerTripSubscription extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->greeting('Hello')
-            ->line('You are invited to join a trip')
+            ->greeting('Dear valued user,')
             ->line('Kindly use this code to confirm your subscription: ' . $this->subscriptionCode);
     }
 
