@@ -3,6 +3,7 @@
 namespace App\GraphQL\Queries;
 
 use App\User;
+use App\PartnerTrip;
 use App\PartnerTripUser;
 use App\PartnerTripStation;
 use App\PartnerTripStationUser;
@@ -80,5 +81,53 @@ class PartnerTripResolver
             ->get();
 
         return $stationUsers;
+    }
+
+    public function userTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')
+            ->where('partner_trip_users.partner_user_id', $args['user_id'])
+            ->get();
+
+        return $userTrips;
+    }
+
+    public function userLiveTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $liveTrip = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')
+            ->where('partner_trip_users.partner_user_id', $args['user_id'])
+            ->where('status', true)
+            ->first();
+
+        if ($liveTrip) {
+            return [
+                "status" => true,
+                "trip" => $liveTrip
+            ];
+        }
+
+        return [
+            "status" => false,
+            "trip" => null
+        ];
+    }
+
+    public function driverLiveTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $liveTrip = PartnerTrip::where('driver_id', $args['driver_id'])
+            ->where('status', true)
+            ->first();
+
+        if ($liveTrip) {
+            return [
+                "status" => true,
+                "trip" => $liveTrip
+            ];
+        }
+
+        return [
+            "status" => false,
+            "trip" => null
+        ];
     }
 }

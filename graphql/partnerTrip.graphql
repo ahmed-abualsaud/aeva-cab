@@ -37,6 +37,11 @@ input UpdatePartnerTripInput {
   friday: String
 }
 
+type LiveTripResponse {
+  status: Boolean
+  trip: PartnerTrip
+}
+
 type PartnerTrip {
   id: ID
   name: String
