@@ -4,6 +4,8 @@ namespace App\GraphQL\Mutations;
 
 use App\PartnerTrip;
 use App\PartnerTripSchedule;
+use App\PartnerTripUser;
+use App\User;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Arr;
@@ -28,7 +30,7 @@ class PartnerTripResolver
             $subscriptionCode = 'PRTNR' . $newTrip->partner_id . 'TRP' . $newTrip->id;
             $newTrip->update(['subscription_code' => $subscriptionCode]);
         } catch (\Exception $e) {
-            throw new \Exception('Trip not created. Something went wrong.');
+            throw new \Exception('Trip not created. ' . $e->getMessage());
         }
         
         try {
@@ -36,7 +38,7 @@ class PartnerTripResolver
             $scheduleInput['partner_trip_id'] = $newTrip->id;
             PartnerTripSchedule::create($scheduleInput);
         } catch (\Exception $e) {
-            throw new \Exception('Trip schedule not created. Something went wrong.');
+            throw new \Exception('Trip schedule not created. ' . $e->getMessage());
         }
     
         return $newTrip;
@@ -62,5 +64,72 @@ class PartnerTripResolver
         }
     
         return $trip;
+    }
+
+    public function inviteUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $data = [];
+        $arr = [];
+
+        foreach($args['partner_user_id'] as $val) {
+            $arr['partner_trip_id'] = $args['partner_trip_id'];
+            $arr['partner_user_id'] = $val;
+            array_push($data, $arr);
+        } 
+
+        try {
+            PartnerTripUser::insert($data);
+        } catch (\Exception $e) {
+            throw new \Exception('Each user is allowed to subscribe for a trip once.');
+        }
+
+        return [
+            "status" => true,
+            "message" => "Subscription code has been sent."
+        ];
+    }
+
+    public function subscribeUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo) 
+    {
+        try {
+            $trip = PartnerTrip::where('subscription_code', $args['subscription_code'])->firstOrFail();
+        } catch (\Exception $e) {
+            throw new \Exception('The provided subscription code is invalid.');
+        }
+        
+        try {
+            $tripUser = PartnerTripUser::where('partner_trip_id', $trip['id'])
+                ->where('partner_user_id', $args['user_id'])->firstOrFail();
+            if ($tripUser->subscription_verified_at) {
+                throw new \Exception('You have already subscribed for this trip.');
+            } else {
+                $tripUser->update(['subscription_verified_at' => now()]);
+            }
+        } catch (\Exception $e) {
+            PartnerTripUser::create([
+                'partner_trip_id' => $trip['id'],
+                'partner_user_id' => $args['user_id'],
+                'subscription_verified_at' => now()
+            ]);
+            User::where('id', $args['user_id'])->update(['partner_id' => $trip['partner_id']]);
+        }
+        
+        return $trip;
+    }
+
+    public function unsubscribeUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+      try {
+        PartnerTripUser::where('partner_trip_id', $args['partner_trip_id'])
+        ->whereIn('partner_user_id', $args['partner_user_id'])
+        ->delete();
+      } catch (\Exception $e) {
+        throw new \Exception('Subscription cancellation faild. ' . $e->getMessage());
+      }
+
+      return [
+        "status" => true,
+        "message" => "Selected subscriptions have been cancelled successfully."
+      ];
     }
 }

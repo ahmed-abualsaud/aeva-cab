@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
-class ResetUserPassword
+class ResetPasswordResolver
 {
     use ResetsPasswords;
     use ValidatesRequests;
@@ -24,7 +24,7 @@ class ResetUserPassword
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function user($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $args = collect($args)->except('directive')->toArray();
         $response = $this->broker()->reset($args, function ($user, $password) {

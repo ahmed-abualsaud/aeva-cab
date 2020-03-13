@@ -6,10 +6,8 @@ use App\PartnerTripStation;
 use App\PartnerTripStationUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use App\Exceptions\CustomException;
 
-class AcceptPartnerTripStation
+class PartnerTripStationResolver
 {
     /**
      * Return a value for the field.
@@ -20,17 +18,44 @@ class AcceptPartnerTripStation
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function assignUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $input = collect($args)->except('directive')->toArray();
+
+        try {
+            PartnerTripStationUser::create($input);
+        } catch (\Exception $e) {
+            throw new \Exception('Each user is allowed to be assigned to one station for each trip.');
+        }
+ 
+        return [
+            "status" => true,
+            "message" => "You've successfully assigned to this station."
+        ];
+    }
+
+    public function unassignUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        try {
+            PartnerTripStationUser::where('station_id', $args['station_id'])
+                ->where('user_id', $args['user_id'])->delete();
+        } catch (\Exception $e) {
+            throw new \Exception('User station assignment cancellation faild.');
+        }
+ 
+        return [
+            "status" => true,
+            "message" => "You've successfully unassigned from this station."
+        ];
+    }
+
+    public function acceptStation($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         try {
             $station = PartnerTripStation::where('id', $args['station_id'])->firstOrFail();
             $station->update(['accepted_at' => now()]);
         } catch (\Exception $e) {
-            throw new CustomException(
-              'Not Accepted.',
-              'No station with this id is found.',
-              'Model Not Found.'
-            );
+            throw new \Exception('No station with the provided ID is found.');
         }
 
         try {

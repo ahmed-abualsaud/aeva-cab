@@ -19,7 +19,7 @@ class TripLogResolver
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function getDriverLocation($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function driverLocation($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         try {
             $location = TripLog::select(['latitude', 'longitude'])
@@ -36,7 +36,7 @@ class TripLogResolver
         ];
     }
 
-    public function getPickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function pickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $users = TripLog::where('log_id', $args['log_id'])
             ->where('status', 'PICKED_UP')
@@ -47,7 +47,7 @@ class TripLogResolver
         return $users;
     }
 
-    public function getPickedAndNotpickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function pickedAndNotpickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $users = PartnerTripStationUser::where('station_id', $args['station_id'])
             ->join('users', 'users.id', '=', 'partner_trip_station_users.user_id')

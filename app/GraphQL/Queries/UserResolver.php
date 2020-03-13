@@ -6,7 +6,7 @@ use App\PartnerTrip;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
-class UserTrips
+class UserResolver
 {
     /**
      * Return a value for the field.
@@ -17,10 +17,22 @@ class UserTrips
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function trips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')->where('partner_trip_users.partner_user_id', $args['user_id'])->get();
+        $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')
+            ->where('partner_trip_users.partner_user_id', $args['user_id'])
+            ->get();
 
         return $userTrips;
+    }
+
+    public function liveTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $liveTrip = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')
+            ->where('partner_trip_users.partner_user_id', $args['user_id'])
+            ->where('status', true)
+            ->first();
+
+        return $liveTrip;
     }
 }

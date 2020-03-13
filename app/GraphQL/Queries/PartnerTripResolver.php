@@ -4,10 +4,12 @@ namespace App\GraphQL\Queries;
 
 use App\User;
 use App\PartnerTripUser;
+use App\PartnerTripStation;
+use App\PartnerTripStationUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
-class PartnerTripUsers
+class PartnerTripResolver
 {
     /**
      * Return a value for the field.
@@ -18,7 +20,8 @@ class PartnerTripUsers
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+
+    public function users($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $status = $args['status'];
 
@@ -49,5 +52,33 @@ class PartnerTripUsers
         }
 
         return $users;
+    }
+
+    public function stations($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $status = $args['status'];
+
+        switch($status) {
+            case 'accepted':
+                $stations = PartnerTripStation::where('partner_trip_id', $args['partner_trip_id'])
+                    ->whereNotNull('accepted_at')->get();
+                break;
+            case 'notAccepted':
+                $stations = PartnerTripStation::where('partner_trip_id', $args['partner_trip_id'])
+                    ->whereNull('accepted_at')->get();
+                break;
+        }
+
+        return $stations;
+    }
+
+    public function stationUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $stationUsers = PartnerTripStationUser::where('station_id', $args['station_id'])
+            ->join('users', 'users.id', '=', 'partner_trip_station_users.user_id')
+            ->select('users.*')
+            ->get();
+
+        return $stationUsers;
     }
 }

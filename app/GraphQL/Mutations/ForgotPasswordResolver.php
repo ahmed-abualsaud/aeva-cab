@@ -7,7 +7,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Support\Facades\Password;
 
-class ForgotUserPassword
+class ForgotPasswordResolver
 {
     use SendsPasswordResetEmails;
 
@@ -20,7 +20,7 @@ class ForgotUserPassword
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function user($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $response = $this->broker()->sendResetLink(['email' => $args['email']]);
         if ($response == Password::RESET_LINK_SENT) {
