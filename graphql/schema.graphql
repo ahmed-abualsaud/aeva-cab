@@ -103,6 +103,8 @@ extend type Mutation {
   createRole(input: CreateRoleInput! @spread): Role @create
   updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
   deleteRole(id: ID!): Role @delete
+
+  createFile(input: CreateFileInput! @spread): File @create
 }
 
 type Query {
@@ -168,3 +170,4 @@ type Query {
 #import partnerTripUser.graphql
 #import roleType.graphql
 #import role.graphql
+#import file.graphql

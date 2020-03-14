@@ -1,0 +1,10 @@
+input CreateFileInput {
+  name: String! @rules(apply: ["required"])
+  path: String! @rules(apply: ["required"])
+}
+
+type File {
+  id: ID
+  name: String
+  path: String
+}
