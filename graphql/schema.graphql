@@ -123,6 +123,7 @@ type Query {
   vehicles(orderBy: [OrderByClause] @orderBy): [Vehicle!]! @paginate
   driverVehicles(driver_id: ID! assigned: Boolean! orderBy: [OrderByClause] @orderBy): [Vehicle] 
     @paginate(scopes: ["assignedOrNot"])
+  driverTrips(driver_id: ID! @eq): [PartnerTrip] @all
 
   carTypes: [CarType!]! @all
   carType(id: ID @eq): CarType @find
