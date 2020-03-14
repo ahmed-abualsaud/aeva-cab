@@ -47,6 +47,7 @@ type ScheduledTrips {
   name: String
   dayName: String
   date: DateTime
+  startsAt: String
 }
 
 type PartnerTrip {

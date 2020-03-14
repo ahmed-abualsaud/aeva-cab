@@ -7,6 +7,7 @@ use App\PartnerTrip;
 use App\PartnerTripUser;
 use App\PartnerTripStation;
 use App\PartnerTripStationUser;
+use Carbon\Carbon;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -152,11 +153,13 @@ class PartnerTripResolver
         foreach ($trips as $trip) {
             foreach($days as $day) {
                 if ($trip->schedule->$day) {
+                    $date = date('Y-m-d', strtotime($day)).' '.$trip->schedule->$day;
                     $arr[] = [
                         "id" => $trip->id,
                         "name" => $trip->name,
                         "dayName" => $day,
-                        "date" => date('Y-m-d', strtotime($day)).' '.$trip->schedule->$day
+                        "date" => $date,
+                        "startsAt" => Carbon::parse($date)->diffForHumans()
                     ];
                 }
             }
