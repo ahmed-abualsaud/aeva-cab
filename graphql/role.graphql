@@ -15,6 +15,7 @@ input CreateRoleInput {
   fleet: Boolean
   payment: Boolean
   cancellation: Boolean
+  file_id: ID
 }
 
 input UpdateRoleInput {
@@ -35,6 +36,7 @@ input UpdateRoleInput {
   payment: Boolean
   cancellation: Boolean
   status: Boolean
+  file_id: ID
 }
 
 input QruzMemberLoginInput { 
@@ -66,4 +68,5 @@ type Role {
   cancellation: Boolean
   employee_id: String
   status: Boolean
+  file: File @belongsTo
 }

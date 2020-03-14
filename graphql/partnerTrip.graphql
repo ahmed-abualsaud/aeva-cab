@@ -42,6 +42,20 @@ type LiveTripResponse {
   trip: PartnerTrip
 }
 
+type UserMyTrips {
+  id: ID
+  name: String
+  dayName: String
+  date: String
+}
+
+type DriverMyTrips {
+  id: ID
+  name: String
+  dayName: String
+  date: String
+}
+
 type PartnerTrip {
   id: ID
   name: String

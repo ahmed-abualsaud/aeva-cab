@@ -100,6 +100,7 @@ extend type Mutation {
   updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
   deleteRole(id: ID!): Role @delete
 
+  createFile(input: CreateFileInput! @spread): File @create
   startTrip(input: StartTripLogInput! @spread): PartnerTrip 
     @field(resolver: "TripLogResolver@startTrip")
   updateDriverLocation(input: TripLogInput! @spread): String 
@@ -165,6 +166,11 @@ type Query {
   driverLiveTrip(driver_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@driverLiveTrip")
 
+  userMyTrips(user_id: ID!): [UserMyTrips]
+    @field(resolver: "PartnerTripResolver@userMyTrips")
+  driverMyTrips(driver_id: ID!): [DriverMyTrips]
+    @field(resolver: "PartnerTripResolver@driverMyTrips")
+
   getDriverLocation(log_id: String!): GetDriverLocationResponse!
     @field(resolver: "TripLogResolver@driverLocation")
   getPickedUsers(log_id: String!): [User]
@@ -190,4 +196,5 @@ type Query {
 #import partnerTripUser.graphql
 #import roleType.graphql
 #import role.graphql
+#import file.graphql
 #import tripLog.graphql
