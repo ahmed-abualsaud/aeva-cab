@@ -165,6 +165,11 @@ type Query {
   driverLiveTrip(driver_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@driverLiveTrip")
 
+  userMyTrips(user_id: ID!): [UserMyTrips]
+    @field(resolver: "PartnerTripResolver@userMyTrips")
+  driverMyTrips(driver_id: ID!): [DriverMyTrips]
+    @field(resolver: "PartnerTripResolver@driverMyTrips")
+
   getDriverLocation(log_id: String!): GetDriverLocationResponse!
     @field(resolver: "TripLogResolver@driverLocation")
   getPickedUsers(log_id: String!): [User]

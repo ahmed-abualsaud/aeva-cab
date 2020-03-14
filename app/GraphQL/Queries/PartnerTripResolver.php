@@ -87,9 +87,175 @@ class PartnerTripResolver
     {
         $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')
             ->where('partner_trip_users.partner_user_id', $args['user_id'])
+            ->whereRaw('? between startDate and endDate', [date('Y-m-d')])
             ->get();
+            
 
         return $userTrips;
+    }
+
+    public function userMyTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')
+            ->where('partner_trip_users.partner_user_id', $args['user_id'])
+            ->whereRaw('? between startDate and endDate', [date('Y-m-d')])
+            ->select('partner_trips.*','partner_trip_users.partner_trip_id')
+            ->get();
+
+        $arr = array();
+        foreach ($userTrips as $userTrip) {
+            if ($userTrip->schedule->saturday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Saturday",
+                    "date" => date('Y-m-d', strtotime('saturday')).' '.$userTrip->schedule->saturday
+                ];
+            }
+
+            if ($userTrip->schedule->sunday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Sunday",
+                    "date" => date('Y-m-d', strtotime('sunday')).' '.$userTrip->schedule->sunday
+                ];
+            }
+
+            if ($userTrip->schedule->monday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Monday",
+                    "date" => date('Y-m-d', strtotime('monday')).' '.$userTrip->schedule->monday
+                ];
+            }
+
+            if ($userTrip->schedule->tuesday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Tuesday",
+                    "date" => date('Y-m-d', strtotime('tuesday')).' '.$userTrip->schedule->tuesday
+                ];
+            }
+
+            if ($userTrip->schedule->wednesday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Wednesday",
+                    "date" => date('Y-m-d', strtotime('wednesday')).' '.$userTrip->schedule->wednesday
+                ];
+            }
+
+            if ($userTrip->schedule->thursday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Thursday",
+                    "date" => date('Y-m-d', strtotime('thursday')).' '.$userTrip->schedule->thursday
+                ];
+            }
+
+            if ($userTrip->schedule->friday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Friday",
+                    "date" => date('Y-m-d', strtotime('friday')).' '.$userTrip->schedule->friday
+                ];
+            }
+        }
+
+        usort($arr, function($element1, $element2) { 
+            $datetime1 = strtotime($element1['date']); 
+            $datetime2 = strtotime($element2['date']); 
+            return $datetime1 - $datetime2; 
+        });
+        
+        return $arr;
+    }
+
+    public function driverMyTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $userTrips = PartnerTrip::where('driver_id', $args['driver_id'])
+            ->whereRaw('? between startDate and endDate', [date('Y-m-d')])
+            ->get();
+
+        $arr = array();
+        foreach ($userTrips as $userTrip) {
+            if ($userTrip->schedule->saturday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Saturday",
+                    "date" => date('Y-m-d', strtotime('saturday')).' '.$userTrip->schedule->saturday
+                ];
+            }
+
+            if ($userTrip->schedule->sunday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Sunday",
+                    "date" => date('Y-m-d', strtotime('sunday')).' '.$userTrip->schedule->sunday
+                ];
+            }
+
+            if ($userTrip->schedule->monday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Monday",
+                    "date" => date('Y-m-d', strtotime('monday')).' '.$userTrip->schedule->monday
+                ];
+            }
+
+            if ($userTrip->schedule->tuesday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Tuesday",
+                    "date" => date('Y-m-d', strtotime('tuesday')).' '.$userTrip->schedule->tuesday
+                ];
+            }
+
+            if ($userTrip->schedule->wednesday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Wednesday",
+                    "date" => date('Y-m-d', strtotime('wednesday')).' '.$userTrip->schedule->wednesday
+                ];
+            }
+
+            if ($userTrip->schedule->thursday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Thursday",
+                    "date" => date('Y-m-d', strtotime('thursday')).' '.$userTrip->schedule->thursday
+                ];
+            }
+
+            if ($userTrip->schedule->friday) {
+                $arr[] = [
+                    "id" => $userTrip->id,
+                    "name" => $userTrip->name,
+                    "dayName" => "Friday",
+                    "date" => date('Y-m-d', strtotime('friday')).' '.$userTrip->schedule->friday
+                ];
+            }
+        }
+
+        usort($arr, function($element1, $element2) { 
+            $datetime1 = strtotime($element1['date']); 
+            $datetime2 = strtotime($element2['date']); 
+            return $datetime1 - $datetime2; 
+        });
+        
+        return $arr;
     }
 
     public function userLiveTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
@@ -130,4 +296,11 @@ class PartnerTripResolver
             "trip" => null
         ];
     }
+
+    // Comparison function 
+    public function date_compare($element1, $element2) { 
+        $datetime1 = strtotime($element1['datetime']); 
+        $datetime2 = strtotime($element2['datetime']); 
+        return $datetime1 - $datetime2; 
+    }  
 }
