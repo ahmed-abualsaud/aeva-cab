@@ -27,7 +27,7 @@ class PartnerTripResolver
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         try {
-            $tripInput = Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'location', 'startDate', 'endDate', 'return_time']);
+            $tripInput = Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'location', 'start_date', 'end_date', 'return_time']);
             $newTrip = PartnerTrip::create($tripInput);
             $subscriptionCode = 'PRTNR' . $newTrip->partner_id . 'TRP' . $newTrip->id;
             $newTrip->update(['subscription_code' => $subscriptionCode]);
@@ -49,7 +49,7 @@ class PartnerTripResolver
     public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         try {
-            $tripInput = Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'location', 'startDate', 'endDate', 'return_time']);
+            $tripInput = Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'location', 'start_date', 'end_date', 'return_time']);
             $trip = PartnerTrip::findOrFail($args['id']);
             $trip->update($tripInput);
         } catch (\Exception $e) {
