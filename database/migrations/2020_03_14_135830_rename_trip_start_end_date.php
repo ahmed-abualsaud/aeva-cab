@@ -14,8 +14,8 @@ class RenameTripStartEndDate extends Migration
     public function up()
     {
         Schema::table('partner_trips', function (Blueprint $table) {
-            $table->renameColumn('startdate', 'start_date');
-            $table->renameColumn('enddate', 'end_date');
+            $table->renameColumn('startDate', 'start_date');
+            $table->renameColumn('endDate', 'end_date');
         });
     }
 
