@@ -2,11 +2,12 @@
 
 namespace App\GraphQL\Queries;
 
-use App\PartnerTripStationUser;
+use App\Driver;
+use App\PartnerDriver;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
-class PartnerTripStationUsers
+class PartnerResolver
 {
     /**
      * Return a value for the field.
@@ -17,13 +18,16 @@ class PartnerTripStationUsers
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function drivers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $users = PartnerTripStationUser::where('station_id', $args['station_id'])
-            ->join('partner_users', 'partner_users.id', '=', 'partner_trip_station_users.user_id')
-            ->select('partner_users.*')
-            ->get();
+        $partnerDrivers = PartnerDriver::where('partner_id', $args['partner_id'])->get()->pluck('driver_id');
 
-        return $users;
+        if ($args['assigned']) {
+            $drivers = Driver::whereIn('id', $partnerDrivers)->get();
+        } else {
+            $drivers = Driver::whereNotIn('id', $partnerDrivers)->get();
+        }
+
+        return $drivers;
     }
 }

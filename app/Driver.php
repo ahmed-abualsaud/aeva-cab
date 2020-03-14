@@ -43,4 +43,9 @@ class Driver extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(PartnerTrip::class);
     }
+
+    public function vehicles()
+    {
+        return $this->hasMany(DriverVehicle::class);
+    }
 } 

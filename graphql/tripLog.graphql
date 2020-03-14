@@ -1,0 +1,49 @@
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+input StartTripLogInput {
+  trip_id: ID! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+}
+
+input TripLogInput {
+  trip_id: ID! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+}
+
+input PickUsersUpInput {
+  trip_id: ID! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+  users: [UserObj!]!
+}
+
+input UserObj {
+  id: ID!
+  is_picked_up: Boolean!
+}
+
+input ChangeTripUserStatusInput {
+  log_id: String! @rules(apply: ["required"])
+  user_id: ID! @rules(apply: ["required"])
+  status: String! @rules(apply: ["required", "in:PICKED_UP,NOT_PICKED_UP,DROPPED_OFF"])
+}
+
+type GetDriverLocationResponse {
+  latitude: String!
+  longitude: String!
+}
+
+type PartnerTripLog {
+  id: ID
+  log_id: String! @rules(apply: ["required"])
+  created_at: DateTime
+  updated_at: DateTime
+  latitude: String
+  longitude: String
+  user_id: User @belongsTo
+  status: String
+}

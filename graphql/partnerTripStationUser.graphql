@@ -10,7 +10,7 @@ input DeletePartnerTripStationUserInput {
 }
 
 type PartnerTripStationUserResponse {
-  status: String!
+  status: Boolean!
   message: String
 }
 

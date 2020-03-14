@@ -7,7 +7,7 @@ use Illuminate\Support\Arr;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
-class QruzMemberLogin
+class RoleResolver
 {
     /**
      * @param $rootValue
@@ -19,7 +19,7 @@ class QruzMemberLogin
      *
      * @return array
      */
-    public function resolve($rootValue, array $args, GraphQLContext $context = null, ResolveInfo $resolveInfo)
+    public function login($rootValue, array $args, GraphQLContext $context = null, ResolveInfo $resolveInfo)
     {
         $credentials = Arr::only($args, ['email', 'password']);
 
@@ -32,10 +32,10 @@ class QruzMemberLogin
         }
 
         $role = auth('role')->user();
-        
-        $response['access_token'] = $token;
-        $response['role'] = $role;
 
-        return $response;
+        return [
+            'access_token' => $token,
+            'role' => $role
+        ];
     }
 }

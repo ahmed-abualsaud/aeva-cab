@@ -3,11 +3,18 @@ input CreatePartnerTripInput {
   partner_id: ID! @rules(apply: ["required"])
   driver_id: ID! @rules(apply: ["required"])
   vehicle_id: ID! @rules(apply: ["required"])
-  ride_car_share: Boolean
-  location: String
-  time: String
   startDate: Date! @rules(apply: ["required"])
   endDate: Date! @rules(apply: ["required"])
+  ride_car_share: Boolean
+  location: String
+  return_time: String
+  saturday: String
+  sunday: String
+  monday: String
+  tuesday: String
+  wednesday: String
+  thursday: String
+  friday: String
 }
 
 input UpdatePartnerTripInput {
@@ -18,9 +25,21 @@ input UpdatePartnerTripInput {
   subscription_code: String
   ride_car_share: Boolean
   location: String
-  time: String
+  return_time: String
   startDate: Date
   endDate: Date
+  saturday: String
+  sunday: String
+  monday: String
+  tuesday: String
+  wednesday: String
+  thursday: String
+  friday: String
+}
+
+type LiveTripResponse {
+  status: Boolean
+  trip: PartnerTrip
 }
 
 type PartnerTrip {
@@ -28,14 +47,15 @@ type PartnerTrip {
   name: String
   ride_car_share: Boolean
   location: String
-  time: String
+  return_time: String
   startDate: Date
   endDate: Date
   subscription_code: String
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
+  schedule: PartnerTripSchedule @hasOne
   stations: [PartnerTripStation] @hasMany
-  schedules: [PartnerTripSchedule] @hasMany
-  users: [User] @belongsToMany
+  log_id: String
+  status: Boolean
 }

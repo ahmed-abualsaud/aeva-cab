@@ -4,7 +4,7 @@ input PartnerDriverInput {
 }
 
 type PartnerDriverResponse {
-  status: String!
+  status: Boolean!
   message: String
 }
 

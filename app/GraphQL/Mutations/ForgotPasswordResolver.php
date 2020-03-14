@@ -2,13 +2,15 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\PartnerTripUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use App\Exceptions\CustomException;
+use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Support\Facades\Password;
 
-class DeletePartnerTripUser
+class ForgotPasswordResolver
 {
+    use SendsPasswordResetEmails;
+
     /**
      * Return a value for the field.
      *
@@ -18,23 +20,19 @@ class DeletePartnerTripUser
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function user($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-      try {
-        PartnerTripUser::where('partner_trip_id', $args['partner_trip_id'])
-        ->whereIn('partner_user_id', $args['partner_user_id'])
-        ->delete();
-      } catch (\Exception $e) {
-        throw new CustomException(
-          'Subscription cancellation faild.',
-          'Something went wrong.',
-          'Unknown.'
-        );
-      }
-
-      return [
-        "status" => "SUCCESS",
-        "message" => "Selected subscriptions have been cancelled successfully."
-      ];
+        $response = $this->broker()->sendResetLink(['email' => $args['email']]);
+        if ($response == Password::RESET_LINK_SENT) {
+            return [
+                'status'  => true,
+                'message' => trans($response),
+            ];
+        }
+ 
+        return [
+            'status'  => false,
+            'message' => trans($response),
+        ];
     }
 }

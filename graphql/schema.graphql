@@ -1,30 +1,28 @@
 type Mutation {
   qruzMemberLogin(input: QruzMemberLoginInput! @spread): QruzMemberAuthPayload! 
-    @field(resolver: "QruzMemberLogin@resolve")
+    @field(resolver: "RoleResolver@login")
 
   partnerLogin(input: PartnerLoginInput! @spread): PartnerAuthPayload! 
-    @field(resolver: "PartnerLogin@resolve")
+    @field(resolver: "PartnerResolver@login")
 
-  createUser(input: CreateUserInput! @spread): UserPayload 
-    @field(resolver: "CreateUser")
-
+  createUser(input: CreateUserInput! @spread): UserPayload!
+    @field(resolver: "UserResolver@create")
   userLogin(input: UserLoginInput! @spread): UserPayload! 
-    @field(resolver: "UserLogin@resolve")
-
+    @field(resolver: "UserResolver@login")
   userSocialLogin(input: UserSocialLoginInput! @spread): UserPayload! 
-    @field(resolver: "UserSocialLogin@resolve")
-
+    @field(resolver: "UserResolver@socialLogin")
   userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
-    @field(resolver: "UserPhoneVerification")
+    @field(resolver: "UserResolver@phoneVerification")
+  changeUserPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! 
+    @field(resolver: "UserResolver@updatePassword")
+  forgotUserPassword(input: ForgotPasswordInput! @spread): UpdatePasswordResponse! 
+    @field(resolver: "ForgotPasswordResolver@user")
+  updateUserForgottenPassword(input: NewPasswordWithCodeInput @spread): UpdatePasswordResponse! 
+    @field(resolver: "ResetPasswordResolver@user")
 
   driverLogin(input: DriverLoginInput! @spread): DriverAuthPayload! 
-    @field(resolver: "DriverLogin@resolve")
-
-  forgotUserPassword(input: ForgotPasswordInput! @spread): UpdatePasswordResponse! @field(resolver: "ForgotUserPassword")
-
-  updateUserForgottenPassword(input: NewPasswordWithCodeInput @spread): UpdatePasswordResponse! @field(resolver: "ResetUserPassword")
-
-  changeUserPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! @field(resolver: "ChangeUserPassword")
+    @field(resolver: "DriverResolver@login")
+  
 }
 
 extend type Mutation {
@@ -53,48 +51,46 @@ extend type Mutation {
   deleteVehicle(id: ID!): Vehicle @delete
 
   createDriverVehicle(input: DriverVehicleInput! @spread): DriverVehicleResponse! 
-    @field(resolver: "CreateDriverVehicle")
+    @field(resolver: "DriverResolver@assignVehicle")
   deleteDriverVehicle(input: DriverVehicleInput! @spread): DriverVehicleResponse! 
-    @field(resolver: "DeleteDriverVehicle")
+    @field(resolver: "DriverResolver@unassignVehicle")
 
   createPartner(input: CreatePartnerInput! @spread): Partner @create
   updatePartner(input: UpdatePartnerInput! @spread): Partner @update @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
 
   updateUser(input: UpdateUserInput! @spread): UserPayload 
-    @field(resolver: "UpdateUser") @updateUserValidation
+    @field(resolver: "UserResolver@update") @updateUserValidation
   deleteUser(id: ID!): User @delete
 
   createPartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse!
-    @field(resolver: "CreatePartnerDriver")
+    @field(resolver: "PartnerResolver@assignDriver")
   deletePartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse! 
-    @field(resolver: "DeletePartnerDriver") 
+    @field(resolver: "PartnerResolver@unassignDriver") 
 
   createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip 
-    @field(resolver: "CreatePartnerTrip")
-  updatePartnerTrip(input: UpdatePartnerTripInput! @spread): PartnerTrip @update
+    @field(resolver: "PartnerTripResolver@create")
+  updatePartnerTrip(input: UpdatePartnerTripInput! @spread): PartnerTrip 
+    @field(resolver: "PartnerTripResolver@update")
   deletePartnerTrip(id: ID!): PartnerTrip @delete
 
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
+
   acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): AcceptPartnerTripStationResponse! 
-    @field(resolver: "AcceptPartnerTripStation") 
-
+    @field(resolver: "PartnerTripStationResolver@acceptStation") 
   createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
-    @field(resolver: "PartnerTripStationUserResolver@create") 
+    @field(resolver: "PartnerTripStationResolver@assignUser") 
   deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
-    @field(resolver: "PartnerTripStationUserResolver@destroy") 
-
-  createPartnerTripSchedule(input: CreatePartnerTripScheduleInput! @spread): PartnerTripSchedule @create
-  updatePartnerTripSchedule(input: UpdatePartnerTripScheduleInput! @spread): PartnerTripSchedule @update
+    @field(resolver: "PartnerTripStationResolver@unassignUser") 
 
   createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUserResponse! 
-    @field(resolver: "CreatePartnerTripUser")
-  deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): PartnerTripUserResponse! 
-    @field(resolver: "DeletePartnerTripUser")
+    @field(resolver: "PartnerTripResolver@inviteUser")
   confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): PartnerTrip!
-    @field(resolver: "ConfirmPartnerTripUser")
+    @field(resolver: "PartnerTripResolver@subscribeUser")
+  deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): PartnerTripUserResponse! 
+    @field(resolver: "PartnerTripResolver@unsubscribeUser")
  
   createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
   updateRoleType(input: UpdateRoleTypeInput! @spread): RoleType @update @updateRoleTypeValidation
@@ -105,6 +101,16 @@ extend type Mutation {
   deleteRole(id: ID!): Role @delete
 
   createFile(input: CreateFileInput! @spread): File @create
+  startTrip(input: StartTripLogInput! @spread): PartnerTrip 
+    @field(resolver: "TripLogResolver@startTrip")
+  updateDriverLocation(input: TripLogInput! @spread): String 
+    @field(resolver: "TripLogResolver@updateDriverLocation")
+  endTrip(input: TripLogInput! @spread): String
+    @field(resolver: "TripLogResolver@endTrip")
+  pickUsersUp(input: PickUsersUpInput! @spread): String
+    @field(resolver: "TripLogResolver@pickUsersUp")
+  changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
+    @field(resolver: "TripLogResolver@changeTripUserStatus")
 }
 
 type Query {
@@ -143,14 +149,28 @@ type Query {
 
   partnerTrips(partner_id: ID! @eq): [PartnerTrip] @all
   partnerUsers(partner_id: ID! @eq): [User] @all
-  partnerDrivers(partner_id: ID! assigned: Boolean!): [Driver] @field(resolver: "PartnerDrivers")
-  partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [User] @field(resolver: "PartnerTripUsers")
+  partnerDrivers(partner_id: ID! assigned: Boolean!): [Driver] 
+    @field(resolver: "PartnerResolver@drivers")
+  partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [User] 
+    @field(resolver: "PartnerTripResolver@users")
   partnerTripStations(input: GetPartnerTripStationsInput! @spread): [PartnerTripStation]
-    @field(resolver: "PartnerTripStations") 
+    @field(resolver: "PartnerTripResolver@stations") 
   partnerTripStationUsers(station_id: ID!): [User] 
-    @field(resolver: "PartnerTripStationUsers")
+    @field(resolver: "PartnerTripResolver@stationUsers")
 
-  partnerTripSchedules: [PartnerTripSchedule!]! @all
+  userTrips(user_id: ID!): [PartnerTrip] 
+    @field(resolver: "PartnerTripResolver@userTrips")
+  userLiveTrip(user_id: ID!): LiveTripResponse!
+    @field(resolver: "PartnerTripResolver@userLiveTrip")
+  driverLiveTrip(driver_id: ID!): LiveTripResponse!
+    @field(resolver: "PartnerTripResolver@driverLiveTrip")
+
+  getDriverLocation(log_id: String!): GetDriverLocationResponse!
+    @field(resolver: "TripLogResolver@driverLocation")
+  getPickedUsers(log_id: String!): [User]
+    @field(resolver: "TripLogResolver@pickedUsers")
+  getPickedAndNotpickedUsers(log_id: String!, station_id: ID!): [User]
+    @field(resolver: "TripLogResolver@pickedAndNotpickedUsers")
 }
 
 #import fleet.graphql 
@@ -171,3 +191,4 @@ type Query {
 #import roleType.graphql
 #import role.graphql
 #import file.graphql
+#import tripLog.graphql
