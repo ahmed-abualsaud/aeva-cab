@@ -42,18 +42,11 @@ type LiveTripResponse {
   trip: PartnerTrip
 }
 
-type UserMyTrips {
+type ScheduledTrips {
   id: ID
   name: String
   dayName: String
-  date: String
-}
-
-type DriverMyTrips {
-  id: ID
-  name: String
-  dayName: String
-  date: String
+  date: DateTime
 }
 
 type PartnerTrip {

@@ -159,17 +159,15 @@ type Query {
   partnerTripStationUsers(station_id: ID!): [User] 
     @field(resolver: "PartnerTripResolver@stationUsers")
 
-  userTrips(user_id: ID!): [PartnerTrip] 
-    @field(resolver: "PartnerTripResolver@userTrips")
   userLiveTrip(user_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@userLiveTrip")
   driverLiveTrip(driver_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@driverLiveTrip")
 
-  userMyTrips(user_id: ID!): [UserMyTrips]
-    @field(resolver: "PartnerTripResolver@userMyTrips")
-  driverMyTrips(driver_id: ID!): [DriverMyTrips]
-    @field(resolver: "PartnerTripResolver@driverMyTrips")
+  userTrips(user_id: ID!): [ScheduledTrips]
+    @field(resolver: "PartnerTripResolver@userTrips")
+  driverTrips(driver_id: ID!): [ScheduledTrips]
+    @field(resolver: "PartnerTripResolver@driverTrips")
 
   getDriverLocation(log_id: String!): GetDriverLocationResponse!
     @field(resolver: "TripLogResolver@driverLocation")
