@@ -111,6 +111,9 @@ extend type Mutation {
     @field(resolver: "TripLogResolver@pickUsersUp")
   changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
     @field(resolver: "TripLogResolver@changeTripUserStatus")
+
+  upload(file: Upload!): String
+    @field(resolver: "Upload")
 }
 
 type Query {
@@ -164,6 +167,8 @@ type Query {
   driverLiveTrip(driver_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@driverLiveTrip")
 
+  userSubscriptions(user_id: ID!): [PartnerTrip]
+    @field(resolver: "PartnerTripResolver@userSubscriptions")
   userTrips(user_id: ID!): [ScheduledTrips]
     @field(resolver: "PartnerTripResolver@userTrips")
   driverTrips(driver_id: ID!): [ScheduledTrips]

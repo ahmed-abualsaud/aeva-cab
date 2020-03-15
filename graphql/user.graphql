@@ -1,4 +1,5 @@
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
 
 input CreateUserInput {
   name: String! @rules(apply: ["required"])
@@ -9,7 +10,6 @@ input CreateUserInput {
   provider_id: String
   partner_id: ID
   position: String
-  avatar: String
 }
 
 input UpdateUserInput {

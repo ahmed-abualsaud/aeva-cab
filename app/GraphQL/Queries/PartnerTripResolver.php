@@ -84,6 +84,17 @@ class PartnerTripResolver
         return $stationUsers;
     }
 
+    public function userSubscriptions($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $userSubscriptions = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')
+            ->where('partner_trip_users.partner_user_id', $args['user_id'])
+            ->select('partner_trips.id','partner_trips.name')
+            ->get();
+
+
+        return $userSubscriptions;
+    }
+
     public function userTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')
@@ -144,6 +155,7 @@ class PartnerTripResolver
             "trip" => null
         ];
     } 
+    
 
     protected function scheduledTrips($trips) {
 
