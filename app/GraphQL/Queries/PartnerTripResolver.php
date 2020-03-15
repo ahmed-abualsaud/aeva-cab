@@ -88,9 +88,7 @@ class PartnerTripResolver
     {
         $userSubscriptions = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')
             ->where('partner_trip_users.partner_user_id', $args['user_id'])
-            ->select('partner_trips.id','partner_trips.name')
             ->get();
-
 
         return $userSubscriptions;
     }
