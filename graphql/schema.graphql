@@ -112,7 +112,7 @@ extend type Mutation {
   changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
     @field(resolver: "TripLogResolver@changeTripUserStatus")
 
-  upload(file: Upload!): String
+  upload(id: ID!, avatar: Upload!): User
     @field(resolver: "Upload")
 }
 

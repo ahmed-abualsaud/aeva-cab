@@ -37,6 +37,11 @@ input UserSocialLoginInput {
   token: String! @rules(apply: ["required"])
 }
 
+type UploadResponse {
+  id: ID!
+  avatar: String!
+}
+
 type UserPayload {
   access_token: String
   user: User

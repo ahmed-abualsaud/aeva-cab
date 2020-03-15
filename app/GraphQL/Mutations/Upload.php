@@ -2,6 +2,8 @@
 
 namespace App\GraphQL\Mutations;
 
+use \App\User;
+
 class Upload
 {
     /**
@@ -11,11 +13,16 @@ class Upload
      * @param  mixed[]  $args
      * @return string|null
      */
-    public function __invoke($root, array $args): ?string
+    public function __invoke($root, array $args)
     {
-        /** @var \Illuminate\Http\UploadedFile $file */
-        $file = $args['file'];
+        
+        $uploadedFile = \Storage::disk('local')->putFile('uploads', $args['avatar']);
 
-        return $file->storePublicly('public');
+        $path = env('APP_URL') . '/' . $uploadedFile;
+
+        $user = User::find($args['id']);
+        $user->update(['avatar' => $path]);
+
+        return $user;
     }
 }
