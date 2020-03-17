@@ -4,10 +4,13 @@ namespace App\GraphQL\Mutations;
 
 use \App\TripLog;
 use \App\PartnerTrip;
+use \App\PartnerTripStationUser;
+use App\Notifications\NearYou;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Notification;
 
 class TripLogResolver
 {
@@ -30,6 +33,30 @@ class TripLogResolver
         }
 
         return $trip;
+    }
+
+    public function nearYou($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        if (!array_key_exists('station_id', $args)) {
+            throw new \Exception('Station ID is required but not provided.');
+        }
+
+        $stationUsers = PartnerTripStationUser::where('station_id', $args['station_id'])
+            ->join('users', 'users.id', '=', 'partner_trip_station_users.user_id')
+            ->select('users.phone','users.email')
+            ->get();
+
+        $emails = $stationUsers->pluck('email');
+        $phones = $stationUsers->pluck('phone');
+
+        // Notification::route('mail', $emails)
+        //     ->notify(new NearYou());
+
+        $input = collect($args)->except(['directive', 'station_id'])->toArray();
+        $input['status'] = 'NEAR_YOU';
+        TripLog::create($input);
+
+        return "Notification has been sent to selected station users.";
     }
 
     public function endTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)

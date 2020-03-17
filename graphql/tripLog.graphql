@@ -9,6 +9,7 @@ input TripLogInput {
   log_id: String! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
+  station_id: ID
 }
 
 input PickUsersUpInput {

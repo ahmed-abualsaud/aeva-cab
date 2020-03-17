@@ -2,7 +2,7 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
 
-# Mutations that does not require Auth
+# Mutations that do not require Auth
 type Mutation {
   # Admin Auth
   qruzMemberLogin(input: QruzMemberLoginInput! @spread): QruzMemberAuthPayload! 
@@ -145,6 +145,8 @@ extend type Mutation {
     @field(resolver: "TripLogResolver@startTrip")
   updateDriverLocation(input: TripLogInput! @spread): String 
     @field(resolver: "TripLogResolver@updateDriverLocation")
+  nearYou(input: TripLogInput! @spread): String
+    @field(resolver: "TripLogResolver@nearYou")
   endTrip(input: TripLogInput! @spread): String
     @field(resolver: "TripLogResolver@endTrip")
   pickUsersUp(input: PickUsersUpInput! @spread): String
