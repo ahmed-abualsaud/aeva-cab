@@ -1,10 +1,14 @@
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
+
+# Does not require Auth
 type Mutation {
+  # Admin Auth
   qruzMemberLogin(input: QruzMemberLoginInput! @spread): QruzMemberAuthPayload! 
     @field(resolver: "RoleResolver@login")
 
-  partnerLogin(input: PartnerLoginInput! @spread): PartnerAuthPayload! 
-    @field(resolver: "PartnerResolver@login")
-
+  # User Auth
   createUser(input: CreateUserInput! @spread): UserPayload!
     @field(resolver: "UserResolver@create")
   userLogin(input: UserLoginInput! @spread): UserPayload! 
@@ -20,87 +24,123 @@ type Mutation {
   updateUserForgottenPassword(input: NewPasswordWithCodeInput @spread): UpdatePasswordResponse! 
     @field(resolver: "ResetPasswordResolver@user")
 
+  # Driver Auth
   driverLogin(input: DriverLoginInput! @spread): DriverAuthPayload! 
     @field(resolver: "DriverResolver@login")
-  
+
+  # Partner Auth
+  partnerLogin(input: PartnerLoginInput! @spread): PartnerAuthPayload! 
+    @field(resolver: "PartnerResolver@login")
 }
 
+# Require Auth
 extend type Mutation {
+  # User
+  updateUser(input: UpdateUserInput! @spread): UserPayload 
+    @field(resolver: "UserResolver@update") @updateUserValidation
+  deleteUser(id: ID!): User @delete
+  uploadUserAvatar(id: ID!, avatar: Upload!): User
+    @field(resolver: "Upload@userAvatar")
+
+  # Fleet
   createFleet(input: CreateFleetInput! @spread): Fleet @create
   updateFleet(input: UpdateFleetInput! @spread): Fleet @update @updateFleetValidation
   deleteFleet(id: ID!): Fleet @delete
+  uploadFleetAvatar(id: ID!, avatar: Upload!): Fleet
+    @field(resolver: "Upload@fleetAvatar")
 
+  # Driver
   createDriver(input: CreateDriverInput! @spread): Driver @create
   updateDriver(input: UpdateDriverInput! @spread): Driver @update @updateDriverValidation
   deleteDriver(id: ID!): Driver @delete
+  uploadDriverAvatar(id: ID!, avatar: Upload!): Driver
+    @field(resolver: "Upload@driverAvatar")
 
-  createCarType(input: CreateCarTypeInput! @spread): CarType @create
-  updateCarType(input: UpdateCarTypeInput! @spread): CarType @update @updateCarTypeValidation
-  deleteCarType(id: ID!): CarType @delete
+  # Role
+  createRole(input: CreateRoleInput! @spread): Role @create
+  updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
+  deleteRole(id: ID!): Role @delete
 
-  createCarMake(input: CreateCarMakeInput! @spread): CarMake @create
-  updateCarMake(input: UpdateCarMakeInput! @spread): CarMake @update @updateCarMakeValidation
-  deleteCarMake(id: ID!): CarMake @delete
+  # Role Type
+  createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
+  updateRoleType(input: UpdateRoleTypeInput! @spread): RoleType @update @updateRoleTypeValidation
+  deleteRoleType(id: ID!): RoleType @delete
 
-  createCarModel(input: CreateCarModelInput! @spread): CarModel @create
-  updateCarModel(input: UpdateCarModelInput! @spread): CarModel @update
-  deleteCarModel(id: ID!): CarModel @delete
-
+  # Vehicles
   createVehicle(input: CreateVehicleInput! @spread): Vehicle @create
   updateVehicle(input: UpdateVehicleInput! @spread): Vehicle @update @updateVehicleValidation
   deleteVehicle(id: ID!): Vehicle @delete
 
+  # Car Make
+  createCarMake(input: CreateCarMakeInput! @spread): CarMake @create
+  updateCarMake(input: UpdateCarMakeInput! @spread): CarMake @update @updateCarMakeValidation
+  deleteCarMake(id: ID!): CarMake @delete
+
+  # Car Model
+  createCarModel(input: CreateCarModelInput! @spread): CarModel @create
+  updateCarModel(input: UpdateCarModelInput! @spread): CarModel @update
+  deleteCarModel(id: ID!): CarModel @delete
+
+  # Car Type
+  createCarType(input: CreateCarTypeInput! @spread): CarType @create
+  updateCarType(input: UpdateCarTypeInput! @spread): CarType @update @updateCarTypeValidation
+  deleteCarType(id: ID!): CarType @delete
+
+  # Document
+  uploadDocument(input: UploadDocumentInput! @spread): Document
+    @field(resolver: "Upload@document")
+  deleteDocument(id: ID!): String
+    @field(resolver: "Upload@deleteDocument")
+  updateDocument(input: UpdateDocumentInput! @spread): Document @update
+
+  # Driver Vehicle
   createDriverVehicle(input: DriverVehicleInput! @spread): DriverVehicleResponse! 
     @field(resolver: "DriverResolver@assignVehicle")
   deleteDriverVehicle(input: DriverVehicleInput! @spread): DriverVehicleResponse! 
     @field(resolver: "DriverResolver@unassignVehicle")
 
+  # Partner
   createPartner(input: CreatePartnerInput! @spread): Partner @create
   updatePartner(input: UpdatePartnerInput! @spread): Partner @update @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
+  uploadPartnerLogo(id: ID!, logo: Upload!): Partner
+    @field(resolver: "Upload@partnerLogo")
 
-  updateUser(input: UpdateUserInput! @spread): UserPayload 
-    @field(resolver: "UserResolver@update") @updateUserValidation
-  deleteUser(id: ID!): User @delete
-
+  # Partner Driver
   createPartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse!
     @field(resolver: "PartnerResolver@assignDriver")
   deletePartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse! 
-    @field(resolver: "PartnerResolver@unassignDriver") 
+    @field(resolver: "PartnerResolver@unassignDriver")
 
+  # Trip
   createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip 
     @field(resolver: "PartnerTripResolver@create")
   updatePartnerTrip(input: UpdatePartnerTripInput! @spread): PartnerTrip 
     @field(resolver: "PartnerTripResolver@update")
   deletePartnerTrip(id: ID!): PartnerTrip @delete
 
+  # Trip Station
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
-
   acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): AcceptPartnerTripStationResponse! 
-    @field(resolver: "PartnerTripStationResolver@acceptStation") 
+    @field(resolver: "PartnerTripStationResolver@acceptStation")
+
+  # Station User
   createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
     @field(resolver: "PartnerTripStationResolver@assignUser") 
   deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
-    @field(resolver: "PartnerTripStationResolver@unassignUser") 
+    @field(resolver: "PartnerTripStationResolver@unassignUser")
 
+  # Trip User
   createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUserResponse! 
     @field(resolver: "PartnerTripResolver@inviteUser")
   confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): PartnerTrip!
     @field(resolver: "PartnerTripResolver@subscribeUser")
   deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): PartnerTripUserResponse! 
     @field(resolver: "PartnerTripResolver@unsubscribeUser")
- 
-  createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
-  updateRoleType(input: UpdateRoleTypeInput! @spread): RoleType @update @updateRoleTypeValidation
-  deleteRoleType(id: ID!): RoleType @delete
 
-  createRole(input: CreateRoleInput! @spread): Role @create
-  updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
-  deleteRole(id: ID!): Role @delete
-
-  createFile(input: CreateFileInput! @spread): File @create
+  # Trip Log
   startTrip(input: StartTripLogInput! @spread): PartnerTrip 
     @field(resolver: "TripLogResolver@startTrip")
   updateDriverLocation(input: TripLogInput! @spread): String 
@@ -111,69 +151,90 @@ extend type Mutation {
     @field(resolver: "TripLogResolver@pickUsersUp")
   changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
     @field(resolver: "TripLogResolver@changeTripUserStatus")
+} 
 
-  upload(id: ID!, avatar: Upload!): User
-    @field(resolver: "Upload")
-}
-
+# Require Auth
 type Query {
-  fleets(orderBy: [OrderByClause] @orderBy): [Fleet!]! @paginate
-  fleet(id: ID @eq): Fleet @find
-
-  drivers: [Driver!]! @all
-  driver(id: ID @eq): Driver @find
-  fleetDrivers(fleet_id: ID @eq orderBy: [OrderByClause] @orderBy): [Driver] @paginate
-
-  vehicles(orderBy: [OrderByClause] @orderBy): [Vehicle!]! @paginate
-  driverVehicles(driver_id: ID! assigned: Boolean! orderBy: [OrderByClause] @orderBy): [Vehicle] 
-    @paginate(scopes: ["assignedOrNot"])
-  driverTrips(driver_id: ID! @eq): [PartnerTrip] @all
-
-  carTypes: [CarType!]! @all
-  carType(id: ID @eq): CarType @find
-  
-  carMakes: [CarMake!]! @all
-  carMake(id: ID @eq): CarMake @find
-
-  carModels(orderBy: [OrderByClause] @orderBy): [CarModel!]! @paginate
-  carModel(id: ID @eq): CarModel @find
-  carMakeModels(make_id: ID @eq): [CarModel] @all
-
-  partners: [Partner!]! @all
-  partner(id: ID @eq): Partner @find
-
-  trips: [PartnerTrip!]! @all
-  trip(id: ID @eq): PartnerTrip @find
-
-  roleTypes: [RoleType!]! @all
-  roleType(id: ID @eq): RoleType @find
-
-  roles: [Role!]! @all
-  role(id: ID @eq): Role @find 
-
-  partnerTrips(partner_id: ID! @eq): [PartnerTrip] @all
-  partnerUsers(partner_id: ID! @eq): [User] @all
-  partnerDrivers(partner_id: ID! assigned: Boolean!): [Driver] 
-    @field(resolver: "PartnerResolver@drivers")
-  partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [User] 
-    @field(resolver: "PartnerTripResolver@users")
-  partnerTripStations(input: GetPartnerTripStationsInput! @spread): [PartnerTripStation]
-    @field(resolver: "PartnerTripResolver@stations") 
-  partnerTripStationUsers(station_id: ID!): [User] 
-    @field(resolver: "PartnerTripResolver@stationUsers")
-
+  # User
   userLiveTrip(user_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@userLiveTrip")
-  driverLiveTrip(driver_id: ID!): LiveTripResponse!
-    @field(resolver: "PartnerTripResolver@driverLiveTrip")
-
   userSubscriptions(user_id: ID!): [PartnerTrip]
     @field(resolver: "PartnerTripResolver@userSubscriptions")
   userTrips(user_id: ID!): [ScheduledTrips]
     @field(resolver: "PartnerTripResolver@userTrips")
+  partnerUsers(partner_id: ID! @eq): [User] @all
+
+  # Fleet
+  fleets(orderBy: [OrderByClause] @orderBy): [Fleet!]! @paginate
+  fleet(id: ID @eq): Fleet @find
+  fleetDrivers(fleet_id: ID @eq orderBy: [OrderByClause] @orderBy): [Driver] @paginate
+
+  # Driver
+  drivers: [Driver!]! @all
+  driver(id: ID @eq): Driver @find
+
+  # Role
+  roles: [Role!]! @all
+  role(id: ID @eq): Role @find 
+
+  # Role Type
+  roleTypes: [RoleType!]! @all
+  roleType(id: ID @eq): RoleType @find
+
+  # Vehicles
+  vehicles(orderBy: [OrderByClause] @orderBy): [Vehicle!]! @paginate
+
+  # Car Make
+  carMakes: [CarMake!]! @all
+  carMake(id: ID @eq): CarMake @find
+
+  # Car Model
+  carModels(orderBy: [OrderByClause] @orderBy): [CarModel!]! @paginate
+  carModel(id: ID @eq): CarModel @find
+  carMakeModels(make_id: ID @eq): [CarModel] @all
+
+  # Car Type
+  carTypes: [CarType!]! @all
+  carType(id: ID @eq): CarType @find
+
+  # Document
+  documents(documentable_id: ID!, documentable_type: String!): [Document]
+    @field(resolver: "DocumentResolver")
+
+  # Driver Vehicle
+  driverVehicles(driver_id: ID! assigned: Boolean! orderBy: [OrderByClause] @orderBy): [Vehicle] 
+    @paginate(scopes: ["assignedOrNot"])
+
+  # Partner
+  partners: [Partner!]! @all
+  partner(id: ID @eq): Partner @find
+
+  # Partner Driver
+  partnerDrivers(partner_id: ID! assigned: Boolean!): [Driver] 
+    @field(resolver: "PartnerResolver@drivers")
+
+  # Trip
+  trips: [PartnerTrip!]! @all
+  trip(id: ID @eq): PartnerTrip @find
+  partnerTrips(partner_id: ID! @eq): [PartnerTrip] @all
+  driverLiveTrip(driver_id: ID!): LiveTripResponse!
+    @field(resolver: "PartnerTripResolver@driverLiveTrip")
   driverTrips(driver_id: ID!): [ScheduledTrips]
     @field(resolver: "PartnerTripResolver@driverTrips")
 
+  # Trip Station
+  partnerTripStations(input: GetPartnerTripStationsInput! @spread): [PartnerTripStation]
+    @field(resolver: "PartnerTripResolver@stations") 
+
+  # Station User
+  partnerTripStationUsers(station_id: ID!): [User] 
+    @field(resolver: "PartnerTripResolver@stationUsers")
+
+  # Trip User
+  partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [User] 
+    @field(resolver: "PartnerTripResolver@users")
+
+  # Trip Log
   getDriverLocation(log_id: String!): GetDriverLocationResponse!
     @field(resolver: "TripLogResolver@driverLocation")
   getPickedUsers(log_id: String!): [User]
@@ -194,10 +255,9 @@ type Query {
 #import partnerDriver.graphql
 #import partnerTrip.graphql
 #import partnerTripStation.graphql
-#import partnerTripSchedule.graphql
 #import partnerTripStationUser.graphql
 #import partnerTripUser.graphql
 #import roleType.graphql
 #import role.graphql
-#import file.graphql
 #import tripLog.graphql
+#import document.graphql

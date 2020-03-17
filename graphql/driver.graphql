@@ -1,5 +1,3 @@
-scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
-
 input CreateDriverInput {
   name: String! @rules(apply: ["required"])
   fleet_id: ID! @rules(apply: ["required"])
@@ -13,7 +11,7 @@ input CreateDriverInput {
 }
 
 input UpdateDriverInput {
-  id: ID!
+  id: ID! @rules(apply: ["required"])
   name: String
   email: String
   phone: String

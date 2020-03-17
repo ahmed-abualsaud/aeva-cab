@@ -15,4 +15,9 @@ class Fleet extends Model
     {
         return $this->hasMany(Driver::class);
     }
+
+    public function documents()
+    {
+        return $this->morphMany('App\Document', 'documentable');
+    }
 }

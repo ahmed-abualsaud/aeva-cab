@@ -1,6 +1,3 @@
-scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
-scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
-
 input CreatePartnerTripUserInput {
   partner_trip_id: ID! @rules(apply: ["required"])
   partner_user_id: [ID!]! @rules(apply: ["required"])

@@ -1,5 +1,3 @@
-scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
-
 input CreateVehicleInput {
   license_plate: String! @rules(apply: ["required", "unique:vehicles,license_plate"])
   license_expires_on: Date! @rules(apply: ["required"])
@@ -10,7 +8,7 @@ input CreateVehicleInput {
 }
 
 input UpdateVehicleInput {
-  id: ID!
+  id: ID! @rules(apply: ["required"])
   license_plate: String
   license_expires_on: Date
   car_type_id: ID

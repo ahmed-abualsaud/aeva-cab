@@ -4,7 +4,7 @@ input CreateCarModelInput {
 }
 
 input UpdateCarModelInput {
-  id: ID!
+  id: ID! @rules(apply: ["required"])
   name: String
   make_id: ID
 }

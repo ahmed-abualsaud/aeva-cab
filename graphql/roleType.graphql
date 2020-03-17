@@ -3,7 +3,7 @@ input CreateRoleTypeInput {
 }
 
 input UpdateRoleTypeInput {
-  id: ID!
+  id: ID! @rules(apply: ["required"])
   name: String
 }
 

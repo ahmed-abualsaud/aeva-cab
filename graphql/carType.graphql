@@ -3,7 +3,7 @@ input CreateCarTypeInput {
 }
 
 input UpdateCarTypeInput {
-  id: ID!
+  id: ID! @rules(apply: ["required"])
   name: String
 }
 

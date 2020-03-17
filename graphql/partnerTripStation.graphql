@@ -1,5 +1,3 @@
-scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
-
 input CreatePartnerTripStationInput {
   name: String
   latitude: String! @rules(apply: ["required"])

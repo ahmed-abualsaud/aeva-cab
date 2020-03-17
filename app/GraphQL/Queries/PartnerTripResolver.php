@@ -98,7 +98,7 @@ class PartnerTripResolver
         $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.partner_trip_id')
             ->where('partner_trip_users.partner_user_id', $args['user_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->select('partner_trips.id','partner_trips.name')
+            ->select('partner_trips.id','partner_trips.*')
             ->get();
 
         
@@ -109,7 +109,7 @@ class PartnerTripResolver
     {
         $driverTrips = PartnerTrip::where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->select('id', 'name')
+            ->select('id', 'partner_trips.*')
             ->get();
 
         return $this->scheduledTrips($driverTrips);
@@ -164,12 +164,18 @@ class PartnerTripResolver
             foreach($days as $day) {
                 if ($trip->schedule->$day) {
                     $date = date('Y-m-d', strtotime($day)).' '.$trip->schedule->$day;
+                    $tripDate = Carbon::parse($date);
+                    $now = Carbon::now();
+                    $diff = $tripDate->diffInMinutes($now);
+
                     $arr[] = [
                         "id" => $trip->id,
                         "name" => $trip->name,
                         "dayName" => $day,
                         "date" => $date,
-                        "startsAt" => Carbon::parse($date)->diffForHumans()
+                        "startsAt" => Carbon::parse($date)->diffForHumans(),
+                        "flag" => (($diff < 10) ? true : false),
+                        "trip" => $trip
                     ];
                 }
             }

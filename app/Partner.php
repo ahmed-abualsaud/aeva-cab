@@ -50,4 +50,9 @@ class Partner extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(PartnerTrip::class);
     }
+
+    public function documents()
+    {
+        return $this->morphMany('App\Document', 'documentable');
+    }
 }

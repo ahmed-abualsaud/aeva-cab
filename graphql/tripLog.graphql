@@ -1,5 +1,3 @@
-scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
-
 input StartTripLogInput {
   trip_id: ID! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])

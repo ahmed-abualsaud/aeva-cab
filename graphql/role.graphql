@@ -19,7 +19,7 @@ input CreateRoleInput {
 }
 
 input UpdateRoleInput {
-  id: ID!
+  id: ID! @rules(apply: ["required"])
   name: String
   email: String
   phone: String
