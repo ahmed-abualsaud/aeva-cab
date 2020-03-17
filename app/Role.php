@@ -40,9 +40,4 @@ class Role extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(RoleType::class);
     }
-
-    public function file()
-    {
-        return $this->belongsTo(File::class);
-    }
 }

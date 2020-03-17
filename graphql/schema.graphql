@@ -2,7 +2,7 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
 
-# Does not require Auth
+# Mutations that does not require Auth
 type Mutation {
   # Admin Auth
   qruzMemberLogin(input: QruzMemberLoginInput! @spread): QruzMemberAuthPayload! 
@@ -33,7 +33,7 @@ type Mutation {
     @field(resolver: "PartnerResolver@login")
 }
 
-# Require Auth
+# Mutations that require Auth
 extend type Mutation {
   # User
   updateUser(input: UpdateUserInput! @spread): UserPayload 
@@ -87,7 +87,7 @@ extend type Mutation {
   deleteCarType(id: ID!): CarType @delete
 
   # Document
-  uploadDocument(input: UploadDocumentInput! @spread): Document
+  uploadDocument(input: UploadDocumentInput @spread): Document
     @field(resolver: "Upload@document")
   deleteDocument(id: ID!): String
     @field(resolver: "Upload@deleteDocument")

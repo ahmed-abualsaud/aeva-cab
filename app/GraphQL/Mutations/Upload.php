@@ -86,8 +86,9 @@ class Upload
         $url = $this->uploadFile($file);
         $input = collect($args)->except(['file', 'directive'])->toArray();
         $input['url'] = $url;
+
         
-        if (!array_key_exists('name', $args)) {
+        if (!$input['name']) {
             $input['name'] = $file->getClientOriginalName();
         }
 
