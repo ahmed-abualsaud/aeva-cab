@@ -2,11 +2,11 @@ input CreateDriverInput {
   name: String! @rules(apply: ["required"])
   fleet_id: ID! @rules(apply: ["required"])
   phone: String! @rules(apply: ["required", "unique:drivers,phone"])
-  password: String! @rules(apply: ["required"]) @bcrypt
   email: String  @rules(apply: ["email", "unique:drivers,email"])
+  password: String
   license_no: String
   license_expires_on: Date
-  avatar: String
+  avatar: Upload
   status: Boolean
 }
 
@@ -18,7 +18,7 @@ input UpdateDriverInput {
   fleet_id: ID
   license_no: String
   license_expires_on: Date
-  avatar: String
+  avatar: Upload
   status: Boolean
 }
 

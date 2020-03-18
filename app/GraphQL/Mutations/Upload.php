@@ -7,12 +7,15 @@ use \App\Driver;
 use \App\Partner;
 use \App\Fleet;
 use \App\Document;
+use \App\Traits\UploadOneFile;
+use \App\Traits\DeleteOneFile;
 use Illuminate\Support\Facades\Storage;
 
 class Upload
 {
+    use UploadOneFile;
+    use DeleteOneFile;
 
-    protected $storageDisk = 'azure';
     /**
      * Upload a file, store it on the server and return the model.
      *
@@ -28,8 +31,8 @@ class Upload
             throw new \Exception('User with the provided ID is not found. ' . $e->getMessage());
         }
 
-        if ($user->avatar) $this->deleteFile($user->avatar, 'avatars');
-        $path = $this->uploadFile($args['avatar'], 'avatars');
+        if ($user->avatar) $this->deleteOneFile($user->avatar, 'avatars');
+        $path = $this->uploadOneFile($args['avatar'], 'avatars');
         $user->update(['avatar' => $path]);
 
         return $user;
@@ -43,8 +46,8 @@ class Upload
             throw new \Exception('Fleet with the provided ID is not found. ' . $e->getMessage());
         }
 
-        if ($fleet->avatar) $this->deleteFile($fleet->avatar, 'avatars');
-        $path = $this->uploadFile($args['avatar'], 'avatars');
+        if ($fleet->avatar) $this->deleteOneFile($fleet->avatar, 'avatars');
+        $path = $this->uploadOneFile($args['avatar'], 'avatars');
         $fleet->update(['avatar' => $path]);
 
         return $fleet;
@@ -58,8 +61,8 @@ class Upload
             throw new \Exception('Driver with the provided ID is not found. ' . $e->getMessage());
         }
 
-        if ($driver->avatar) $this->deleteFile($driver->avatar, 'avatars');
-        $path = $this->uploadFile($args['avatar'], 'avatars');
+        if ($driver->avatar) $this->deleteOneFile($driver->avatar, 'avatars');
+        $path = $this->uploadOneFile($args['avatar'], 'avatars');
         $driver->update(['avatar' => $path]);
 
         return $driver;
@@ -73,8 +76,8 @@ class Upload
             throw new \Exception('Partner with the provided ID is not found. ' . $e->getMessage());
         }
 
-        if ($partner->logo) $this->deleteFile($partner->logo, 'avatars');
-        $path = $this->uploadFile($args['logo'], 'avatars');
+        if ($partner->logo) $this->deleteOneFile($partner->logo, 'avatars');
+        $path = $this->uploadOneFile($args['logo'], 'avatars');
         $partner->update(['logo' => $path]);
 
         return $partner;
@@ -83,7 +86,7 @@ class Upload
     public function document($root, array $args)
     {
         $file = $args['file'];
-        $url = $this->uploadFile($file, 'documents');
+        $url = $this->uploadOneFile($file, 'documents');
         $input = collect($args)->except(['file', 'directive'])->toArray();
         $input['url'] = $url;
         
@@ -104,32 +107,9 @@ class Upload
             throw new \Exception('Document with the provided ID is not found. ' . $e->getMessage());
         }
 
-        $this->deleteFile($document->url, 'documents');
+        $this->deleteOneFile($document->url, 'documents');
         $document->delete();
 
         return "Document has been deleted.";
-    }
-
-    protected function uploadFile($file, $folder)
-    {
-        try {
-            $fileHash = str_replace('.' . $file->extension(), '', $file->hashName());
-            $fileName = $fileHash . '.' . $file->getClientOriginalExtension();
-            $uploadedFile = Storage::disk($this->storageDisk)->putFileAs($folder, $file, $fileName);
-            return env('AZURE_STORAGE_URL') . '/' . $uploadedFile;
-        } catch(\Exception $e) {
-            throw new \Exception('We could not able to upload this file. ' . $e->getMessage());
-        }
-    }
-
-    protected function deleteFile($file, $folder)
-    {
-        try {
-            $fileName = explode($folder.'/', $file)[1];
-            $exists = Storage::disk($this->storageDisk)->exists($folder.'/'.$fileName);
-            if ($exists) Storage::disk($this->storageDisk)->delete($folder.'/'.$fileName);
-        } catch(\Exception $e) {
-            // Do nothing. Simply, file does not exist.
-        }
     }
 }

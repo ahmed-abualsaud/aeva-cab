@@ -1,8 +1,8 @@
 input CreateFleetInput {
   name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["email", "unique:fleets,email"])
-  phone: String @rules(apply: ["unique:fleets,phone"])
-  avatar: String
+  phone: String! @rules(apply: ["required", "unique:fleets,phone"])
+  email: String @rules(apply: ["email", "unique:fleets,email"])
+  avatar: Upload
   status: Boolean
   expires_on: Date
   max_no_of_cars: Int
@@ -13,7 +13,7 @@ input UpdateFleetInput {
   name: String
   email: String
   phone: String
-  avatar: String
+  avatar: Upload
   status: Boolean
   expires_on: Date
   max_no_of_cars: Int

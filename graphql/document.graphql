@@ -19,4 +19,6 @@ type Document {
   expires_on: String
   documentable_id: ID
   documentable_type: String
+  updated_at: DateTime
+  modified: String
 }

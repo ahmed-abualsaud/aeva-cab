@@ -43,15 +43,19 @@ extend type Mutation {
     @field(resolver: "Upload@userAvatar")
 
   # Fleet
-  createFleet(input: CreateFleetInput! @spread): Fleet @create
-  updateFleet(input: UpdateFleetInput! @spread): Fleet @update @updateFleetValidation
+  createFleet(input: CreateFleetInput! @spread): Fleet
+    @field(resolver: "FleetResolver@create")
+  updateFleet(input: UpdateFleetInput! @spread): Fleet 
+    @field(resolver: "FleetResolver@update") @updateFleetValidation
   deleteFleet(id: ID!): Fleet @delete
   uploadFleetAvatar(id: ID!, avatar: Upload!): Fleet
     @field(resolver: "Upload@fleetAvatar")
 
   # Driver
-  createDriver(input: CreateDriverInput! @spread): Driver @create
-  updateDriver(input: UpdateDriverInput! @spread): Driver @update @updateDriverValidation
+  createDriver(input: CreateDriverInput! @spread): Driver 
+    @field(resolver: "DriverResolver@create")
+  updateDriver(input: UpdateDriverInput! @spread): Driver 
+    @field(resolver: "DriverResolver@update") @updateDriverValidation
   deleteDriver(id: ID!): Driver @delete
   uploadDriverAvatar(id: ID!, avatar: Upload!): Driver
     @field(resolver: "Upload@driverAvatar")
@@ -67,8 +71,10 @@ extend type Mutation {
   deleteRoleType(id: ID!): RoleType @delete
 
   # Vehicles
-  createVehicle(input: CreateVehicleInput! @spread): Vehicle @create
-  updateVehicle(input: UpdateVehicleInput! @spread): Vehicle @update @updateVehicleValidation
+  createVehicle(input: CreateVehicleInput! @spread): Vehicle 
+    @field(resolver: "VehicleResolver@create")
+  updateVehicle(input: UpdateVehicleInput! @spread): Vehicle 
+    @field(resolver: "VehicleResolver@update") @updateVehicleValidation
   deleteVehicle(id: ID!): Vehicle @delete
 
   # Car Make
@@ -100,8 +106,10 @@ extend type Mutation {
     @field(resolver: "DriverResolver@unassignVehicle")
 
   # Partner
-  createPartner(input: CreatePartnerInput! @spread): Partner @create
-  updatePartner(input: UpdatePartnerInput! @spread): Partner @update @updatePartnerValidation
+  createPartner(input: CreatePartnerInput! @spread): Partner
+    @field(resolver: "PartnerResolver@create")
+  updatePartner(input: UpdatePartnerInput! @spread): Partner 
+    @field(resolver: "PartnerResolver@update") @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
   uploadPartnerLogo(id: ID!, logo: Upload!): Partner
     @field(resolver: "Upload@partnerLogo")
