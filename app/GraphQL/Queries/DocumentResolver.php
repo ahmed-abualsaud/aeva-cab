@@ -21,7 +21,6 @@ class DocumentResolver
     {
         $documents = Document::where('documentable_id', $args['documentable_id'])
             ->where('documentable_type', $args['documentable_type'])
-            ->selectRaw("documents.*, DATE_FORMAT(updated_at, '%b %d, %Y at %r') AS modified")
             ->get();
 
         return $documents;
