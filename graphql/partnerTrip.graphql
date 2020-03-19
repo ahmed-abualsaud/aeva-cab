@@ -5,6 +5,8 @@ input CreatePartnerTripInput {
   vehicle_id: ID! @rules(apply: ["required"])
   start_date: Date! @rules(apply: ["required"])
   end_date: Date! @rules(apply: ["required"])
+  d_latitude: String
+  d_longitude: String
   ride_car_share: Boolean
   location: String
   return_time: String
@@ -28,6 +30,8 @@ input UpdatePartnerTripInput {
   return_time: String
   start_date: Date
   end_date: Date
+  d_latitude: String
+  d_longitude: String
   saturday: String
   sunday: String
   monday: String
@@ -73,6 +77,8 @@ type PartnerTrip {
   start_date: Date
   end_date: Date
   subscription_code: String
+  d_latitude: String
+  d_longitude: String
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo

@@ -26,38 +26,32 @@ class PartnerTripResolver
      */
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        try {
-            $tripInput = Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'location', 'start_date', 'end_date', 'return_time']);
-            $newTrip = PartnerTrip::create($tripInput);
-            $subscriptionCode = 'PRTNR' . $newTrip->partner_id . 'TRP' . $newTrip->id;
-            $newTrip->update(['subscription_code' => $subscriptionCode]);
-        } catch (\Exception $e) {
-            throw new \Exception('Trip not created. ' . $e->getMessage());
-        }
+        $tripInput = $this->tripInput($rootValue, $args, $context, $resolveInfo);
+        $newTrip = PartnerTrip::create($tripInput);
+
+        $subscriptionCode = 'PRTNR' . $newTrip->partner_id . 'TRP' . $newTrip->id;
+        $newTrip->update(['subscription_code' => $subscriptionCode]);
         
-        try {
-            $scheduleInput = Arr::only($args, ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
-            $scheduleInput['partner_trip_id'] = $newTrip->id;
-            PartnerTripSchedule::create($scheduleInput);
-        } catch (\Exception $e) {
-            throw new \Exception('Trip schedule not created. ' . $e->getMessage());
-        }
-    
+        $scheduleInput = $this->scheduleInput($rootValue, $args, $context, $resolveInfo);
+
+        $scheduleInput['partner_trip_id'] = $newTrip->id;
+        PartnerTripSchedule::create($scheduleInput);
+
         return $newTrip;
     }
 
     public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
+        $tripInput = $this->tripInput($rootValue, $args, $context, $resolveInfo);
         try {
-            $tripInput = Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'location', 'start_date', 'end_date', 'return_time']);
             $trip = PartnerTrip::findOrFail($args['id']);
             $trip->update($tripInput);
         } catch (\Exception $e) {
-            throw new \Exception('Trip not updated. Something went wrong.');
+            throw new \Exception('Trip with the provided ID is not found.');
         }
         
+        $scheduleInput = $this->scheduleInput($rootValue, $args, $context, $resolveInfo);
         try {
-            $scheduleInput = Arr::only($args, ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
             $tripSchedule = PartnerTripSchedule::findOrFail($trip->schedule->id);
             $tripSchedule->update($scheduleInput);
         } catch (ModelNotFoundException $e) {
@@ -128,17 +122,23 @@ class PartnerTripResolver
 
     public function unsubscribeUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-      try {
         PartnerTripUser::where('partner_trip_id', $args['partner_trip_id'])
         ->whereIn('partner_user_id', $args['partner_user_id'])
         ->delete();
-      } catch (\Exception $e) {
-        throw new \Exception('Subscription cancellation faild. ' . $e->getMessage());
-      }
 
       return [
         "status" => true,
         "message" => "Selected subscriptions have been cancelled successfully."
       ];
+    }
+
+    protected function tripInput($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        return Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'location', 'start_date', 'end_date', 'return_time', 'd_latitude', 'd_longitude']);
+    }
+
+    protected function scheduleInput($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        return Arr::only($args, ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
     }
 }
