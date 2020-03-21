@@ -4,6 +4,7 @@ namespace App\GraphQL\Mutations;
 
 use App\PartnerTripStation;
 use App\PartnerTripStationUser;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -61,7 +62,7 @@ class PartnerTripStationResolver
         try {
             $userCurrentStation = PartnerTripStationUser::where('trip_id', $args['trip_id'])->where('user_id', $station['created_by'])->firstOrFail();
             $userCurrentStation->update(['station_id' => $args['station_id']]);
-        } catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) { 
             PartnerTripStationUser::create([
                 'trip_id' => $args['trip_id'],
                 'station_id' => $args['station_id'],
