@@ -37,5 +37,6 @@ type PartnerTripStation {
   longitude: String
   created_by: User @belongsTo
   accepted_at: DateTime
+  state: String
   users: [User] @belongsToMany
 }

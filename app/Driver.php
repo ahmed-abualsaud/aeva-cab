@@ -53,4 +53,10 @@ class Driver extends Authenticatable implements JWTSubject
     {
         return $this->morphMany('App\Document', 'documentable');
     }
+
+    public function deviceTokens()
+    {
+        return $this->morphMany(DeviceToken::class, 'tokenable');
+
+    }
 } 

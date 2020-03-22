@@ -3,8 +3,9 @@
 namespace App\GraphQL\Mutations;
 
 use App\User;
-use \App\Traits\UploadOneFile;
-use \App\Traits\DeleteOneFile;
+use App\Traits\UploadOneFile;
+use App\Traits\DeleteOneFile;
+use App\DeviceToken;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -30,9 +31,9 @@ class UserResolver
      */
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $input = collect($args)->except(['directive', 'avatar'])->toArray();
+        $input = collect($args)->except(['directive', 'avatar', 'platform', 'device_id'])->toArray();
 
-        if ($args['avatar']) {
+        if (array_key_exists('avatar', $args) && $args['avatar']) {
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $input['avatar'] = $url;
         }
@@ -48,8 +49,12 @@ class UserResolver
         $input['password'] = Hash::make($password);
 
         $user = User::create($input);
-        $token = null;
 
+        if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
+            $this->createDeviceToken($rootValue, $args, $context, $resolveInfo, $user->id);
+        }
+
+        $token = null;
         if (!array_key_exists('partner_id', $args)) {
             Auth::onceUsingId($user->id);
             $token = JWTAuth::fromUser($user);
@@ -71,7 +76,7 @@ class UserResolver
             throw new \Exception('The provided user ID is not found.');
         }
 
-        if ($args['avatar']) {
+        if (array_key_exists('avatar', $args) && $args['avatar']) {
             if ($user->avatar) $this->deleteOneFile($user->avatar, 'avatars');
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $input['avatar'] = $url;
@@ -92,6 +97,14 @@ class UserResolver
         }
 
         $user = auth('user')->user();
+
+        if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
+            try {
+                DeviceToken::where('device_id', $args['device_id'])->firstOrFail();
+            } catch (ModelNotFoundException $e) {
+                $this->createDeviceToken($rootValue, $args, $context, $resolveInfo, $user->id);
+            }
+        }
 
         return [
             'access_token' => $token,
@@ -117,6 +130,14 @@ class UserResolver
             'provider_id' => $userData->getId(),
             'avatar'      => $userData->getAvatar(),
             ]);
+        }
+
+        if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
+            try {
+                DeviceToken::where('device_id', $args['device_id'])->firstOrFail();
+            } catch (ModelNotFoundException $e) {
+                $this->createDeviceToken($rootValue, $args, $context, $resolveInfo, $user->id);
+            }
         }
 
         Auth::onceUsingId($user->id);
@@ -174,5 +195,13 @@ class UserResolver
             'message' => 'Password changed successfully.'
         ];
 
+    }
+
+    protected function createDeviceToken($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo, $user_id)
+    {
+        $tokenInput = collect($args)->only(['platform', 'device_id'])->toArray();
+        $tokenInput['tokenable_id'] = $user_id;
+        $tokenInput['tokenable_type'] = 'App\User';
+        DeviceToken::create($tokenInput);
     }
 }

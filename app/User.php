@@ -51,5 +51,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Partner::class);
     }
+
+    public function deviceTokens()
+    {
+        return $this->morphMany(DeviceToken::class, 'tokenable');
+    }
 }
  

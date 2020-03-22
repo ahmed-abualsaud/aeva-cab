@@ -25,6 +25,8 @@ input UpdateDriverInput {
 input DriverLoginInput {
   emailOrPhone: String! @rules(apply: ["required"])
   password: String! @rules(apply: ["required"])
+  platform: String
+  device_id: String
 }
 
 type DriverAuthPayload {
@@ -44,4 +46,5 @@ type Driver {
   fleet: Fleet! @belongsTo
   trips: [PartnerTrip] @hasMany
   vehicles: [Vehicle] @hasMany
+  deviceTokens: [DeviceToken] @morphMany
 }

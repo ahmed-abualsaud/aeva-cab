@@ -33,7 +33,7 @@ class PartnerTrip extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'partner_trip_users', 'partner_trip_id', 'partner_user_id');
+        return $this->belongsToMany(User::class, 'partner_trip_users', 'partner_trip_id', 'partner_user_id')->whereNotNull('subscription_verified_at');
     }
 
     public function schedule()

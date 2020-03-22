@@ -2,15 +2,14 @@
 
 namespace App\GraphQL\Mutations;
 
-use \App\TripLog;
-use \App\PartnerTrip;
-use \App\PartnerTripStationUser;
-use App\Notifications\NearYou;
+use App\TripLog;
+use App\PartnerTrip;
+use App\PartnerTripStationUser;
+use App\Jobs\PushNotification;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Notification;
 
 class TripLogResolver
 {
@@ -22,7 +21,16 @@ class TripLogResolver
             if ($trip->status) {
                 throw new \Exception('Trip has already started.');
             }
+
             $logID = uniqid() . 'T' . $args['trip_id'];
+
+            $notificationMsg = $trip->name . ' has started.';
+            $data = [
+                "status" => "TRIP_STARTED",
+                "logID" => $logID
+            ];
+            PushNotification::dispatch($this->getTokens($trip), $notificationMsg, $data);
+
             $trip->update(['status' => true, 'log_id' => $logID]);
             $input = Arr::except($args, ['directive']);
             $input['status'] = 'STARTED';
@@ -38,19 +46,18 @@ class TripLogResolver
     public function nearYou($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         if (!array_key_exists('station_id', $args)) {
-            throw new \Exception('Station ID is required but not provided.');
+            throw new \Exception('Station ID is required, but not provided.');
         }
 
-        $stationUsers = PartnerTripStationUser::where('station_id', $args['station_id'])
-            ->join('users', 'users.id', '=', 'partner_trip_station_users.user_id')
-            ->select('users.phone','users.email')
-            ->get();
-
-        $emails = $stationUsers->pluck('email');
-        $phones = $stationUsers->pluck('phone');
-
-        // Notification::route('mail', $emails)
-        //     ->notify(new NearYou());
+        $tokens = PartnerTripStationUser::where('station_id', $args['station_id'])
+            ->where('device_tokens.tokenable_type', 'App\User')
+            ->join('device_tokens', 'device_tokens.tokenable_id', '=', 'partner_trip_station_users.user_id')
+            ->select('device_tokens.device_id')
+            ->pluck('device_id');
+        
+        $notificationMsg = 'Our driver is so close to you, kindly stand by.';
+        $data = ["status" => "NEAR_YOU"];
+        PushNotification::dispatch($tokens, $notificationMsg, $data);
 
         $input = collect($args)->except(['directive', 'station_id'])->toArray();
         $input['status'] = 'NEAR_YOU';
@@ -66,6 +73,11 @@ class TripLogResolver
             if (!$trip->status) {
                 throw new \Exception('Trip has already ended.');
             }
+
+            $notificationMsg = 'We have arrived';
+            $data = ["status" => "TRIP_ENDED"];
+            PushNotification::dispatch($this->getTokens($trip), $notificationMsg, $data);
+
             $trip->update(['status' => false, 'log_id' => null]);
             $input = Arr::except($args, ['directive']);
             $input['status'] = 'ARRIVED';
@@ -74,13 +86,13 @@ class TripLogResolver
             throw new \Exception('We could not find a trip with the provided ID.');
         }
 
-        return 'Trip ended.';
+        return 'Trip has ended.';
     }
 
     public function pickUsersUp($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $data = []; 
-        $arr = [];
+        $data = array(); 
+        $arr = array();
 
         foreach($args['users'] as $user) {
             $arr['log_id'] = $args['log_id'];
@@ -129,6 +141,18 @@ class TripLogResolver
         }
         
         return 'Your status has been changed into ' . $args['status'];
+    }
+
+    protected function getTokens($trip)
+    {
+        $tokens = array();
+        foreach ($trip->users as $user) {
+            $deviceIDs = $user->deviceTokens->pluck('device_id');
+            array_push($tokens, $deviceIDs);
+        }
+        $tokens = Arr::collapse($tokens);
+
+        return array_filter($tokens);
     }
 
 }
