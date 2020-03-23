@@ -56,24 +56,6 @@ class PartnerTripResolver
         return $users;
     }
 
-    public function stations($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
-    {
-        $status = $args['status'];
-
-        switch($status) {
-            case 'accepted':
-                $stations = PartnerTripStation::where('partner_trip_id', $args['partner_trip_id'])
-                    ->whereNotNull('accepted_at')->get();
-                break;
-            case 'notAccepted':
-                $stations = PartnerTripStation::where('partner_trip_id', $args['partner_trip_id'])
-                    ->whereNull('accepted_at')->get();
-                break;
-        }
-
-        return $stations;
-    }
-
     public function stationUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $stationUsers = PartnerTripStationUser::where('station_id', $args['station_id'])

@@ -131,7 +131,7 @@ extend type Mutation {
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
-  acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): AcceptPartnerTripStationResponse! 
+  acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): PartnerTripStation
     @field(resolver: "PartnerTripStationResolver@acceptStation")
 
   # Station User
@@ -233,8 +233,7 @@ type Query {
     @field(resolver: "PartnerTripResolver@driverTrips")
 
   # Trip Station
-  partnerTripStations(input: GetPartnerTripStationsInput! @spread): [PartnerTripStation]
-    @field(resolver: "PartnerTripResolver@stations") 
+  partnerTripStations(partner_trip_id: ID! @eq): [PartnerTripStation] @all
 
   # Station User
   partnerTripStationUsers(station_id: ID!): [User] 

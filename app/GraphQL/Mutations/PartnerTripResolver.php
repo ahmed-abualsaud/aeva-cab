@@ -134,7 +134,7 @@ class PartnerTripResolver
 
     protected function tripInput($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        return Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'location', 'start_date', 'end_date', 'return_time', 'd_latitude', 'd_longitude']);
+        return Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'start_date', 'end_date', 'return_time']);
     }
 
     protected function scheduleInput($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)

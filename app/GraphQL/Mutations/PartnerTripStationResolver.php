@@ -54,9 +54,9 @@ class PartnerTripStationResolver
     {
         try {
             $station = PartnerTripStation::where('id', $args['station_id'])->firstOrFail();
-            $station->update(['accepted_at' => now()]);
+            $station->update(['state' => 'PICKABLE', 'accepted_at' => now()]);
         } catch (\Exception $e) {
-            throw new \Exception('No station with the provided ID is found.');
+            throw new \Exception('Station with the provided ID is not found.');
         }
 
         try {
@@ -70,9 +70,6 @@ class PartnerTripStationResolver
             ]);
         }
 
-        return [
-            "status" => true,
-            "message" => "Selected station has been accepted."
-        ];
+        return $station;
     }
 }
