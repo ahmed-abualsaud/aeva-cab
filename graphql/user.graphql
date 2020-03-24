@@ -8,7 +8,7 @@ input CreateUserInput {
   partner_id: ID
   position: String
   avatar: Upload
-  platform: String
+  platform: String @rules(apply: ["in:android,ios"])
   device_id: String
 }
 
@@ -30,14 +30,14 @@ input UserPhoneVerificationInput {
 input UserLoginInput {
   email: String! @rules(apply: ["required", "email"])
   password: String! @rules(apply: ["required"])
-  platform: String
+  platform: String @rules(apply: ["in:android,ios"])
   device_id: String
 }
 
 input UserSocialLoginInput {
   provider: String! @rules(apply: ["required", "in:facebook,google"])
   token: String! @rules(apply: ["required"])
-  platform: String
+  platform: String @rules(apply: ["in:android,ios"])
   device_id: String
 }
 

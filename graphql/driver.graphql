@@ -25,7 +25,7 @@ input UpdateDriverInput {
 input DriverLoginInput {
   emailOrPhone: String! @rules(apply: ["required"])
   password: String! @rules(apply: ["required"])
-  platform: String
+  platform: String @rules(apply: ["in:android,ios"])
   device_id: String
 }
 

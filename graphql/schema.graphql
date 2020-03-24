@@ -193,6 +193,7 @@ type Query {
 
   # Vehicles
   vehicles(orderBy: [OrderByClause] @orderBy): [Vehicle!]! @paginate
+  vehicle(id: ID @eq): Vehicle @find
 
   # Car Make
   carMakes: [CarMake!]! @all
