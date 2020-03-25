@@ -45,7 +45,6 @@ class UserResolver
         } else {
             throw new \Exception('Password or phone is required but not provided.');
         }
-
         $input['password'] = Hash::make($password);
 
         $user = User::create($input);
@@ -55,7 +54,10 @@ class UserResolver
         }
 
         $token = null;
-        if (!array_key_exists('partner_id', $args)) {
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            $employeeID = 'P0' . $args['partner_id'] . 'U0' . $user->id;
+            User::where('id', $user->id)->update(['employee_id' => $employeeID]);
+        } else {
             Auth::onceUsingId($user->id);
             $token = JWTAuth::fromUser($user);
         }
@@ -72,7 +74,7 @@ class UserResolver
 
         try {
             $user = User::findOrFail($args['id']);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
             throw new \Exception('The provided user ID is not found.');
         }
 
@@ -80,6 +82,10 @@ class UserResolver
             if ($user->avatar) $this->deleteOneFile($user->avatar, 'avatars');
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $input['avatar'] = $url;
+        }
+
+        if (array_key_exists('phone', $args) && $args['phone'] && is_null($user->phone)) {
+            $input['phone_verified_at'] = now();
         }
 
         $user->update($input);

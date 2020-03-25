@@ -3,7 +3,7 @@
 namespace App\GraphQL\Queries;
 
 use \App\TripLog;
-use \App\PartnerTripStationUser;
+use \App\PartnerTripUser;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -49,8 +49,8 @@ class TripLogResolver
 
     public function pickedAndNotpickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $users = PartnerTripStationUser::where('station_id', $args['station_id'])
-            ->join('users', 'users.id', '=', 'partner_trip_station_users.user_id')
+        $users = PartnerTripUser::where('station_id', $args['station_id'])
+            ->join('users', 'users.id', '=', 'partner_trip_users.user_id')
             ->leftJoin('trip_logs', function ($join) use ($args) {
                 $join->on('users.id', '=', 'trip_logs.user_id')
                     ->where('trip_logs.log_id', $args['log_id'])

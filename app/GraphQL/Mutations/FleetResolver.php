@@ -6,6 +6,7 @@ use \App\Fleet;
 use \App\Driver;
 use \App\Traits\UploadOneFile;
 use \App\Traits\DeleteOneFile;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Facades\Hash;
@@ -49,7 +50,7 @@ class FleetResolver
 
         try {
             $fleet = Fleet::findOrFail($args['id']);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
             throw new \Exception('The provided fleet ID is not found.');
         }
 

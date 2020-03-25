@@ -8,6 +8,7 @@ use \App\Traits\DeleteOneFile;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class VehicleResolver 
 {
@@ -42,7 +43,7 @@ class VehicleResolver
 
         try {
             $vehicle = Vehicle::findOrFail($args['id']);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
             throw new \Exception('The provided vehicle ID is not found.');
         }
 

@@ -2,14 +2,15 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\PartnerTrip;
-use App\PartnerTripSchedule;
-use App\PartnerTripUser;
 use App\User;
+use App\PartnerTrip;
+use App\PartnerTripUser;
+use App\PartnerTripSchedule;
 use App\Notifications\TripSubscription;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Notification;
 
@@ -29,12 +30,12 @@ class PartnerTripResolver
         $tripInput = $this->tripInput($rootValue, $args, $context, $resolveInfo);
         $newTrip = PartnerTrip::create($tripInput);
 
-        $subscriptionCode = 'PRTNR' . $newTrip->partner_id . 'TRP' . $newTrip->id;
+        $subscriptionCode = Str::random(4) . 'P' . $newTrip->partner_id . 'T' . $newTrip->id;
         $newTrip->update(['subscription_code' => $subscriptionCode]);
-        
+         
         $scheduleInput = $this->scheduleInput($rootValue, $args, $context, $resolveInfo);
 
-        $scheduleInput['partner_trip_id'] = $newTrip->id;
+        $scheduleInput['trip_id'] = $newTrip->id;
         PartnerTripSchedule::create($scheduleInput);
 
         return $newTrip;
@@ -46,7 +47,7 @@ class PartnerTripResolver
         try {
             $trip = PartnerTrip::findOrFail($args['id']);
             $trip->update($tripInput);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
             throw new \Exception('Trip with the provided ID is not found.');
         }
         
@@ -55,7 +56,7 @@ class PartnerTripResolver
             $tripSchedule = PartnerTripSchedule::findOrFail($trip->schedule->id);
             $tripSchedule->update($scheduleInput);
         } catch (ModelNotFoundException $e) {
-            $scheduleInput['partner_trip_id'] = $trip->id;
+            $scheduleInput['trip_id'] = $trip->id;
             PartnerTripSchedule::create($scheduleInput);
         }
     
@@ -64,7 +65,7 @@ class PartnerTripResolver
 
     public function inviteUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $users = User::select(['phone', 'email'])->whereIn('id', $args['partner_user_id'])->get();
+        $users = User::select(['phone', 'email'])->whereIn('id', $args['user_id'])->get();
         $phones = $users->pluck('phone');
         $emails = $users->pluck('email');
 
@@ -74,9 +75,9 @@ class PartnerTripResolver
         $data = [];
         $arr = [];
 
-        foreach($args['partner_user_id'] as $val) {
-            $arr['partner_trip_id'] = $args['partner_trip_id'];
-            $arr['partner_user_id'] = $val;
+        foreach($args['user_id'] as $val) {
+            $arr['trip_id'] = $args['trip_id'];
+            $arr['user_id'] = $val;
             array_push($data, $arr);
         } 
 
@@ -101,20 +102,25 @@ class PartnerTripResolver
         }
         
         try {
-            $tripUser = PartnerTripUser::where('partner_trip_id', $trip['id'])
-                ->where('partner_user_id', $args['user_id'])->firstOrFail();
+            $tripUser = PartnerTripUser::where('trip_id', $trip['id'])
+                ->where('user_id', $args['user_id'])->firstOrFail();
             if ($tripUser->subscription_verified_at) {
                 throw new \Exception('You have already subscribed for this trip.');
             } else {
                 $tripUser->update(['subscription_verified_at' => now()]);
             }
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
             PartnerTripUser::create([
-                'partner_trip_id' => $trip['id'],
-                'partner_user_id' => $args['user_id'],
+                'trip_id' => $trip['id'],
+                'user_id' => $args['user_id'],
                 'subscription_verified_at' => now()
             ]);
-            User::where('id', $args['user_id'])->update(['partner_id' => $trip['partner_id']]);
+            $employeeID = 'P0' . $trip['partner_id'] . 'U0' . $args['user_id'];
+            User::where('id', $args['user_id'])
+                ->update([
+                    'partner_id' => $trip['partner_id'],
+                    'employee_id' => $employeeID
+                ]);
         }
         
         return $trip;
@@ -122,8 +128,8 @@ class PartnerTripResolver
 
     public function unsubscribeUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        PartnerTripUser::where('partner_trip_id', $args['partner_trip_id'])
-        ->whereIn('partner_user_id', $args['partner_user_id'])
+        PartnerTripUser::where('trip_id', $args['trip_id'])
+        ->whereIn('user_id', $args['user_id'])
         ->delete();
 
       return [

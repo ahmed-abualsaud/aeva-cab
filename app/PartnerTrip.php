@@ -28,16 +28,16 @@ class PartnerTrip extends Model
 
     public function stations() 
     {
-        return $this->hasMany(PartnerTripStation::class)->whereNotNull('accepted_at');
+        return $this->hasMany(PartnerTripStation::class, 'trip_id')->whereNotNull('accepted_at');
     }
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'partner_trip_station_users', 'trip_id', 'user_id');
+        return $this->belongsToMany(User::class, 'partner_trip_users', 'trip_id', 'user_id');
     }
 
     public function schedule()
     {
-        return $this->hasOne(PartnerTripSchedule::class);
+        return $this->hasOne(PartnerTripSchedule::class, 'trip_id');
     }
 }

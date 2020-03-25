@@ -42,7 +42,7 @@ type LiveTripResponse {
 
 type PartnerTripSchedule {
   id: ID
-  partner_trip_id: ID
+  trip_id: ID
   saturday: String
   sunday: String
   monday: String
@@ -50,16 +50,6 @@ type PartnerTripSchedule {
   wednesday: String
   thursday: String
   friday: String
-}
-
-type ScheduledTrips {
-  id: ID
-  name: String
-  dayName: String
-  date: DateTime
-  startsAt: String
-  flag: Boolean
-  trip: PartnerTrip
 }
 
 type PartnerTrip {
@@ -78,4 +68,8 @@ type PartnerTrip {
   users: [User] @hasMany
   log_id: String
   status: Boolean
+  flag: Boolean
+  startsAt: String
+  dayName: String
+  date: String
 }

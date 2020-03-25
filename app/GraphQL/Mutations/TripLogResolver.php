@@ -4,7 +4,7 @@ namespace App\GraphQL\Mutations;
 
 use App\TripLog;
 use App\PartnerTrip;
-use App\PartnerTripStationUser;
+use App\PartnerTripUser;
 use App\Jobs\PushNotification;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -49,9 +49,9 @@ class TripLogResolver
             throw new \Exception('Station ID is required, but not provided.');
         }
 
-        $tokens = PartnerTripStationUser::where('station_id', $args['station_id'])
+        $tokens = PartnerTripUser::where('station_id', $args['station_id'])
             ->where('device_tokens.tokenable_type', 'App\User')
-            ->join('device_tokens', 'device_tokens.tokenable_id', '=', 'partner_trip_station_users.user_id')
+            ->join('device_tokens', 'device_tokens.tokenable_id', '=', 'partner_trip_users.user_id')
             ->select('device_tokens.device_id')
             ->pluck('device_id');
         

@@ -47,7 +47,7 @@ class DriverResolver
 
         try {
             $driver = Driver::findOrFail($args['id']);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
             throw new \Exception('The provided driver ID is not found.');
         }
 

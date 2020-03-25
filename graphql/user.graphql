@@ -96,6 +96,7 @@ type User {
   avatar: String
   position: String
   phone_verified_at: DateTime
+  employee_id: String
   partner: Partner @belongsTo
   is_picked_up: Boolean
   deviceTokens: [DeviceToken] @morphMany

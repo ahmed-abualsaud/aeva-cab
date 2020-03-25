@@ -135,9 +135,9 @@ extend type Mutation {
     @field(resolver: "PartnerTripStationResolver@acceptStation")
 
   # Station User
-  createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
+  createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripUserResponse! 
     @field(resolver: "PartnerTripStationResolver@assignUser") 
-  deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): PartnerTripStationUserResponse! 
+  deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): PartnerTripUserResponse! 
     @field(resolver: "PartnerTripStationResolver@unassignUser")
 
   # Trip User
@@ -170,7 +170,7 @@ type Query {
     @field(resolver: "PartnerTripResolver@userLiveTrip")
   userSubscriptions(user_id: ID!): [PartnerTrip]
     @field(resolver: "PartnerTripResolver@userSubscriptions")
-  userTrips(user_id: ID!): [ScheduledTrips]
+  userTrips(user_id: ID!): [PartnerTrip]
     @field(resolver: "PartnerTripResolver@userTrips")
   partnerUsers(partner_id: ID! @eq): [User] @all
 
@@ -226,15 +226,16 @@ type Query {
 
   # Trip
   trips: [PartnerTrip!]! @all
-  trip(id: ID @eq): PartnerTrip @find
+  trip(id: ID @eq): PartnerTrip 
+    @field(resolver: "PartnerTripResolver@trip")
   partnerTrips(partner_id: ID! @eq): [PartnerTrip] @all
   driverLiveTrip(driver_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@driverLiveTrip")
-  driverTrips(driver_id: ID!): [ScheduledTrips]
+  driverTrips(driver_id: ID!): [PartnerTrip]
     @field(resolver: "PartnerTripResolver@driverTrips")
 
   # Trip Station
-  partnerTripStations(partner_trip_id: ID! @eq): [PartnerTripStation] @all
+  partnerTripStations(trip_id: ID! @eq): [PartnerTripStation] @all
 
   # Station User
   partnerTripStationUsers(station_id: ID!): [User] 
@@ -265,7 +266,6 @@ type Query {
 #import partnerDriver.graphql
 #import partnerTrip.graphql
 #import partnerTripStation.graphql
-#import partnerTripStationUser.graphql
 #import partnerTripUser.graphql
 #import roleType.graphql
 #import role.graphql

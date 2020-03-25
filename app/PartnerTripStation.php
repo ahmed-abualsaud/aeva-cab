@@ -18,6 +18,6 @@ class PartnerTripStation extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'partner_trip_station_users', 'station_id', 'user_id');
+        return $this->belongsToMany(User::class, 'partner_trip_users', 'station_id', 'user_id');
     }
 }

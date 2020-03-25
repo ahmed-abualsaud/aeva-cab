@@ -2,8 +2,8 @@
 
 namespace App\GraphQL\Mutations;
 
+use App\PartnerTripUser;
 use App\PartnerTripStation;
-use App\PartnerTripStationUser;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -24,9 +24,11 @@ class PartnerTripStationResolver
         $input = collect($args)->except('directive')->toArray();
 
         try {
-            PartnerTripStationUser::create($input);
-        } catch (\Exception $e) {
-            throw new \Exception('Each user is allowed to be assigned to one station for each trip.');
+            $userStation = PartnerTripUser::where('trip_id', $args['trip_id'])
+                ->where('user_id', $args['user_id'])->firstOrFail();
+            $userStation->update(['station_id' => $args['station_id']]);
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('No subscription for the provided user ID.');
         }
  
         return [
@@ -38,7 +40,7 @@ class PartnerTripStationResolver
     public function unassignUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         try {
-            PartnerTripStationUser::where('station_id', $args['station_id'])
+            PartnerTripUser::where('station_id', $args['station_id'])
                 ->where('user_id', $args['user_id'])->delete();
         } catch (\Exception $e) {
             throw new \Exception('User station assignment cancellation faild.');
@@ -55,18 +57,21 @@ class PartnerTripStationResolver
         try {
             $station = PartnerTripStation::where('id', $args['station_id'])->firstOrFail();
             $station->update(['state' => 'PICKABLE', 'accepted_at' => now()]);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
             throw new \Exception('Station with the provided ID is not found.');
         }
 
         try {
-            $userCurrentStation = PartnerTripStationUser::where('trip_id', $args['trip_id'])->where('user_id', $station['created_by'])->firstOrFail();
+            $userCurrentStation = PartnerTripUser::where('trip_id', $args['trip_id'])
+                ->where('user_id', $station['created_by'])
+                ->firstOrFail();
             $userCurrentStation->update(['station_id' => $args['station_id']]);
         } catch (ModelNotFoundException $e) { 
-            PartnerTripStationUser::create([
+            PartnerTripUser::create([
                 'trip_id' => $args['trip_id'],
                 'station_id' => $args['station_id'],
-                'user_id' => $station['created_by']
+                'user_id' => $station['created_by'],
+                'subscription_verified_at' => now()
             ]);
         }
 

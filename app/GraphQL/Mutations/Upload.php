@@ -10,6 +10,7 @@ use \App\Document;
 use \App\Traits\UploadOneFile;
 use \App\Traits\DeleteOneFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Upload
 {
@@ -27,7 +28,7 @@ class Upload
     {
         try {
             $user = User::findOrFail($args['id']);
-        } catch(\Exception $e) {
+        } catch(ModelNotFoundException $e) {
             throw new \Exception('User with the provided ID is not found. ' . $e->getMessage());
         }
 
@@ -42,7 +43,7 @@ class Upload
     {
         try {
             $fleet = Fleet::findOrFail($args['id']);
-        } catch(\Exception $e) {
+        } catch(ModelNotFoundException $e) {
             throw new \Exception('Fleet with the provided ID is not found. ' . $e->getMessage());
         }
 
@@ -57,7 +58,7 @@ class Upload
     {
         try {
             $driver = Driver::findOrFail($args['id']);
-        } catch(\Exception $e) {
+        } catch(ModelNotFoundException $e) {
             throw new \Exception('Driver with the provided ID is not found. ' . $e->getMessage());
         }
 
@@ -72,7 +73,7 @@ class Upload
     {
         try {
             $partner = Partner::findOrFail($args['id']);
-        } catch(\Exception $e) {
+        } catch(ModelNotFoundException $e) {
             throw new \Exception('Partner with the provided ID is not found. ' . $e->getMessage());
         }
 
@@ -103,7 +104,7 @@ class Upload
     {
         try {
             $document = Document::findOrFail($args['id']);
-        } catch(\Exception $e) {
+        } catch(ModelNotFoundException $e) {
             throw new \Exception('Document with the provided ID is not found. ' . $e->getMessage());
         }
 

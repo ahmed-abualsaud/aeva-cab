@@ -6,8 +6,9 @@ use \App\Partner;
 use App\PartnerDriver;
 use \App\Traits\UploadOneFile;
 use \App\Traits\DeleteOneFile;
-use App\Exceptions\CustomException;
 use Illuminate\Support\Arr;
+use App\Exceptions\CustomException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -44,7 +45,7 @@ class PartnerResolver
 
         try {
             $partner = Partner::findOrFail($args['id']);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
             throw new \Exception('The provided partner ID is not found.');
         }
 
