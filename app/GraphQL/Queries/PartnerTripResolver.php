@@ -81,7 +81,7 @@ class PartnerTripResolver
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->get();
         
-        return $this->scheduledTrips($userTrips);
+        return $this->scheduledTrips($userTrips, 'USER');
     }
 
     public function driverTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
@@ -155,20 +155,33 @@ class PartnerTripResolver
     } 
     
 
-    protected function scheduledTrips($trips) {
+    protected function scheduledTrips($trips, $target = null) {
 
+        $stationReachedAt = null;
         $sortedTrips = array();
         $days = array('saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday');
 
-        foreach ($trips as $trip) {
+        foreach($trips as $trip) {
+            if ($target) {
+                $userStation = PartnerTripStation::join('partner_trip_users', 'partner_trip_users.station_id', '=', 'partner_trip_stations.id')
+                    ->where('partner_trip_users.trip_id', $trip->id)
+                    ->select('partner_trip_stations.time_from_start')
+                    ->first();
+                if ($userStation->time_from_start) {
+                    $stationReachedAt = strtotime($userStation->time_from_start) - strtotime("00:00:00");
+                }
+            }
             foreach($days as $day) {
                 if ($trip->schedule->$day) {
                     $tripInstance = new PartnerTrip();
-                    $date = date('Y-m-d', strtotime($day)) . ' ' . $trip->schedule->$day;
+                    $date = date('Y-m-d', strtotime($day));
                     $trip->dayName = $day;
-                    $trip->date = strtotime($date) * 1000;
+                    $trip->date = strtotime($date . ' ' . $trip->schedule->$day) * 1000;
                     $trip->flag = $this->getFlag($trip->schedule->$day);
                     $trip->startsAt = Carbon::parse($date)->diffForHumans();
+                    if ($stationReachedAt) {
+                        $trip->stationReachedAt = $trip->date + ($stationReachedAt * 1000);
+                    }
                     $tripInstance->fill($trip->toArray());
                     array_push($sortedTrips, $tripInstance);
                 }

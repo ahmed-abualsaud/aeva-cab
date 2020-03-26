@@ -72,4 +72,5 @@ type PartnerTrip {
   startsAt: String
   dayName: String
   date: String
+  stationReachedAt: String
 }
