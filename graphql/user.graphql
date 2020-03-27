@@ -99,6 +99,7 @@ type User {
   employee_id: String
   partner: Partner @belongsTo
   is_picked_up: Boolean
+  is_arrived: Boolean
   deviceTokens: [DeviceToken] @morphMany
 }
 

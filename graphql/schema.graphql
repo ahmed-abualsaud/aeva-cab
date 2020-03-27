@@ -149,12 +149,14 @@ extend type Mutation {
     @field(resolver: "PartnerTripResolver@unsubscribeUser")
 
   # Trip Log
-  startTrip(input: StartTripLogInput! @spread): PartnerTrip 
+  startTrip(input: StartTripInput! @spread): PartnerTrip 
     @field(resolver: "TripLogResolver@startTrip")
   updateDriverLocation(input: TripLogInput! @spread): String 
     @field(resolver: "TripLogResolver@updateDriverLocation")
-  nearYou(input: TripLogInput! @spread): String
+  nearYou(input: NearYouInput! @spread): String
     @field(resolver: "TripLogResolver@nearYou")
+  userArrived(input: UserArrivedInput! @spread): String
+    @field(resolver: "TripLogResolver@userArrived")
   endTrip(input: TripLogInput! @spread): String
     @field(resolver: "TripLogResolver@endTrip")
   pickUsersUp(input: PickUsersUpInput! @spread): String
@@ -252,6 +254,8 @@ type Query {
     @field(resolver: "TripLogResolver@pickedUsers")
   getPickedAndNotpickedUsers(log_id: String!, station_id: ID!): [User]
     @field(resolver: "TripLogResolver@pickedAndNotpickedUsers")
+  getArrivedAndNotArrivedUsers(log_id: String!, station_id: ID!): [User]
+    @field(resolver: "TripLogResolver@arrivedAndNotArrivedUsers")
 }
 
 #import fleet.graphql 

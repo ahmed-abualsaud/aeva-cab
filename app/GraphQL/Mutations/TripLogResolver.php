@@ -2,8 +2,10 @@
 
 namespace App\GraphQL\Mutations;
 
+use App\User;
 use App\TripLog;
 use App\PartnerTrip;
+use \App\DeviceToken;
 use App\PartnerTripUser;
 use App\Jobs\PushNotification;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -45,10 +47,6 @@ class TripLogResolver
 
     public function nearYou($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        if (!array_key_exists('station_id', $args)) {
-            throw new \Exception('Station ID is required, but not provided.');
-        }
-
         $tokens = PartnerTripUser::where('station_id', $args['station_id'])
             ->where('device_tokens.tokenable_type', 'App\User')
             ->join('device_tokens', 'device_tokens.tokenable_id', '=', 'partner_trip_users.user_id')
@@ -59,11 +57,29 @@ class TripLogResolver
         $data = ["status" => "NEAR_YOU"];
         PushNotification::dispatch($tokens, $notificationMsg, $data);
 
-        $input = collect($args)->except(['directive', 'station_id'])->toArray();
-        $input['status'] = 'NEAR_YOU';
+        return "Notification has been sent to selected station users.";
+    }
+
+    public function userArrived($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {   
+        $token = DeviceToken::where('tokenable_id', $args['driver_id'])
+            ->where('tokenable_type', 'App\Driver')
+            ->select('device_id')
+            ->pluck('device_id');
+        
+        $user = User::where('id', $args['user_id'])
+            ->select('name')
+            ->first();
+        
+        $notificationMsg = $user->name . ' has arrived';
+        $data = ["status" => "USER_ARRIVED"];
+        PushNotification::dispatch($token, $notificationMsg, $data);
+
+        $input = collect($args)->except(['directive', 'driver_id'])->toArray();
+        $input['status'] = 'USER_ARRIVED';
         TripLog::create($input);
 
-        return "Notification has been sent to selected station users.";
+        return "Notification has been sent to the driver";
     }
 
     public function endTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
@@ -80,7 +96,7 @@ class TripLogResolver
 
             $trip->update(['status' => false, 'log_id' => null]);
             $input = Arr::except($args, ['directive']);
-            $input['status'] = 'ARRIVED';
+            $input['status'] = 'ENDED';
             TripLog::create($input);
         } catch (ModelNotFoundException $e) {
             throw new \Exception('We could not find a trip with the provided ID.');
@@ -119,7 +135,7 @@ class TripLogResolver
     }
 
     public function updateDriverLocation($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
-    {    
+    {
         try {
             $input = Arr::except($args, ['directive']);
             TripLog::create($input);

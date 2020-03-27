@@ -79,6 +79,7 @@ class PartnerTripResolver
         $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.trip_id')
             ->where('partner_trip_users.user_id', $args['user_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
+            ->select('partner_trips.*')
             ->get();
         
         return $this->scheduledTrips($userTrips, 'USER');
@@ -88,6 +89,7 @@ class PartnerTripResolver
     {
         $driverTrips = PartnerTrip::where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
+            ->select('partner_trips.*')
             ->get();
 
         return $this->scheduledTrips($driverTrips);
@@ -152,14 +154,15 @@ class PartnerTripResolver
         $trip->flag = $flag;
         $trip->startsAt = $startsAt;
         return $trip;
-    } 
-    
+    }
 
     protected function scheduledTrips($trips, $target = null) {
 
         $stationReachedAt = null;
         $sortedTrips = array();
         $days = array('saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday');
+        $upcomingCheck = true;
+        $now = strtotime(now())*1000;
 
         foreach($trips as $trip) {
             if ($target) {
@@ -167,7 +170,8 @@ class PartnerTripResolver
                     ->where('partner_trip_users.trip_id', $trip->id)
                     ->select('partner_trip_stations.time_from_start')
                     ->first();
-                if ($userStation->time_from_start) {
+
+                if ($userStation && $userStation->time_from_start) {
                     $stationReachedAt = strtotime($userStation->time_from_start) - strtotime("00:00:00");
                 }
             }
@@ -175,10 +179,11 @@ class PartnerTripResolver
                 if ($trip->schedule->$day) {
                     $tripInstance = new PartnerTrip();
                     $date = date('Y-m-d', strtotime($day));
+                    $dateTime = $date . ' ' . $trip->schedule->$day;  
                     $trip->dayName = $day;
-                    $trip->date = strtotime($date . ' ' . $trip->schedule->$day) * 1000;
+                    $trip->date = strtotime($dateTime) * 1000;
                     $trip->flag = $this->getFlag($trip->schedule->$day);
-                    $trip->startsAt = Carbon::parse($date)->diffForHumans();
+                    $trip->startsAt = Carbon::parse($dateTime)->diffForHumans();
                     if ($stationReachedAt) {
                         $trip->stationReachedAt = $trip->date + ($stationReachedAt * 1000);
                     }
@@ -189,6 +194,15 @@ class PartnerTripResolver
         }
 
         usort($sortedTrips, function ($a, $b) { return ($a['date'] > $b['date']); });
+
+        foreach($sortedTrips as $trip) {
+            if ($upcomingCheck && $now < $trip->date) {
+                $trip->upcoming = true;
+                $upcomingCheck = false;
+            } else {
+                $trip->upcoming = false;
+            }
+        }
         
         return $sortedTrips;
     }

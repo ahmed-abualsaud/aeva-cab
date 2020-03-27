@@ -67,10 +67,11 @@ type PartnerTrip {
   stations: [PartnerTripStation] @hasMany
   users: [User] @hasMany
   log_id: String
-  status: Boolean
-  flag: Boolean
   startsAt: String
   dayName: String
   date: String
   stationReachedAt: String
+  status: Boolean
+  flag: Boolean
+  upcoming: Boolean
 }

@@ -63,4 +63,20 @@ class TripLogResolver
         return $users;
     }
 
+    public function arrivedAndNotArrivedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $users = PartnerTripUser::where('station_id', $args['station_id'])
+            ->join('users', 'users.id', '=', 'partner_trip_users.user_id')
+            ->leftJoin('trip_logs', function ($join) use ($args) {
+                $join->on('users.id', '=', 'trip_logs.user_id')
+                    ->where('trip_logs.log_id', $args['log_id'])
+                    ->where('status', 'USER_ARRIVED');
+            })
+            ->selectRaw('users.*, (CASE WHEN trip_logs.status IS NULL THEN 0 ELSE 1 END) AS is_arrived
+            ')
+            ->get();
+
+        return $users;
+    }
+
 }
