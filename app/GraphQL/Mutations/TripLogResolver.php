@@ -5,9 +5,10 @@ namespace App\GraphQL\Mutations;
 use App\User;
 use App\TripLog;
 use App\PartnerTrip;
-use \App\DeviceToken;
+use App\DeviceToken;
 use App\PartnerTripUser;
 use App\Jobs\PushNotification;
+use App\Events\DriverLocationUpdated;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Arr;
@@ -136,6 +137,13 @@ class TripLogResolver
 
     public function updateDriverLocation($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
+        $location = [
+            'latitude' => $args['latitude'],
+            'longitude' => $args['longitude']
+        ];
+
+        broadcast(new DriverLocationUpdated($location, $args['trip_id']))->toOthers();
+
         try {
             $input = Arr::except($args, ['directive']);
             TripLog::create($input);
