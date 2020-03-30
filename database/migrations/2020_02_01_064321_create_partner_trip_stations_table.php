@@ -18,10 +18,16 @@ class CreatePartnerTripStationsTable extends Migration
             $table->string('name')->nullable();
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8);
-            $table->unsignedBigInteger('partner_trip_id');
+            $table->unsignedBigInteger('trip_id');
+            $table->time('time_from_start')->nullable();
+            $table->timestamp('accepted_at')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->string('state')->default('PENDING');
             $table->timestamps();
-
-            $table->foreign('partner_trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
+            $table->softDeletes();
+            
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
         });
     }
 

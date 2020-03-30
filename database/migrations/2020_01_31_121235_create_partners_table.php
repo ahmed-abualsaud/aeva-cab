@@ -27,6 +27,7 @@ class CreatePartnersTable extends Migration
             $table->unsignedInteger('max_no_of_trips')->nullable();
             $table->string('logo')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

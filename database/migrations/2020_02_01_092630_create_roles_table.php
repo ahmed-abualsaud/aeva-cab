@@ -15,13 +15,12 @@ class CreateRolesTable extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
             $table->string('phone')->nullable();
             $table->unsignedBigInteger('role_type_id');
-            $table->string('employee_id')->default(uniqid());
+            $table->string('employee_id')->nullable();
             $table->boolean('dashboard')->default(0);
             $table->boolean('roles')->default(0);
             $table->boolean('archive')->default(0);
@@ -33,8 +32,9 @@ class CreateRolesTable extends Migration
             $table->boolean('fleet')->default(0);
             $table->boolean('payment')->default(0); 
             $table->boolean('cancellation')->default(0);
-            $table->timestamps();
             $table->boolean('status')->default(0);
+            $table->timestamps();
+            $table->softDeletes();
             
             $table->foreign('role_type_id')->references('id')->on('role_types')->onDelete('cascade');
         });

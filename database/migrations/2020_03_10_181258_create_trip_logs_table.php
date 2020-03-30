@@ -20,15 +20,7 @@ class CreateTripLogsTable extends Migration
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8);
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->enum('status', [
-                'STARTED', 
-                'MOVING', 
-                'NEAR_YOU', 
-                'PICKED_UP', 
-                'NOT_PICKED_UP', 
-                'DROPPED_OFF', 
-                'ARRIVED'
-            ])->default('MOVING');
+            $table->string('status')->default('MOVING');
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->nullable();
 

@@ -15,7 +15,7 @@ class CreatePartnerTripSchedulesTable extends Migration
     {
         Schema::create('partner_trip_schedules', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('partner_trip_id');
+            $table->unsignedBigInteger('trip_id');
             $table->time('saturday')->nullable();
             $table->time('sunday')->nullable();
             $table->time('monday')->nullable();
@@ -25,7 +25,7 @@ class CreatePartnerTripSchedulesTable extends Migration
             $table->time('friday')->nullable();
             $table->timestamps();
 
-            $table->foreign('partner_trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
+            $table->foreign('trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
         });
     }
 

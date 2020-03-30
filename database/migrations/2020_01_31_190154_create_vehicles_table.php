@@ -18,9 +18,14 @@ class CreateVehiclesTable extends Migration
             $table->string('license_plate')->unique();
             $table->unsignedBigInteger('car_type_id');
             $table->unsignedBigInteger('car_model_id');
+            $table->unsignedBigInteger('car_make_id');
+            $table->date('license_expires_on')->nullable();
+            $table->year('year');
+            $table->string('photo')->nullable();
             $table->timestamps();
             $table->softDeletes();
-
+            
+            $table->foreign('car_make_id')->references('id')->on('car_makes')->onDelete('cascade');
             $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('cascade');
             $table->foreign('car_model_id')->references('id')->on('car_models')->onDelete('cascade');
         });

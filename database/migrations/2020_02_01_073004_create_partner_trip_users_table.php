@@ -15,14 +15,17 @@ class CreatePartnerTripUsersTable extends Migration
     {
         Schema::create('partner_trip_users', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('partner_trip_id');
-            $table->unsignedBigInteger('partner_user_id');
+            $table->unsignedBigInteger('trip_id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('station_id')->nullable();
             $table->timestamp('subscription_verified_at')->nullable();
-            $table->date('subscription_expires_on')->nullable();
             $table->timestamps();
 
-            $table->foreign('partner_trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
-            $table->foreign('partner_user_id')->references('id')->on('partner_users')->onDelete('cascade');
+            $table->unique(['trip_id', 'user_id'], 'trip_user');
+
+            $table->foreign('trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('station_id')->references('id')->on('partner_trip_stations')->onDelete('cascade');
         });
     }
 

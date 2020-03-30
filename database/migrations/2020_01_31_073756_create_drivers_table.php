@@ -15,17 +15,17 @@ class CreateDriversTable extends Migration
     {
         Schema::create('drivers', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('name');
             $table->string('email')->unique();
+            $table->string('password')->nullable();
             $table->string('phone')->nullable();
-            $table->string('car_no')->nullable();
             $table->string('license_no')->nullable();
             $table->date('license_expires_on')->nullable();
             $table->string('avatar')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->boolean('status')->default(1);
             $table->unsignedBigInteger('fleet_id');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('fleet_id')->references('id')->on('fleets')->onDelete('cascade');
         });

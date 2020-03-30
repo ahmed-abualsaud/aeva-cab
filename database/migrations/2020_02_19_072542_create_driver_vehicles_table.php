@@ -17,6 +17,9 @@ class CreateDriverVehiclesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('driver_id');
             $table->unsignedBigInteger('vehicle_id');
+            $table->timestamps();
+            
+            $table->unique(['driver_id', 'vehicle_id'], 'driver_vehicle');
 
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('cascade');
