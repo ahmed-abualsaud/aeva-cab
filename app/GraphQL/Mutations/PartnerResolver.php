@@ -29,7 +29,7 @@ class PartnerResolver
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $input = collect($args)->except(['directive', 'logo'])->toArray();
-        $input['password'] = Hash::make($input['phone']);
+        $input['password'] = Hash::make($input['phone1']);
 
         if ($args['logo']) {
             $url = $this->uploadOneFile($args['logo'], 'images');
