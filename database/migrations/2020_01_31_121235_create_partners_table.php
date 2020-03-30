@@ -16,11 +16,11 @@ class CreatePartnersTable extends Migration
         Schema::create('partners', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('type')->nullable();
-            $table->string('phone1')->nullable();
-            $table->string('phone2')->nullable();
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('phone1');
+            $table->string('phone2')->nullable();
+            $table->string('type')->nullable();
             $table->enum('size', ['Small','Medium','Large','Enterprise'])->nullable();
             $table->date('license_expires_on')->nullable();
             $table->date('insurance_expires_on')->nullable();

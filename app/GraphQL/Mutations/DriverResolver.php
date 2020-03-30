@@ -3,12 +3,12 @@
 namespace App\GraphQL\Mutations;
 
 use App\Driver;
-use App\DriverVehicle;
 use App\DeviceToken;
+use App\DriverVehicle;
 use App\Traits\UploadOneFile;
 use App\Traits\DeleteOneFile;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Facades\Hash;
@@ -30,7 +30,7 @@ class DriverResolver
     {
         $input = collect($args)->except(['directive', 'avatar'])->toArray();
         $input['password'] = Hash::make($input['phone']);
-
+ 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $input['avatar'] = $url;

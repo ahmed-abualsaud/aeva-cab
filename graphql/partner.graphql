@@ -1,10 +1,9 @@
 input CreatePartnerInput {
   name: String! @rules(apply: ["required"])
   email: String! @rules(apply: ["email", "unique:partners,email"])
-  password: String! @rules(apply: ["required","min:8"]) @bcrypt
-  type: String
-  phone1: String
+  phone1: String! @rules(apply: ["required"])
   phone2: String
+  type: String
   logo: Upload
   size: String @rules(apply: ["in:Small,Medium,Large,Enterprise"])
   license_expires_on: Date

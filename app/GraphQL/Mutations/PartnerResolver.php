@@ -8,6 +8,7 @@ use \App\Traits\UploadOneFile;
 use \App\Traits\DeleteOneFile;
 use Illuminate\Support\Arr;
 use App\Exceptions\CustomException;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -28,12 +29,13 @@ class PartnerResolver
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $input = collect($args)->except(['directive', 'logo'])->toArray();
+        $input['password'] = Hash::make($input['phone']);
 
         if ($args['logo']) {
             $url = $this->uploadOneFile($args['logo'], 'images');
             $input['logo'] = $url;
         }
-        
+         
         $partner = Partner::create($input);
 
         return $partner;
