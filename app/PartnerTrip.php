@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\PartnerTripSchedule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -28,7 +29,13 @@ class PartnerTrip extends Model
 
     public function stations() 
     {
-        return $this->hasMany(PartnerTripStation::class, 'trip_id')->whereNotNull('accepted_at');
+        $today = strtolower(date('l'));
+        return $this->hasMany(PartnerTripStation::class, 'trip_id')
+            ->select('*')
+            ->addSelect(['shouldBeThereAt' => PartnerTripSchedule::selectRaw("UNIX_TIMESTAMP(ADDTIME($today, partner_trip_stations.time_from_start))*1000")
+                ->whereColumn('partner_trip_stations.trip_id', 'partner_trip_schedules.trip_id')
+            ])
+            ->whereNotNull('accepted_at');
     }
 
     public function users()

@@ -49,15 +49,18 @@ class TripLogResolver
 
     public function pickedAndNotpickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $users = PartnerTripUser::where('station_id', $args['station_id'])
+
+        $users = PartnerTripUser::select(['users.id', 'users.name', 'users.email', 'users.phone', 'users.avatar'])
+            ->where('station_id', $args['station_id'])
             ->join('users', 'users.id', '=', 'partner_trip_users.user_id')
-            ->leftJoin('trip_logs', function ($join) use ($args) {
-                $join->on('users.id', '=', 'trip_logs.user_id')
-                    ->where('trip_logs.log_id', $args['log_id'])
-                    ->where('status', 'PICKED_UP');
-            })
-            ->selectRaw('users.*, (CASE WHEN trip_logs.status IS NULL THEN 0 ELSE 1 END) AS is_picked_up
-            ')
+            ->addSelect(['is_picked_up' => TripLog::select('status')
+                ->whereColumn('user_id', 'partner_trip_users.user_id')
+                ->where('status', 'PICKED_UP')
+            ])
+            ->addSelect(['is_arrived' => TripLog::select('status')
+                ->whereColumn('user_id', 'partner_trip_users.user_id')
+                ->where('status', 'USER_ARRIVED')
+            ])
             ->get();
 
         return $users;

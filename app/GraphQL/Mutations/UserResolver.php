@@ -3,17 +3,18 @@
 namespace App\GraphQL\Mutations;
 
 use App\User;
+use JWTAuth;
+use App\DeviceToken;
+use App\Jobs\Otp;
+use Illuminate\Support\Str;
 use App\Traits\UploadOneFile;
 use App\Traits\DeleteOneFile;
-use App\DeviceToken;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use GraphQL\Type\Definition\ResolveInfo;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Support\Str;
-use JWTAuth;
+use GraphQL\Type\Definition\ResolveInfo;
+use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class UserResolver
 {
@@ -162,6 +163,10 @@ class UserResolver
         for($i = 0; $i < 4; $i++) {
             $verification_code .= mt_rand(0, 9);
         }
+
+        $message = $verification_code . " is your Qruz verification code";
+
+        Otp::dispatch($args['phone'], $message);
 
         return [
             "verificationCode" => $verification_code

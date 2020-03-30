@@ -123,6 +123,8 @@ class TripLogResolver
 
         $user_id = collect($args['users'])->pluck('id');
         TripLog::where('log_id', $args['log_id'])
+        ->where('status', 'PICKED_UP')
+        ->orWhere('status', 'NOT_PICKED_UP')
         ->whereIn('user_id', $user_id)
         ->delete();
 
