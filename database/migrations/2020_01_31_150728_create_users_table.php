@@ -25,6 +25,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
+            $table->string('employee_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
             
