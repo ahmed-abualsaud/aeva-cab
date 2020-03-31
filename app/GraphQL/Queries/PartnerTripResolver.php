@@ -82,7 +82,7 @@ class PartnerTripResolver
             ->select('partner_trips.*')
             ->get();
         
-        return $this->scheduledTrips($userTrips, 'USER');
+        return $this->scheduledTrips($userTrips);
     }
 
     public function driverTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
@@ -156,25 +156,14 @@ class PartnerTripResolver
         return $trip;
     }
 
-    protected function scheduledTrips($trips, $target = null) {
+    protected function scheduledTrips($trips) {
 
-        $stationReachedAt = null;
         $sortedTrips = array();
         $days = array('saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday');
         $upcomingCheck = true;
         $now = strtotime(now())*1000;
 
         foreach($trips as $trip) {
-            if ($target) {
-                $userStation = PartnerTripStation::join('partner_trip_users', 'partner_trip_users.station_id', '=', 'partner_trip_stations.id')
-                    ->where('partner_trip_users.trip_id', $trip->id)
-                    ->select('partner_trip_stations.time_from_start')
-                    ->first();
-
-                if ($userStation && $userStation->time_from_start) {
-                    $stationReachedAt = strtotime($userStation->time_from_start) - strtotime("00:00:00");
-                }
-            }
             foreach($days as $day) {
                 if ($trip->schedule->$day) {
                     $tripInstance = new PartnerTrip();
@@ -184,9 +173,6 @@ class PartnerTripResolver
                     $trip->date = strtotime($dateTime) * 1000;
                     $trip->flag = $this->getFlag($trip->schedule->$day);
                     $trip->startsAt = Carbon::parse($dateTime)->diffForHumans();
-                    if ($stationReachedAt) {
-                        $trip->stationReachedAt = $trip->date + ($stationReachedAt * 1000);
-                    }
                     $tripInstance->fill($trip->toArray());
                     array_push($sortedTrips, $tripInstance);
                 }
