@@ -230,7 +230,7 @@ type Query {
   trips: [PartnerTrip!]! @all
   trip(id: ID @eq): PartnerTrip 
     @field(resolver: "PartnerTripResolver@trip")
-  partnerTrips(partner_id: ID! @eq): [PartnerTrip] @all
+  partnerTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [PartnerTrip] @all
   driverLiveTrip(driver_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@driverLiveTrip")
   driverTrips(driver_id: ID!): [PartnerTrip]
