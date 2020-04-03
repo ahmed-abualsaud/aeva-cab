@@ -252,10 +252,8 @@ type Query {
     @field(resolver: "TripLogResolver@driverLocation")
   getPickedUsers(log_id: String!): [User]
     @field(resolver: "TripLogResolver@pickedUsers")
-  getPickedAndNotpickedUsers(log_id: String!, station_id: ID!): [User]
-    @field(resolver: "TripLogResolver@pickedAndNotpickedUsers")
-  getArrivedAndNotArrivedUsers(log_id: String!, station_id: ID!): [User]
-    @field(resolver: "TripLogResolver@arrivedAndNotArrivedUsers")
+  getArrivedAndPickedUsers(log_id: String!, station_id: ID!): [User]
+    @field(resolver: "TripLogResolver@arrivedAndPickedUsers")
 }
 
 #import fleet.graphql 

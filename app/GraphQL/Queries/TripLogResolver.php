@@ -47,20 +47,29 @@ class TripLogResolver
         return $users;
     }
 
-    public function pickedAndNotpickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function arrivedAndPickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-
-        $users = PartnerTripUser::select(['users.id', 'users.name', 'users.email', 'users.phone', 'users.avatar'])
+        $users = PartnerTripUser::selectRaw('
+            users.id, users.name, users.email, users.phone, users.avatar, 
+            (CASE WHEN isPickedLog.status IS NULL THEN 0 ELSE 1 END) AS is_picked_up, 
+            (CASE WHEN isArrivedLog.status IS NULL THEN 0 ELSE 1 END) AS is_arrived
+        ')
             ->where('station_id', $args['station_id'])
             ->join('users', 'users.id', '=', 'partner_trip_users.user_id')
-            ->addSelect(['is_picked_up' => TripLog::select('status')
-                ->whereColumn('user_id', 'partner_trip_users.user_id')
-                ->where('status', 'PICKED_UP')
-            ])
-            ->addSelect(['is_arrived' => TripLog::select('status')
-                ->whereColumn('user_id', 'partner_trip_users.user_id')
-                ->where('status', 'USER_ARRIVED')
-            ])
+            ->leftJoin(\DB::raw('(SELECT user_id, log_id, status FROM trip_logs) isPickedLog'), 
+                function ($join) use ($args) {
+                    $join->on('partner_trip_users.user_id', '=', 'isPickedLog.user_id')
+                        ->where('isPickedLog.log_id', $args['log_id'])
+                        ->where('isPickedLog.status', 'PICKED_UP');
+                }
+            )
+            ->leftJoin(\DB::raw('(SELECT user_id, log_id, status FROM trip_logs) isArrivedLog'), 
+                function ($join) use ($args) {
+                    $join->on('partner_trip_users.user_id', '=', 'isArrivedLog.user_id')
+                        ->where('isArrivedLog.log_id', $args['log_id'])
+                        ->where('isArrivedLog.status', 'USER_ARRIVED');
+                }
+            )
             ->get();
 
         return $users;

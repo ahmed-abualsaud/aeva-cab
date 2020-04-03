@@ -120,13 +120,23 @@ class TripLogResolver
             $arr['status'] = $user['is_picked_up'] ? 'PICKED_UP' : 'NOT_PICKED_UP';
             array_push($data, $arr);
         } 
-
+        
+        $filterNewPickedUp = Arr::where($args['users'], function ($value, $key) {
+            return $value['is_picked_up'];
+        });
+        $pickedUp = collect($filterNewPickedUp)->pluck('id')->toArray();
+        
         $user_id = collect($args['users'])->pluck('id');
-        TripLog::where('log_id', $args['log_id'])
-        ->where('status', 'PICKED_UP')
-        ->orWhere('status', 'NOT_PICKED_UP')
-        ->whereIn('user_id', $user_id)
-        ->delete();
+        $tripLogs = TripLog::where('log_id', $args['log_id'])
+            ->where('status', 'PICKED_UP')
+            ->orWhere('status', 'NOT_PICKED_UP')
+            ->whereIn('user_id', $user_id);
+
+        $oldPickedUp = $tripLogs->get()->where('status', 'PICKED_UP')->pluck('user_id')->toArray();
+        
+        $newPickedUp = array_diff($pickedUp, $oldPickedUp);
+
+        $tripLogs->delete();
 
         try {
             TripLog::insert($data);
