@@ -11,16 +11,16 @@ class TripSubscription extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $subscriptionCode;
+    public $message;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($subscriptionCode)
+    public function __construct($message)
     {
-        $this->subscriptionCode = $subscriptionCode;
+        $this->message = $message;
     }
 
     /**
@@ -44,7 +44,7 @@ class TripSubscription extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->greeting('Dear valued user,')
-            ->line('Kindly use this code to confirm your subscription: ' . $this->subscriptionCode);
+            ->line($this->message);
     }
 
     /**

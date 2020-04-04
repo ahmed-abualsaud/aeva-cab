@@ -7,19 +7,17 @@ use JWTAuth;
 use App\DeviceToken;
 use App\Jobs\Otp;
 use Illuminate\Support\Str;
-use App\Traits\UploadOneFile;
-use App\Traits\DeleteOneFile;
+use App\Traits\UploadFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+ 
 class UserResolver
 {
-    use UploadOneFile;
-    use DeleteOneFile;
+    use UploadFile;
 
     /**
      * Return a value for the field.

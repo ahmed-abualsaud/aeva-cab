@@ -5,8 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\Driver;
 use App\DeviceToken;
 use App\DriverVehicle;
-use App\Traits\UploadOneFile;
-use App\Traits\DeleteOneFile;
+use App\Traits\UploadFile;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -15,8 +14,7 @@ use Illuminate\Support\Facades\Hash;
 
 class DriverResolver 
 {
-    use UploadOneFile;
-    use DeleteOneFile;
+    use UploadFile;
     /**
      * Return a value for the field.
      *

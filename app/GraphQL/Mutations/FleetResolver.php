@@ -4,8 +4,7 @@ namespace App\GraphQL\Mutations;
 
 use \App\Fleet;
 use \App\Driver;
-use \App\Traits\UploadOneFile;
-use \App\Traits\DeleteOneFile;
+use \App\Traits\UploadFile;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -13,8 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class FleetResolver
 { 
-    use UploadOneFile;
-    use DeleteOneFile;
+    use UploadFile;
 
     /**
      * Return a value for the field.

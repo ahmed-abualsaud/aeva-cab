@@ -34,13 +34,11 @@ type Mutation {
 }
 
 # Mutations that require Auth
-extend type Mutation {
+extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   # User
   updateUser(input: UpdateUserInput! @spread): UserPayload 
     @field(resolver: "UserResolver@update") @updateUserValidation
   deleteUser(id: ID!): User @delete
-  uploadUserAvatar(id: ID!, avatar: Upload!): User
-    @field(resolver: "Upload@userAvatar")
 
   # Fleet
   createFleet(input: CreateFleetInput! @spread): Fleet
@@ -48,8 +46,6 @@ extend type Mutation {
   updateFleet(input: UpdateFleetInput! @spread): Fleet 
     @field(resolver: "FleetResolver@update") @updateFleetValidation
   deleteFleet(id: ID!): Fleet @delete
-  uploadFleetAvatar(id: ID!, avatar: Upload!): Fleet
-    @field(resolver: "Upload@fleetAvatar")
 
   # Driver
   createDriver(input: CreateDriverInput! @spread): Driver 
@@ -57,8 +53,6 @@ extend type Mutation {
   updateDriver(input: UpdateDriverInput! @spread): Driver 
     @field(resolver: "DriverResolver@update") @updateDriverValidation
   deleteDriver(id: ID!): Driver @delete
-  uploadDriverAvatar(id: ID!, avatar: Upload!): Driver
-    @field(resolver: "Upload@driverAvatar")
 
   # Role
   createRole(input: CreateRoleInput! @spread): Role @create
@@ -94,9 +88,9 @@ extend type Mutation {
 
   # Document
   uploadDocument(input: UploadDocumentInput @spread): Document
-    @field(resolver: "Upload@document")
+    @field(resolver: "DocumentResolver@create")
   deleteDocument(id: ID!): String
-    @field(resolver: "Upload@deleteDocument")
+    @field(resolver: "DocumentResolver@delete")
   updateDocument(input: UpdateDocumentInput! @spread): Document @update
 
   # Driver Vehicle
@@ -111,8 +105,6 @@ extend type Mutation {
   updatePartner(input: UpdatePartnerInput! @spread): Partner 
     @field(resolver: "PartnerResolver@update") @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
-  uploadPartnerLogo(id: ID!, logo: Upload!): Partner
-    @field(resolver: "Upload@partnerLogo")
 
   # Partner Driver
   createPartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse!
@@ -165,8 +157,8 @@ extend type Mutation {
     @field(resolver: "TripLogResolver@changeTripUserStatus")
 } 
 
-# Require Auth
-type Query {
+# Queries that require Auth
+type Query @guard(with: ["role", "partner", "user", "driver"]) {
   # User
   userLiveTrip(user_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@userLiveTrip")

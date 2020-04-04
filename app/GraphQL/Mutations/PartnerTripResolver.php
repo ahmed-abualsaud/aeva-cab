@@ -6,11 +6,12 @@ use App\User;
 use App\PartnerTrip;
 use App\PartnerTripUser;
 use App\PartnerTripSchedule;
+use App\Jobs\Otp;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use App\Notifications\TripSubscription;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Notification;
 
@@ -65,12 +66,13 @@ class PartnerTripResolver
 
     public function inviteUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $users = User::select(['phone', 'email'])->whereIn('id', $args['user_id'])->get();
-        $phones = $users->pluck('phone');
+        $users = User::select('phone', 'email')->whereIn('id', $args['user_id'])->get();
+        $phones = $users->pluck('phone')->toArray();
         $emails = $users->pluck('email');
 
-        Notification::route('mail', $emails)
-            ->notify(new TripSubscription($args['subscription_code']));
+        $message = 'Kindly use this code to confirm your subscription: ' . $args['subscription_code'];
+        Notification::route('mail', $emails)->notify(new TripSubscription($message));
+        Otp::dispatch(implode(",", $phones), $message);
 
         $data = [];
         $arr = [];

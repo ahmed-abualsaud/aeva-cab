@@ -4,8 +4,7 @@ namespace App\GraphQL\Mutations;
 
 use \App\Partner;
 use App\PartnerDriver;
-use \App\Traits\UploadOneFile;
-use \App\Traits\DeleteOneFile;
+use \App\Traits\UploadFile;
 use Illuminate\Support\Arr;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Hash;
@@ -15,8 +14,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class PartnerResolver
 {
-    use UploadOneFile;
-    use DeleteOneFile;
+    use UploadFile;
     /**
      * Return a value for the field.
      *

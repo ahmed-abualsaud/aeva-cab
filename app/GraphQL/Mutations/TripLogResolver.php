@@ -8,10 +8,11 @@ use App\PartnerTrip;
 use App\DeviceToken;
 use App\PartnerTripUser;
 use App\Jobs\PushNotification;
+use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use App\Events\DriverLocationUpdated;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TripLogResolver
@@ -91,7 +92,13 @@ class TripLogResolver
                 throw new \Exception('Trip has already ended.');
             }
 
-            $notificationMsg = 'We have arrived';
+            $comeBack = '';
+            if ($trip->return_time) {
+                $comeBack = ' We will return back to you at ' . Carbon::parse($trip->return_time)->format('g:i A');
+            }
+
+            
+            $notificationMsg = 'We have arrived. Have a great time.' . $comeBack;
             $data = ["status" => "TRIP_ENDED"];
             PushNotification::dispatch($this->getTokens($trip), $notificationMsg, $data);
 
@@ -136,13 +143,19 @@ class TripLogResolver
         
         $newPickedUp = array_diff($pickedUp, $oldPickedUp);
 
-        $tripLogs->delete();
+        if ($newPickedUp) {
+            $devices = DeviceToken::where('tokenable_type', 'App\User')
+            ->whereIn('tokenable_id', $newPickedUp)
+            ->select('device_id')
+            ->pluck('device_id');
 
-        try {
-            TripLog::insert($data);
-        } catch (\Exception $e) {
-            throw new \Exception('Trip ID or User ID is invalid. ' . $e->getMessage());
+            $notificationMsg = 'Have a wonderful trip. May you be happy and safe throughout this trip.';
+            $pushData = ["status" => "PICKED_UP"];
+            PushNotification::dispatch($devices, $notificationMsg, $pushData);
         }
+
+        $tripLogs->delete();
+        TripLog::insert($data);
 
         return 'Selected users status have been changed.';
     }
