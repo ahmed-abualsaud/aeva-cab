@@ -157,10 +157,7 @@ class UserResolver
 
     public function phoneVerification($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $verification_code = '';
-        for($i = 0; $i < 4; $i++) {
-            $verification_code .= mt_rand(0, 9);
-        }
+        $verification_code = mt_rand(1000, 9999);
 
         $message = $verification_code . " is your Qruz verification code";
 
