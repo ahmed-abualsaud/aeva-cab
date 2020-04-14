@@ -97,7 +97,6 @@ class TripLogResolver
                 $comeBack = ' We will return back to you at ' . Carbon::parse($trip->return_time)->format('g:i A');
             }
 
-            
             $notificationMsg = 'We have arrived. Have a great time.' . $comeBack;
             $data = ["status" => "TRIP_ENDED"];
             PushNotification::dispatch($this->getTokens($trip), $notificationMsg, $data);

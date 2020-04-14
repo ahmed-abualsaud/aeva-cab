@@ -9,11 +9,11 @@ use App\PartnerTripSchedule;
 use App\Jobs\Otp;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use App\Notifications\TripSubscription;
+use App\Mail\TripSubscriptionCode;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Mail;
 
 class PartnerTripResolver
 {
@@ -71,8 +71,9 @@ class PartnerTripResolver
         $emails = $users->pluck('email');
 
         $message = 'Kindly use this code to confirm your subscription: ' . $args['subscription_code'];
-        Notification::route('mail', $emails)->notify(new TripSubscription($message));
-        Otp::dispatch(implode(",", $phones), $message);
+        
+        Mail::bcc($emails)->send(new TripSubscriptionCode($message));
+        Otp::dispatch(implode(",", $phones), $message);        
 
         $data = [];
         $arr = [];
