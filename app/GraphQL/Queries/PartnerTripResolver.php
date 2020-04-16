@@ -69,6 +69,7 @@ class PartnerTripResolver
     {
         $userSubscriptions = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.trip_id')
             ->where('partner_trip_users.user_id', $args['user_id'])
+            ->whereNotNull('partner_trip_users.subscription_verified_at')
             ->get();
 
         return $userSubscriptions;
@@ -78,6 +79,7 @@ class PartnerTripResolver
     {
         $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.trip_id')
             ->where('partner_trip_users.user_id', $args['user_id'])
+            ->whereNotNull('partner_trip_users.subscription_verified_at')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->select('partner_trips.*')
             ->get();
