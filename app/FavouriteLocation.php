@@ -4,8 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DriverVehicle extends Model
+class FavouriteLocation extends Model
 {
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
     protected $guarded = [];
 
     /**
@@ -17,16 +22,8 @@ class DriverVehicle extends Model
         'created_at', 'updated_at'
     ];
 
-    /**
-     * The services that belong to the user.
-     */
-    public function driver()
+    public function user()
     {
-        return $this->belongsTo('App\Driver', 'driver_id');
-    }
-
-    public function vehicle()
-    {
-        return $this->belongsTo('App\Vehicle');
+        return $this->belongsTo('App\User');
     }
 }

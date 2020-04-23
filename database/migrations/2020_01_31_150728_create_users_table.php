@@ -19,13 +19,19 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->string('password')->nullable();
             $table->string('phone')->nullable();
-            $table->string('position')->nullable();
+            $table->string('title')->nullable();
             $table->string('avatar')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
+            $table->string('employee_id')->nullable();
+            $table->enum('payment_mode', ['CASH', 'CARD', 'PAYPAL'])->nullable();
+            $table->double('latitude', 15, 8)->nullable();
+            $table->double('longitude',15,8)->nullable();
+            $table->string('stripe_cust_id')->nullable();
+            $table->float('wallet_balance')->default(0);
+            $table->decimal('rating', 4, 2)->default(5);
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
-            $table->string('employee_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
             

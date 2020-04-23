@@ -12,6 +12,7 @@ input CreateRoleInput {
   business: Boolean
   commute: Boolean 
   ondemand: Boolean
+  cab: Boolean
   fleet: Boolean
   payment: Boolean
   cancellation: Boolean
@@ -31,10 +32,11 @@ input UpdateRoleInput {
   business: Boolean
   commute: Boolean
   ondemand: Boolean
+  cab: Boolean
   fleet: Boolean
   payment: Boolean
   cancellation: Boolean
-  status: Boolean
+  status: String
 }
 
 input QruzMemberLoginInput { 
@@ -61,9 +63,10 @@ type Role {
   business: Boolean
   commute: Boolean
   ondemand: Boolean
+  cab: Boolean
   fleet: Boolean
   payment: Boolean
   cancellation: Boolean
   employee_id: String
-  status: Boolean
+  status: String
 }

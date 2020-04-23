@@ -82,9 +82,16 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   deleteCarModel(id: ID!): CarModel @delete
 
   # Car Type
-  createCarType(input: CreateCarTypeInput! @spread): CarType @create
-  updateCarType(input: UpdateCarTypeInput! @spread): CarType @update @updateCarTypeValidation
+  createCarType(input: CreateCarTypeInput! @spread): CarType
+    @field(resolver: "CarTypeResolver@create")
+  updateCarType(input: UpdateCarTypeInput! @spread): CarType 
+    @field(resolver: "CarTypeResolver@update") @updateCarTypeValidation
   deleteCarType(id: ID!): CarType @delete
+
+  # Promo Code
+  createPromoCode(input: CreatePromoCodeInput! @spread): PromoCode @create
+  updatePromoCode(input: UpdatePromoCodeInput! @spread): PromoCode @update @updatePromoCodeValidation
+  deletePromoCode(id: ID!): PromoCode @delete
 
   # Document
   uploadDocument(input: UploadDocumentInput @spread): Document
@@ -202,6 +209,10 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   carTypes: [CarType!]! @all
   carType(id: ID @eq): CarType @find
 
+  # Promo Code
+  promoCodes: [PromoCode!]! @all
+  promoCode(id: ID @eq): PromoCode @find
+
   # Document
   documents(documentable_id: ID!, documentable_type: String!): [Document]
     @field(resolver: "DocumentResolver")
@@ -265,3 +276,4 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
 #import role.graphql
 #import tripLog.graphql
 #import document.graphql
+#import promoCode.graphql

@@ -6,7 +6,7 @@ input CreateUserInput {
   provider: String
   provider_id: String
   partner_id: ID
-  position: String
+  title: String
   avatar: Upload
   platform: String @rules(apply: ["in:android,ios"])
   device_id: String
@@ -18,7 +18,7 @@ input UpdateUserInput {
   email: String
   partner_id: ID
   phone: String
-  position: String
+  title: String
   avatar: Upload
   phone_verified_at: DateTime
 }
@@ -94,7 +94,7 @@ type User {
   email: String
   phone: String
   avatar: String
-  position: String
+  title: String
   phone_verified_at: DateTime
   employee_id: String
   partner: Partner @belongsTo

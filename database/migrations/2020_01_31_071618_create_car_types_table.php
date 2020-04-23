@@ -16,6 +16,14 @@ class CreateCarTypesTable extends Migration
         Schema::create('car_types', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->unique();
+            $table->string('photo')->nullable();
+            $table->integer('capacity');
+            $table->integer('fixed');
+            $table->integer('price');
+            $table->integer('minute');
+            $table->integer('distance');
+            $table->enum('calculator', ['MIN', 'HOUR', 'DISTANCE', 'DISTANCEMIN', 'DISTANCEHOUR']);
+            $table->boolean('status')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

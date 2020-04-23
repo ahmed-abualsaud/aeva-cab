@@ -20,6 +20,7 @@ class CreateDocumentsTable extends Migration
             $table->date('expires_on')->nullable();
             $table->unsignedInteger('documentable_id');
             $table->string('documentable_type');
+            $table->enum('status', ['ASSESSING', 'ACTIVE'])->nullable();
             $table->timestamps();
         });
     }

@@ -1,0 +1,22 @@
+input CreatePromoCodeInput {
+  name: String! @rules(apply: ["required", "unique:promo_codes,name"])
+  discount: Float! @rules(apply: ["required"])
+  discount_type: String @rules(apply: ["in:PERCENT,AMOUNT"])
+  expires_on: Date! @rules(apply: ["required"])
+}
+
+input UpdatePromoCodeInput {
+  id: ID! @rules(apply: ["required"])
+  name: String
+  discount: Float
+  discount_type: String @rules(apply: ["in:PERCENT,AMOUNT"])
+  expires_on: Date
+}
+
+type PromoCode {
+  id: ID
+  name: String
+  discount: Float
+  discount_type: String
+  expires_on: Date
+}

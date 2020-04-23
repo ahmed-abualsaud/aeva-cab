@@ -1,13 +1,34 @@
 input CreateCarTypeInput {
   name: String! @rules(apply: ["required", "unique:car_types,name"])
+  capacity: Int! @rules(apply: ["required"])
+  fixed: Int! @rules(apply: ["required"])
+  price: Int! @rules(apply: ["required"])
+  minute: Int! @rules(apply: ["required"])
+  distance: Int! @rules(apply: ["required"])
+  calculator: String! @rules(apply: ["required", "in:MIN,HOUR,DISTANCE,DISTANCEMIN,DISTANCEHOUR"])
+  photo: Upload
 }
 
 input UpdateCarTypeInput {
   id: ID! @rules(apply: ["required"])
   name: String
+  capacity: Int!
+  fixed: Int
+  price: Int
+  minute: Int
+  distance: Int
+  calculator: String @rules(apply: ["in:MIN,HOUR,DISTANCE,DISTANCEMIN,DISTANCEHOUR"])
+  photo: Upload
 }
 
 type CarType {
-  id: ID!
-  name: String!
+  id: ID
+  name: String
+  capacity: Int
+  fixed: Int
+  price: Int
+  minute: Int
+  distance: Int
+  calculator: String
+  photo: String
 }

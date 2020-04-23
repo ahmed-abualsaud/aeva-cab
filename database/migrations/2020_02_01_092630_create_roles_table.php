@@ -29,10 +29,11 @@ class CreateRolesTable extends Migration
             $table->boolean('business')->default(0);
             $table->boolean('commute')->default(0);
             $table->boolean('ondemand')->default(0);
+            $table->boolean('cab')->default(0);
             $table->boolean('fleet')->default(0);
             $table->boolean('payment')->default(0); 
             $table->boolean('cancellation')->default(0);
-            $table->boolean('status')->default(0);
+            $table->string('status')->nullable();
             $table->timestamps();
             $table->softDeletes();
             
