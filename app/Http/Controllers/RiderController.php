@@ -122,9 +122,10 @@ class RiderController extends Controller
         ]);
 
         $user = Auth::guard('user')->user();
-        $user->latitude = $request->latitude; 
-        $user->longitude = $request->longitude;
-        $user->save();
+        $user->update([
+            "latitude" => $request->latitude,
+            "longitude" => $request->longitude
+        ]);
         return response()->json(['message' => trans('cabResponses.user.location_updated')]);
     }
 
@@ -159,6 +160,8 @@ class RiderController extends Controller
 
     public function send_request(Request $request) {
 
+        $user = Auth::guard('user')->user();
+
         $this->validate($request, [
             's_latitude' => 'required|numeric',
             'd_latitude' => 'required|numeric',
@@ -169,12 +172,12 @@ class RiderController extends Controller
             'distance' => 'required|numeric',
             'use_wallet' => 'numeric',
             'payment_mode' => 'required|in:CASH,CARD,PAYPAL',
-            'card_id' => ['required_if:payment_mode,CARD','exists:cards,card_id,user_id,'.Auth::guard('user')->user()->id],
+            'card_id' => ['required_if:payment_mode,CARD','exists:cards,card_id,user_id,'.$user->id],
         ]);
+ 
+        $activeRequests = UserRequest::PendingRequest($user->id)->first();
 
-        $activeRequests = UserRequest::PendingRequest(Auth::guard('user')->user()->id)->count();
-
-        if($activeRequests > 0) {
+        if($activeRequests) {
             return response()->json(['error' => trans('cabResponses.ride.request_inprogress')], 500);
         }
 
@@ -183,10 +186,10 @@ class RiderController extends Controller
             $afterschedule_time = (new Carbon("$request->schedule_date $request->schedule_time"))->addHour(1);
 
             $checkScheduling = UserRequest::where('status','SCHEDULED')
-                ->where('user_id', Auth::guard('user')->user()->id)
-                ->whereBetween('schedule_at',[$beforeschedule_time, $afterschedule_time])
-                ->count();
-            if ($checkScheduling > 0) {
+                ->where('user_id', $user->id)
+                ->whereBetween('schedule_at', [$beforeschedule_time, $afterschedule_time])
+                ->first();
+            if ($checkScheduling) {
                 return response()->json(['error' => trans('cabResponses.ride.request_scheduled')], 500);
             }
 
@@ -197,9 +200,9 @@ class RiderController extends Controller
         $longitude = $request->s_longitude;
         $car_type = $request->service_type;
 
-        $drivers = Driver::select(DB::Raw("(6371 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) AS distance"),'id')
+        $drivers = Driver::select(DB::Raw("(6371 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) AS distance"), 'id')
+            ->having('distance', '<=', $distance)
             ->where('status', 'APPROVED')
-            ->whereRaw("(6371 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $distance")
             ->whereHas('vehicles', function($query) use ($car_type) {
                 $query->where('car_type_id', $car_type);
                 $query->where('status', 'ACTIVE');
@@ -208,10 +211,7 @@ class RiderController extends Controller
             ->take(5)
             ->get();
 
-        // List Providers who are currently busy and add them to the filter list.
-
-        if(count($drivers) == 0) {
-            // Push Notification to User
+        if(!$drivers->count()) {
             return response()->json(['message' => 'No drivers are available now']);
         }
 
@@ -225,11 +225,16 @@ class RiderController extends Controller
             $route_key = $details['routes'][0]['overview_polyline']['points'];
 
             $userRequest = new UserRequest;
-            $userRequest->booking_id = uniqid() . 'R' . Auth::guard('user')->user()->id;
-            $userRequest->user_id = Auth::guard('user')->user()->id;
+            $userRequest->booking_id = uniqid() . 'R' . $user->id;
+            $userRequest->user_id = $user->id;
             
             if ((env('MANUAL_REQUEST', 0) == 0) && (env('BROADCAST_REQUEST', 0) == 0)) {
                 $userRequest->current_driver_id = $drivers[0]->id;
+                (new SendPushController)->IncomingRequest($drivers[0]->id);
+            }
+
+            if (env('BROADCAST_REQUEST', 0) == 1) {
+                (new SendPushController)->IncomingRequest($drivers->pluck('id')); 
             }
 
             $userRequest->car_type_id = $request->service_type;
@@ -247,7 +252,7 @@ class RiderController extends Controller
             $userRequest->d_longitude = $request->d_longitude;
             $userRequest->distance = $request->distance;
 
-            if(Auth::guard('user')->user()->wallet_balance > 0){
+            if($user->wallet_balance > 0) {
                 $userRequest->use_wallet = $request->use_wallet ? : 0;
             }
 
@@ -266,30 +271,24 @@ class RiderController extends Controller
                 $userRequest->schedule_at = date("Y-m-d H:i:s", strtotime("$request->schedule_date $request->schedule_time"));
             }
 
-             if((env('MANUAL_REQUEST',  0) == 0) && (env('BROADCAST_REQUEST', 0) == 0)){
-                (new SendPushController)->IncomingRequest($drivers[0]->id);
-            }
-
             $userRequest->save();
 
-            User::where('id', Auth::guard('user')->user()->id)->update(['payment_mode' => $request->payment_mode]);
+            $user->update(['payment_mode' => $request->payment_mode]);
 
-            if($request->has('card_id')) {
-                Card::where('user_id', Auth::guard('user')->user()->id)->update(['is_default' => 0]);
+            if ($request->has('card_id')) {
+                Card::where('user_id', $user->id)->update(['is_default' => 0]);
                 Card::where('card_id', $request->card_id)->update(['is_default' => 1]);
             }
 
-            if(env('MANUAL_REQUEST', 0) == 0){
-                foreach ($drivers as $key => $driver) {
-                    if (env('BROADCAST_REQUEST', 0) == 1) {
-                       (new SendPushController)->IncomingRequest($driver->id); 
-                    }
-
-                    $Filter = new RequestFilter;
-                    $Filter->request_id = $userRequest->id;
-                    $Filter->driver_id = $driver->id; 
-                    $Filter->save();
-                }
+            if(env('MANUAL_REQUEST', 0) == 0) {
+                $data = array(); 
+                $arr = array();
+                foreach($drivers as $driver) {
+                    $arr['request_id'] = $userRequest->id;
+                    $arr['driver_id'] = $driver->id;
+                    array_push($data, $arr);
+                } 
+                RequestFilter::insert($data);
             }
 
             return response()->json([

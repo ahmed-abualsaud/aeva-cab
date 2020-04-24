@@ -39,6 +39,9 @@ type Driver {
   phone: String
   license_expires_on: Date
   avatar: String
+  latitude: String
+  longitude: String
+  rating: Float
   status: String
   fleet: Fleet! @belongsTo
   trips: [PartnerTrip] @hasMany

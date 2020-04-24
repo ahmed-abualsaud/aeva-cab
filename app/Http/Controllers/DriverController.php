@@ -11,6 +11,7 @@ use Auth;
 use Exception;
 use Carbon\Carbon;
 
+use App\Driver;
 use App\UserRequest;
 use App\DriverVehicle;
 use App\Fleet;

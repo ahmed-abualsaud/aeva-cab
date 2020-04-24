@@ -93,10 +93,9 @@ class SendPushController extends Controller
      *
      * @return void
      */
-    public function IncomingRequest($driver){
-
+    public function IncomingRequest($driver)
+    {
         return $this->sendPushToProvider($driver, trans('cabResponses.push.incoming_request'));
-
     }
     
 
@@ -146,16 +145,24 @@ class SendPushController extends Controller
     }
 
     /**
-     * Sending Push to a user Device.
+     * Sending Push to a driver Device.
      *
      * @return void
      */
-    public function sendPushToProvider($driver_id, $push_message){
-    	$devices = DeviceToken::where('tokenable_id', $driver_id)
+    public function sendPushToProvider($driver_id, $push_message)
+    {
+        if (is_array($driver_id)) {
+            $devices = DeviceToken::whereIn('tokenable_id', $driver_id)
             ->where('tokenable_type', 'App\Driver')
             ->select('device_id')
             ->pluck('device_id');
-
+        } else {
+            $devices = DeviceToken::where('tokenable_id', $driver_id)
+            ->where('tokenable_type', 'App\Driver')
+            ->select('device_id')
+            ->pluck('device_id');
+        }
+    	
         if ($devices) {
             PushNotification::dispatch($devices, $push_message);
         }
