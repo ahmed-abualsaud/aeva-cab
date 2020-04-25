@@ -162,7 +162,7 @@ class RiderController extends Controller
 
         $user = Auth::guard('user')->user();
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             's_latitude' => 'required|numeric',
             'd_latitude' => 'required|numeric',
             's_longitude' => 'required|numeric',
@@ -174,6 +174,10 @@ class RiderController extends Controller
             'payment_mode' => 'required|in:CASH,CARD,PAYPAL',
             'card_id' => ['required_if:payment_mode,CARD','exists:cards,card_id,user_id,'.$user->id],
         ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
  
         $activeRequests = UserRequest::PendingRequest($user->id)->first();
 
@@ -195,7 +199,7 @@ class RiderController extends Controller
 
         }
 
-        $distance = env('PROVIDER_SEARCH_RADIUS', 10);
+        $distance = 200;
         $latitude = $request->s_latitude;
         $longitude = $request->s_longitude;
         $car_type = $request->service_type;
@@ -212,18 +216,11 @@ class RiderController extends Controller
             ->get();
 
         if(!$drivers->count()) {
-            return response()->json(['message' => 'No drivers are available now']);
+            return response()->json(['message' => 'No available drivers now']);
         }
 
         try {
-            $details = "https://maps.googleapis.com/maps/api/directions/json?origin=".$request->s_latitude.",".$request->s_longitude."&destination=".$request->d_latitude.",".$request->d_longitude."&mode=driving&key=".env('GOOGLE_MAP_KEY', null);
-
-            $json = curl($details);
-
-            $details = json_decode($json, TRUE);
-
-            $route_key = $details['routes'][0]['overview_polyline']['points'];
-
+            
             $userRequest = new UserRequest;
             $userRequest->booking_id = uniqid() . 'R' . $user->id;
             $userRequest->user_id = $user->id;
@@ -261,7 +258,10 @@ class RiderController extends Controller
             }
 
             $userRequest->assigned_at = Carbon::now();
-            $userRequest->route_key = $route_key;
+
+            if ($request->has('route_key')) {
+                $userRequest->route_key = $request->route_key;
+            }
 
             if ($drivers->count() <= env('SURGE_TRIGGER', 0) && $drivers->count() > 0) {
                 $userRequest->surge = 1;
@@ -298,7 +298,7 @@ class RiderController extends Controller
             ]);
 
         } catch (Exception $e) {
-            return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
@@ -369,25 +369,20 @@ class RiderController extends Controller
     public function request_status_check() {
 
         try {
+            $user = Auth::guard('user')->user();
             $check_status = ['CANCELLED', 'SCHEDULED'];
-
-            $userRequests = UserRequest::UserRequestStatusCheck(Auth::guard('user')->user()->id, $check_status)
+            $userRequests = UserRequest::UserRequestStatusCheck($user->id, $check_status)
                 ->get()
                 ->toArray(); 
 
-            $search_status = ['SEARCHING','SCHEDULED'];
-            $userRequestsFilter = UserRequest::UserRequestAssignProvider(Auth::guard('user')->user()->id,$search_status)->get(); 
-
-            $timeout = env('DRIVER_SELECT_TIMEOUT', '180');
-
-            if(!empty($userRequestsFilter)) {
-                for ($i=0; $i < sizeof($userRequestsFilter); $i++) {
-                    $expiredTime = $timeout - (time() - strtotime($userRequestsFilter[$i]->assigned_at));
-                    if ($userRequestsFilter[$i]->status == 'SEARCHING' && $expiredTime < 0) {
+            $requests = UserRequest::UserRequestAssignProvider($user->id, 'SEARCHING')->get();  
+            $timeout = 180;
+            if($requests->count()) {
+                foreach($requests as $request) {
+                    $expiredTime = $timeout - (time() - strtotime($request->assigned_at));
+                    if ($expiredTime < 0) {
                         $providerTrip = new TripController();
-                        $providerTrip->assign_next_provider($userRequestsFilter[$i]->id);
-                    } else if ($userRequestsFilter[$i]->status == 'SEARCHING' && $expiredTime > 0) {
-                        break;
+                        $providerTrip->assign_next_provider($request->id);
                     }
                 }
             }

@@ -111,8 +111,7 @@ class UserRequest extends Model
         return $query->where('user_requests.user_id', $user_id)
             ->where('user_requests.user_rated',0)
             ->whereNull('user_requests.driver_id')
-            ->whereIn('user_requests.status', $check_status)
-            ->select('user_requests.*')
-            ->with('filter');
+            ->where('user_requests.status', $check_status)
+            ->select('user_requests.*');
     }
 }

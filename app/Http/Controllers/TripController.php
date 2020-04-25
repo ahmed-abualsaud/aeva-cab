@@ -322,12 +322,6 @@ class TripController extends Controller
         return $Jobs;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function accept(Request $request, $id)
     {
         try {
@@ -521,8 +515,7 @@ class TripController extends Controller
         try {
             $UserRequest = UserRequest::findOrFail($request_id);
         } catch (ModelNotFoundException $e) {
-            // Cancelled between update.
-            return false;
+            return response()->json(['error' => 'Request not found'], 404);
         }
 
         $RequestFilter = RequestFilter::where('driver_id', $UserRequest->current_driver_id)
@@ -530,7 +523,6 @@ class TripController extends Controller
             ->delete();
 
         try {
-
             $next_provider = RequestFilter::where('request_id', $UserRequest->id)
                 ->orderBy('id')
                 ->firstOrFail();
@@ -539,17 +531,10 @@ class TripController extends Controller
             $UserRequest->assigned_at = Carbon::now();
             $UserRequest->save();
 
-            // incoming request push to driver
             (new SendPushController)->IncomingRequest($next_provider->driver_id);
             
         } catch (ModelNotFoundException $e) {
-
             UserRequest::where('id', $UserRequest->id)->update(['status' => 'CANCELLED']);
-
-            // No longer need request specific rows from RequestMeta
-            RequestFilter::where('request_id', $UserRequest->id)->delete();
-
-            //  request push to user driver not available
             (new SendPushController)->ProviderNotAvailable($UserRequest->user_id);
         }
     }

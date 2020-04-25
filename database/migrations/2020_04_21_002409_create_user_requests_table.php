@@ -63,7 +63,7 @@ class CreateUserRequestsTable extends Migration
             $table->boolean('driver_rated')->default(0);
             $table->boolean('use_wallet')->default(0);
             $table->boolean('surge')->default(0);
-            $table->longText('route_key');
+            $table->longText('route_key')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
