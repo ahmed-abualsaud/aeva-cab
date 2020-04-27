@@ -31,11 +31,7 @@ class CreateUserRequestsTable extends Migration
                 'COMPLETED',
                 'SCHEDULED',
             ]);
-            $table->enum('cancelled_by', [
-                'NONE',
-                'USER',
-                'DRIVER'
-            ]);
+            $table->enum('cancelled_by', ['USER','DRIVER'])->nullable();
             $table->string('cancel_reason')->nullable();
             $table->enum('payment_mode', [
                 'CASH',
@@ -43,7 +39,7 @@ class CreateUserRequestsTable extends Migration
                 'PAYPAL'
             ]);
             $table->boolean('paid')->default(0);
-            $table->enum('is_track', ['YES','NO'])->default('NO');
+            $table->boolean('is_track')->default(0);
             $table->double('distance', 15, 8);
             $table->string('travel_time')->nullable();
             $table->string('s_address')->nullable();

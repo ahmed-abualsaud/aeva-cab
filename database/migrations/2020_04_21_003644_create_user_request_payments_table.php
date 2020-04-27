@@ -21,7 +21,7 @@ class CreateUserRequestPaymentsTable extends Migration
             $table->string('payment_mode')->nullable();
             $table->float('fixed', 10, 2)->default(0);
             $table->float('distance', 10, 2)->default(0);
-            $table->float('commision', 10, 2)->default(0);
+            $table->float('commission', 10, 2)->default(0);
             $table->float('discount', 10, 2)->default(0);
             $table->float('tax', 10, 2)->default(0);
             $table->float('wallet', 10, 2)->default(0);

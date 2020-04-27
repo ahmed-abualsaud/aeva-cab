@@ -1,0 +1,25 @@
+type UserRequest {
+  id: ID
+  booking_id: String
+  status: String
+  cancelled_by: String
+  cancel_reason: String
+  payment_mode: String
+  paid: Boolean
+  distance: Float
+  created_at: DateTime
+  schedule_at: DateTime
+  assigned_at: DateTime
+  started_at: DateTime
+  finished_at: DateTime
+  s_address: String
+  d_address: String
+  s_latitude: String
+  s_longitude: String
+  d_latitude: String
+  d_longitude: String
+  user: User @belongsTo
+  driver: Driver @belongsTo
+  car_type: CarType @belongsTo
+  payment: UserRequestPayment @hasOne
+}

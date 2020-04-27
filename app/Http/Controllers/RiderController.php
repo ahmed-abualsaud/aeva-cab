@@ -254,7 +254,7 @@ class RiderController extends Controller
             }
 
             if (env('TRACK_DISTANCE', 0) == 1) {
-                $userRequest->is_track = "YES";
+                $userRequest->is_track = true;
             }
 
             $userRequest->assigned_at = Carbon::now();

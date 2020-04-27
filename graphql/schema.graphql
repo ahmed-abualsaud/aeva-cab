@@ -93,6 +93,9 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   updatePromoCode(input: UpdatePromoCodeInput! @spread): PromoCode @update @updatePromoCodeValidation
   deletePromoCode(id: ID!): PromoCode @delete
 
+  # User Request
+  deleteUserRequest(id: ID!): UserRequest @delete
+
   # Document
   uploadDocument(input: UploadDocumentInput @spread): Document
     @field(resolver: "DocumentResolver@create")
@@ -213,6 +216,10 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   promoCodes: [PromoCode!]! @all
   promoCode(id: ID @eq): PromoCode @find
 
+  # User Request
+  userRequests(status: String): [UserRequest!]!
+    @field(resolver: "CabResolver@userRequests")
+
   # Document
   documents(documentable_id: ID!, documentable_type: String!): [Document]
     @field(resolver: "DocumentResolver")
@@ -277,3 +284,5 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
 #import tripLog.graphql
 #import document.graphql
 #import promoCode.graphql
+#import userRequest.graphql
+#import userRequestPayment.graphql

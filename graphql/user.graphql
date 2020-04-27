@@ -95,11 +95,16 @@ type User {
   phone: String
   avatar: String
   title: String
-  phone_verified_at: DateTime
   employee_id: String
-  partner: Partner @belongsTo
+  payment_mode: String
+  latitude: String
+  longitude: String
+  wallet_balance: Float
+  rating: Float
   is_picked_up: Boolean
   is_arrived: Boolean
+  phone_verified_at: DateTime
+  partner: Partner @belongsTo
   deviceTokens: [DeviceToken] @morphMany
 }
 

@@ -5,7 +5,7 @@ input CreatePartnerInput {
   phone2: String
   type: String
   logo: Upload
-  size: String @rules(apply: ["in:Small,Medium,Large,Enterprise"])
+  size: String @rules(apply: ["in:SMALL,MEDIUM,LARGE,ENTERPRISE"])
   license_expires_on: Date
   insurance_expires_on: Date
   max_no_of_trips: Int
@@ -19,7 +19,7 @@ input UpdatePartnerInput {
   phone1: String
   phone2: String
   logo: Upload
-  size: String @rules(apply: ["in:Small,Medium,Large,Enterprise"])
+  size: String @rules(apply: ["in:SMALL,MEDIUM,LARGE,ENTERPRISE"])
   license_expires_on: Date
   insurance_expires_on: Date
   max_no_of_trips: Int

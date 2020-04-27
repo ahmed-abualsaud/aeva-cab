@@ -32,7 +32,7 @@ class TripController extends Controller
      */
     public function index(Request $request)
     {
-        try{
+        try {
             $driver = Auth::guard('driver')->user();
 
             $driver_id = $driver->id;
@@ -75,18 +75,18 @@ class TripController extends Controller
 
             if(env('MANUAL_REQUEST', 0) == 0) {
                 $Timeout = env('DRIVER_SELECT_TIMEOUT', '180');
-                    if(!empty($IncomingRequests)){
-                        for ($i=0; $i < sizeof($IncomingRequests); $i++) {
-                            $IncomingRequests[$i]->time_left_to_respond = $Timeout - (time() - strtotime($IncomingRequests[$i]->request->assigned_at));
-                            if($IncomingRequests[$i]->request->status == 'SEARCHING' && $IncomingRequests[$i]->time_left_to_respond < 0) {
-                                if(env('BROADCAST_REQUEST', 0) == 1){
-                                    $this->assign_destroy($IncomingRequests[$i]->request->id);
-                                }else{
-                                    $this->assign_next_provider($IncomingRequests[$i]->request->id);
-                                }
+                if(!empty($IncomingRequests)){
+                    for ($i=0; $i < sizeof($IncomingRequests); $i++) {
+                        $IncomingRequests[$i]->time_left_to_respond = $Timeout - (time() - strtotime($IncomingRequests[$i]->request->assigned_at));
+                        if($IncomingRequests[$i]->request->status == 'SEARCHING' && $IncomingRequests[$i]->time_left_to_respond < 0) {
+                            if(env('BROADCAST_REQUEST', 0) == 1){
+                                $this->assign_destroy($IncomingRequests[$i]->request->id);
+                            }else{
+                                $this->assign_next_provider($IncomingRequests[$i]->request->id);
                             }
                         }
                     }
+                }
 
             }
 
@@ -181,7 +181,7 @@ class TripController extends Controller
 
             $UserRequest->status = "CANCELLED";
             $UserRequest->cancel_reason = $request->cancel_reason;
-            $UserRequest->cancelled_by = "PROVIDER";
+            $UserRequest->cancelled_by = "DRIVER";
             $UserRequest->save();
 
              RequestFilter::where('request_id', $UserRequest->id)->delete();
@@ -420,7 +420,7 @@ class TripController extends Controller
             }
 
             if($request->status == 'PICKEDUP'){
-                if($UserRequest->is_track == "YES"){
+                if($UserRequest->is_track){
                    $UserRequest->distance = 0; 
                 }
                 $UserRequest->started_at = Carbon::now();
@@ -429,7 +429,7 @@ class TripController extends Controller
             $UserRequest->save();
 
             if($request->status == 'DROPPED') {
-                if($UserRequest->is_track == "YES"){
+                if($UserRequest->is_track){
                     $UserRequest->d_latitude = $request->latitude?:$UserRequest->d_latitude;
                     $UserRequest->d_longitude = $request->longitude?:$UserRequest->d_longitude;
                     $UserRequest->d_address =  $request->address?:$UserRequest->d_address;
@@ -572,7 +572,7 @@ class TripController extends Controller
                 $Distance = ($kilometer * $car_type->price);
             }
 
-             $Commision = ($Distance + $Fixed) * ( $commission_percentage/100 );
+             $commission = ($Distance + $Fixed) * ( $commission_percentage/100 );
              $Tax = ($Distance + $Fixed) * ( $tax_percentage/100 );
              $ProviderCommission = ($Distance + $Fixed) * ( $provider_commission_percentage/100 );
              $ProviderPay = ($Distance + $Fixed) - $ProviderCommission;
@@ -615,7 +615,7 @@ class TripController extends Controller
             */ 
             $Payment->fixed = $Fixed + $Surge;
             $Payment->distance = $Distance;
-            $Payment->commision = $Commision;
+            $Payment->commission = $commission;
             $Payment->surge = $Surge;
             $Payment->total = $Total;
             $Payment->driver_commission = $ProviderCommission;

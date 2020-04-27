@@ -47,12 +47,6 @@ class UserRequest extends Model
             ->whereNotIn('status' , ['CANCELLED', 'COMPLETED', 'SCHEDULED']);
     }
 
-    public function scopeRequestHistory($query)
-    {
-        return $query->orderBy('user_requests.created_at', 'desc')
-            ->with('user','payment','driver');
-    }
-
     public function scopeUserTrips($query, $user_id)
     {
         return $query->where('user_requests.user_id', $user_id)
