@@ -5,7 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\User;
 use App\PartnerTrip;
 use App\PartnerTripUser;
-use App\PartnerTripSchedule;
+use App\PartnerTripSchedule; 
 use App\Jobs\Otp;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;

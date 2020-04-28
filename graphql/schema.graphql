@@ -219,6 +219,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   # User Request
   userRequests(status: String): [UserRequest!]!
     @field(resolver: "CabResolver@userRequests")
+  userRequest(id: ID! @eq): UserRequest @find
 
   # Document
   documents(documentable_id: ID!, documentable_type: String!): [Document]

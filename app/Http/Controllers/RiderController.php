@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 use DB;
 use Auth;
@@ -199,7 +200,7 @@ class RiderController extends Controller
 
         }
 
-        $distance = 200;
+        $distance = 2000;
         $latitude = $request->s_latitude;
         $longitude = $request->s_longitude;
         $car_type = $request->service_type;
@@ -222,7 +223,7 @@ class RiderController extends Controller
         try {
             
             $userRequest = new UserRequest;
-            $userRequest->booking_id = uniqid() . 'R' . $user->id;
+            $userRequest->booking_id = Str::random(6) . 'R' . $user->id;
             $userRequest->user_id = $user->id;
             
             if ((env('MANUAL_REQUEST', 0) == 0) && (env('BROADCAST_REQUEST', 0) == 0)) {

@@ -577,7 +577,7 @@ class TripController extends Controller
              $ProviderCommission = ($Distance + $Fixed) * ( $provider_commission_percentage/100 );
              $ProviderPay = ($Distance + $Fixed) - $ProviderCommission;
 
-            if($PromoCodeUsage = PromoCodeUsage::where('user_id',$UserRequest->user_id)->where('status','ADDED')->first())
+            if($PromoCodeUsage = PromoCodeUsage::where('user_id', $UserRequest->user_id)->where('status','ADDED')->first())
             {
                 if($PromoCode = PromoCode::find($PromoCodeUsage->promo_code_id)){
                     $Discount = $PromoCode->discount;
