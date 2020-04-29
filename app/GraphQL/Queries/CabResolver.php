@@ -4,6 +4,7 @@ namespace App\GraphQL\Queries;
 
 use App\UserRequest;
 use App\UserRequestPayment;
+use Carbon\Carbon;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -26,6 +27,10 @@ class CabResolver
             $requests->where('status', $args['status']);
         }
 
+        if (array_key_exists('period', $args) && $args['period']) {
+            $requests = $this->dateFilter($args['period'], $requests, 'created_at');
+        }
+
         $requests->orderBy('created_at', 'DESC');
         $requests = $requests->get();
         
@@ -39,24 +44,63 @@ class CabResolver
 
     public function requestStatement($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $requestCount = UserRequest::count();
+        $requestCount = UserRequest::query();
 
-        $earning = UserRequestPayment::selectRaw('
+        $requestGroup = UserRequest::selectRaw('
+            DATE(created_at) as date,
+            count(*) as count
+        ');
+            
+
+        $statement = UserRequestPayment::selectRaw('
             SUM(ROUND(fixed) + ROUND(distance)) as overall_earning,
             SUM(ROUND(commission)) as overall_commission,
             SUM(ROUND(driver_pay)) as driver_earning,
             SUM(ROUND(driver_commission)) as driver_commission
-        ')
-        ->first();
+        ');
+
+        if (array_key_exists('period', $args) && $args['period']) {
+            $statement = $this->dateFilter($args['period'], $statement, 'created_at');
+            $requestCount = $this->dateFilter($args['period'], $requestCount, 'created_at');
+            $requestGroup = $this->dateFilter($args['period'], $requestGroup, 'created_at');
+        }
+
+        $statement = $statement->first();
+        $requestCount = $requestCount->count();
+        $requestGroup = $requestGroup->groupBy('date')->get();
         
         $response = [
             "count" => $requestCount,
-            "overallEarning" => $earning->overall_earning,
-            "driverEarning" => $earning->driver_earning,
-            "overallCommission" => $earning->overall_commission,
-            "driverCommission" => $earning->driver_commission
+            "overallEarning" => $statement->overall_earning,
+            "driverEarning" => $statement->driver_earning,
+            "overallCommission" => $statement->overall_commission,
+            "driverCommission" => $statement->driver_commission,
+            "requests" => $requestGroup
         ];
 
         return $response;
+    }
+
+    protected function dateFilter($period, $result, $field)
+    {
+        switch($period) {
+            case $period == 'today':
+                return $result->where($field, '>=', Carbon::today());
+            
+            case $period == 'week':
+                return $result->where($field, '>=', Carbon::now()->subDays(7));
+            
+            case $period == 'month':
+                return $result->where($field, '>=', Carbon::now()->subMonth());
+            
+            case $period == 'quarter':
+                return $result->where($field, '>=', Carbon::now()->subMonth(3));
+            
+            case $period == 'half':
+                return $result->where($field, '>=', Carbon::now()->subMonth(6));
+            
+            case $period == 'year':
+                return $result->where($field, '>=', Carbon::now()->subMonth(12));  
+        }
     }
 }

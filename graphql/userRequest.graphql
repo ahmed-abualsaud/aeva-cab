@@ -9,6 +9,12 @@ type RequestStatement {
   driverEarning: Float
   overallCommission: Float
   driverCommission: Float
+  requests: [RequestGroup]
+}
+
+type RequestGroup {
+  date: String
+  count: Int
 }
 
 type UserRequest {
