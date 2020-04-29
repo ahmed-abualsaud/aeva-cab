@@ -200,13 +200,13 @@ class RiderController extends Controller
 
         }
 
-        $distance = 2000;
+        $distance = 10;
         $latitude = $request->s_latitude;
         $longitude = $request->s_longitude;
         $car_type = $request->service_type;
 
         $drivers = Driver::select(DB::Raw("(6371 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) AS distance"), 'id')
-            ->having('distance', '<=', $distance)
+            // ->having('distance', '<=', $distance)
             ->where('status', 'APPROVED')
             ->whereHas('vehicles', function($query) use ($car_type) {
                 $query->where('car_type_id', $car_type);

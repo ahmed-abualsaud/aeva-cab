@@ -1,3 +1,16 @@
+type RequestHistory {
+  count: Int
+  requests: [UserRequest]
+}
+
+type RequestStatement {
+  count: Int
+  overallEarning: Float
+  driverEarning: Float
+  overallCommission: Float
+  driverCommission: Float
+}
+
 type UserRequest {
   id: ID
   booking_id: String

@@ -217,8 +217,10 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   promoCode(id: ID @eq): PromoCode @find
 
   # User Request
-  userRequests(status: String): [UserRequest!]!
-    @field(resolver: "CabResolver@userRequests")
+  requestHistory(status: String): RequestHistory
+    @field(resolver: "CabResolver@requestHistory")
+  requestStatement: RequestStatement
+    @field(resolver: "CabResolver@requestStatement")
   userRequest(id: ID! @eq): UserRequest @find
 
   # Document

@@ -3,6 +3,7 @@
 namespace App\GraphQL\Queries;
 
 use App\UserRequest;
+use App\UserRequestPayment;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -17,7 +18,7 @@ class CabResolver
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function userRequests($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function requestHistory($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $requests = UserRequest::query();
 
@@ -26,7 +27,36 @@ class CabResolver
         }
 
         $requests->orderBy('created_at', 'DESC');
+        $requests = $requests->get();
+        
+        $response = [
+            "requests" => $requests,
+            "count" => $requests->count(),
+        ];
 
-        return $requests->get();
+        return $response;
+    }
+
+    public function requestStatement($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $requestCount = UserRequest::count();
+
+        $earning = UserRequestPayment::selectRaw('
+            SUM(ROUND(fixed) + ROUND(distance)) as overall_earning,
+            SUM(ROUND(commission)) as overall_commission,
+            SUM(ROUND(driver_pay)) as driver_earning,
+            SUM(ROUND(driver_commission)) as driver_commission
+        ')
+        ->first();
+        
+        $response = [
+            "count" => $requestCount,
+            "overallEarning" => $earning->overall_earning,
+            "driverEarning" => $earning->driver_earning,
+            "overallCommission" => $earning->overall_commission,
+            "driverCommission" => $earning->driver_commission
+        ];
+
+        return $response;
     }
 }
