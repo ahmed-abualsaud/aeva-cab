@@ -50,32 +50,41 @@ class CabResolver
             DATE(created_at) as date,
             count(*) as count
         ');
+
+        $requestPaymentGroup = UserRequestPayment::selectRaw('
+            DATE(created_at) as date,
+            SUM(ROUND(fixed) + ROUND(distance)) as overallEarning,
+            SUM(ROUND(commission)) as overallCommission
+        ');
             
 
         $statement = UserRequestPayment::selectRaw('
-            SUM(ROUND(fixed) + ROUND(distance)) as overall_earning,
-            SUM(ROUND(commission)) as overall_commission,
-            SUM(ROUND(driver_pay)) as driver_earning,
-            SUM(ROUND(driver_commission)) as driver_commission
+            SUM(ROUND(fixed) + ROUND(distance)) as overallEarning,
+            SUM(ROUND(commission)) as overallCommission,
+            SUM(ROUND(driver_pay)) as driverEarning,
+            SUM(ROUND(driver_commission)) as driverCommission
         ');
 
         if (array_key_exists('period', $args) && $args['period']) {
             $statement = $this->dateFilter($args['period'], $statement, 'created_at');
             $requestCount = $this->dateFilter($args['period'], $requestCount, 'created_at');
             $requestGroup = $this->dateFilter($args['period'], $requestGroup, 'created_at');
+            $requestPaymentGroup = $this->dateFilter($args['period'], $requestPaymentGroup, 'created_at');
         }
 
         $statement = $statement->first();
         $requestCount = $requestCount->count();
         $requestGroup = $requestGroup->groupBy('date')->get();
+        $requestPaymentGroup = $requestPaymentGroup->groupBy('date')->get();
         
         $response = [
             "count" => $requestCount,
-            "overallEarning" => $statement->overall_earning,
-            "driverEarning" => $statement->driver_earning,
-            "overallCommission" => $statement->overall_commission,
-            "driverCommission" => $statement->driver_commission,
-            "requests" => $requestGroup
+            "overallEarning" => $statement->overallEarning,
+            "driverEarning" => $statement->driverEarning,
+            "overallCommission" => $statement->overallCommission,
+            "driverCommission" => $statement->driverCommission,
+            "requests" => $requestGroup,
+            "requestPayments" => $requestPaymentGroup
         ];
 
         return $response;

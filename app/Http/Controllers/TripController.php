@@ -400,7 +400,7 @@ class TripController extends Controller
         $this->validate($request, [
             'status' => 'required|in:ACCEPTED,STARTED,ARRIVED,PICKEDUP,DROPPED,PAYMENT,COMPLETED',
         ]);
-
+ 
         try {
 
             $UserRequest = UserRequest::with('user')->findOrFail($id);
@@ -547,7 +547,7 @@ class TripController extends Controller
             $commission_percentage = env('COMMISSION_PERCENTAGE', 10);
             $provider_commission_percentage = env('PROVIDER_COMMISSION_PERCENTAGE', 10);
             $car_type = CarType::findOrFail($UserRequest->car_type_id);
-            
+             
             $kilometer = $UserRequest->distance;
             $Fixed = $car_type->fixed;
             $Distance = 0;

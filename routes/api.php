@@ -28,9 +28,9 @@ Route::group(['middleware' => ['auth:user']], function () {
         Route::get('/show/providers', 'RiderController@show_providers');
         Route::post('/update/request', 'RiderController@modifiy_request');
         Route::get('/trips', 'RiderController@trips');
-        Route::get('upcoming/trips', 'RiderController@upcoming_trips');
+        Route::get('/upcoming/trips', 'RiderController@upcoming_trips');
         Route::get('/trip/details', 'RiderController@trip_details');
-        Route::get('upcoming/trip/details', 'RiderController@upcoming_trip_details');
+        Route::get('/upcoming/trip/details', 'RiderController@upcoming_trip_details');
         Route::post('/payment', 'PaymentController@payment');
         Route::post('/add/money', 'PaymentController@add_money');
         Route::get('/estimated/fare', 'RiderController@estimated_fare');

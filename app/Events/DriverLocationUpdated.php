@@ -35,6 +35,6 @@ class DriverLocationUpdated implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('trip.'.$this->tripID);
+        return new Channel($this->tripID);
     }
 }

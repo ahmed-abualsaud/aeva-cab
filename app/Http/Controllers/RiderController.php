@@ -888,19 +888,10 @@ class RiderController extends Controller
 
     public function help_details(Request $request)
     {
-        try {
-            if ($request->ajax()) {
-                return response()->json([
-                    'contact_number' => '', 
-                    'contact_email' => ''
-                ]);
-            }
-
-        } catch (Exception $e) {
-            if($request->ajax()) {
-                return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
-            }
-        }
+        return response()->json([
+            'contact_number' => '123', 
+            'contact_email' => 'support@qruz.app'
+        ]);
     }
 
 

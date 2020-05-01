@@ -10,7 +10,7 @@ use App\PartnerTripUser;
 use App\Jobs\PushNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
-use App\Events\DriverLocationUpdated;
+use App\Events\DriverLocationUpdated; 
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -166,7 +166,7 @@ class TripLogResolver
             'longitude' => $args['longitude']
         ];
 
-        broadcast(new DriverLocationUpdated($location, $args['trip_id']))->toOthers();
+        broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
 
         try {
             $input = Arr::except($args, ['directive']);
