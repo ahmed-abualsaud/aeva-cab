@@ -526,16 +526,20 @@ class RiderController extends Controller
             's_longitude' => 'required|numeric',
             'd_latitude' => 'required|numeric',
             'd_longitude' => 'required|numeric',
-            'service_type' => 'required|numeric|exists:car_types,id',
+            'service_type' => 'required|numeric',
         ]);
 
         try {
 
             $details = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$request->s_latitude.",".$request->s_longitude."&destinations=".$request->d_latitude.",".$request->d_longitude."&mode=driving&sensor=false&key=".env('GOOGLE_MAP_KEY', null);
 
-            $json = curl($details);
+            $ch = curl_init();
+            curl_setopt( $ch, CURLOPT_URL, $details );
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec( $ch );
+            curl_close( $ch );
 
-            $details = json_decode($json, TRUE);
+            $details = json_decode($result, TRUE);
 
             $meter = $details['rows'][0]['elements'][0]['distance']['value'];
             $time = $details['rows'][0]['elements'][0]['duration']['text'];
@@ -544,9 +548,14 @@ class RiderController extends Controller
             $kilometer = round($meter/1000);
             $minutes = round($seconds/60);
 
-            $tax_percentage = env('TAX_PERCENTAGE', 14);
+            // Settings
+            $tax_percentage = 14;
+            $driver_search_radius = 2000;
+            $surge_trigger = 0;
+            $surge_percentage = 0;
+
             $car_type = CarType::findOrFail($request->service_type);
-            
+            $base_price = $car_type->fixed;
             $price = $car_type->fixed;
 
             if ($car_type->calculator == 'MIN') {
@@ -566,13 +575,11 @@ class RiderController extends Controller
             $tax_price = ( $tax_percentage/100 ) * $price;
             $total = $price + $tax_price;
             $car_type = $request->service_type;
-
-            $distance = env('PROVIDER_SEARCH_RADIUS', 10);
             $latitude = $request->s_latitude;
             $longitude = $request->s_longitude;
 
             $drivers = Driver::where('status', 'APPROVED')
-                ->whereRaw("(1.609344 * 3956 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $distance")
+                ->whereRaw("(1.609344 * 3956 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $driver_search_radius")
                 ->whereHas('vehicles', function($query) use ($car_type) { 
                     $query->where('car_type_id', $car_type); 
                     $query->where('status','ACTIVE');
@@ -581,16 +588,13 @@ class RiderController extends Controller
 
             $surge = 0;
             
-            if($drivers->count() <= env('SURGE_TRIGGER', 0) && $drivers->count() > 0){
-                $surge_price = (env('SURGE_PERCENTAGE', 0)/100) * $total;
+            if($drivers->count() <= $surge_trigger && $drivers->count() > 0){
+                $surge_price = ($surge_percentage/100) * $total;
                 $total += $surge_price;
                 $surge = 1;
             }
 
-            /*
-            * Reported by Jeya, previously it was hardcoded. we have changed as based on surge percentage.
-            */ 
-            $surge_percentage = 1+(env('SURGE_PERCENTAGE', 0)/100)."X";
+            $surge_percentage = 1+($surge_percentage/100)."X";
 
             return response()->json([
                 'estimated_fare' => round($total,2), 
@@ -599,12 +603,11 @@ class RiderController extends Controller
                 'surge' => $surge,
                 'surge_value' => $surge_percentage,
                 'tax_price' => $tax_price,
-                'base_price' => $car_type->fixed,
-                'wallet_balance' => Auth::guard('user')->user()->wallet_balance
+                'base_price' => $base_price,
             ]);
 
         } catch(Exception $e) {
-            return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 

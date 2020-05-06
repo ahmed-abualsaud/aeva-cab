@@ -50,13 +50,26 @@ type GetDriverLocationResponse {
   longitude: String!
 }
 
-type PartnerTripLog {
+type TripLogResponse {
+  created_at: DateTime!
+  status: String!
+  latitude: String
+  longitude: String
+  user: String
+}
+
+type TripLogHistoryResponse {
+  log_id: String
+  date: Date
+}
+
+type TripLog {
   id: ID
-  log_id: String! @rules(apply: ["required"])
+  log_id: String
   created_at: DateTime
   updated_at: DateTime
   latitude: String
   longitude: String
-  user_id: User @belongsTo
+  user: User @belongsTo
   status: String
 }

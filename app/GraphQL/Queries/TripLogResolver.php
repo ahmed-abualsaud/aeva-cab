@@ -19,6 +19,27 @@ class TripLogResolver
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
+    public function tripLog($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $log = TripLog::selectRaw('trip_logs.status, trip_logs.latitude, trip_logs.longitude, trip_logs.created_at, users.name as user')
+            ->leftJoin('users', 'users.id', '=', 'trip_logs.user_id')
+            ->where('log_id', $args['log_id'])
+            ->where('status', '!=', 'MOVING')
+            ->orderBy('trip_logs.created_at', 'desc')
+            ->get();
+
+        return $log; 
+    }
+
+    public function tripLogHistory($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        return TripLog::selectRaw('log_id, DATE(created_at) as date')
+            ->where('trip_id', $args['trip_id'])
+            ->groupBy('log_id','date')
+            ->orderBy('date', 'desc')
+            ->get();
+    }
+
     public function driverLocation($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         try {

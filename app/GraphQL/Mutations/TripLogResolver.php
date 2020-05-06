@@ -10,7 +10,8 @@ use App\PartnerTripUser;
 use App\Jobs\PushNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
-use App\Events\DriverLocationUpdated; 
+// use App\Events\DriverLocationUpdated; 
+// use App\Events\TripLogPost; 
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -109,6 +110,16 @@ class TripLogResolver
             throw new \Exception('We could not find a trip with the provided ID.');
         }
 
+        // $log = [
+        //     "created_at" => Carbon::now(),
+        //     "status" => $input['status'],
+        //     "latitude" => $args['latitude'],
+        //     "longitude" => $args['longitude'],
+        //     "user" => null
+        // ];
+
+        // broadcast(new TripLogPost($log, 'business.'.$args['trip_id']))->toOthers();
+
         return 'Trip has ended.';
     }
 
@@ -166,7 +177,7 @@ class TripLogResolver
             'longitude' => $args['longitude']
         ];
 
-        broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
+        // broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
 
         try {
             $input = Arr::except($args, ['directive']);
