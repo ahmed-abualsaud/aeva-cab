@@ -37,7 +37,8 @@ class TripController extends Controller
             $driver = auth('driver')->user();
             $driver_id = $driver->id;
 
-            $afterAssignProvider = RequestFilter::where('driver_id', $driver_id)
+            $afterAssignProvider = RequestFilter::with('request.user')
+                ->where('driver_id', $driver_id)
                 ->whereHas('request', function($query) use ($driver_id) {
                     $query->where('status','<>', 'CANCELLED');
                     $query->where('status','<>', 'SCHEDULED');
@@ -46,14 +47,16 @@ class TripController extends Controller
                 });
 
             if ($broadcast_request) {
-                $beforeAssignProvider = RequestFilter::where('driver_id', $driver_id)
+                $beforeAssignProvider = RequestFilter::with('request.user')
+                ->where('driver_id', $driver_id)
                 ->whereHas('request', function($query) use ($driver_id){
                     $query->where('status','<>', 'CANCELLED');
                     $query->where('status','<>', 'SCHEDULED');
                     $query->whereNull('current_driver_id');
                 });
             } else {
-                $beforeAssignProvider = RequestFilter::where('driver_id', $driver_id)
+                $beforeAssignProvider = RequestFilter::with('request.user')
+                ->where('driver_id', $driver_id)
                 ->whereHas('request', function($query) use ($driver_id){
                     $query->where('status','<>', 'CANCELLED');
                     $query->where('status','<>', 'SCHEDULED');
