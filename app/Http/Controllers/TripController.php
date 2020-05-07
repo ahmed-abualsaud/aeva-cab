@@ -25,20 +25,19 @@ use Location\Distance\Vincenty;
 
 class TripController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(Request $request)
     {
         try {
-            $driver = Auth::guard('driver')->user();
 
+            $broadcast_request = true;
+            $manual_request = false;
+            $driver_select_timeout = 180;
+
+            $driver = auth('driver')->user();
             $driver_id = $driver->id;
 
-            $AfterAssignProvider = RequestFilter::with(['request.user', 'request.payment', 'request'])
-                ->where('driver_id', $driver_id)
+            $afterAssignProvider = RequestFilter::where('driver_id', $driver_id)
                 ->whereHas('request', function($query) use ($driver_id) {
                     $query->where('status','<>', 'CANCELLED');
                     $query->where('status','<>', 'SCHEDULED');
@@ -46,25 +45,23 @@ class TripController extends Controller
                     $query->where('current_driver_id', $driver_id);
                 });
 
-            if(env('BROADCAST_REQUEST', 0) == 1){
-                $BeforeAssignProvider = RequestFilter::with(['request.user', 'request.payment', 'request'])
-                ->where('driver_id', $driver_id)
+            if ($broadcast_request) {
+                $beforeAssignProvider = RequestFilter::where('driver_id', $driver_id)
                 ->whereHas('request', function($query) use ($driver_id){
                     $query->where('status','<>', 'CANCELLED');
                     $query->where('status','<>', 'SCHEDULED');
                     $query->whereNull('current_driver_id');
                 });
-            }else{
-                $BeforeAssignProvider = RequestFilter::with(['request.user', 'request.payment', 'request'])
-                ->where('driver_id', $driver_id)
+            } else {
+                $beforeAssignProvider = RequestFilter::where('driver_id', $driver_id)
                 ->whereHas('request', function($query) use ($driver_id){
                     $query->where('status','<>', 'CANCELLED');
                     $query->where('status','<>', 'SCHEDULED');
-                    $query->where('current_driver_id',$driver_id);
+                    $query->where('current_driver_id', $driver_id);
                 });    
             }
                 
-            $IncomingRequests = $BeforeAssignProvider->union($AfterAssignProvider)->get();
+            $incomingRequests = $beforeAssignProvider->union($afterAssignProvider)->get();
 
             if(!empty($request->latitude)) {
                 $driver->update([
@@ -73,32 +70,67 @@ class TripController extends Controller
                 ]);
             }
 
-            if(env('MANUAL_REQUEST', 0) == 0) {
-                $Timeout = env('DRIVER_SELECT_TIMEOUT', '180');
-                if(!empty($IncomingRequests)){
-                    for ($i=0; $i < sizeof($IncomingRequests); $i++) {
-                        $IncomingRequests[$i]->time_left_to_respond = $Timeout - (time() - strtotime($IncomingRequests[$i]->request->assigned_at));
-                        if($IncomingRequests[$i]->request->status == 'SEARCHING' && $IncomingRequests[$i]->time_left_to_respond < 0) {
-                            if(env('BROADCAST_REQUEST', 0) == 1){
-                                $this->assign_destroy($IncomingRequests[$i]->request->id);
-                            }else{
-                                $this->assign_next_provider($IncomingRequests[$i]->request->id);
-                            }
+            if ( !$manual_request && !empty($incomingRequests) ) {
+                foreach($incomingRequests as $incomingRequest) {
+                    $time_left_to_respond = $driver_select_timeout - (time() - strtotime($incomingRequest->request->assigned_at));
+                    if($incomingRequest->request->status == 'SEARCHING' && $time_left_to_respond < 0) {
+                        if ($broadcast_request) {
+                            $this->assign_destroy($incomingRequest->request);
+                        } else {
+                            $this->assign_next_provider($incomingRequest->request);
                         }
                     }
                 }
-
             }
 
-            $Response = [
+            $response = [
                 'account_status' => $driver->status,
-                'service_status' => $driver->vehicle ? Auth::guard('driver')->vehicle->status : 'OFFLINE',
-                'requests' => $IncomingRequests,
+                'service_status' => $driver->vehicle ? $driver->vehicle->status : 'OFFLINE',
+                'requests' => $incomingRequests,
             ];
 
-            return $Response;
+            return $response;
+
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Something went wrong']);
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function assign_destroy($userRequest)
+    {
+
+        try {
+            UserRequest::where('id', $userRequest->id)->update(['status' => 'CANCELLED']);
+            RequestFilter::where('request_id', $userRequest->id)->delete();
+            (new SendPushController)->ProviderNotAvailable($userRequest->user_id);
+
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['error' => 'Unable to reject, Please try again later']);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Connection Error']);
+        }
+    }
+
+    public function assign_next_provider($userRequest) {
+
+        RequestFilter::where('driver_id', $userRequest->current_driver_id)
+            ->where('request_id', $userRequest->id)
+            ->delete();
+
+        try {
+            $next_provider = RequestFilter::where('request_id', $userRequest->id)
+                ->orderBy('id')
+                ->firstOrFail();
+
+            $userRequest->current_driver_id = $next_provider->driver_id;
+            $userRequest->assigned_at = Carbon::now();
+            $userRequest->save();
+
+            (new SendPushController)->IncomingRequest($next_provider->driver_id);
+            
+        } catch (ModelNotFoundException $e) {
+            UserRequest::where('id', $userRequest->id)->update(['status' => 'CANCELLED']);
+            (new SendPushController)->ProviderNotAvailable($userRequest->user_id);
         }
     }
 
@@ -459,12 +491,6 @@ class TripController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $UserRequest = UserRequest::find($id);
@@ -477,65 +503,6 @@ class TripController extends Controller
             return response()->json(['error' => 'Unable to reject, Please try again later']);
         } catch (Exception $e) {
             return response()->json(['error' => 'Connection Error']);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function assign_destroy($id)
-    {
-        $UserRequest = UserRequest::find($id);
-        try {
-            UserRequest::where('id', $UserRequest->id)->update(['status' => 'CANCELLED']);
-            // No longer need request specific rows from RequestMeta
-            RequestFilter::where('request_id', $UserRequest->id)->delete();
-            //  request push to user driver not available
-            (new SendPushController)->ProviderNotAvailable($UserRequest->user_id);
-
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Unable to reject, Please try again later']);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Connection Error']);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-
-    public function assign_next_provider($request_id) {
-
-        try {
-            $UserRequest = UserRequest::findOrFail($request_id);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Request not found'], 404);
-        }
-
-        $RequestFilter = RequestFilter::where('driver_id', $UserRequest->current_driver_id)
-            ->where('request_id', $UserRequest->id)
-            ->delete();
-
-        try {
-            $next_provider = RequestFilter::where('request_id', $UserRequest->id)
-                ->orderBy('id')
-                ->firstOrFail();
-
-            $UserRequest->current_driver_id = $next_provider->driver_id;
-            $UserRequest->assigned_at = Carbon::now();
-            $UserRequest->save();
-
-            (new SendPushController)->IncomingRequest($next_provider->driver_id);
-            
-        } catch (ModelNotFoundException $e) {
-            UserRequest::where('id', $UserRequest->id)->update(['status' => 'CANCELLED']);
-            (new SendPushController)->ProviderNotAvailable($UserRequest->user_id);
         }
     }
 

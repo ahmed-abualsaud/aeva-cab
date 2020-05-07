@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
-use App\Events\DriverLocationUpdated; 
+// use App\Events\DriverLocationUpdated; 
 
 use Auth;
 use Exception;
@@ -135,16 +135,13 @@ class DriverController extends Controller
             'longitude' => $request->longitude
         ];
 
-        $driver = Auth::guard('driver')->user();
-        $driver->latitude = $location['latitude'];
-        $driver->longitude = $location['longitude'];
-        $driver->save();
+        auth('driver')->user()->update($location);
 
-        if ($request->has('request_id')) {
-            broadcast(new DriverLocationUpdated($location, 'cab.'.$request->request_id))->toOthers();
-        }
+        // if ($request->has('request_id')) {
+        //     broadcast(new DriverLocationUpdated($location, 'cab.'.$request->request_id))->toOthers();
+        // }
 
-        return response()->json(['message' => 'Location Updated successfully!']);
+        return response()->json(['message' => 'Driver location has been updated successfully.']);
     }
 
     /**

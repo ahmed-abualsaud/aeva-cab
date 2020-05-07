@@ -4,11 +4,18 @@ input StartTripInput {
   longitude: String! @rules(apply: ["required"])
 }
 
+input UpdateDriverLocationInput {
+  trip_id: ID
+  log_id: String
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+}
+
 input NearYouInput {
   station_id: ID! @rules(apply: ["required"])
 }
 
-input TripLogInput {
+input EndTripInput {
   trip_id: ID! @rules(apply: ["required"])
   log_id: String! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])
@@ -20,7 +27,6 @@ input UserArrivedInput {
   log_id: String! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
-  user_id: ID! @rules(apply: ["required"])
   driver_id: ID! @rules(apply: ["required"])
 }
 
@@ -45,7 +51,7 @@ input UserObj {
   is_picked_up: Boolean!
 }
 
-type GetDriverLocationResponse {
+type DriverLocationResponse {
   latitude: String!
   longitude: String!
 }

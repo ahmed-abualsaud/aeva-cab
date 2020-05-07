@@ -2,14 +2,17 @@
 
 namespace App\GraphQL\Queries;
 
-use \App\TripLog;
-use \App\PartnerTripUser;
+use App\TripLog;
+use App\Driver;
+use App\PartnerTripUser;
+use App\Traits\DateFilter;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TripLogResolver
 {
+    use DateFilter;
     /**
      * Return a value for the field.
      *
@@ -24,7 +27,6 @@ class TripLogResolver
         $log = TripLog::selectRaw('trip_logs.status, trip_logs.latitude, trip_logs.longitude, trip_logs.created_at, users.name as user')
             ->leftJoin('users', 'users.id', '=', 'trip_logs.user_id')
             ->where('log_id', $args['log_id'])
-            ->where('status', '!=', 'MOVING')
             ->orderBy('trip_logs.created_at', 'desc')
             ->get();
 
@@ -33,22 +35,27 @@ class TripLogResolver
 
     public function tripLogHistory($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        return TripLog::selectRaw('log_id, DATE(created_at) as date')
-            ->where('trip_id', $args['trip_id'])
+        $logHistory = TripLog::selectRaw('log_id, DATE(created_at) as date');
+
+        if (array_key_exists('period', $args) && $args['period']) {
+            $logHistory = $this->dateFilter($args['period'], $logHistory, 'created_at');
+        }
+
+        $logHistory = $logHistory->where('trip_id', $args['trip_id'])
             ->groupBy('log_id','date')
             ->orderBy('date', 'desc')
             ->get();
+        
+        return $logHistory;
     }
 
     public function driverLocation($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         try {
-            $location = TripLog::select(['latitude', 'longitude'])
-                ->where('log_id', $args['log_id'])
-                ->latest()
-                ->firstOrFail();
+            $location = Driver::select(['latitude', 'longitude'])
+                ->findOrFail($args['driver_id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('No data for the provided trip log ID.');
+            throw new \Exception('No data for the provided driver ID');
         }
 
         return [

@@ -153,13 +153,13 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   # Trip Log
   startTrip(input: StartTripInput! @spread): PartnerTrip 
     @field(resolver: "TripLogResolver@startTrip")
-  updateDriverLocation(input: TripLogInput! @spread): String 
+  updateDriverLocation(input: UpdateDriverLocationInput! @spread): String 
     @field(resolver: "TripLogResolver@updateDriverLocation")
   nearYou(input: NearYouInput! @spread): String
     @field(resolver: "TripLogResolver@nearYou")
   userArrived(input: UserArrivedInput! @spread): String
     @field(resolver: "TripLogResolver@userArrived")
-  endTrip(input: TripLogInput! @spread): String
+  endTrip(input: EndTripInput! @spread): String
     @field(resolver: "TripLogResolver@endTrip")
   pickUsersUp(input: PickUsersUpInput! @spread): String
     @field(resolver: "TripLogResolver@pickUsersUp")
@@ -261,7 +261,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerTripResolver@users")
 
   # Trip Log
-  getDriverLocation(log_id: String!): GetDriverLocationResponse!
+  getDriverLocation(driver_id: ID!): DriverLocationResponse!
     @field(resolver: "TripLogResolver@driverLocation")
   getPickedUsers(log_id: String!): [User]
     @field(resolver: "TripLogResolver@pickedUsers")
@@ -269,7 +269,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "TripLogResolver@arrivedAndPickedUsers")
   tripLog(log_id: String!): [TripLogResponse]
     @field(resolver: "TripLogResolver@tripLog")
-  tripLogHistory(trip_id: ID!): [TripLogHistoryResponse]
+  tripLogHistory(trip_id: ID! period: String): [TripLogHistoryResponse]
     @field(resolver: "TripLogResolver@tripLogHistory")
 }
 

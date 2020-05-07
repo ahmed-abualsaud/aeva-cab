@@ -64,23 +64,26 @@ class TripLogResolver
     }
 
     public function userArrived($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
-    {   
-        $token = DeviceToken::where('tokenable_id', $args['driver_id'])
-            ->where('tokenable_type', 'App\Driver')
-            ->select('device_id')
-            ->pluck('device_id');
-        
-        $user = User::where('id', $args['user_id'])
-            ->select('name')
-            ->first();
-        
-        $notificationMsg = $user->name . ' has arrived';
-        $data = ["status" => "USER_ARRIVED"];
-        PushNotification::dispatch($token, $notificationMsg, $data);
+    {  
+        try {
+            $user = auth('user')->user();
 
-        $input = collect($args)->except(['directive', 'driver_id'])->toArray();
-        $input['status'] = 'USER_ARRIVED';
-        TripLog::create($input);
+            $token = DeviceToken::where('tokenable_id', $args['driver_id'])
+                ->where('tokenable_type', 'App\Driver')
+                ->select('device_id')
+                ->pluck('device_id');
+            
+            $notificationMsg = $user->name . ' has arrived';
+            $data = ["status" => "USER_ARRIVED"];
+            PushNotification::dispatch($token, $notificationMsg, $data);
+
+            $input = collect($args)->except(['directive', 'driver_id'])->toArray();
+            $input['status'] = 'USER_ARRIVED';
+            $input['user_id'] = $user->id;
+            TripLog::create($input);
+        } catch (\Exception $e) {
+            throw new \Exception('Notification has not been sent to the driver. ' . $e->getMessage());
+        }
 
         return "Notification has been sent to the driver";
     }
@@ -177,14 +180,15 @@ class TripLogResolver
             'longitude' => $args['longitude']
         ];
 
-        // broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
-
         try {
-            $input = Arr::except($args, ['directive']);
-            TripLog::create($input);
+            auth('driver')->user()->update($location);
         } catch (\Exception $e) {
             throw new \Exception('Driver location has not updated. ' . $e->getMessage());
         }
+
+        // if (array_key_exists('trip_id', $args) && $args['trip_id']) {
+            // broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
+        // }
 
         return 'Driver location has been updated successfully.';
     }

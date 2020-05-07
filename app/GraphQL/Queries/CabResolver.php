@@ -4,12 +4,13 @@ namespace App\GraphQL\Queries;
 
 use App\UserRequest;
 use App\UserRequestPayment;
-use Carbon\Carbon;
+use App\Traits\DateFilter;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class CabResolver
 {
+    use DateFilter;
     /**
      * Return a value for the field.
      *
@@ -63,7 +64,7 @@ class CabResolver
             SUM(ROUND(commission)) as overallCommission,
             SUM(ROUND(driver_pay)) as driverEarning,
             SUM(ROUND(driver_commission)) as driverCommission
-        ');
+        '); 
 
         if (array_key_exists('period', $args) && $args['period']) {
             $statement = $this->dateFilter($args['period'], $statement, 'created_at');
@@ -88,28 +89,5 @@ class CabResolver
         ];
 
         return $response;
-    }
-
-    protected function dateFilter($period, $result, $field)
-    {
-        switch($period) {
-            case $period == 'today':
-                return $result->where($field, '>=', Carbon::today());
-            
-            case $period == 'week':
-                return $result->where($field, '>=', Carbon::now()->subDays(7));
-            
-            case $period == 'month':
-                return $result->where($field, '>=', Carbon::now()->subMonth());
-            
-            case $period == 'quarter':
-                return $result->where($field, '>=', Carbon::now()->subMonth(3));
-            
-            case $period == 'half':
-                return $result->where($field, '>=', Carbon::now()->subMonth(6));
-            
-            case $period == 'year':
-                return $result->where($field, '>=', Carbon::now()->subMonth(12));  
-        }
     }
 }
