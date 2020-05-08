@@ -188,7 +188,7 @@ class RiderController extends Controller
             return response()->json(['error' => trans('cabResponses.ride.request_inprogress')], 500);
         }
 
-        if($request->has('schedule_date') && $request->has('schedule_time')) {
+        if ( !empty($request->schedule_date)  && !empty($request->schedule_time) ) {
             $beforeschedule_time = (new Carbon("$request->schedule_date $request->schedule_time"))->subHour(1);
             $afterschedule_time = (new Carbon("$request->schedule_date $request->schedule_time"))->addHour(1);
 
