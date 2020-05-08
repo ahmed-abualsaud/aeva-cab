@@ -75,8 +75,8 @@ class TripController extends Controller
 
             if ( !$manual_request && !empty($incomingRequests) ) {
                 foreach($incomingRequests as $incomingRequest) {
-                    $time_left_to_respond = $driver_select_timeout - (time() - strtotime($incomingRequest->request->assigned_at));
-                    if($incomingRequest->request->status == 'SEARCHING' && $time_left_to_respond < 0) {
+                    $incomingRequest['time_left_to_respond'] = $driver_select_timeout - (time() - strtotime($incomingRequest->request->assigned_at));
+                    if($incomingRequest->request->status == 'SEARCHING' && $incomingRequest['time_left_to_respond'] < 0) {
                         if ($broadcast_request) {
                             $this->assign_destroy($incomingRequest->request);
                         } else {
