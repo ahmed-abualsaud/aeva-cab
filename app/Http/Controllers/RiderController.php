@@ -253,7 +253,7 @@ class RiderController extends Controller
                 $userRequest->surge = 1;
             }
 
-            if($request->has('schedule_date') && $request->has('schedule_time')){
+            if( !empty($request->schedule_date)  && !empty($request->schedule_time) ){
                 $userRequest->schedule_at = date("Y-m-d H:i:s", strtotime("$request->schedule_date $request->schedule_time"));
             }
 
