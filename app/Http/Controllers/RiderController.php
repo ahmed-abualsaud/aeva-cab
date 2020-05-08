@@ -159,8 +159,10 @@ class RiderController extends Controller
 
     }
 
-    public function send_request(Request $request) {
-
+    public function send_request(Request $request) 
+    {
+        $distance = 10;
+        $surge_factor = 0;
         $user = Auth::guard('user')->user();
 
         $validator = Validator::make($request->all(), [
@@ -186,7 +188,7 @@ class RiderController extends Controller
             return response()->json(['error' => trans('cabResponses.ride.request_inprogress')], 500);
         }
 
-        if($request->has('schedule_date') && $request->has('schedule_time')){
+        if($request->has('schedule_date') && $request->has('schedule_time')) {
             $beforeschedule_time = (new Carbon("$request->schedule_date $request->schedule_time"))->subHour(1);
             $afterschedule_time = (new Carbon("$request->schedule_date $request->schedule_time"))->addHour(1);
 
@@ -200,7 +202,6 @@ class RiderController extends Controller
 
         }
 
-        $distance = 10;
         $latitude = $request->s_latitude;
         $longitude = $request->s_longitude;
         $car_type = $request->service_type;
@@ -225,21 +226,9 @@ class RiderController extends Controller
             $userRequest = new UserRequest;
             $userRequest->booking_id = Str::random(6) . 'R' . $user->id;
             $userRequest->user_id = $user->id;
-            
-            if ((env('MANUAL_REQUEST', 0) == 0) && (env('BROADCAST_REQUEST', 0) == 0)) {
-                $userRequest->current_driver_id = $drivers[0]->id;
-                (new SendPushController)->IncomingRequest($drivers[0]->id);
-            }
-
-            if (env('BROADCAST_REQUEST', 0) == 1) {
-                (new SendPushController)->IncomingRequest($drivers->pluck('id')); 
-            }
-
             $userRequest->car_type_id = $request->service_type;
             $userRequest->payment_mode = $request->payment_mode;
-            
             $userRequest->status = 'SEARCHING';
-
             $userRequest->s_address = $request->s_address ? : "";
             $userRequest->d_address = $request->d_address ? : "";
 
@@ -249,22 +238,18 @@ class RiderController extends Controller
             $userRequest->d_latitude = $request->d_latitude;
             $userRequest->d_longitude = $request->d_longitude;
             $userRequest->distance = $request->distance;
+            $userRequest->is_track = true;
+            $userRequest->assigned_at = Carbon::now();
 
             if($user->wallet_balance > 0) {
                 $userRequest->use_wallet = $request->use_wallet ? : 0;
             }
 
-            if (env('TRACK_DISTANCE', 0) == 1) {
-                $userRequest->is_track = true;
-            }
-
-            $userRequest->assigned_at = Carbon::now();
-
             if ($request->has('route_key')) {
                 $userRequest->route_key = $request->route_key;
             }
 
-            if ($drivers->count() <= env('SURGE_TRIGGER', 0) && $drivers->count() > 0) {
+            if ($drivers->count() <= $surge_factor && $drivers->count() > 0) {
                 $userRequest->surge = 1;
             }
 
@@ -281,21 +266,18 @@ class RiderController extends Controller
                 Card::where('card_id', $request->card_id)->update(['is_default' => 1]);
             }
 
-            if(env('MANUAL_REQUEST', 0) == 0) {
-                $data = array(); 
-                $arr = array();
-                foreach($drivers as $driver) {
-                    $arr['request_id'] = $userRequest->id;
-                    $arr['driver_id'] = $driver->id;
-                    array_push($data, $arr);
-                } 
-                RequestFilter::insert($data);
-            }
+            $data = array(); 
+            $arr = array();
+            foreach($drivers as $driver) {
+                $arr['request_id'] = $userRequest->id;
+                $arr['driver_id'] = $driver->id;
+                array_push($data, $arr);
+            } 
+            RequestFilter::insert($data);
 
             return response()->json([
                 'message' => 'New request Created!',
-                'request_id' => $userRequest->id,
-                'current_driver' => $userRequest->current_driver_id,
+                'request_id' => $userRequest->id
             ]);
 
         } catch (Exception $e) {
@@ -391,7 +373,7 @@ class RiderController extends Controller
             return response()->json(['data' => $userRequests]);
 
         } catch (Exception $e) {
-            return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
