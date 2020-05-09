@@ -37,34 +37,34 @@ class TripController extends Controller
             $driver = auth('driver')->user();
             $driver_id = $driver->id;
 
-            $afterAssignProvider = RequestFilter::with('request.user')
+            $incomingRequests = RequestFilter::with('request.user')
                 ->where('driver_id', $driver_id)
                 ->whereHas('request', function($query) use ($driver_id) {
                     $query->where('status','<>', 'CANCELLED');
                     $query->where('status','<>', 'SCHEDULED');
-                    $query->where('driver_id', $driver_id );
-                    $query->where('current_driver_id', $driver_id);
+                    // $query->where('driver_id', $driver_id );
+                    // $query->where('current_driver_id', $driver_id);
                 });
 
-            if ($broadcast_request) {
-                $beforeAssignProvider = RequestFilter::with('request.user')
-                ->where('driver_id', $driver_id)
-                ->whereHas('request', function($query) use ($driver_id){
-                    $query->where('status','<>', 'CANCELLED');
-                    $query->where('status','<>', 'SCHEDULED');
-                    $query->whereNull('current_driver_id');
-                });
-            } else {
-                $beforeAssignProvider = RequestFilter::with('request.user')
-                ->where('driver_id', $driver_id)
-                ->whereHas('request', function($query) use ($driver_id){
-                    $query->where('status','<>', 'CANCELLED');
-                    $query->where('status','<>', 'SCHEDULED');
-                    $query->where('current_driver_id', $driver_id);
-                });    
-            }
+            // if ($broadcast_request) {
+            //     $beforeAssignProvider = RequestFilter::with('request.user')
+            //     ->where('driver_id', $driver_id)
+            //     ->whereHas('request', function($query) use ($driver_id){
+            //         $query->where('status','<>', 'CANCELLED');
+            //         $query->where('status','<>', 'SCHEDULED');
+            //         $query->whereNull('current_driver_id');
+            //     });
+            // } else {
+            //     $beforeAssignProvider = RequestFilter::with('request.user')
+            //     ->where('driver_id', $driver_id)
+            //     ->whereHas('request', function($query) use ($driver_id){
+            //         $query->where('status','<>', 'CANCELLED');
+            //         $query->where('status','<>', 'SCHEDULED');
+            //         $query->where('current_driver_id', $driver_id);
+            //     });    
+            // }
                 
-            $incomingRequests = $beforeAssignProvider->union($afterAssignProvider)->get();
+            // $incomingRequests = $beforeAssignProvider->union($afterAssignProvider)->get();
 
             if(!empty($request->latitude)) {
                 $driver->update([
@@ -133,7 +133,7 @@ class TripController extends Controller
             
         } catch (ModelNotFoundException $e) {
             UserRequest::where('id', $userRequest->id)->update(['status' => 'CANCELLED']);
-            (new SendPushController)->ProviderNotAvailable($userRequest->user_id);
+            (new SendPushController)->ProviderNotAvailable($userRequest->user_id); 
         }
     }
 
@@ -370,10 +370,7 @@ class TripController extends Controller
             $driver_id = Auth::guard('driver')->user()->id;
             
             $UserRequest->driver_id = $driver_id;
-
-            if(env('BROADCAST_REQUEST', 0) == 1){
-               $UserRequest->current_driver_id = $driver_id; 
-            }
+            $UserRequest->current_driver_id = $driver_id;
 
             if($UserRequest->schedule_at){
 
@@ -401,10 +398,10 @@ class TripController extends Controller
 
                 DriverVehicle::where('driver_id',$UserRequest->driver_id)->update(['status' =>'RIDING']);
 
-                $Filters = RequestFilter::where('request_id', $UserRequest->id)->where('driver_id', '!=', $driver_id)->delete();
+                RequestFilter::where('request_id', $UserRequest->id)->where('driver_id', '!=', $driver_id)->delete();
             }
 
-            RequestFilter::where('request_id','!=' ,$UserRequest->id)
+            RequestFilter::where('request_id', '!=', $UserRequest->id)
                 ->where('driver_id',$driver_id )
                 ->whereHas('request', function($query){
                     $query->where('status','<>','SCHEDULED');
@@ -496,10 +493,9 @@ class TripController extends Controller
 
     public function destroy($id)
     {
-        $UserRequest = UserRequest::find($id);
-
         try {
-            $this->assign_next_provider($UserRequest->id);
+            $UserRequest = UserRequest::find($id);
+            $this->assign_next_provider($UserRequest);
             return $UserRequest->with('user')->get();
 
         } catch (ModelNotFoundException $e) {
@@ -782,23 +778,21 @@ class TripController extends Controller
      */
     public function summary(Request $request)
     {
-        try{
-            if($request->ajax()) {
-                $rides = UserRequest::where('driver_id', Auth::guard('driver')->user()->id)->count();
-                $revenue = UserRequestPayment::whereHas('request', function($query) use ($request) {
-                    $query->where('driver_id', Auth::guard('driver')->user()->id);
-                })
-                ->sum('total');
-                $cancel_rides = UserRequest::where('status','CANCELLED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
-                $scheduled_rides = UserRequest::where('status','SCHEDULED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
+        try {
+            $rides = UserRequest::where('driver_id', Auth::guard('driver')->user()->id)->count();
+            $revenue = UserRequestPayment::whereHas('request', function($query) use ($request) {
+                $query->where('driver_id', Auth::guard('driver')->user()->id);
+            })
+            ->sum('total');
+            $cancel_rides = UserRequest::where('status','CANCELLED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
+            $scheduled_rides = UserRequest::where('status','SCHEDULED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
 
-                return response()->json([
-                    'rides' => $rides, 
-                    'revenue' => $revenue,
-                    'cancel_rides' => $cancel_rides,
-                    'scheduled_rides' => $scheduled_rides,
-                ]);
-            }
+            return response()->json([
+                'rides' => $rides, 
+                'revenue' => $revenue,
+                'cancel_rides' => $cancel_rides,
+                'scheduled_rides' => $scheduled_rides,
+            ]);
 
         } catch (Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')]);

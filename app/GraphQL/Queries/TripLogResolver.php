@@ -27,6 +27,7 @@ class TripLogResolver
         $log = TripLog::selectRaw('trip_logs.status, trip_logs.latitude, trip_logs.longitude, trip_logs.created_at, users.name as user')
             ->leftJoin('users', 'users.id', '=', 'trip_logs.user_id')
             ->where('log_id', $args['log_id'])
+            ->orderBy('trip_logs.created_at')
             ->get();
 
         return $log; 

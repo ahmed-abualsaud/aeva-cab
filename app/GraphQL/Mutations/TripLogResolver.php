@@ -78,7 +78,7 @@ class TripLogResolver
             PushNotification::dispatch($token, $notificationMsg, $data);
 
             $input = collect($args)->except(['directive', 'driver_id'])->toArray();
-            $input['status'] = 'USER_ARRIVED';
+            $input['status'] = 'ARRIVED';
             $input['user_id'] = $user->id;
             TripLog::create($input);
         } catch (\Exception $e) {

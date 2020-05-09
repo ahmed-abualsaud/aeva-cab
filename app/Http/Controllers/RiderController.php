@@ -6,14 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-
-use DB;
-use Auth;
-use Hash;
-use Storage;
-
-use Exception;
-use Notification;
 use Carbon\Carbon;
 
 use App\Card;
@@ -28,7 +20,6 @@ use App\PromoCodeUsage;
 use App\WalletPassbook;
 use App\DriverVehicle;
 use App\UserRequestRating;
-use App\Http\Controllers\TripController;
 use App\Http\Controllers\SendPushController;
 
 class RiderController extends Controller
@@ -67,7 +58,7 @@ class RiderController extends Controller
                 ]);
             }
             return $User;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -122,7 +113,7 @@ class RiderController extends Controller
             'longitude' => 'required|numeric',
         ]);
 
-        $user = Auth::guard('user')->user();
+        $user = auth('user')->user();
         $user->update([
             "latitude" => $request->latitude,
             "longitude" => $request->longitude
@@ -137,7 +128,7 @@ class RiderController extends Controller
         ]);
 
         try {
-            return User::find(Auth::guard('user')->user()->id);
+            return User::find(auth('user')->user()->id);
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => trans('cabResponses.user.user_not_found')], 500);
         }
@@ -163,7 +154,7 @@ class RiderController extends Controller
     {
         $distance = 10;
         $surge_factor = 0;
-        $user = Auth::guard('user')->user();
+        $user = auth('user')->user();
 
         $validator = Validator::make($request->all(), [
             's_latitude' => 'required|numeric',
@@ -177,6 +168,8 @@ class RiderController extends Controller
             'payment_mode' => 'required|in:CASH,CARD,PAYPAL',
             'card_id' => ['required_if:payment_mode,CARD','exists:cards,card_id,user_id,'.$user->id],
         ]);
+
+
 
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
@@ -206,7 +199,7 @@ class RiderController extends Controller
         $longitude = $request->s_longitude;
         $car_type = $request->service_type;
 
-        $drivers = Driver::select(DB::Raw("(6371 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) AS distance"), 'id')
+        $drivers = Driver::selectRaw("(6371 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) AS distance, id")
             // ->having('distance', '<=', $distance)
             ->where('status', 'APPROVED')
             ->whereHas('vehicles', function($query) use ($car_type) {
@@ -280,7 +273,7 @@ class RiderController extends Controller
                 'request_id' => $userRequest->id
             ]);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -295,7 +288,7 @@ class RiderController extends Controller
     public function cancel_request(Request $request) {
 
         $this->validate($request, [
-            'request_id' => 'required|numeric|exists:user_requests,id,user_id,'.Auth::guard('user')->user()->id,
+            'request_id' => 'required|numeric|exists:user_requests,id,user_id,'.auth('user')->user()->id,
         ]);
 
         try {
@@ -349,45 +342,45 @@ class RiderController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function request_status_check() {
-
+    public function request_status_check() 
+    {
         try {
-            $user = Auth::guard('user')->user();
-            $check_status = ['CANCELLED', 'SCHEDULED'];
-            $userRequests = UserRequest::UserRequestStatusCheck($user->id, $check_status)
-                ->get()
-                ->toArray(); 
+            $user_id = auth('user')->id();
 
-            $requests = UserRequest::UserRequestAssignProvider($user->id, 'SEARCHING')->get();  
-            $timeout = 180;
-            if($requests->count()) {
-                foreach($requests as $request) {
-                    $expiredTime = $timeout - (time() - strtotime($request->assigned_at));
-                    if ($expiredTime < 0) {
-                        $providerTrip = new TripController();
-                        $providerTrip->assign_next_provider($request->id);
-                    }
-                }
+            $userLatestRequests = UserRequest::where('user_requests.user_id', $user_id)
+                ->where('user_requests.user_rated',0)
+                ->whereNotIn('user_requests.status', ['CANCELLED', 'SCHEDULED'])
+                ->leftJoin('driver_vehicles', 'driver_vehicles.driver_id', '=', 'user_requests.driver_id')
+                ->leftJoin('vehicles', 'vehicles.id', '=', 'driver_vehicles.vehicle_id')
+                ->leftJoin('car_makes', 'car_makes.id', '=', 'vehicles.car_make_id')
+                ->leftJoin('car_models', 'car_models.id', '=', 'vehicles.car_model_id')
+                ->selectRaw("user_requests.*, vehicles.license_plate, CONCAT(car_makes.name, ' ', car_models.name) AS car_model")
+                ->with('user','driver','car_type','rating','payment')
+                ->latest()
+                ->take(1)
+                ->get() 
+                ->toArray();
+
+            $requestCheck = UserRequest::where('user_id', $user_id)
+                ->where('status', 'SEARCHING')
+                ->whereRaw("180 - (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(CONVERT_TZ(assigned_at, 'Africa/Cairo', 'SYSTEM'))) < 0");
+
+            if ($requestCheck->count()) {
+                $requestCheck->update(['status' => 'CANCELLED']);
+                (new SendPushController)->ProviderNotAvailable($user_id);
             }
 
-            return response()->json(['data' => $userRequests]);
+            return response()->json(['data' => $userLatestRequests]);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
-
     public function rate_provider(Request $request) {
 
         $this->validate($request, [
-            'request_id' => 'required|integer|exists:user_requests,id,user_id,'.Auth::guard('user')->user()->id,
+            'request_id' => 'required|integer|exists:user_requests,id,user_id,'.auth('user')->user()->id,
             'rating' => 'required|integer|in:1,2,3,4,5',
             'comment' => 'max:255',
         ]);
@@ -428,23 +421,17 @@ class RiderController extends Controller
 
             // Send Push Notification to Driver 
             return response()->json(['message' => trans('cabResponses.ride.driver_rated')]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
 
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
 
     public function modifiy_request(Request $request) {
 
         $this->validate($request, [
-            'request_id' => 'required|integer|exists:user_requests,id,user_id,'.Auth::guard('user')->user()->id,
+            'request_id' => 'required|integer|exists:user_requests,id,user_id,'.auth('user')->user()->id,
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'address' => 'required'
@@ -461,23 +448,16 @@ class RiderController extends Controller
             // Send Push Notification to Driver 
             return response()->json(['message' => trans('cabResponses.ride.request_modify_location')]); 
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
 
     } 
 
-
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
     public function trips() {
     
         try{
-            $userRequests = UserRequest::UserTrips(Auth::guard('user')->user()->id)->get();
+            $userRequests = UserRequest::UserTrips(auth('user')->user()->id)->get();
             if (!empty($userRequests)) {
                 $marker = '/assets/icons/marker.png';
                 foreach ($userRequests as $key => $value) {
@@ -495,7 +475,7 @@ class RiderController extends Controller
             }
             return $userRequests;
         }
-        catch (Exception $e) {
+        catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
         }
     }
@@ -588,7 +568,7 @@ class RiderController extends Controller
                 'base_price' => $base_price,
             ]);
 
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
@@ -606,7 +586,7 @@ class RiderController extends Controller
         ]);
     
         try {
-            $userRequests = UserRequest::UserTripDetails(Auth::guard('user')->user()->id, $request->request_id)->get();
+            $userRequests = UserRequest::UserTripDetails(auth('user')->user()->id, $request->request_id)->get();
             if (!empty($userRequests)) {
                 $marker = '/assets/icons/marker.png';
                 foreach ($userRequests as $key => $value) {
@@ -625,7 +605,7 @@ class RiderController extends Controller
             return $userRequests;
         }
 
-        catch (Exception $e) {
+        catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
         }
     }
@@ -641,11 +621,11 @@ class RiderController extends Controller
             $this->check_expiry();
 
             return PromoCodeUsage::Active()
-                ->where('user_id', Auth::guard('user')->user()->id)
+                ->where('user_id', auth('user')->user()->id)
                 ->with('promocode')
                 ->get();
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
     } 
@@ -663,7 +643,7 @@ class RiderController extends Controller
                         ->update(['status' => 'ADDED']);
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
     }
@@ -691,7 +671,7 @@ class RiderController extends Controller
                     'code' => 'promocode_expired'
                 ]);
 
-            } else if (PromoCodeUsage::where('promo_code_id', $find_promo->id)->where('user_id', Auth::guard('user')->user()->id)->whereIn('status', ['ADDED','USED'])->count() > 0){
+            } else if (PromoCodeUsage::where('promo_code_id', $find_promo->id)->where('user_id', auth('user')->user()->id)->whereIn('status', ['ADDED','USED'])->count() > 0){
                 return response()->json([
                     'message' => trans('cabResponses.promocode_already_in_use'), 
                     'code' => 'promocode_already_in_use'
@@ -699,7 +679,7 @@ class RiderController extends Controller
             } else {
                 $promo = new PromoCodeUsage;
                 $promo->promo_code_id = $find_promo->id;
-                $promo->user_id = Auth::guard('user')->user()->id;
+                $promo->user_id = auth('user')->user()->id;
                 $promo->status = 'ADDED';
                 $promo->save();
                 return response()->json([
@@ -707,7 +687,7 @@ class RiderController extends Controller
                     'code' => 'promocode_applied'
                 ]); 
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
     } 
@@ -715,7 +695,7 @@ class RiderController extends Controller
     public function upcoming_trips() {
     
         try {
-            $userRequests = UserRequest::UserUpcomingTrips(Auth::guard('user')->user()->id)->get();
+            $userRequests = UserRequest::UserUpcomingTrips(auth('user')->user()->id)->get();
             if (!empty($userRequests)) {
                 $marker = '/assets/icons/marker.png';
                 foreach ($userRequests as $key => $value) {
@@ -734,7 +714,7 @@ class RiderController extends Controller
             return $userRequests;
         }
 
-        catch (Exception $e) {
+        catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
         }
     }
@@ -752,7 +732,7 @@ class RiderController extends Controller
         ]);
     
         try{
-            $userRequests = UserRequest::UserUpcomingTripDetails(Auth::guard('user')->user()->id,$request->request_id)->get();
+            $userRequests = UserRequest::UserUpcomingTripDetails(auth('user')->user()->id,$request->request_id)->get();
             if (!empty($userRequests)) {
                 $marker = '/assets/icons/marker.png';
                 foreach ($userRequests as $key => $value) {
@@ -771,7 +751,7 @@ class RiderController extends Controller
             return $userRequests;
         }
 
-        catch (Exception $e) {
+        catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
         }
     }
@@ -819,7 +799,7 @@ class RiderController extends Controller
             }
             return $drivers;
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
     }
@@ -843,7 +823,7 @@ class RiderController extends Controller
                 'user' => $user
             ]);
 
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
     }
@@ -864,7 +844,7 @@ class RiderController extends Controller
             if($request->ajax()) {
                 return response()->json(['message' => 'Password Updated']);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if($request->ajax()) {
                 return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
             }
@@ -890,7 +870,7 @@ class RiderController extends Controller
             
             return response()->json(['message' => trans('cabResponses.email_available')]);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
              return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
     }
@@ -907,9 +887,9 @@ class RiderController extends Controller
     {
         try{
             
-            return WalletPassbook::where('user_id',Auth::guard('user')->user()->id)->get();
+            return WalletPassbook::where('user_id',auth('user')->user()->id)->get();
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
              return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
     }
@@ -924,8 +904,8 @@ class RiderController extends Controller
     public function promo_passbook(Request $request)
     {
         try {
-            return PromoCodeUsage::where('user_id',Auth::guard('user')->user()->id)->with('promocode')->get();
-        } catch (Exception $e) {
+            return PromoCodeUsage::where('user_id',auth('user')->user()->id)->with('promocode')->get();
+        } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
     }

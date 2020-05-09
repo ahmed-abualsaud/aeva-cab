@@ -90,22 +90,4 @@ class UserRequest extends Model
             ->select('user_requests.*')
             ->with('car_type','user','driver');
     }
-
-    public function scopeUserRequestStatusCheck($query, $user_id, $check_status)
-    {
-        return $query->where('user_requests.user_id', $user_id)
-            ->where('user_requests.user_rated',0)
-            ->whereNotIn('user_requests.status', $check_status)
-            ->select('user_requests.*')
-            ->with('user','driver','car_type','rating','payment');
-    }
-
-    public function scopeUserRequestAssignProvider($query, $user_id, $check_status)
-    {
-        return $query->where('user_requests.user_id', $user_id)
-            ->where('user_requests.user_rated',0)
-            ->whereNull('user_requests.driver_id')
-            ->where('user_requests.status', $check_status)
-            ->select('user_requests.*');
-    }
 }
