@@ -37,7 +37,9 @@ class TripController extends Controller
                 ->where('request_filters.driver_id', $driver->id)
                 ->whereNotIn('user_requests.status', ['CANCELLED', 'SCHEDULED'])
                 ->selectRaw("user_requests.*, 180 - (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(CONVERT_TZ(user_requests.assigned_at, 'Africa/Cairo', 'SYSTEM'))) AS time_left_to_respond");
-
+            
+            $latestRequest = [];
+            
             if ($incomingRequests->count()) {
 
                 $latestRequest = $incomingRequests->latest('user_requests.created_at')
