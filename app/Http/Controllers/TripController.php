@@ -30,66 +30,49 @@ class TripController extends Controller
     {
         try {
 
-            $broadcast_request = true;
-            $manual_request = false;
-            $driver_select_timeout = 180;
-
             $driver = auth('driver')->user();
-            $driver_id = $driver->id;
 
-            $incomingRequests = RequestFilter::with('request.user')
-                ->where('driver_id', $driver_id)
-                ->whereHas('request', function($query) use ($driver_id) {
-                    $query->where('status','<>', 'CANCELLED');
-                    $query->where('status','<>', 'SCHEDULED');
-                    // $query->where('driver_id', $driver_id );
-                    // $query->where('current_driver_id', $driver_id);
-                });
+            $incomingRequests = UserRequest::with('user')
+                ->join('request_filters', 'request_filters.request_id', 'user_requests.id')
+                ->where('request_filters.driver_id', $driver->id)
+                ->whereNotIn('user_requests.status', ['CANCELLED', 'SCHEDULED'])
+                ->selectRaw("user_requests.*, 180 - (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(CONVERT_TZ(user_requests.assigned_at, 'Africa/Cairo', 'SYSTEM'))) AS time_left_to_respond");
 
-            // if ($broadcast_request) {
-            //     $beforeAssignProvider = RequestFilter::with('request.user')
-            //     ->where('driver_id', $driver_id)
-            //     ->whereHas('request', function($query) use ($driver_id){
-            //         $query->where('status','<>', 'CANCELLED');
-            //         $query->where('status','<>', 'SCHEDULED');
-            //         $query->whereNull('current_driver_id');
-            //     });
-            // } else {
-            //     $beforeAssignProvider = RequestFilter::with('request.user')
-            //     ->where('driver_id', $driver_id)
-            //     ->whereHas('request', function($query) use ($driver_id){
-            //         $query->where('status','<>', 'CANCELLED');
-            //         $query->where('status','<>', 'SCHEDULED');
-            //         $query->where('current_driver_id', $driver_id);
-            //     });    
-            // }
+            if ($incomingRequests->count()) {
+
+                $latestRequest = $incomingRequests->latest('user_requests.created_at')
+                    ->take(1)
+                    ->get();
+
+                $expiredRequests = $incomingRequests->where('user_requests.status', 'SEARCHING')
+                    ->having('time_left_to_respond', '<', 0);
+
+                if ($expiredRequests->get()->count()) {
+
+                    $expiredRequestsID = $expiredRequests->pluck('id');
+
+                    $expiredRequests->update(['user_requests.status' => 'CANCELLED']);
+    
+                    RequestFilter::whereIn('request_id', $expiredRequestsID)->delete();
+    
+                    (new SendPushController)->ProviderNotAvailable($latestRequest[0]->user_id);
+                } 
+
+            }
+
+            if(!empty($request->latitude) && !empty($request->longitude)) {
                 
-            // $incomingRequests = $beforeAssignProvider->union($afterAssignProvider)->get();
-
-            if(!empty($request->latitude)) {
                 $driver->update([
                     'latitude' => $request->latitude,
                     'longitude' => $request->longitude,
                 ]);
-            }
 
-            if ( !$manual_request && !empty($incomingRequests) ) {
-                foreach($incomingRequests as $incomingRequest) {
-                    $incomingRequest['time_left_to_respond'] = $driver_select_timeout - (time() - strtotime($incomingRequest->request->assigned_at));
-                    if($incomingRequest->request->status == 'SEARCHING' && $incomingRequest['time_left_to_respond'] < 0) {
-                        if ($broadcast_request) {
-                            $this->assign_destroy($incomingRequest->request);
-                        } else {
-                            $this->assign_next_provider($incomingRequest->request);
-                        }
-                    }
-                }
             }
 
             $response = [
                 'account_status' => $driver->status,
                 'service_status' => $driver->vehicle ? $driver->vehicle->status : 'OFFLINE',
-                'requests' => $incomingRequests,
+                'requests' => $latestRequest,
             ];
 
             return $response;
@@ -151,54 +134,49 @@ class TripController extends Controller
         ]);
 
         try {
-            $driver = Auth::guard('driver')->user();
+            $driver = auth('driver')->user();
 
-            $UserRequest = UserRequest::where('status','PICKEDUP')
-                ->where('driver_id',$driver->id)
+            $userRequest = UserRequest::where('status', 'PICKEDUP')
+                ->where('driver_id', $driver->id)
                 ->find($id);
 
-            if ($UserRequest && ($request->latitude && $request->longitude)) {
             
-                if ($UserRequest->track_latitude && $UserRequest->track_longitude) {
+            if ($userRequest->track_latitude && $userRequest->track_longitude) {
 
-                    $coordinate1 = new Coordinate($UserRequest->track_latitude, $UserRequest->track_longitude); 
-                    $coordinate2 = new Coordinate($request->latitude, $request->longitude); 
+                $coordinate1 = new Coordinate($userRequest->track_latitude, $userRequest->track_longitude); 
+                $coordinate2 = new Coordinate($request->latitude, $request->longitude); 
 
-                    $calculator = new Vincenty();
+                $calculator = new Vincenty();
 
-                    $mydistance = $calculator->getDistance($coordinate1, $coordinate2); 
+                $mydistance = $calculator->getDistance($coordinate1, $coordinate2); 
 
-                    $meters = round($mydistance);
+                $meters = round($mydistance);
 
-                    if ($meters >= 100) {
-                        $traveldistance = round(($meters/1000),8);
+                if ($meters >= 100) {
+                    $traveldistance = round(($meters/1000),8);
 
-                        $calulatedistance = $UserRequest->track_distance + $traveldistance;
+                    $calulatedistance = $userRequest->track_distance + $traveldistance;
 
-                        $UserRequest->track_distance  = $calulatedistance;
-                        $UserRequest->distance        = $calulatedistance;
-                        $UserRequest->track_latitude  = $request->latitude;
-                        $UserRequest->track_longitude = $request->longitude;
-                        $UserRequest->save();
-                    }
-                } else if (!$UserRequest->track_latitude && !$UserRequest->track_longitude) {
-                    $UserRequest->distance             = 0;
-                    $UserRequest->track_latitude      = $request->latitude;
-                    $UserRequest->track_longitude     = $request->longitude;
-                    $UserRequest->save();
+                    $userRequest->track_distance  = $calulatedistance;
+                    $userRequest->distance        = $calulatedistance;
+                    $userRequest->track_latitude  = $request->latitude;
+                    $userRequest->track_longitude = $request->longitude;
+                    $userRequest->save();
                 }
+            } else if (!$userRequest->track_latitude && !$userRequest->track_longitude) {
+                $userRequest->distance             = 0;
+                $userRequest->track_latitude      = $request->latitude;
+                $userRequest->track_longitude     = $request->longitude;
+                $userRequest->save();
             }
-            return $UserRequest;
+
+            return $userRequest;
+
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Something went wrong']);
         }
     }
 
-    /**
-     * Cancel given request.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function cancel(Request $request)
     {
         $this->validate($request, [
@@ -235,11 +213,6 @@ class TripController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function rate(Request $request, $id)
     {
 
@@ -420,13 +393,6 @@ class TripController extends Controller
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $this->validate($request, [
