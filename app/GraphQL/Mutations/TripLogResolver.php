@@ -3,6 +3,7 @@
 namespace App\GraphQL\Mutations;
 
 use App\User;
+use App\Driver;
 use App\TripLog;
 use App\PartnerTrip;
 use App\DeviceToken;
@@ -181,8 +182,8 @@ class TripLogResolver
         ];
 
         try {
-            auth('driver')->user()->update($location);
-        } catch (\Exception $e) {
+            Driver::findOrFail($args['driver_id'])->update($location);
+        } catch (ModelNotFoundException $e) {
             throw new \Exception('Driver location has not updated. ' . $e->getMessage());
         }
 
