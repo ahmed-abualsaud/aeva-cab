@@ -67,24 +67,22 @@ class TripLogResolver
     public function userArrived($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {  
         try {
-            $user = auth('user')->user();
-
+            $user = User::select('name')->findOrFail($args['user_id']);
             $token = DeviceToken::where('tokenable_id', $args['driver_id'])
-                ->where('tokenable_type', 'App\Driver')
-                ->select('device_id')
-                ->pluck('device_id');
-            
-            $notificationMsg = $user->name . ' has arrived';
-            $data = ["status" => "USER_ARRIVED"];
-            PushNotification::dispatch($token, $notificationMsg, $data);
+            ->where('tokenable_type', 'App\Driver')
+            ->select('device_id')
+            ->pluck('device_id');
 
             $input = collect($args)->except(['directive', 'driver_id'])->toArray();
             $input['status'] = 'ARRIVED';
-            $input['user_id'] = $user->id;
             TripLog::create($input);
         } catch (\Exception $e) {
             throw new \Exception('Notification has not been sent to the driver. ' . $e->getMessage());
         }
+        
+        $notificationMsg = $user->name . ' has arrived';
+        $data = ["status" => "USER_ARRIVED"];
+        PushNotification::dispatch($token, $notificationMsg, $data);
 
         return "Notification has been sent to the driver";
     }

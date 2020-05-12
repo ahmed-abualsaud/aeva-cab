@@ -28,6 +28,7 @@ input UserArrivedInput {
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
   driver_id: ID! @rules(apply: ["required"])
+  user_id: ID! @rules(apply: ["required"])
 }
 
 input PickUsersUpInput {
