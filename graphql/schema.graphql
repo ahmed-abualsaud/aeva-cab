@@ -128,6 +128,7 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   updatePartnerTrip(input: UpdatePartnerTripInput! @spread): PartnerTrip 
     @field(resolver: "PartnerTripResolver@update")
   deletePartnerTrip(id: ID!): PartnerTrip @delete
+  restorePartnerTrip(id: ID!): PartnerTrip @restore
 
   # Trip Station
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
@@ -241,9 +242,9 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
 
   # Trip
   trips: [PartnerTrip!]! @all
-  trip(id: ID @eq): PartnerTrip 
+  trip(id: ID @eq): PartnerTrip  
     @field(resolver: "PartnerTripResolver@trip")
-  partnerTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [PartnerTrip] @all
+  partnerTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [PartnerTrip] @all @softDeletes
   driverLiveTrip(driver_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@driverLiveTrip")
   driverTrips(driver_id: ID!): [PartnerTrip]
