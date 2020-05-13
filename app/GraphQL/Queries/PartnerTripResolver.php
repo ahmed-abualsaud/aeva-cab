@@ -149,7 +149,7 @@ class PartnerTripResolver
         $today = strtolower(date('l'));
         if ($trip->schedule->$today) {
             $date = date('Y-m-d') . ' ' . $trip->schedule->$today;
-            $flag = $this->getFlag($trip->schedule->$today);
+            $flag = $this->getFlag($trip->schedule->$today, $trip->status);
             $startsAt = Carbon::parse($date)->diffForHumans();
             $trip->startsAt = $startsAt;
         }
@@ -173,7 +173,7 @@ class PartnerTripResolver
                     $dateTime = $date . ' ' . $trip->schedule->$day;  
                     $trip->dayName = $day;
                     $trip->date = strtotime($dateTime) * 1000;
-                    $trip->flag = $this->getFlag($trip->schedule->$day);
+                    $trip->flag = $this->getFlag($trip->schedule->$day, $trip->status);
                     $trip->startsAt = Carbon::parse($dateTime)->diffForHumans();
                     $tripInstance->fill($trip->toArray());
                     array_push($sortedTrips, $tripInstance);
@@ -195,10 +195,10 @@ class PartnerTripResolver
         return $sortedTrips;
     }
 
-    protected function getFlag($day) 
+    protected function getFlag($day, $status) 
     {   
         $tripDate = Carbon::parse(date('Y-m-d') . ' ' . $day);
         $minutes = $tripDate->diffInMinutes(now());
-        return ($minutes < 15) ? true : false;
+        return ($minutes < 15 && $status) ? true : false;
     } 
 }
