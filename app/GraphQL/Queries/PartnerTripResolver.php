@@ -84,7 +84,7 @@ class PartnerTripResolver
             ->select('partner_trips.*')
             ->get();
         
-        return $this->scheduledTrips($userTrips);
+        return $this->scheduledTrips($userTrips, 'user');
     }
 
     public function driverTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
@@ -94,7 +94,7 @@ class PartnerTripResolver
             ->select('partner_trips.*')
             ->get();
 
-        return $this->scheduledTrips($driverTrips);
+        return $this->scheduledTrips($driverTrips, 'driver');
     }
 
     public function userLiveTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
@@ -149,7 +149,7 @@ class PartnerTripResolver
         $today = strtolower(date('l'));
         if ($trip->schedule->$today) {
             $date = date('Y-m-d') . ' ' . $trip->schedule->$today;
-            $flag = $this->getFlag($trip->schedule->$today, $trip->status);
+            $flag = $this->getFlag($trip->schedule->$today, $trip->status, null);
             $startsAt = Carbon::parse($date)->diffForHumans();
             $trip->startsAt = $startsAt;
         }
@@ -158,7 +158,7 @@ class PartnerTripResolver
         return $trip;
     }
 
-    protected function scheduledTrips($trips) {
+    protected function scheduledTrips($trips, $target) {
 
         $sortedTrips = array();
         $days = array('saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday');
@@ -173,7 +173,7 @@ class PartnerTripResolver
                     $dateTime = $date . ' ' . $trip->schedule->$day;  
                     $trip->dayName = $day;
                     $trip->date = strtotime($dateTime) * 1000;
-                    $trip->flag = $this->getFlag($trip->schedule->$day, $trip->status);
+                    $trip->flag = $this->getFlag($trip->schedule->$day, $trip->status, $target);
                     $trip->startsAt = Carbon::parse($dateTime)->diffForHumans();
                     $tripInstance->fill($trip->toArray());
                     array_push($sortedTrips, $tripInstance);
@@ -195,10 +195,11 @@ class PartnerTripResolver
         return $sortedTrips;
     }
 
-    protected function getFlag($day, $status) 
+    protected function getFlag($day, $status, $target) 
     {   
         $tripDate = Carbon::parse(date('Y-m-d') . ' ' . $day);
         $minutes = $tripDate->diffInMinutes(now());
-        return ($minutes < 15 && $status) ? true : false;
+        if ($target == 'user') return ($minutes < 15 && $status) ? true : false;
+        return ($minutes < 15) ? true : false;
     } 
 }
