@@ -17,8 +17,6 @@ type Mutation {
     @field(resolver: "UserResolver@socialLogin")
   userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
     @field(resolver: "UserResolver@phoneVerification")
-  changeUserPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! 
-    @field(resolver: "UserResolver@updatePassword")
   forgotUserPassword(input: ForgotPasswordInput! @spread): UpdatePasswordResponse! 
     @field(resolver: "ForgotPasswordResolver@user")
   updateUserForgottenPassword(input: NewPasswordWithCodeInput @spread): UpdatePasswordResponse! 
@@ -39,6 +37,8 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   updateUser(input: UpdateUserInput! @spread): UserPayload 
     @field(resolver: "UserResolver@update") @updateUserValidation
   deleteUser(id: ID!): User @delete
+  changeUserPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! 
+    @field(resolver: "UserResolver@updatePassword")
 
   # Fleet
   createFleet(input: CreateFleetInput! @spread): Fleet
@@ -115,6 +115,8 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   updatePartner(input: UpdatePartnerInput! @spread): Partner 
     @field(resolver: "PartnerResolver@update") @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
+  changePartnerPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! 
+    @field(resolver: "PartnerResolver@updatePassword")
 
   # Partner Driver
   createPartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse!

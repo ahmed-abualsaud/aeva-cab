@@ -29,7 +29,7 @@ class PartnerResolver
         $input = collect($args)->except(['directive', 'logo'])->toArray();
         $input['password'] = Hash::make($input['phone1']);
 
-        if ($args['logo']) {
+        if (array_key_exists('logo', $args) && $args['logo']) {
             $url = $this->uploadOneFile($args['logo'], 'images');
             $input['logo'] = $url;
         }
@@ -49,7 +49,7 @@ class PartnerResolver
             throw new \Exception('The provided partner ID is not found.');
         }
 
-        if ($args['logo']) {
+        if (array_key_exists('logo', $args) && $args['logo']) { 
             if ($partner->logo) $this->deleteOneFile($partner->logo, 'images');
             $url = $this->uploadOneFile($args['logo'], 'images');
             $input['logo'] = $url;
@@ -128,5 +128,40 @@ class PartnerResolver
             "status" => true,
             "message" => "Selected drivers have been unassigned successfully."
         ];
+    }
+
+    public function updatePassword($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        try {
+            $partner = Partner::findOrFail($args['id']);
+        } catch (ModelNotFoundException $e) {
+            return [
+                'status' => false, 
+                'message' => 'The provided partner ID is not found.'
+            ];
+        }
+
+        if (!(Hash::check($args['current_password'], $partner->password))) {
+            return [
+                'status' => false,
+                'message' => 'Your current password does not matches with the password you provided.'
+            ];
+        }
+
+        if (strcmp($args['current_password'], $args['new_password']) == 0) {
+            return [
+                'status' => false,
+                'message' => 'New Password cannot be same as your current password. Please choose a different password.'
+            ];
+        }
+
+        $partner->password = Hash::make($args['new_password']);
+        $partner->save();
+
+        return [
+            'status' => true,
+            'message' => 'Password changed successfully.'
+        ];
+
     }
 }
