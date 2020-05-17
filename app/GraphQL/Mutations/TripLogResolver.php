@@ -8,6 +8,7 @@ use App\TripLog;
 use App\PartnerTrip;
 use App\DeviceToken;
 use App\PartnerTripUser;
+use App\DriverVehicle;
 use App\Jobs\PushNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
@@ -36,6 +37,10 @@ class TripLogResolver
                 "logID" => $logID
             ];
             PushNotification::dispatch($this->getTokens($trip), $notificationMsg, $data);
+
+            DriverVehicle::where('driver_id', $trip->driver_id)
+                ->where('vehicle_id', $trip->vehicle_id)
+                ->update(['status' => 'RIDING', 'trip_type' => 'BUSINESS', 'trip_id' => $trip->id]);
 
             $trip->update(['status' => true, 'log_id' => $logID]);
             $input = Arr::except($args, ['directive']);
@@ -103,6 +108,10 @@ class TripLogResolver
             $notificationMsg = 'We have arrived. Have a great time.' . $comeBack;
             $data = ["status" => "TRIP_ENDED"];
             PushNotification::dispatch($this->getTokens($trip), $notificationMsg, $data);
+
+            DriverVehicle::where('driver_id', $trip->driver_id)
+                ->where('vehicle_id', $trip->vehicle_id)
+                ->update(['status' => 'ACTIVE', 'trip_type' => null, 'trip_id' => null]);
 
             $trip->update(['status' => false, 'log_id' => null]);
             $input = Arr::except($args, ['directive']);

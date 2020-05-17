@@ -3,6 +3,7 @@
 namespace App\GraphQL\Queries;
 
 use App\User;
+use App\DriverVehicle;
 use App\PartnerTrip;
 use App\PartnerTripUser;
 use App\PartnerTripStation;
@@ -119,20 +120,23 @@ class PartnerTripResolver
 
     public function driverLiveTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $liveTrip = PartnerTrip::where('driver_id', $args['driver_id'])
-            ->where('status', true)
+        $liveTrip = DriverVehicle::select('trip_type', 'trip_id')
+            ->where('driver_id', $args['driver_id'])
+            ->where('status', 'RIDING')
             ->first();
 
         if ($liveTrip) {
             return [
                 "status" => true,
-                "trip" => $liveTrip
+                "tripType" => $liveTrip->trip_type,
+                "tripID" => $liveTrip->trip_id
             ];
         }
 
         return [
             "status" => false,
-            "trip" => null
+            "tripType" => null,
+            "tripID" => null
         ];
     } 
 

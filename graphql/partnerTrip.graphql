@@ -40,6 +40,12 @@ type LiveTripResponse {
   trip: PartnerTrip
 }
 
+type DriverLiveTripResponse {
+  status: Boolean
+  tripType: String
+  tripID: ID
+}
+
 type PartnerTripSchedule {
   id: ID
   trip_id: ID

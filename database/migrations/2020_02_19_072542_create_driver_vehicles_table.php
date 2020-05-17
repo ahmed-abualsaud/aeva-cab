@@ -18,7 +18,8 @@ class CreateDriverVehiclesTable extends Migration
             $table->unsignedBigInteger('driver_id');
             $table->unsignedBigInteger('vehicle_id');
             $table->enum('status', ['ACTIVE', 'OFFLINE', 'RIDING'])->nullable();
-            $table->timestamps();
+            $table->enum('trip_type', ['BUSINESS', 'CAB', 'ONDEMAND', 'COMMUTE'])->nullable();
+            $table->unsignedInteger('trip_id')->nullable();
             
             $table->unique(['driver_id', 'vehicle_id'], 'driver_vehicle');
 

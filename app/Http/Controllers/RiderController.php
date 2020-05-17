@@ -295,14 +295,13 @@ class RiderController extends Controller
 
             $userRequest = UserRequest::findOrFail($request->request_id);
 
-            if($userRequest->status == 'CANCELLED')
-            {
+            if ($userRequest->status == 'CANCELLED') {
                 return response()->json(['error' => trans('cabResponses.ride.already_cancelled')], 500);
             }
 
-            if(in_array($userRequest->status, ['SEARCHING','STARTED','ARRIVED','SCHEDULED'])) {
+            if (in_array($userRequest->status, ['SEARCHING','STARTED','ARRIVED','SCHEDULED'])) {
 
-                if($userRequest->status != 'SEARCHING'){
+                if ($userRequest->status != 'SEARCHING') {
                     $this->validate($request, [
                         'cancel_reason'=> 'max:255',
                     ]);
@@ -316,16 +315,13 @@ class RiderController extends Controller
                 RequestFilter::where('request_id', $userRequest->id)->delete();
 
                 if ($userRequest->driver_id && $userRequest->status != 'SCHEDULED') {
-                    DriverVehicle::where('driver_id', $userRequest->driver_id)->update(['status' => 'ACTIVE']);
+                    DriverVehicle::where('driver_id', $userRequest->driver_id)
+                        ->update(['status' => 'ACTIVE', 'trip_type' => null, 'trip_id' => null]);
                 }
 
                 (new SendPushController)->UserCancellRide($userRequest);
 
-                if($request->ajax()) {
-                    return response()->json(['message' => trans('cabResponses.ride.ride_cancelled')]); 
-                } else {
-                    return redirect('dashboard')->with('flash_success','Request Cancelled Successfully');
-                }
+               return response()->json(['message' => trans('cabResponses.ride.ride_cancelled')]);
 
             } else {
                 return response()->json(['error' => trans('cabResponses.ride.already_onride')], 500); 

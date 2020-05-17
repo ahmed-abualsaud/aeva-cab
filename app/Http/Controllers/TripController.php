@@ -187,26 +187,27 @@ class TripController extends Controller
         
         try {
 
-            $UserRequest = UserRequest::findOrFail($request->id);
+            $userRequest = UserRequest::findOrFail($request->id);
             $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];
 
-            if(!in_array($UserRequest->status, $Cancellable)) {
+            if(!in_array($userRequest->status, $Cancellable)) {
                 return response()->json(['error' => 'Cannot cancel request at this stage!']);
             }
 
-            $UserRequest->status = "CANCELLED";
-            $UserRequest->cancel_reason = $request->cancel_reason;
-            $UserRequest->cancelled_by = "DRIVER";
-            $UserRequest->save();
+            $userRequest->status = "CANCELLED";
+            $userRequest->cancel_reason = $request->cancel_reason;
+            $userRequest->cancelled_by = "DRIVER";
+            $userRequest->save();
 
-             RequestFilter::where('request_id', $UserRequest->id)->delete();
+             RequestFilter::where('request_id', $userRequest->id)->delete();
 
-             DriverVehicle::where('driver_id',$UserRequest->driver_id)->update(['status' =>'ACTIVE']);
+             DriverVehicle::where('driver_id',$userRequest->driver_id)
+                ->update(['status' =>'ACTIVE', 'trip_type' => null, 'trip_id' => null]);
 
              // Send Push Notification to User
-            (new SendPushController)->ProviderCancellRide($UserRequest);
+            (new SendPushController)->ProviderCancellRide($userRequest);
 
-            return $UserRequest;
+            return $userRequest;
 
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Something went wrong']);
@@ -217,44 +218,44 @@ class TripController extends Controller
 
     public function rate(Request $request, $id)
     {
-
         $this->validate($request, [
-                'rating' => 'required|integer|in:1,2,3,4,5',
-                'comment' => 'max:255',
-            ]);
+            'rating' => 'required|integer|in:1,2,3,4,5',
+            'comment' => 'max:255',
+        ]);
     
         try {
 
-            $UserRequest = UserRequest::where('id', $id)
+            $userRequest = UserRequest::where('id', $id)
                 ->where('status', 'COMPLETED')
                 ->firstOrFail();
 
-            if($UserRequest->rating == null) {
+            if($userRequest->rating == null) {
                 UserRequestRating::create([
-                        'driver_id' => $UserRequest->driver_id,
-                        'user_id' => $UserRequest->user_id,
-                        'request_id' => $UserRequest->id,
-                        'driver_rating' => $request->rating,
-                        'driver_comment' => $request->comment,
-                    ]);
+                    'driver_id' => $userRequest->driver_id,
+                    'user_id' => $userRequest->user_id,
+                    'request_id' => $userRequest->id,
+                    'driver_rating' => $request->rating,
+                    'driver_comment' => $request->comment,
+                ]);
             } else {
-                $UserRequest->rating->update([
-                        'driver_rating' => $request->rating,
-                        'driver_comment' => $request->comment,
-                    ]);
+                $userRequest->rating->update([
+                    'driver_rating' => $request->rating,
+                    'driver_comment' => $request->comment,
+                ]);
             }
 
-            $UserRequest->update(['driver_rated' => 1]);
+            $userRequest->update(['driver_rated' => 1]);
 
-            // Delete from filter so that it doesn't show up in status checks.
             RequestFilter::where('request_id', $id)->delete();
 
-            DriverVehicle::where('driver_id',$UserRequest->driver_id)->update(['status' =>'ACTIVE']);
+            DriverVehicle::where('driver_id',$userRequest->driver_id)
+                ->update(['status' =>'ACTIVE', 'trip_type' => null, 'trip_id' => null]);
 
             // Send Push Notification to Driver 
-            $average = UserRequestRating::where('driver_id', $UserRequest->driver_id)->avg('driver_rating');
+            $average = UserRequestRating::where('driver_id', $userRequest->driver_id)
+                ->avg('driver_rating');
 
-            $UserRequest->user->update(['rating' => $average]);
+            $userRequest->user->update(['rating' => $average]);
 
             return response()->json(['message' => 'Request Completed!']);
 
@@ -336,21 +337,21 @@ class TripController extends Controller
     {
         try {
 
-            $UserRequest = UserRequest::findOrFail($id);
+            $userRequest = UserRequest::findOrFail($id);
 
-            if ($UserRequest->status != "SEARCHING") {
+            if ($userRequest->status != "SEARCHING") {
                 return response()->json(['error' => 'Request already under progress!']);
             }
 
             $driver_id = Auth::guard('driver')->user()->id;
             
-            $UserRequest->driver_id = $driver_id;
-            $UserRequest->current_driver_id = $driver_id;
+            $userRequest->driver_id = $driver_id;
+            $userRequest->current_driver_id = $driver_id;
 
-            if($UserRequest->schedule_at){
+            if($userRequest->schedule_at){
 
-                $beforeschedule_time = strtotime($UserRequest->schedule_at."- 1 hour");
-                $afterschedule_time = strtotime($UserRequest->schedule_at."+ 1 hour");
+                $beforeschedule_time = strtotime($userRequest->schedule_at."- 1 hour");
+                $afterschedule_time = strtotime($userRequest->schedule_at."+ 1 hour");
 
                 $CheckScheduling = UserRequest::where('status','SCHEDULED')
                     ->where('driver_id', $driver_id)
@@ -361,22 +362,23 @@ class TripController extends Controller
                     return response()->json(['error' => trans('cabResponses.ride.request_already_scheduled')]);
                 }
 
-                RequestFilter::where('request_id',$UserRequest->id)->where('driver_id',$driver_id)->update(['status' => 2]);
+                RequestFilter::where('request_id',$userRequest->id)->where('driver_id',$driver_id)->update(['status' => 2]);
 
-                $UserRequest->status = "SCHEDULED";
-                $UserRequest->save();
+                $userRequest->status = "SCHEDULED";
+                $userRequest->save();
 
             } else {
 
-                $UserRequest->status = "STARTED";
-                $UserRequest->save();
+                $userRequest->status = "STARTED";
+                $userRequest->save();
 
-                DriverVehicle::where('driver_id',$UserRequest->driver_id)->update(['status' =>'RIDING']);
+                DriverVehicle::where('driver_id', $userRequest->driver_id)
+                    ->update(['status' => 'RIDING', 'trip_type' => 'CAB', 'trip_id' => $userRequest->id]);
 
-                RequestFilter::where('request_id', $UserRequest->id)->where('driver_id', '!=', $driver_id)->delete();
+                RequestFilter::where('request_id', $userRequest->id)->where('driver_id', '!=', $driver_id)->delete();
             }
 
-            RequestFilter::where('request_id', '!=', $UserRequest->id)
+            RequestFilter::where('request_id', '!=', $userRequest->id)
                 ->where('driver_id',$driver_id )
                 ->whereHas('request', function($query){
                     $query->where('status','<>','SCHEDULED');
@@ -384,9 +386,9 @@ class TripController extends Controller
                 ->delete(); 
 
             // Send Push Notification to User
-            (new SendPushController)->RideAccepted($UserRequest);
+            (new SendPushController)->RideAccepted($userRequest);
 
-            return $UserRequest->with('user')->get();
+            return $userRequest->with('user')->get();
 
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Unable to accept, Please try again later']);
@@ -403,54 +405,50 @@ class TripController extends Controller
  
         try {
 
-            $UserRequest = UserRequest::with('user')->findOrFail($id);
+            $userRequest = UserRequest::with('user')->findOrFail($id);
 
-            if($request->status == 'DROPPED' && $UserRequest->payment_mode != 'CASH') {
-                $UserRequest->status = 'COMPLETED';
-            } else if ($request->status == 'COMPLETED' && $UserRequest->payment_mode == 'CASH') {
-                $UserRequest->status = $request->status;
-                $UserRequest->paid = 1;
-                // DriverVehicle::where('driver_id',$UserRequest->driver_id)->update(['status' =>'ACTIVE']);
+            if($request->status == 'DROPPED' && $userRequest->payment_mode != 'CASH') {
+                $userRequest->status = 'COMPLETED';
+            } else if ($request->status == 'COMPLETED' && $userRequest->payment_mode == 'CASH') {
+                $userRequest->status = $request->status;
+                $userRequest->paid = 1;
+                // DriverVehicle::where('driver_id',$userRequest->driver_id)->update(['status' =>'ACTIVE']);
             } else {
-                $UserRequest->status = $request->status;
+                $userRequest->status = $request->status;
 
-                if($request->status == 'ARRIVED'){
-                    (new SendPushController)->Arrived($UserRequest);
+                if ($request->status == 'ARRIVED') {
+                    (new SendPushController)->Arrived($userRequest);
                 }
             }
 
-            if($request->status == 'PICKEDUP'){
-                if($UserRequest->is_track){
-                   $UserRequest->distance = 0; 
+            if ($request->status == 'PICKEDUP') {
+                if($userRequest->is_track){
+                   $userRequest->distance = 0; 
                 }
-                $UserRequest->started_at = Carbon::now();
+                $userRequest->started_at = Carbon::now();
             }
 
-            $UserRequest->save();
+            $userRequest->save();
 
-            if($request->status == 'DROPPED') {
-                if($UserRequest->is_track){
-                    $UserRequest->d_latitude = $request->latitude?:$UserRequest->d_latitude;
-                    $UserRequest->d_longitude = $request->longitude?:$UserRequest->d_longitude;
-                    $UserRequest->d_address =  $request->address?:$UserRequest->d_address;
+            if ($request->status == 'DROPPED') {
+                if ($userRequest->is_track) {
+                    $userRequest->d_latitude = $request->latitude?:$userRequest->d_latitude;
+                    $userRequest->d_longitude = $request->longitude?:$userRequest->d_longitude;
+                    $userRequest->d_address =  $request->address?:$userRequest->d_address;
                 }
-                $UserRequest->finished_at = Carbon::now();
-                $StartedDate  = date_create($UserRequest->started_at);
+                $userRequest->finished_at = Carbon::now();
+                $StartedDate  = date_create($userRequest->started_at);
                 $FinisedDate  = Carbon::now();
                 $TimeInterval = date_diff($StartedDate,$FinisedDate);
                 $MintuesTime  = $TimeInterval->i;
-                $UserRequest->travel_time = $MintuesTime;
-                $UserRequest->save();
-                $UserRequest->with('user')->findOrFail($id);
-                $UserRequest->invoice = $this->invoice($id);
+                $userRequest->travel_time = $MintuesTime;
+                $userRequest->save();
+                $userRequest->invoice = $this->invoice($userRequest);
 
-                (new SendPushController)->Dropped($UserRequest);
+                (new SendPushController)->Dropped($userRequest);
             }
-
-           
-            // Send Push Notification to User
        
-            return $UserRequest;
+            return $userRequest;
 
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Unable to update, Please try again later']);
@@ -462,9 +460,9 @@ class TripController extends Controller
     public function destroy($id)
     {
         try {
-            $UserRequest = UserRequest::find($id);
-            $this->assign_next_provider($UserRequest);
-            return $UserRequest->with('user')->get();
+            $userRequest = UserRequest::find($id);
+            $this->assign_next_provider($userRequest);
+            return $userRequest->with('user')->get();
 
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Unable to reject, Please try again later']);
@@ -473,16 +471,15 @@ class TripController extends Controller
         }
     }
 
-    public function invoice($request_id)
+    public function invoice($userRequest)
     {
         try {
-            $UserRequest = UserRequest::findOrFail($request_id);
             $tax_percentage = env('TAX_PERCENTAGE', 14);
             $commission_percentage = env('COMMISSION_PERCENTAGE', 10);
             $provider_commission_percentage = env('PROVIDER_COMMISSION_PERCENTAGE', 10);
-            $car_type = CarType::findOrFail($UserRequest->car_type_id);
+            $car_type = CarType::findOrFail($userRequest->car_type_id);
              
-            $kilometer = $UserRequest->distance;
+            $kilometer = $userRequest->distance;
             $Fixed = $car_type->fixed;
             $Distance = 0;
             $minutes = 0;
@@ -511,7 +508,7 @@ class TripController extends Controller
              $ProviderCommission = ($Distance + $Fixed) * ( $provider_commission_percentage/100 );
              $ProviderPay = ($Distance + $Fixed) - $ProviderCommission;
 
-            if($PromoCodeUsage = PromoCodeUsage::where('user_id', $UserRequest->user_id)->where('status','ADDED')->first())
+            if($PromoCodeUsage = PromoCodeUsage::where('user_id', $userRequest->user_id)->where('status','ADDED')->first())
             {
                 if($PromoCode = PromoCode::find($PromoCodeUsage->promo_code_id)){
                     $Discount = $PromoCode->discount;
@@ -532,7 +529,7 @@ class TripController extends Controller
             }
 
             
-            if ($UserRequest->surge) {
+            if ($userRequest->surge) {
                 $Surge = (env('SURGE_PERCENTAGE', 0)/100) * $Total;
                 $Total += $Surge;
             }
@@ -542,7 +539,7 @@ class TripController extends Controller
             }
 
             $Payment = new UserRequestPayment;
-            $Payment->request_id = $UserRequest->id;
+            $Payment->request_id = $userRequest->id;
 
             /*
             * Reported by Jeya, We are adding the surge price with Base price of Service Type.
@@ -554,71 +551,68 @@ class TripController extends Controller
             $Payment->total = $Total;
             $Payment->driver_commission = $ProviderCommission;
             $Payment->driver_pay = $ProviderPay;
-            if($Discount != 0 && $PromoCodeUsage){
+            if ($Discount != 0 && $PromoCodeUsage){
                 $Payment->promo_code_id = $PromoCodeUsage->promo_code_id;
             }
             $Payment->discount = $Discount;
 
-            if($Discount  == ($Fixed + $Distance + $Tax)){
-                $UserRequest->paid = 1;
+            if ($Discount  == ($Fixed + $Distance + $Tax)) {
+                $userRequest->paid = 1;
             }
 
-            if($UserRequest->use_wallet == 1 && $Total > 0){
+            if ($userRequest->use_wallet == 1 && $Total > 0) {
 
-                $User = User::find($UserRequest->user_id);
+                $User = User::find($userRequest->user_id);
 
                 $Wallet = $User->wallet_balance;
 
-                if($Wallet != 0){
+                if ($Wallet != 0) {
 
-                    if($Total > $Wallet) {
+                    if ($Total > $Wallet) {
 
                         $Payment->wallet = $Wallet;
                         $Payable = $Total - $Wallet;
-                        User::where('id',$UserRequest->user_id)->update(['wallet_balance' => 0 ]);
+                        User::where('id',$userRequest->user_id)->update(['wallet_balance' => 0 ]);
                         $Payment->payable = abs($Payable);
 
                         WalletPassbook::create([
-                          'user_id' => $UserRequest->user_id,
+                          'user_id' => $userRequest->user_id,
                           'amount' => $Wallet,
                           'status' => 'DEBITED',
                           'via' => 'TRIP',
                         ]);
 
                         // charged wallet money push 
-                        (new SendPushController)->ChargedWalletMoney($UserRequest->user_id,currency($Wallet));
+                        (new SendPushController)->ChargedWalletMoney($userRequest->user_id,currency($Wallet));
 
                     } else {
-
                         $Payment->payable = 0;
                         $WalletBalance = $Wallet - $Total;
-                        User::where('id',$UserRequest->user_id)->update(['wallet_balance' => $WalletBalance]);
+                        User::where('id',$userRequest->user_id)->update(['wallet_balance' => $WalletBalance]);
                         $Payment->wallet = $Total;
                         
                         $Payment->payment_id = 'WALLET';
-                        $Payment->payment_mode = $UserRequest->payment_mode;
+                        $Payment->payment_mode = $userRequest->payment_mode;
 
-                        $UserRequest->paid = 1;
-                        $UserRequest->status = 'COMPLETED';
-                        $UserRequest->save();
+                        $userRequest->paid = 1;
+                        $userRequest->status = 'COMPLETED';
+                        $userRequest->save();
 
                         WalletPassbook::create([
-                          'user_id' => $UserRequest->user_id,
+                          'user_id' => $userRequest->user_id,
                           'amount' => $Total,
                           'status' => 'DEBITED',
                           'via' => 'TRIP',
                         ]);
 
                         // charged wallet money push 
-                        (new SendPushController)->ChargedWalletMoney($UserRequest->user_id, currency($Total));
+                        (new SendPushController)->ChargedWalletMoney($userRequest->user_id, currency($Total));
                     }
 
                 }
-
             } else {
                 $Payment->total = abs($Total);
-                $Payment->payable = abs($Total);
-                
+                $Payment->payable = abs($Total); 
             }
 
             $Payment->tax = $Tax;
@@ -631,58 +625,42 @@ class TripController extends Controller
         }
     }
 
-    /**
-     * Get the trip history details of the driver
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function history_details(Request $request)
     {
         $this->validate($request, [
             'request_id' => 'required|integer|exists:user_requests,id',
-        ]);
-
-        if($request->ajax()) {
+        ]); 
             
-            $Jobs = UserRequest::where('id',$request->request_id)
-                ->where('driver_id', Auth::guard('driver')->user()->id)
-                ->with('payment','car_type','user','rating')
-                ->get();
-            if(!empty($Jobs)){
-                $marker = '/assets/icons/marker.png';
-                foreach ($Jobs as $key => $value) {
-                    $Jobs[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                            "autoscale=1".
-                            "&size=320x130".
-                            "&maptype=terrian".
-                            "&format=png".
-                            "&visual_refresh=true".
-                            "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                            "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                            "&path=color:0x000000|weight:3|enc:".$value->route_key.
-                            "&key=".env('GOOGLE_MAP_KEY', null);
-                }
+        $Jobs = UserRequest::where('id',$request->request_id)
+            ->where('driver_id', Auth::guard('driver')->user()->id)
+            ->with('payment','car_type','user','rating')
+            ->get();
+        if(!empty($Jobs)){
+            $marker = '/assets/icons/marker.png';
+            foreach ($Jobs as $key => $value) {
+                $Jobs[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
+                        "autoscale=1".
+                        "&size=320x130".
+                        "&maptype=terrian".
+                        "&format=png".
+                        "&visual_refresh=true".
+                        "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
+                        "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
+                        "&path=color:0x000000|weight:3|enc:".$value->route_key.
+                        "&key=".env('GOOGLE_MAP_KEY', null);
             }
-
-            return $Jobs;
         }
-
+        return $Jobs;
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
-    public function upcoming_trips() {
-    
-        try{
-            $UserRequest = UserRequest::ProviderUpcomingRequest(Auth::guard('driver')->user()->id)->get();
-            if(!empty($UserRequest)){
+    public function upcoming_trips() 
+    {
+        try {
+            $userRequest = UserRequest::ProviderUpcomingRequest(Auth::guard('driver')->user()->id)->get();
+            if(!empty($userRequest)){
                 $marker = 'asset/marker.png';
-                foreach ($UserRequest as $key => $value) {
-                    $UserRequest[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
+                foreach ($userRequest as $key => $value) {
+                    $userRequest[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
                         "autoscale=1".
                         "&size=320x130".
                         "&maptype=terrian".
@@ -694,7 +672,7 @@ class TripController extends Controller
                         "&key=".env('GOOGLE_MAP_KEY', null);
                 }
             }
-            return $UserRequest;
+            return $userRequest;
         }
 
         catch (Exception $e) {
@@ -702,41 +680,32 @@ class TripController extends Controller
         }
     }
 
-    /**
-     * Get the trip history details of the driver
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function upcoming_details(Request $request)
     {
         $this->validate($request, [
             'request_id' => 'required|integer|exists:user_requests,id',
         ]);
 
-        if($request->ajax()) {
-            
-            $Jobs = UserRequest::where('id',$request->request_id)
-                ->where('driver_id', Auth::guard('driver')->user()->id)
-                ->with('car_type','user')
-                ->get();
-            if(!empty($Jobs)){
-                $marker = '/assets/icons/marker.png';
-                foreach ($Jobs as $key => $value) {
-                    $Jobs[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                        "autoscale=1".
-                        "&size=320x130".
-                        "&maptype=terrian".
-                        "&format=png".
-                        "&visual_refresh=true".
-                        "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                        "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                        "&path=color:0x000000|weight:3|enc:".$value->route_key.
-                        "&key=".env('GOOGLE_MAP_KEY', null);
-                }
+        $Jobs = UserRequest::where('id',$request->request_id)
+            ->where('driver_id', Auth::guard('driver')->user()->id)
+            ->with('car_type','user')
+            ->get();
+        if(!empty($Jobs)){
+            $marker = '/assets/icons/marker.png';
+            foreach ($Jobs as $key => $value) {
+                $Jobs[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
+                    "autoscale=1".
+                    "&size=320x130".
+                    "&maptype=terrian".
+                    "&format=png".
+                    "&visual_refresh=true".
+                    "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
+                    "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
+                    "&path=color:0x000000|weight:3|enc:".$value->route_key.
+                    "&key=".env('GOOGLE_MAP_KEY', null);
             }
-            return $Jobs;
         }
-
+        return $Jobs;
     }
 
     /**

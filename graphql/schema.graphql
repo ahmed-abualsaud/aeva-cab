@@ -189,6 +189,10 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   # Driver
   drivers: [Driver!]! @all
   driver(id: ID @eq): Driver @find
+  driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
+    @field(resolver: "PartnerTripResolver@driverLiveTrip")
+  driverTrips(driver_id: ID!): [PartnerTrip]
+    @field(resolver: "PartnerTripResolver@driverTrips")
 
   # Role
   roles: [Role!]! @all
@@ -237,6 +241,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   # Partner
   partners: [Partner!]! @all
   partner(id: ID @eq): Partner @find
+  partnerTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [PartnerTrip] @all @softDeletes
 
   # Partner Driver
   partnerDrivers(partner_id: ID! assigned: Boolean!): [Driver] 
@@ -246,11 +251,6 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   trips: [PartnerTrip!]! @all
   trip(id: ID @eq): PartnerTrip  
     @field(resolver: "PartnerTripResolver@trip")
-  partnerTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [PartnerTrip] @all @softDeletes
-  driverLiveTrip(driver_id: ID!): LiveTripResponse!
-    @field(resolver: "PartnerTripResolver@driverLiveTrip")
-  driverTrips(driver_id: ID!): [PartnerTrip]
-    @field(resolver: "PartnerTripResolver@driverTrips")
 
   # Trip Station
   partnerTripStations(trip_id: ID! @eq): [PartnerTripStation] @all
