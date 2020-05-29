@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRequestFiltersTable extends Migration
+class CreateCabRequestFiltersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateRequestFiltersTable extends Migration
      */
     public function up()
     {
-        Schema::create('request_filters', function (Blueprint $table) {
+        Schema::create('cab_request_filters', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('request_id');
             $table->unsignedBigInteger('driver_id');
@@ -21,7 +21,7 @@ class CreateRequestFiltersTable extends Migration
             $table->timestamps();
 
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
-            $table->foreign('request_id')->references('id')->on('user_requests')->onDelete('cascade');
+            $table->foreign('request_id')->references('id')->on('cab_requests')->onDelete('cascade');
         });
     }
 
@@ -32,6 +32,6 @@ class CreateRequestFiltersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('request_filters');
+        Schema::dropIfExists('cab_request_filters');
     }
 }

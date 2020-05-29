@@ -48,8 +48,8 @@ input ChangeTripUserStatusInput {
 }
 
 input UserObj {
-  id: ID!
-  is_picked_up: Boolean!
+  id: ID! @rules(apply: ["required"])
+  is_picked_up: Boolean! @rules(apply: ["required"])
 }
 
 type DriverLocationResponse {

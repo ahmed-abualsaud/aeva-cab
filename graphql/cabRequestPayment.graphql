@@ -1,4 +1,4 @@
-type UserRequestPayment {
+type CabRequestPayment {
   id: ID
   payment_id: String
   payment_mode: String

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserRequestsTable extends Migration
+class CreateCabRequestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreateUserRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_requests', function (Blueprint $table) {
+        Schema::create('cab_requests', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('booking_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('current_driver_id')->nullable();
@@ -77,6 +76,6 @@ class CreateUserRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_requests');
+        Schema::dropIfExists('cab_requests');
     }
 }

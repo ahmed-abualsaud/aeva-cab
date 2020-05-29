@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserRequestPaymentsTable extends Migration
+class CreateCabRequestPaymentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateUserRequestPaymentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_request_payments', function (Blueprint $table) {
+        Schema::create('cab_request_payments', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('request_id');
             $table->unsignedBigInteger('promo_code_id')->nullable();
@@ -32,7 +32,7 @@ class CreateUserRequestPaymentsTable extends Migration
             $table->float('driver_pay', 8, 2)->default(0);
             $table->timestamps();
 
-            $table->foreign('request_id')->references('id')->on('user_requests')->onDelete('cascade');
+            $table->foreign('request_id')->references('id')->on('cab_requests')->onDelete('cascade');
             $table->foreign('promo_code_id')->references('id')->on('promo_codes')->onDelete('cascade');
         });
     }
@@ -44,6 +44,6 @@ class CreateUserRequestPaymentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_request_payments');
+        Schema::dropIfExists('cab_request_payments');
     }
 }

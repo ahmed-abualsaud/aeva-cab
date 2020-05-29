@@ -1,8 +1,8 @@
 input CreateDriverInput {
   name: String! @rules(apply: ["required"])
   fleet_id: ID! @rules(apply: ["required"])
-  phone: String! @rules(apply: ["required", "unique:drivers,phone"])
-  email: String  @rules(apply: ["email", "unique:drivers,email"])
+  email: String @rules(apply: ["email", "unique:drivers,email"])
+  phone: String @rules(apply: ["unique:drivers,phone"])
   password: String
   license_expires_on: Date
   avatar: Upload

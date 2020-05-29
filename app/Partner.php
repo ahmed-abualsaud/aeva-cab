@@ -55,4 +55,9 @@ class Partner extends Authenticatable implements JWTSubject
     {
         return $this->morphMany('App\Document', 'documentable');
     }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucwords($value);
+    }
 }

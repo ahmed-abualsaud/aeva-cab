@@ -56,5 +56,10 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->morphMany(DeviceToken::class, 'tokenable');
     }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucwords($value);
+    }
 }
  

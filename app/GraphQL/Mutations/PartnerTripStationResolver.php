@@ -19,6 +19,29 @@ class PartnerTripStationResolver
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
+    public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        try {
+            $data = array(); 
+            $arr = array();
+            foreach($args['stations'] as $station) {
+                $arr['trip_id'] = $args['trip_id'];
+                $arr['name'] = $station['name'];
+                $arr['latitude'] = $station['latitude'];
+                $arr['longitude'] = $station['longitude'];
+                $arr['state'] = $station['state'];
+                $arr['accepted_at'] = $station['accepted_at'];
+                $arr['time_from_start'] = $station['time_from_start'];
+                array_push($data, $arr);
+            } 
+            PartnerTripStation::insert($data);
+        } catch (\Exception $e) {
+            throw new \Exception('We could not able to insert these stations.' . $e->getMessage());
+        }
+    
+        return true;
+    }
+
     public function assignUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $input = collect($args)->except('directive')->toArray();

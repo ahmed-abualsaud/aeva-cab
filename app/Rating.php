@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UserRequestRating extends Model
+class Rating extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -27,7 +27,7 @@ class UserRequestRating extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\User');
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -35,6 +35,14 @@ class UserRequestRating extends Model
      */
     public function driver()
     {
-        return $this->belongsTo('App\Driver');
+        return $this->belongsTo(Driver::class);
+    }
+
+    /**
+     * Get the owning ratingable model.
+     */
+    public function ratingable()
+    {
+        return $this->morphTo();
     }
 }

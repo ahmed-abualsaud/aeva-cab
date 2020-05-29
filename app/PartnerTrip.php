@@ -41,10 +41,16 @@ class PartnerTrip extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'partner_trip_users', 'trip_id', 'user_id');
-    }
+    } 
 
     public function schedule()
     {
         return $this->hasOne(PartnerTripSchedule::class, 'trip_id');
     }
+
+    public function scopePredefinedStations($query, $args) 
+    {
+        return $query->where('id', '<>', $args['trip_id']);
+    }
+    
 }

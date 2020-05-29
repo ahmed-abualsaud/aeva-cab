@@ -95,7 +95,16 @@ class UserResolver
     public function login($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
 
-        $credentials = collect($args)->only(['email', 'password'])->toArray();
+        $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
+        $credentials = [];
+
+        if ($emailOrPhone) {
+            $credentials["email"] = $args['emailOrPhone'];
+        } else {
+            $credentials["phone"] = $args['emailOrPhone'];
+        } 
+
+        $credentials["password"] = $args['password'];
 
         if (! $token = auth('user')->attempt($credentials)) {
             throw new \Exception('The provided authentication credentials are invalid.');
@@ -115,7 +124,7 @@ class UserResolver
             'access_token' => $token,
             'user' => $user
         ];
-    }
+    } 
 
     public function socialLogin($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {

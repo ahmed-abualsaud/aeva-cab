@@ -19,6 +19,13 @@ input UpdateVehicleInput {
   photo: Upload
 }
 
+type VehicleModelsByTypeResponse {
+  id: ID
+  photo: String
+  name: String
+  seats: Int
+}
+
 type Vehicle {
   id: ID
   license_plate: String

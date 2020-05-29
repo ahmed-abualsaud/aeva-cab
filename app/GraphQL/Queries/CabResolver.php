@@ -2,8 +2,8 @@
 
 namespace App\GraphQL\Queries;
 
-use App\UserRequest;
-use App\UserRequestPayment;
+use App\CabRequest;
+use App\CabRequestPayment;
 use App\Traits\DateFilter;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -20,46 +20,23 @@ class CabResolver
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function requestHistory($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
-    {
-        $requests = UserRequest::query();
-
-        if (array_key_exists('status', $args) && $args['status']) {
-            $requests->where('status', $args['status']);
-        }
-
-        if (array_key_exists('period', $args) && $args['period']) {
-            $requests = $this->dateFilter($args['period'], $requests, 'created_at');
-        }
-
-        $requests->orderBy('created_at', 'DESC');
-        $requests = $requests->get();
-        
-        $response = [
-            "requests" => $requests,
-            "count" => $requests->count(),
-        ];
-
-        return $response;
-    }
-
     public function requestStatement($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $requestCount = UserRequest::query();
+        $requestCount = CabRequest::query();
 
-        $requestGroup = UserRequest::selectRaw('
+        $requestGroup = CabRequest::selectRaw('
             DATE(created_at) as date,
             count(*) as count
         ');
 
-        $requestPaymentGroup = UserRequestPayment::selectRaw('
+        $requestPaymentGroup = CabRequestPayment::selectRaw('
             DATE(created_at) as date,
             SUM(ROUND(fixed) + ROUND(distance)) as overallEarning,
             SUM(ROUND(commission)) as overallCommission
         ');
             
 
-        $statement = UserRequestPayment::selectRaw('
+        $statement = CabRequestPayment::selectRaw('
             SUM(ROUND(fixed) + ROUND(distance)) as overallEarning,
             SUM(ROUND(commission)) as overallCommission,
             SUM(ROUND(driver_pay)) as driverEarning,

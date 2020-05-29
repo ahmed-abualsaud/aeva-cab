@@ -12,12 +12,12 @@ use App\Http\Controllers\SendPushController;
 
 use App\User;
 use App\PromoCode;
-use App\UserRequest;
-use App\RequestFilter;
+use App\CabRequest;
+use App\CabRequestFilter;
 use App\PromoCodeUsage;
 use App\DriverVehicle;
-use App\UserRequestRating;
-use App\UserRequestPayment;
+use App\Rating;
+use App\CabRequestPayment;
 use App\CarType;
 use App\WalletPassbook;
 use Location\Coordinate;
@@ -25,6 +25,10 @@ use Location\Distance\Vincenty;
 
 class TripController extends Controller
 {
+    public $tax_percentage = 14;
+    public $commission_percentage = 0;
+    public $driver_commission_percentage = 0;
+    public $surge_percentage = 0;
 
     public function index(Request $request)
     {
@@ -32,30 +36,30 @@ class TripController extends Controller
 
             $driver = auth('driver')->user();
 
-            $incomingRequests = UserRequest::with('user')
-                ->join('request_filters', 'request_filters.request_id', 'user_requests.id')
-                ->where('request_filters.driver_id', $driver->id)
-                ->whereNotIn('user_requests.status', ['CANCELLED', 'SCHEDULED'])
-                ->selectRaw("user_requests.*, 180 - (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(CONVERT_TZ(user_requests.assigned_at, 'Africa/Cairo', 'SYSTEM'))) AS time_left_to_respond");
+            $incomingRequests = CabRequest::with('user')
+                ->join('cab_request_filters', 'cab_request_filters.request_id', 'cab_requests.id')
+                ->where('cab_request_filters.driver_id', $driver->id)
+                ->whereNotIn('cab_requests.status', ['CANCELLED', 'SCHEDULED'])
+                ->selectRaw("cab_requests.*, 180 - (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(CONVERT_TZ(cab_requests.assigned_at, 'Africa/Cairo', 'SYSTEM'))) AS time_left_to_respond");
             
             $latestRequest = [];
             
             if ($incomingRequests->count()) {
 
-                $latestRequest = $incomingRequests->latest('user_requests.created_at')
+                $latestRequest = $incomingRequests->latest('cab_requests.created_at')
                     ->take(1)
                     ->get();
 
-                $expiredRequests = $incomingRequests->where('user_requests.status', 'SEARCHING')
+                $expiredRequests = $incomingRequests->where('cab_requests.status', 'SEARCHING')
                     ->having('time_left_to_respond', '<', 0);
 
                 if ($expiredRequests->get()->count()) {
 
                     $expiredRequestsID = $expiredRequests->pluck('id');
 
-                    $expiredRequests->update(['user_requests.status' => 'CANCELLED']);
+                    $expiredRequests->update(['cab_requests.status' => 'CANCELLED']);
     
-                    RequestFilter::whereIn('request_id', $expiredRequestsID)->delete();
+                    CabRequestFilter::whereIn('request_id', $expiredRequestsID)->delete();
     
                     (new SendPushController)->ProviderNotAvailable($latestRequest[0]->user_id);
                 } 
@@ -86,27 +90,26 @@ class TripController extends Controller
 
     public function assign_destroy($userRequest)
     {
-
         try {
-            UserRequest::where('id', $userRequest->id)->update(['status' => 'CANCELLED']);
-            RequestFilter::where('request_id', $userRequest->id)->delete();
+            CabRequest::where('id', $userRequest->id)->update(['status' => 'CANCELLED']);
+            CabRequestFilter::where('request_id', $userRequest->id)->delete();
             (new SendPushController)->ProviderNotAvailable($userRequest->user_id);
 
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Unable to reject, Please try again later']);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Connection Error']);
         }
     }
 
-    public function assign_next_provider($userRequest) {
-
-        RequestFilter::where('driver_id', $userRequest->current_driver_id)
+    public function assign_next_provider($userRequest) 
+    {
+        CabRequestFilter::where('driver_id', $userRequest->current_driver_id)
             ->where('request_id', $userRequest->id)
             ->delete();
 
         try {
-            $next_provider = RequestFilter::where('request_id', $userRequest->id)
+            $next_provider = CabRequestFilter::where('request_id', $userRequest->id)
                 ->orderBy('id')
                 ->firstOrFail();
 
@@ -117,16 +120,10 @@ class TripController extends Controller
             (new SendPushController)->IncomingRequest($next_provider->driver_id);
             
         } catch (ModelNotFoundException $e) {
-            UserRequest::where('id', $userRequest->id)->update(['status' => 'CANCELLED']);
+            CabRequest::where('id', $userRequest->id)->update(['status' => 'CANCELLED']);
             (new SendPushController)->ProviderNotAvailable($userRequest->user_id); 
         }
     }
-
-    /**
-     * Calculate distance between two coordinates.
-     * 
-     * @return \Illuminate\Http\Response
-     */
 
     public function calculate_distance(Request $request, $id)
     {
@@ -138,7 +135,7 @@ class TripController extends Controller
         try {
             $driver = auth('driver')->user();
 
-            $userRequest = UserRequest::where('status', 'PICKEDUP')
+            $userRequest = CabRequest::where('status', 'PICKEDUP')
                 ->where('driver_id', $driver->id)
                 ->find($id);
 
@@ -187,7 +184,7 @@ class TripController extends Controller
         
         try {
 
-            $userRequest = UserRequest::findOrFail($request->id);
+            $userRequest = CabRequest::findOrFail($request->id);
             $Cancellable = ['SEARCHING', 'ACCEPTED', 'ARRIVED', 'STARTED', 'CREATED','SCHEDULED'];
 
             if(!in_array($userRequest->status, $Cancellable)) {
@@ -199,12 +196,11 @@ class TripController extends Controller
             $userRequest->cancelled_by = "DRIVER";
             $userRequest->save();
 
-             RequestFilter::where('request_id', $userRequest->id)->delete();
+            CabRequestFilter::where('request_id', $userRequest->id)->delete();
 
-             DriverVehicle::where('driver_id',$userRequest->driver_id)
+            DriverVehicle::where('driver_id',$userRequest->driver_id)
                 ->update(['status' =>'ACTIVE', 'trip_type' => null, 'trip_id' => null]);
 
-             // Send Push Notification to User
             (new SendPushController)->ProviderCancellRide($userRequest);
 
             return $userRequest;
@@ -212,8 +208,6 @@ class TripController extends Controller
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Something went wrong']);
         }
-
-
     }
 
     public function rate(Request $request, $id)
@@ -224,35 +218,34 @@ class TripController extends Controller
         ]);
     
         try {
-
-            $userRequest = UserRequest::where('id', $id)
+            $userRequest = CabRequest::where('id', $id)
                 ->where('status', 'COMPLETED')
                 ->firstOrFail();
 
-            if($userRequest->rating == null) {
-                UserRequestRating::create([
-                    'driver_id' => $userRequest->driver_id,
-                    'user_id' => $userRequest->user_id,
-                    'request_id' => $userRequest->id,
+            if($userRequest->rating) {
+                $userRequest->rating->update([
                     'driver_rating' => $request->rating,
                     'driver_comment' => $request->comment,
                 ]);
             } else {
-                $userRequest->rating->update([
+                Rating::create([
+                    'ratingable_id' => $userRequest->id,
+                    'ratingable_type' => 'App\CabRequest',
+                    'driver_id' => $userRequest->driver_id,
+                    'user_id' => $userRequest->user_id,
                     'driver_rating' => $request->rating,
-                    'driver_comment' => $request->comment,
+                    'driver_comment' => $request->comment
                 ]);
             }
 
             $userRequest->update(['driver_rated' => 1]);
 
-            RequestFilter::where('request_id', $id)->delete();
+            CabRequestFilter::where('request_id', $id)->delete();
 
-            DriverVehicle::where('driver_id',$userRequest->driver_id)
+            DriverVehicle::where('driver_id', $userRequest->driver_id)
                 ->update(['status' =>'ACTIVE', 'trip_type' => null, 'trip_id' => null]);
 
-            // Send Push Notification to Driver 
-            $average = UserRequestRating::where('driver_id', $userRequest->driver_id)
+            $average = Rating::where('driver_id', $userRequest->driver_id)
                 ->avg('driver_rating');
 
             $userRequest->user->update(['rating' => $average]);
@@ -271,10 +264,8 @@ class TripController extends Controller
      */
     public function scheduled(Request $request)
     {
-        
-        try{
-
-            $Jobs = UserRequest::where('driver_id', Auth::guard('driver')->user()->id)
+        try {
+            $Jobs = CabRequest::where('driver_id', Auth::guard('driver')->user()->id)
                 ->where('status', 'SCHEDULED')
                 ->with('car_type')
                 ->get();
@@ -297,19 +288,14 @@ class TripController extends Controller
 
             return $Jobs;
             
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             return response()->json(['error' => "Something Went Wrong"]);
         }
     }
 
-    /**
-     * Get the trip history of the driver
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function history(Request $request)
     {
-        $Jobs = UserRequest::where('driver_id', Auth::guard('driver')->user()->id)
+        $Jobs = CabRequest::where('driver_id', Auth::guard('driver')->user()->id)
                 ->where('status', 'COMPLETED')
                 ->orderBy('created_at','desc')
                 ->with('payment')
@@ -319,15 +305,15 @@ class TripController extends Controller
             $marker = 'asset/marker.png';
             foreach ($Jobs as $key => $value) {
                 $Jobs[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                        "autoscale=1".
-                        "&size=320x130".
-                        "&maptype=terrian".
-                        "&format=png".
-                        "&visual_refresh=true".
-                        "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                        "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                        "&path=color:0x000000|weight:3|enc:".$value->route_key.
-                        "&key=".env('GOOGLE_MAP_KEY', null);
+                    "autoscale=1".
+                    "&size=320x130".
+                    "&maptype=terrian".
+                    "&format=png".
+                    "&visual_refresh=true".
+                    "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
+                    "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
+                    "&path=color:0x000000|weight:3|enc:".$value->route_key.
+                    "&key=".env('GOOGLE_MAP_KEY', null);
             }
         }
         return $Jobs;
@@ -336,9 +322,7 @@ class TripController extends Controller
     public function accept(Request $request, $id)
     {
         try {
-
-            $userRequest = UserRequest::findOrFail($id);
-
+            $userRequest = CabRequest::findOrFail($id);
             if ($userRequest->status != "SEARCHING") {
                 return response()->json(['error' => 'Request already under progress!']);
             }
@@ -348,21 +332,22 @@ class TripController extends Controller
             $userRequest->driver_id = $driver_id;
             $userRequest->current_driver_id = $driver_id;
 
-            if($userRequest->schedule_at){
-
+            if ($userRequest->schedule_at) {
                 $beforeschedule_time = strtotime($userRequest->schedule_at."- 1 hour");
                 $afterschedule_time = strtotime($userRequest->schedule_at."+ 1 hour");
 
-                $CheckScheduling = UserRequest::where('status','SCHEDULED')
+                $CheckScheduling = CabRequest::where('status','SCHEDULED')
                     ->where('driver_id', $driver_id)
-                    ->whereBetween('schedule_at',[$beforeschedule_time,$afterschedule_time])
+                    ->whereBetween('schedule_at', [$beforeschedule_time, $afterschedule_time])
                     ->count();
 
-                if ($CheckScheduling > 0 ) {
+                if ($CheckScheduling) {
                     return response()->json(['error' => trans('cabResponses.ride.request_already_scheduled')]);
                 }
 
-                RequestFilter::where('request_id',$userRequest->id)->where('driver_id',$driver_id)->update(['status' => 2]);
+                CabRequestFilter::where('request_id', $userRequest->id)
+                    ->where('driver_id', $driver_id)
+                    ->update(['status' => 2]);
 
                 $userRequest->status = "SCHEDULED";
                 $userRequest->save();
@@ -375,24 +360,24 @@ class TripController extends Controller
                 DriverVehicle::where('driver_id', $userRequest->driver_id)
                     ->update(['status' => 'RIDING', 'trip_type' => 'CAB', 'trip_id' => $userRequest->id]);
 
-                RequestFilter::where('request_id', $userRequest->id)->where('driver_id', '!=', $driver_id)->delete();
+                CabRequestFilter::where('request_id', $userRequest->id)
+                    ->where('driver_id', '!=', $driver_id)->delete();
             }
 
-            RequestFilter::where('request_id', '!=', $userRequest->id)
-                ->where('driver_id',$driver_id )
+            CabRequestFilter::where('request_id', '!=', $userRequest->id)
+                ->where('driver_id', $driver_id )
                 ->whereHas('request', function($query){
-                    $query->where('status','<>','SCHEDULED');
+                    $query->where('status', '<>', 'SCHEDULED');
                 })
                 ->delete(); 
 
-            // Send Push Notification to User
             (new SendPushController)->RideAccepted($userRequest);
 
             return $userRequest->with('user')->get();
 
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Unable to accept, Please try again later']);
-        } catch (Exception $e) {
+            return response()->json(['error' => 'Request ID does not exist.']);
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Connection Error']);
         }
     }
@@ -404,8 +389,7 @@ class TripController extends Controller
         ]);
  
         try {
-
-            $userRequest = UserRequest::with('user')->findOrFail($id);
+            $userRequest = CabRequest::with('user')->findOrFail($id);
 
             if($request->status == 'DROPPED' && $userRequest->payment_mode != 'CASH') {
                 $userRequest->status = 'COMPLETED';
@@ -415,7 +399,6 @@ class TripController extends Controller
                 // DriverVehicle::where('driver_id',$userRequest->driver_id)->update(['status' =>'ACTIVE']);
             } else {
                 $userRequest->status = $request->status;
-
                 if ($request->status == 'ARRIVED') {
                     (new SendPushController)->Arrived($userRequest);
                 }
@@ -451,65 +434,66 @@ class TripController extends Controller
             return $userRequest;
 
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Unable to update, Please try again later']);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Connection Error']);
+            return response()->json(['error' => 'Request ID does not exist.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong, please try again.']);
         }
     }
 
     public function destroy($id)
     {
         try {
-            $userRequest = UserRequest::find($id);
+            $userRequest = CabRequest::findOrFail($id);
             $this->assign_next_provider($userRequest);
             return $userRequest->with('user')->get();
-
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Unable to reject, Please try again later']);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'Connection Error']);
+            return response()->json(['error' => 'Request ID does not exist.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong, please try again.']);
         }
     }
 
     public function invoice($userRequest)
     {
         try {
-            $tax_percentage = env('TAX_PERCENTAGE', 14);
-            $commission_percentage = env('COMMISSION_PERCENTAGE', 10);
-            $provider_commission_percentage = env('PROVIDER_COMMISSION_PERCENTAGE', 10);
             $car_type = CarType::findOrFail($userRequest->car_type_id);
-             
             $kilometer = $userRequest->distance;
             $Fixed = $car_type->fixed;
             $Distance = 0;
             $minutes = 0;
-            $Discount = 0; // Promo Code discounts should be added here.
+            $Discount = 0;
             $Wallet = 0;
             $Surge = 0;
             $ProviderCommission = 0;
             $ProviderPay = 0;
 
-            if($car_type->calculator == 'MIN') {
-                $Distance = $car_type->minute * $minutes;
-            } else if($car_type->calculator == 'HOUR') {
-                $Distance = $car_type->minute * 60;
-            } else if($car_type->calculator == 'DISTANCE') {
-                $Distance = ($kilometer * $car_type->price);
-            } else if($car_type->calculator == 'DISTANCEMIN') {
-                $Distance = ($kilometer * $car_type->price) + ($car_type->minute * $minutes);
-            } else if($car_type->calculator == 'DISTANCEHOUR') {
-                $Distance = ($kilometer * $car_type->price) + ($car_type->minute * $minutes * 60);
-            } else {
-                $Distance = ($kilometer * $car_type->price);
+            $calculator = $car_type->calculator;
+
+            switch($calculator) {
+                case "MIN":
+                    $Distance = $car_type->minute * $minutes;
+                    break;
+                case "HOUR":
+                    $Distance = $car_type->minute * 60;
+                    break;
+                case "DISTANCEMIN":
+                    $Distance = ($kilometer * $car_type->price) + ($car_type->minute * $minutes);
+                    break;
+                case "DISTANCEHOUR":
+                    $Distance = ($kilometer * $car_type->price) + ($car_type->minute * $minutes * 60);
+                    break;
+                default:
+                    $Distance = ($kilometer * $car_type->price);
             }
 
-             $commission = ($Distance + $Fixed) * ( $commission_percentage/100 );
-             $Tax = ($Distance + $Fixed) * ( $tax_percentage/100 );
-             $ProviderCommission = ($Distance + $Fixed) * ( $provider_commission_percentage/100 );
-             $ProviderPay = ($Distance + $Fixed) - $ProviderCommission;
+            $commission = ($Distance + $Fixed) * ( $this->commission_percentage/100 );
+            $Tax = ($Distance + $Fixed) * ( $this->tax_percentage/100 );
+            $ProviderCommission = ($Distance + $Fixed) * ( $this->driver_commission_percentage/100 );
+            $ProviderPay = ($Distance + $Fixed) - $ProviderCommission;
 
-            if($PromoCodeUsage = PromoCodeUsage::where('user_id', $userRequest->user_id)->where('status','ADDED')->first())
-            {
+            $PromoCodeUsage = PromoCodeUsage::where('user_id', $userRequest->user_id)->where('status','ADDED')->first();
+
+            if($PromoCodeUsage) {
                 if($PromoCode = PromoCode::find($PromoCodeUsage->promo_code_id)){
                     $Discount = $PromoCode->discount;
                     $PromoCodeUsage->status ='USED';
@@ -524,26 +508,21 @@ class TripController extends Controller
                 }
 
             } else {
-                
                 $Total = $Fixed + $Distance + $Tax - $Discount;
             }
 
-            
             if ($userRequest->surge) {
-                $Surge = (env('SURGE_PERCENTAGE', 0)/100) * $Total;
+                $Surge = ($this->surge_percentage/100) * $Total;
                 $Total += $Surge;
             }
 
             if ($Total < 0) {
-                $Total = 0.00; // prevent from negative value
+                $Total = 0.00; 
             }
 
-            $Payment = new UserRequestPayment;
+            $Payment = new CabRequestPayment;
             $Payment->request_id = $userRequest->id;
 
-            /*
-            * Reported by Jeya, We are adding the surge price with Base price of Service Type.
-            */ 
             $Payment->fixed = $Fixed + $Surge;
             $Payment->distance = $Distance;
             $Payment->commission = $commission;
@@ -572,7 +551,8 @@ class TripController extends Controller
 
                         $Payment->wallet = $Wallet;
                         $Payable = $Total - $Wallet;
-                        User::where('id',$userRequest->user_id)->update(['wallet_balance' => 0 ]);
+                        User::where('id', $userRequest->user_id)
+                            ->update(['wallet_balance' => 0 ]);
                         $Payment->payable = abs($Payable);
 
                         WalletPassbook::create([
@@ -582,13 +562,12 @@ class TripController extends Controller
                           'via' => 'TRIP',
                         ]);
 
-                        // charged wallet money push 
-                        (new SendPushController)->ChargedWalletMoney($userRequest->user_id,currency($Wallet));
+                        (new SendPushController)->ChargedWalletMoney($userRequest->user_id, currency($Wallet));
 
                     } else {
                         $Payment->payable = 0;
                         $WalletBalance = $Wallet - $Total;
-                        User::where('id',$userRequest->user_id)->update(['wallet_balance' => $WalletBalance]);
+                        User::where('id', $userRequest->user_id)->update(['wallet_balance' => $WalletBalance]);
                         $Payment->wallet = $Total;
                         
                         $Payment->payment_id = 'WALLET';
@@ -605,10 +584,8 @@ class TripController extends Controller
                           'via' => 'TRIP',
                         ]);
 
-                        // charged wallet money push 
                         (new SendPushController)->ChargedWalletMoney($userRequest->user_id, currency($Total));
                     }
-
                 }
             } else {
                 $Payment->total = abs($Total);
@@ -621,17 +598,19 @@ class TripController extends Controller
             return $Payment;
 
         } catch (ModelNotFoundException $e) {
-            return false;
+            return response()->json(['error' => 'Car type does not exist.']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong, please try again.']);
         }
     }
 
     public function history_details(Request $request)
     {
         $this->validate($request, [
-            'request_id' => 'required|integer|exists:user_requests,id',
+            'request_id' => 'required|integer',
         ]); 
             
-        $Jobs = UserRequest::where('id',$request->request_id)
+        $Jobs = CabRequest::where('id',$request->request_id)
             ->where('driver_id', Auth::guard('driver')->user()->id)
             ->with('payment','car_type','user','rating')
             ->get();
@@ -656,7 +635,7 @@ class TripController extends Controller
     public function upcoming_trips() 
     {
         try {
-            $userRequest = UserRequest::ProviderUpcomingRequest(Auth::guard('driver')->user()->id)->get();
+            $userRequest = CabRequest::ProviderUpcomingRequest(Auth::guard('driver')->user()->id)->get();
             if(!empty($userRequest)){
                 $marker = 'asset/marker.png';
                 foreach ($userRequest as $key => $value) {
@@ -675,7 +654,7 @@ class TripController extends Controller
             return $userRequest;
         }
 
-        catch (Exception $e) {
+        catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
         }
     }
@@ -683,10 +662,10 @@ class TripController extends Controller
     public function upcoming_details(Request $request)
     {
         $this->validate($request, [
-            'request_id' => 'required|integer|exists:user_requests,id',
+            'request_id' => 'required|integer',
         ]);
 
-        $Jobs = UserRequest::where('id',$request->request_id)
+        $Jobs = CabRequest::where('id',$request->request_id)
             ->where('driver_id', Auth::guard('driver')->user()->id)
             ->with('car_type','user')
             ->get();
@@ -708,21 +687,16 @@ class TripController extends Controller
         return $Jobs;
     }
 
-    /**
-     * Get the trip history details of the driver
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function summary(Request $request)
     {
         try {
-            $rides = UserRequest::where('driver_id', Auth::guard('driver')->user()->id)->count();
-            $revenue = UserRequestPayment::whereHas('request', function($query) use ($request) {
+            $rides = CabRequest::where('driver_id', Auth::guard('driver')->user()->id)->count();
+            $revenue = CabRequestPayment::whereHas('request', function($query) use ($request) {
                 $query->where('driver_id', Auth::guard('driver')->user()->id);
             })
             ->sum('total');
-            $cancel_rides = UserRequest::where('status','CANCELLED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
-            $scheduled_rides = UserRequest::where('status','SCHEDULED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
+            $cancel_rides = CabRequest::where('status','CANCELLED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
+            $scheduled_rides = CabRequest::where('status','SCHEDULED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
 
             return response()->json([
                 'rides' => $rides, 
@@ -731,29 +705,10 @@ class TripController extends Controller
                 'scheduled_rides' => $scheduled_rides,
             ]);
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
         }
 
-    }
-
-    /**
-     * help Details.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
-    public function help_details(Request $request){
-
-        try {
-            return response()->json([
-                'contact_number' => '012345678', 
-                'contact_email' => 'support@qruz.app'
-            ]);
-
-        } catch (Exception $e) {
-            return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
-        }
     }
 
 }

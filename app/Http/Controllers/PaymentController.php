@@ -11,8 +11,8 @@ use Exception;
 use App\Card;
 use App\User;
 use App\WalletPassbook;
-use App\UserRequest;
-use App\UserRequestPayment;
+use App\CabRequest;
+use App\CabRequestPayment;
 
 class PaymentController extends Controller
 {

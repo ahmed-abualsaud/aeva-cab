@@ -1,6 +1,6 @@
 input CreateUserInput {
   name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["required", "email", "unique:users,email"])
+  email: String @rules(apply: ["email", "unique:users,email"])
   phone: String @rules(apply: ["unique:users,phone"])
   password: String
   provider: String
@@ -28,7 +28,7 @@ input UserPhoneVerificationInput {
 }
 
 input UserLoginInput {
-  email: String! @rules(apply: ["required", "email"])
+  emailOrPhone: String! @rules(apply: ["required"])
   password: String! @rules(apply: ["required"])
   platform: String @rules(apply: ["in:android,ios"])
   device_id: String
@@ -39,11 +39,6 @@ input UserSocialLoginInput {
   token: String! @rules(apply: ["required"])
   platform: String @rules(apply: ["in:android,ios"])
   device_id: String
-}
-
-type UploadResponse {
-  id: ID!
-  avatar: String!
 }
 
 type UserPayload {

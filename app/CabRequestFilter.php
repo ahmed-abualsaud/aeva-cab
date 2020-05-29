@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class RequestFilter extends Model
+class CabRequestFilter extends Model
 {
    	/**
      * The attributes that are mass assignable.
@@ -24,6 +24,6 @@ class RequestFilter extends Model
 
     public function request()
     {
-        return $this->belongsTo('App\UserRequest');
+        return $this->belongsTo('App\CabRequest');
     }
 }

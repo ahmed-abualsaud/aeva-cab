@@ -4,18 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserRequestRatingsTable extends Migration
+class CreateRatingsTable extends Migration
 {
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up()
+    public function up() 
     {
-        Schema::create('user_request_ratings', function (Blueprint $table) {
+        Schema::create('ratings', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('request_id');
+            $table->unsignedInteger('ratingable_id');
+            $table->string('ratingable_type');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->integer('user_rating')->default(0);
@@ -23,8 +24,7 @@ class CreateUserRequestRatingsTable extends Migration
             $table->string('user_comment')->nullable();
             $table->string('driver_comment')->nullable();
             $table->timestamps();
-
-            $table->foreign('request_id')->references('id')->on('user_requests')->onDelete('cascade');
+            
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
         });
@@ -37,6 +37,6 @@ class CreateUserRequestRatingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_request_ratings');
+        Schema::dropIfExists('ratings');
     }
 }

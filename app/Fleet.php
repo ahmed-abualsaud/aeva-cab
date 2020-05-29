@@ -20,4 +20,9 @@ class Fleet extends Model
     {
         return $this->morphMany('App\Document', 'documentable');
     }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucwords($value);
+    }
 }

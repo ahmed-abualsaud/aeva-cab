@@ -62,7 +62,6 @@ class DriverResolver
 
     public function login($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-
         $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
         $credentials = [];
 

@@ -2,8 +2,8 @@
 
 namespace App\GraphQL\Mutations;
 
-use \App\CarType;
-use \App\Traits\UploadFile;
+use App\CarType;
+use App\Traits\UploadFile;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -24,7 +24,7 @@ class CarTypeResolver
     {
         $input = collect($args)->except(['directive', 'photo'])->toArray();
 
-        if ($args['photo']) {
+        if (array_key_exists('photo', $args) && $args['photo']) {
           $url = $this->uploadOneFile($args['photo'], 'images');
           $input['photo'] = $url;
         }
@@ -44,7 +44,7 @@ class CarTypeResolver
             throw new \Exception('The provided carType ID is not found.');
         }
 
-        if ($args['photo']) {
+        if (array_key_exists('photo', $args) && $args['photo']) {
             if ($carType->photo) $this->deleteOneFile($carType->photo, 'images');
             $url = $this->uploadOneFile($args['photo'], 'images');
             $input['photo'] = $url;

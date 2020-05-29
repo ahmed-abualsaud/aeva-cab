@@ -17,13 +17,12 @@ class CreateCarTypesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->string('photo')->nullable();
-            $table->integer('capacity');
-            $table->integer('fixed');
-            $table->integer('price');
-            $table->integer('minute');
-            $table->integer('distance');
+            $table->unsignedSmallInteger('seats');
+            $table->unsignedSmallInteger('fixed');
+            $table->unsignedSmallInteger('price');
+            $table->unsignedSmallInteger('minute');
+            $table->unsignedSmallInteger('distance');
             $table->enum('calculator', ['MIN', 'HOUR', 'DISTANCE', 'DISTANCEMIN', 'DISTANCEHOUR']);
-            $table->boolean('status')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

@@ -66,24 +66,29 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function incoming_requests()
     {
-        return $this->hasMany(RequestFilter::class, 'driver_id')
+        return $this->hasMany(CabRequestFilter::class, 'driver_id')
             ->where('status', 0);
     }
 
     public function requests()
     {
-        return $this->hasMany(RequestFilter::class, 'driver_id');
+        return $this->hasMany(CabRequestFilter::class, 'driver_id');
     }
 
     public function accepted()
     {
-        return $this->hasMany(UserRequest::class, 'driver_id')
+        return $this->hasMany(CabRequest::class, 'driver_id')
             ->where('status','!=','CANCELLED');
     }
 
     public function cancelled()
     {
-        return $this->hasMany(UserRequest::class, 'driver_id')
+        return $this->hasMany(CabRequest::class, 'driver_id')
             ->where('status', 'CANCELLED');
+    }
+
+    public function setNameAttribute($value)
+    {
+        $this->attributes['name'] = ucwords($value);
     }
 } 

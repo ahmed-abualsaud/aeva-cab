@@ -13,10 +13,10 @@ use Exception;
 use Carbon\Carbon;
 
 use App\Driver;
-use App\UserRequest;
+use App\CabRequest;
 use App\DriverVehicle;
 use App\Fleet;
-use App\RequestFilter;
+use App\CabRequestFilter;
 
 class DriverController extends Controller
 {
@@ -161,7 +161,7 @@ class DriverController extends Controller
         if($driver->vehicle) {
             
             $driver_id = $driver->id;
-            $OfflineOpenRequest = RequestFilter::with(['request.driver','request'])
+            $OfflineOpenRequest = CabRequestFilter::with(['request.driver','request'])
                 ->where('driver_id', $driver_id)
                 ->whereHas('request', function($query) use ($driver_id){
                     $query->where('status','SEARCHING');
@@ -170,7 +170,7 @@ class DriverController extends Controller
                     })->pluck('id');
 
             if(count($OfflineOpenRequest)>0) {
-                RequestFilter::whereIn('id',$OfflineOpenRequest)->delete();
+                CabRequestFilter::whereIn('id',$OfflineOpenRequest)->delete();
             }   
            
             $driver->vehicle->update(['status' => $request->service_status]);
@@ -191,7 +191,7 @@ class DriverController extends Controller
     {
         try {
             
-            $Rides = UserRequest::where('driver_id', Auth::guard('driver')->user()->id)
+            $Rides = CabRequest::where('driver_id', Auth::guard('driver')->user()->id)
                     ->where('status', 'COMPLETED')
                     ->where('created_at', '>=', Carbon::today())
                     ->with('payment', 'car_type')

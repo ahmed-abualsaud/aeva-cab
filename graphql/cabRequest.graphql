@@ -1,8 +1,3 @@
-type RequestHistory {
-  count: Int
-  requests: [UserRequest]
-}
-
 type RequestStatement {
   count: Int
   overallEarning: Float
@@ -24,9 +19,8 @@ type RequestPaymentGroup {
   overallCommission: Float
 }
 
-type UserRequest {
+type CabRequest {
   id: ID
-  booking_id: String
   status: String
   cancelled_by: String
   cancel_reason: String
@@ -38,6 +32,7 @@ type UserRequest {
   assigned_at: DateTime
   started_at: DateTime
   finished_at: DateTime
+  deleted_at: DateTime
   s_address: String
   d_address: String
   s_latitude: String
@@ -47,5 +42,5 @@ type UserRequest {
   user: User @belongsTo
   driver: Driver @belongsTo
   car_type: CarType @belongsTo
-  payment: UserRequestPayment @hasOne
+  payment: CabRequestPayment @hasOne
 }

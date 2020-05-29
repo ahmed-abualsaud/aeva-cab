@@ -9,7 +9,7 @@ use Exception;
 use Auth;
 use DB;
 use App\FavouriteLocation;
-use App\UserRequest;
+use App\CabRequest;
 
 class FavouriteLocationController extends Controller
 {
@@ -24,8 +24,8 @@ class FavouriteLocationController extends Controller
         $WorkLocation = FavouriteLocation::where(['type'=>'WORK','user_id'=>Auth::guard('user')->user()->id])->get();
         $OthersLocation = FavouriteLocation::where(['type'=>'OTHER','user_id'=>Auth::guard('user')->user()->id])->get();
 
-        $SourceAddressRecent = UserRequest::select(['id','user_id','s_address as address','s_latitude as latitude','s_longitude as longitude',DB::Raw('"RECENT" as type')])->where('user_id',Auth::guard('user')->user()->id)->distinct('s_address')->orderBy('id','desc');
-        $DistinationAddressRecent = UserRequest::select(['id','user_id','d_address as address','d_latitude as latitude','d_longitude as longitude',DB::Raw('"RECENT" as type')])->where('user_id',Auth::guard('user')->user()->id)->distinct('d_address')->orderBy('id','desc');
+        $SourceAddressRecent = CabRequest::select(['id','user_id','s_address as address','s_latitude as latitude','s_longitude as longitude',DB::Raw('"RECENT" as type')])->where('user_id',Auth::guard('user')->user()->id)->distinct('s_address')->orderBy('id','desc');
+        $DistinationAddressRecent = CabRequest::select(['id','user_id','d_address as address','d_latitude as latitude','d_longitude as longitude',DB::Raw('"RECENT" as type')])->where('user_id',Auth::guard('user')->user()->id)->distinct('d_address')->orderBy('id','desc');
 
         $RecentLocation = $SourceAddressRecent->union($DistinationAddressRecent)->orderBy('id','desc')->skip(0)->take(10)->get();
         $SearchLocation = ["HOME" => $HomeLocation,"WORK"=>$WorkLocation,"OTHER"=>$OthersLocation,

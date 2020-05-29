@@ -1,16 +1,22 @@
 input CreateCarModelInput {
   name: String! @rules(apply: ["required"])
   make_id: ID! @rules(apply: ["required"])
+  seats: Int! @rules(apply: ["required"])
+  photo: Upload
 }
 
 input UpdateCarModelInput {
   id: ID! @rules(apply: ["required"])
   name: String
   make_id: ID
+  seats: Int
+  photo: Upload
 }
 
 type CarModel {
   id: ID
   name: String
   make: CarMake @belongsTo
+  seats: Int
+  photo: String
 }

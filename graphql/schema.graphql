@@ -77,8 +77,10 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   deleteCarMake(id: ID!): CarMake @delete
 
   # Car Model
-  createCarModel(input: CreateCarModelInput! @spread): CarModel @create
-  updateCarModel(input: UpdateCarModelInput! @spread): CarModel @update
+  createCarModel(input: CreateCarModelInput! @spread): CarModel 
+    @field(resolver: "CarModelResolver@create")
+  updateCarModel(input: UpdateCarModelInput! @spread): CarModel
+    @field(resolver: "CarModelResolver@update")
   deleteCarModel(id: ID!): CarModel @delete
 
   # Car Type
@@ -92,9 +94,6 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   createPromoCode(input: CreatePromoCodeInput! @spread): PromoCode @create
   updatePromoCode(input: UpdatePromoCodeInput! @spread): PromoCode @update @updatePromoCodeValidation
   deletePromoCode(id: ID!): PromoCode @delete
-
-  # User Request
-  deleteUserRequest(id: ID!): UserRequest @delete
 
   # Document
   uploadDocument(input: UploadDocumentInput @spread): Document
@@ -132,12 +131,25 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   deletePartnerTrip(id: ID!): PartnerTrip @delete
   restorePartnerTrip(id: ID!): PartnerTrip @restore
 
+  # Cab Request
+  deleteCabRequest(id: ID!): CabRequest @delete
+  restoreCabRequest(id: ID!): CabRequest @restore
+
+  # Ondemand Request 
+  createOndemandRequest(input: CreateOndemandRequestInput! @spread): OndemandRequest 
+    @field(resolver: "OndemandRequestResolver@create")
+  updateOndemandRequest(input: UpdateOndemandRequestInput! @spread): OndemandRequest @update
+  deleteOndemandRequest(id: ID!): OndemandRequest @delete
+  restoreOndemandRequest(id: ID!): OndemandRequest @restore
+
   # Trip Station
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
+  createPartnerTripStations(input: CreatePartnerTripStationsInput! @spread): Boolean 
+    @field(resolver: "PartnerTripStationResolver@create") 
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
   acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): PartnerTripStation
-    @field(resolver: "PartnerTripStationResolver@acceptStation")
+    @field(resolver: "PartnerTripStationResolver@acceptStation") 
 
   # Station User
   createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripUserResponse! 
@@ -205,13 +217,15 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   # Vehicles
   vehicles(orderBy: [OrderByClause] @orderBy): [Vehicle!]! @paginate
   vehicle(id: ID @eq): Vehicle @find
+  vehicleModelsByType(type_id: ID!): [VehicleModelsByTypeResponse!]
+    @field(resolver: "VehicleResolver@vehicleModelsByType")
 
   # Car Make
   carMakes: [CarMake!]! @all
   carMake(id: ID @eq): CarMake @find
 
   # Car Model
-  carModels(orderBy: [OrderByClause] @orderBy): [CarModel!]! @paginate
+  carModels(orderBy: [OrderByClause] @orderBy): [CarModel!]! @all
   carModel(id: ID @eq): CarModel @find
   carMakeModels(make_id: ID @eq): [CarModel] @all
 
@@ -223,12 +237,18 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   promoCodes: [PromoCode!]! @all
   promoCode(id: ID @eq): PromoCode @find
 
-  # User Request
-  requestHistory(status: String period: String): RequestHistory
-    @field(resolver: "CabResolver@requestHistory")
-  requestStatement(period: String): RequestStatement
+  # Cab Request
+  cabRequests(status: String period: String): [CabRequest]
+    @paginate(scopes: ["filter"]) @softDeletes
+  cabRequest(id: ID! @eq): CabRequest @find
+  cabRequestStatement(period: String): RequestStatement
     @field(resolver: "CabResolver@requestStatement")
-  userRequest(id: ID! @eq): UserRequest @find
+
+  # Ondemand Request
+  ondemandRequests(status: String period: String): [OndemandRequest]
+    @paginate(scopes: ["filter"]) @softDeletes
+  ondemandRequestsByUser(user_id: ID! @eq): [OndemandRequest] @all
+  ondemandRequest(id: ID @eq): OndemandRequest @find
 
   # Document
   documents(documentable_id: ID!, documentable_type: String!): [Document]
@@ -242,6 +262,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   partners: [Partner!]! @all
   partner(id: ID @eq): Partner @find
   partnerTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [PartnerTrip] @all @softDeletes
+  partnerPredefinedStations(partner_id: ID! @eq trip_id: ID!): [PartnerTrip] @all(scopes: ["predefinedStations"])
 
   # Partner Driver
   partnerDrivers(partner_id: ID! assigned: Boolean!): [Driver] 
@@ -294,5 +315,6 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
 #import tripLog.graphql
 #import document.graphql
 #import promoCode.graphql
-#import userRequest.graphql
-#import userRequestPayment.graphql
+#import cabRequest.graphql
+#import cabRequestPayment.graphql
+#import ondemandRequest.graphql

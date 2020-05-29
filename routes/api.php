@@ -34,7 +34,6 @@ Route::group(['middleware' => ['auth:user']], function () {
         Route::post('/payment', 'PaymentController@payment');
         Route::post('/add/money', 'PaymentController@add_money');
         Route::get('/estimated/fare', 'RiderController@estimated_fare');
-        Route::get('/help', 'RiderController@help_details');
         Route::get('/promocodes', 'RiderController@promocodes');
         Route::post('/promocode/add', 'RiderController@add_promocode');
         Route::resource('card', 'CardController');
@@ -50,7 +49,6 @@ Route::group(['middleware' => ['auth:driver']], function () {
         Route::resource('trip', 'TripController');
         Route::post('cancel', 'TripController@cancel');
         Route::post('summary', 'TripController@summary');
-        Route::get('help', 'TripController@help_details');
         Route::group(['prefix' => 'profile'], function () {
             Route::get ('/', 'DriverController@index');
             Route::post('/location', 'DriverController@location');
