@@ -8,7 +8,6 @@ input CreatePartnerTripStationInput {
   created_by: ID
   accepted_at: DateTime
   time_from_start: String
-  __typename: String
 }
 
 input CreatePartnerTripStationsInput {
