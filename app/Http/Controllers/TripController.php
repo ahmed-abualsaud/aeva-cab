@@ -36,7 +36,7 @@ class TripController extends Controller
 
             $driver = auth('driver')->user();
 
-            $incomingRequests = CabRequest::with('user')
+            $incomingRequests = CabRequest::with('user', 'payment')
                 ->join('cab_request_filters', 'cab_request_filters.request_id', 'cab_requests.id')
                 ->where('cab_request_filters.driver_id', $driver->id)
                 ->whereNotIn('cab_requests.status', ['CANCELLED', 'SCHEDULED'])
