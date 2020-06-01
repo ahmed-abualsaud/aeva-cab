@@ -16,9 +16,9 @@ class CreatePartnersTable extends Migration
         Schema::create('partners', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->string('password');
-            $table->string('phone1');
+            $table->string('phone1')->unique();
             $table->string('phone2')->nullable();
             $table->string('type')->nullable();
             $table->enum('size', ['SMALL','MEDIUM','LARGE','ENTERPRISE'])->nullable();

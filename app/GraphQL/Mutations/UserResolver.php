@@ -104,7 +104,7 @@ class UserResolver
             $credentials["phone"] = $args['emailOrPhone'];
         } 
 
-        $credentials["password"] = $args['password'];
+        $credentials["password"] = $args['password']; 
 
         if (! $token = auth('user')->attempt($credentials)) {
             throw new \Exception('The provided authentication credentials are invalid.');
@@ -140,7 +140,7 @@ class UserResolver
             $user = User::create([
             'name'        => $userData->getName(),
             'email'       => $userData->getEmail(),
-            'provider'    => $args['provider'],
+            'provider'    => $args['provider'], 
             'provider_id' => $userData->getId(),
             'avatar'      => $userData->getAvatar(),
             ]);

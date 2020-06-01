@@ -2,9 +2,9 @@
 
 namespace App\GraphQL\Mutations;
 
-use \App\Partner;
+use App\Partner;
 use App\PartnerDriver;
-use \App\Traits\UploadFile;
+use App\Traits\UploadFile;
 use Illuminate\Support\Arr;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Hash;
@@ -62,8 +62,16 @@ class PartnerResolver
 
     public function login($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-    
-        $credentials = Arr::only($args, ['email', 'password']);
+        $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
+        $credentials = [];
+
+        if ($emailOrPhone) {
+            $credentials["email"] = $args['emailOrPhone'];
+        } else {
+            $credentials["phone1"] = $args['emailOrPhone'];
+        } 
+
+        $credentials["password"] = $args['password'];
 
         if (! $token = auth('partner')->attempt($credentials)) {
         throw new CustomException(

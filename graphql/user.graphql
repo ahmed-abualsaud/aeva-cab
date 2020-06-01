@@ -69,7 +69,7 @@ input NewPasswordWithCodeInput {
 input ChangePasswordInput {
   id: ID! @rules(apply: ["required"])
   current_password: String! @rules(apply: ["required"])
-  new_password: String! @rules(apply: ["required", "confirmed", "min:8"])
+  new_password: String! @rules(apply: ["required", "confirmed"])
   new_password_confirmation: String!
 }
 

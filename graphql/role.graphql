@@ -1,9 +1,8 @@
 input CreateRoleInput {
   name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["required", "email", "unique:roles,email"])
-  password: String! @rules(apply: ["required", "min:8"]) @bcrypt
+  email: String @rules(apply: ["email", "unique:roles,email"])
   role_type_id: ID! @rules(apply: ["required"])
-  phone: String @rules(apply: ["unique:roles,phone"])
+  phone: String! @rules(apply: ["required", "unique:roles,phone"])
   dashboard: Boolean
   roles: Boolean
   archive: Boolean
@@ -40,7 +39,7 @@ input UpdateRoleInput {
 }
 
 input QruzMemberLoginInput { 
-  email: String!
+  emailOrPhone: String!
   password: String!
 }
 

@@ -42,6 +42,7 @@ type PartnerTripStation {
   longitude: String
   created_by: User @belongsTo
   accepted_at: DateTime
+  deleted_at: DateTime
   state: String
   time_from_start: String
   shouldBeThereAt: String

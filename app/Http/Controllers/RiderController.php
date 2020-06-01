@@ -175,7 +175,7 @@ class RiderController extends Controller
             return response()->json(['error' => trans('cabResponses.ride.request_inprogress')], 500);
         }
 
-        if ( !empty($request->schedule_date)  && !empty($request->schedule_time) ) {
+        if ( !empty($request->schedule_date) && !empty($request->schedule_time) ) {
             $beforeschedule_time = (new Carbon("$request->schedule_date $request->schedule_time"))->subHour(1);
             $afterschedule_time = (new Carbon("$request->schedule_date $request->schedule_time"))->addHour(1);
 
@@ -194,7 +194,7 @@ class RiderController extends Controller
 
         $drivers = Driver::selectRaw("(6371 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) AS distance, id")
             // ->having('distance', '<=', $this->driver_search_radius)
-            // ->where('status', 'APPROVED')
+            ->where('status', 'APPROVED')
             ->whereHas('vehicles', function($query) use ($car_type) {
                 $query->where('car_type_id', $car_type);
                 $query->where('status', 'ACTIVE');

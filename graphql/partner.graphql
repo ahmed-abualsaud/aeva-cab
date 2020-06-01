@@ -1,11 +1,11 @@
 input CreatePartnerInput {
   name: String! @rules(apply: ["required"])
-  email: String! @rules(apply: ["email", "unique:partners,email"])
-  phone1: String! @rules(apply: ["required"])
+  email: String @rules(apply: ["email", "unique:partners,email"])
+  phone1: String! @rules(apply: ["required", "unique:partners,phone1"])
   phone2: String
   type: String
   logo: Upload
-  size: String @rules(apply: ["in:SMALL,MEDIUM,LARGE,ENTERPRISE"])
+  size: String
   license_expires_on: Date
   insurance_expires_on: Date
   max_no_of_trips: Int
@@ -26,7 +26,7 @@ input UpdatePartnerInput {
 }
 
 input PartnerLoginInput {
-  email: String!
+  emailOrPhone: String!
   password: String!
 }
 

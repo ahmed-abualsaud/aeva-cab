@@ -55,7 +55,8 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   deleteDriver(id: ID!): Driver @delete
 
   # Role
-  createRole(input: CreateRoleInput! @spread): Role @create
+  createRole(input: CreateRoleInput! @spread): Role
+    @field(resolver: "RoleResolver@create")
   updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
   deleteRole(id: ID!): Role @delete
 
@@ -148,6 +149,7 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerTripStationResolver@create") 
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation @update
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
+  restorePartnerTripStation(id: ID!): PartnerTripStation @restore
   acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): PartnerTripStation
     @field(resolver: "PartnerTripStationResolver@acceptStation") 
 
@@ -274,7 +276,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerTripResolver@trip")
 
   # Trip Station
-  partnerTripStations(trip_id: ID! @eq): [PartnerTripStation] @all
+  partnerTripStations(trip_id: ID! @eq): [PartnerTripStation] @all @softDeletes
 
   # Station User
   partnerTripStationUsers(station_id: ID!): [User] 

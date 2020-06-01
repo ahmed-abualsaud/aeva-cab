@@ -2,8 +2,10 @@
 
 namespace App\GraphQL\Mutations;
 
+use App\Role;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Hash;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
@@ -19,9 +21,28 @@ class RoleResolver
      *
      * @return array
      */
+    public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $input = collect($args)->except(['directive'])->toArray();
+        $input['password'] = Hash::make($input['phone']);
+         
+        $role = Role::create($input);
+
+        return $role;
+    }
+
     public function login($rootValue, array $args, GraphQLContext $context = null, ResolveInfo $resolveInfo)
     {
-        $credentials = Arr::only($args, ['email', 'password']);
+        $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
+        $credentials = [];
+
+        if ($emailOrPhone) {
+            $credentials["email"] = $args['emailOrPhone'];
+        } else {
+            $credentials["phone"] = $args['emailOrPhone'];
+        } 
+
+        $credentials["password"] = $args['password'];
 
         if (! $token = auth('role')->attempt($credentials)) {
         throw new CustomException(
