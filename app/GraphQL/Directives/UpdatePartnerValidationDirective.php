@@ -14,9 +14,10 @@ class UpdatePartnerValidationDirective extends ValidationDirective
   {
     return [
       'id' => ['required'],
+      'phone1' => ['sometimes', Rule::unique('partners', 'phone1')->ignore($this->args['id'], 'id')],
       'email' => ['sometimes', Rule::unique('partners', 'email')->ignore($this->args['id'], 'id')],
     ];
-  }
+  } 
 
   /**
    * @return string[]
@@ -24,6 +25,7 @@ class UpdatePartnerValidationDirective extends ValidationDirective
   public function messages(): array
   {
     return [
+      'phone1.unique' => 'The chosen phone is not available',
       'email.unique' => 'The chosen email is not available',
     ];
   }
