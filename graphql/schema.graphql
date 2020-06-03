@@ -57,7 +57,8 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   # Role
   createRole(input: CreateRoleInput! @spread): Role
     @field(resolver: "RoleResolver@create")
-  updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
+  updateRole(input: UpdateRoleInput! @spread): Role 
+    @field(resolver: "RoleResolver@update") @updateRoleValidation
   deleteRole(id: ID!): Role @delete
 
   # Role Type
@@ -115,7 +116,7 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   updatePartner(input: UpdatePartnerInput! @spread): Partner 
     @field(resolver: "PartnerResolver@update") @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
-  changePartnerPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! 
+  changePartnerPassword(input: ChangePasswordInput @spread): String 
     @field(resolver: "PartnerResolver@updatePassword")
 
   # Partner Driver

@@ -6,7 +6,7 @@ use App\User;
 use JWTAuth;
 use App\DeviceToken;
 use App\Jobs\Otp;
-use Illuminate\Support\Str;
+use Illuminate\Support\Str; 
 use App\Traits\UploadFile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;

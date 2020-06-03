@@ -3,6 +3,7 @@
 namespace App\GraphQL\Mutations;
 
 use App\Role;
+use App\Traits\UploadFile;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +12,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class RoleResolver
 {
+    use UploadFile;
     /**
      * @param $rootValue
      * @param array                                                    $args
@@ -25,8 +27,34 @@ class RoleResolver
     {
         $input = collect($args)->except(['directive'])->toArray();
         $input['password'] = Hash::make($input['phone']);
+
+        if (array_key_exists('avatar', $args) && $args['avatar']) {
+            $url = $this->uploadOneFile($args['avatar'], 'avatars');
+            $input['avatar'] = $url;
+        }
          
         $role = Role::create($input);
+
+        return $role;
+    }
+
+    public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $input = collect($args)->except(['id', 'directive', 'avatar'])->toArray();
+
+        try {
+            $role = Role::findOrFail($args['id']);
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('The provided role ID is not found.');
+        }
+
+        if (array_key_exists('avatar', $args) && $args['avatar']) {
+            if ($role->avatar) $this->deleteOneFile($role->avatar, 'avatars');
+            $url = $this->uploadOneFile($args['avatar'], 'avatars');
+            $input['avatar'] = $url;
+        }
+
+        $role->update($input);
 
         return $role;
     }
@@ -46,9 +74,8 @@ class RoleResolver
 
         if (! $token = auth('role')->attempt($credentials)) {
         throw new CustomException(
-            'Authentication Faild',
             'The provided authentication credentials are invalid.',
-            'Authentication'
+            'customValidation'
         );
         }
 

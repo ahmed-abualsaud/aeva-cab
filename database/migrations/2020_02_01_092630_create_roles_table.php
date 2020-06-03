@@ -21,6 +21,7 @@ class CreateRolesTable extends Migration
             $table->string('phone')->unique();
             $table->unsignedBigInteger('role_type_id');
             $table->string('employee_id')->nullable();
+            $table->string('avatar')->nullable();
             $table->boolean('dashboard')->default(0);
             $table->boolean('roles')->default(0);
             $table->boolean('archive')->default(0);

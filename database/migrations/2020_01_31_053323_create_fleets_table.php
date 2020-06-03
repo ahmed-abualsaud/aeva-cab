@@ -16,8 +16,8 @@ class CreateFleetsTable extends Migration
         Schema::create('fleets', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->string('email')->unique();
-            $table->string('phone')->nullable();
+            $table->string('email')->unique()->nullable();
+            $table->string('phone')->unique();
             $table->integer('max_no_of_cars')->nullable();
             $table->date('expires_on')->nullable();
             $table->string('avatar')->nullable();

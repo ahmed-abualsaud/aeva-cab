@@ -74,11 +74,10 @@ class PartnerResolver
         $credentials["password"] = $args['password'];
 
         if (! $token = auth('partner')->attempt($credentials)) {
-        throw new CustomException(
-            'Authentication Faild',
-            'The provided authentication credentials are invalid.',
-            'Authentication'
-        );
+            throw new CustomException(
+                'The provided authentication credentials are invalid.',
+                'customValidation'
+            ); 
         }
 
         $partner = auth('partner')->user();
@@ -106,9 +105,8 @@ class PartnerResolver
             PartnerDriver::insert($data);
         } catch (\Exception $e) {
             throw new CustomException(
-              'Assignment faild.',
               'Driver can not be assigned to the same partner more than once.',
-              'Integrity constraint violation.'
+              'customValidation'
             );
         }
  
@@ -127,8 +125,7 @@ class PartnerResolver
         } catch (\Exception $e) {
             throw new CustomException(
                 'Assignment cancellation faild.',
-                'Something went wrong',
-                'Unknown.'
+                'customValidation'
             );
         }
 
@@ -143,33 +140,27 @@ class PartnerResolver
         try {
             $partner = Partner::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            return [
-                'status' => false, 
-                'message' => 'The provided partner ID is not found.'
-            ];
+            throw new \Exception('The provided partner ID is not found.');
         }
 
         if (!(Hash::check($args['current_password'], $partner->password))) {
-            return [
-                'status' => false,
-                'message' => 'Your current password does not matches with the password you provided.'
-            ];
+            throw new CustomException(
+                'Your current password does not matches with the password you provided.',
+                'customValidation'
+            );
         }
 
         if (strcmp($args['current_password'], $args['new_password']) == 0) {
-            return [
-                'status' => false,
-                'message' => 'New Password cannot be same as your current password. Please choose a different password.'
-            ];
+            throw new CustomException(
+                'New Password cannot be same as your current password. Please choose a different password.',
+                'customValidation'
+            );
         }
 
         $partner->password = Hash::make($args['new_password']);
         $partner->save();
 
-        return [
-            'status' => true,
-            'message' => 'Password changed successfully.'
-        ];
+        return 'Password changed successfully.';
 
     }
 }

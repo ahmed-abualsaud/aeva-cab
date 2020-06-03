@@ -3,6 +3,7 @@ input CreateRoleInput {
   email: String @rules(apply: ["email", "unique:roles,email"])
   role_type_id: ID! @rules(apply: ["required"])
   phone: String! @rules(apply: ["required", "unique:roles,phone"])
+  avatar: Upload
   dashboard: Boolean
   roles: Boolean
   archive: Boolean
@@ -23,6 +24,7 @@ input UpdateRoleInput {
   email: String
   phone: String
   role_type_id: ID
+  avatar: Upload
   dashboard: Boolean
   roles: Boolean
   archive: Boolean
@@ -54,6 +56,7 @@ type Role {
   email: String
   phone: String
   role_type: RoleType @belongsTo
+  avatar: String
   dashboard: Boolean
   roles: Boolean
   archive: Boolean

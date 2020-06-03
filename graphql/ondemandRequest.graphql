@@ -1,7 +1,10 @@
 input CreateOndemandRequestInput {
   user_id: ID! @rules(apply: ["required"])
   verb: String! @rules(apply: ["required", "in:RENT,ORGANIZE,SUBSCRIBE"])
-  type: String @rules(apply: ["in:EVENT,TRIP,RIDESHARE,CARSHARE"])
+  type: String @rules(apply: ["in:RENT,EVENT,TRIP,RIDESHARE,CARSHARE"])
+  event_name: String
+  find_people: Boolean
+  contact_phone: String
   start_date: String! @rules(apply: ["required"])
   end_date: String! @rules(apply: ["required"])
   from_lat: String! @rules(apply: ["required"])
@@ -12,7 +15,7 @@ input CreateOndemandRequestInput {
   to_address: String
   frequency: String @rules(apply: ["in:DAILY,ONE_TIME"])
   way: String @rules(apply: ["in:ONE_WAY,TWO_WAYS"])
-  classification: String @rules(apply: ["in:EDUCATIONAL,CORPORATE,INDIVIDUAL"])
+  classification: String @rules(apply: ["in:EDUCATIONAL,CORPORATE,INDIVIDUAL,GROUP"])
   comment: String
   no_of_users: Int
   vehicles: [RequestVehicles!]! @rules(apply: ["required"])
@@ -36,8 +39,11 @@ type OndemandRequest {
   user: User @belongsTo
   verb: String
   type: String
-  start_date: DateTime
-  end_date: DateTime
+  event_name: String
+  find_people: Boolean
+  contact_phone: String
+  start_date: String
+  end_date: String
   from_lat: String
   from_lng: String 
   to_lat: String
