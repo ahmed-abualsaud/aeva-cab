@@ -86,4 +86,32 @@ class RoleResolver
             'role' => $role
         ];
     }
+
+    public function updatePassword($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        try {
+            $role = Role::findOrFail($args['id']);
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('The provided role ID is not found.');
+        }
+
+        if (!(Hash::check($args['current_password'], $role->password))) {
+            throw new CustomException(
+                'Your current password does not matches with the password you provided.',
+                'customValidation'
+            );
+        }
+
+        if (strcmp($args['current_password'], $args['new_password']) == 0) {
+            throw new CustomException(
+                'New Password cannot be same as your current password. Please choose a different password.',
+                'customValidation'
+            );
+        }
+
+        $role->password = Hash::make($args['new_password']);
+        $role->save();
+
+        return 'Password changed successfully.';
+    }
 }

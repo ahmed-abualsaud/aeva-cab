@@ -57,8 +57,8 @@ type OndemandRequest {
   status: String
   comment: String
   response: String
-  created_at: DateTime
-  deleted_at: DateTime
+  created_at: String
+  deleted_at: String
   vehicles: [OndemandRequestVehicle] @hasMany
 }
 

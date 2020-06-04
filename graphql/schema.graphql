@@ -59,6 +59,8 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "RoleResolver@create")
   updateRole(input: UpdateRoleInput! @spread): Role 
     @field(resolver: "RoleResolver@update") @updateRoleValidation
+  changeRolePassword(input: ChangePasswordInput @spread): String 
+    @field(resolver: "RoleResolver@updatePassword")
   deleteRole(id: ID!): Role @delete
 
   # Role Type
@@ -212,6 +214,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   # Role
   roles: [Role!]! @all
   role(id: ID @eq): Role @find 
+  authRole: Role @auth
 
   # Role Type
   roleTypes: [RoleType!]! @all
@@ -264,6 +267,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   # Partner
   partners: [Partner!]! @all
   partner(id: ID @eq): Partner @find
+  authPartner: Partner @auth
   partnerTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [PartnerTrip] @all @softDeletes
   partnerPredefinedStations(partner_id: ID! @eq trip_id: ID!): [PartnerTrip] @all(scopes: ["predefinedStations"])
 
