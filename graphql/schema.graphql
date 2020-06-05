@@ -142,7 +142,8 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   # Ondemand Request 
   createOndemandRequest(input: CreateOndemandRequestInput! @spread): OndemandRequest 
     @field(resolver: "OndemandRequestResolver@create")
-  updateOndemandRequest(input: UpdateOndemandRequestInput! @spread): OndemandRequest @update
+  updateOndemandRequest(input: UpdateOndemandRequestInput! @spread): OndemandRequest
+    @field(resolver: "OndemandRequestResolver@update")
   deleteOndemandRequest(id: ID!): OndemandRequest @delete
   restoreOndemandRequest(id: ID!): OndemandRequest @restore
 

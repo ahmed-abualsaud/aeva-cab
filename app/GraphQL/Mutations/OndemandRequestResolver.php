@@ -4,6 +4,8 @@ namespace App\GraphQL\Mutations;
 
 use App\OndemandRequest;
 use App\OndemandRequestVehicle;
+use App\DeviceToken;
+use App\Jobs\PushNotification;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -24,7 +26,7 @@ class OndemandRequestResolver
         try {
             $input = collect($args)->except(['directive', 'vehicles'])->toArray();
             $request = OndemandRequest::create($input);
-
+ 
             $data = array(); 
             $arr = array();
 
@@ -41,6 +43,45 @@ class OndemandRequestResolver
             throw new \Exception('We could not able to create this request.' . $e->getMessage());
         }
         
+
+        return $request;
+    }
+
+    public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $input = collect($args)->except(['id', 'directive'])->toArray();
+
+        try {
+            $request = OndemandRequest::findOrFail($args['id']);
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('The provided request ID is not found.');
+        }
+
+        if (array_key_exists('status', $args) && $args['status']) { 
+            
+            if ($args['status'] === 'CANCELLED' && $request->status !== 'PENDING') {
+                throw new \Exception('This request can not be cancelled.');
+            }
+
+            if ($args['status'] !== 'CANCELLED') {
+                $token = DeviceToken::where('tokenable_id', $request->user_id)
+                    ->where('tokenable_type', 'App\User')
+                    ->select('device_id')
+                    ->pluck('device_id');
+    
+                $response = $args['response'] ? ' '.$args['response'] : '';
+                $notificationMsg = 'Your Ondemand request ID ' . $request->id . ' has ' . strtolower($args['status']) . '.' . $response;
+    
+                $data = [
+                    "request_id" => $request->id, 
+                    "status" => $args['status']
+                ];
+    
+                PushNotification::dispatch($token, $notificationMsg, $data);
+            }
+        }
+
+        $request->update($input);
 
         return $request;
     }

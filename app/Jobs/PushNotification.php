@@ -36,6 +36,6 @@ class PushNotification implements ShouldQueue
      */
     public function handle()
     {
-        Firebase::push($this->devices, 'Qruz Business', $this->message, $this->data);
+        Firebase::push($this->devices, 'Qruz', $this->message, $this->data);
     }
 }
