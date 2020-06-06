@@ -20,9 +20,13 @@ use App\WalletPassbook;
 use App\DriverVehicle;
 use App\Rating;
 use App\Http\Controllers\SendPushController;
+use App\Traits\UploadFile;
 
 class RiderController extends Controller
 {
+
+    use UploadFile;
+
     public $tax_percentage = 14;
     public $driver_search_radius = 10;
     public $surge_factor = 0;
@@ -59,6 +63,27 @@ class RiderController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function handleAvatar(Request $request)
+    {
+        $this->validate($request, [
+            'id' => 'required|numeric',
+            'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        try {
+            $user = User::findOrFail($request->id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json('The provided user ID is not found.', 500);
+        }
+
+        if ($user->avatar) $this->deleteOneFile($user->avatar, 'avatars');
+        $url = $this->uploadOneFile($request->avatar, 'avatars');
+
+        $user->update(['avatar' => $url]);
+
+        return response()->json($user);
     }
 
     public function login(Request $request)
@@ -673,7 +698,7 @@ class RiderController extends Controller
                 foreach ($userRequests as $key => $value) {
                     $userRequests[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
                     "autoscale=1".
-                    "&size=320x130".
+                    "&size=320x130". 
                     "&maptype=terrian".
                     "&format=png".
                     "&visual_refresh=true".

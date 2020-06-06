@@ -19,6 +19,7 @@ Route::post('/driver/login' , 'DriverController@login');
 Route::group(['middleware' => ['auth:user']], function () {
     Route::group(['prefix' => 'user'], function () { 
         Route::post('/update/location', 'RiderController@update_location');
+        Route::post('/update/avatar', 'RiderController@handleAvatar');
         Route::get('/details', 'RiderController@details');
         Route::get('/services', 'RiderController@services');
         Route::post('/rate/provider', 'RiderController@rate_provider');
