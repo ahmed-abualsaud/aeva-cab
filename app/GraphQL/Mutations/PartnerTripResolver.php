@@ -66,15 +66,6 @@ class PartnerTripResolver
 
     public function inviteUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $users = User::select('phone', 'email')->whereIn('id', $args['user_id'])->get();
-        $phones = $users->pluck('phone')->toArray();
-        $emails = $users->pluck('email');
-
-        $message = 'Kindly use this code to confirm your subscription: ' . $args['subscription_code'];
-        
-        Mail::bcc($emails)->send(new TripSubscriptionCode($message));
-        Otp::dispatch(implode(",", $phones), $message);        
-
         $data = [];
         $arr = [];
 
@@ -89,6 +80,15 @@ class PartnerTripResolver
         } catch (\Exception $e) {
             throw new \Exception('Each user is allowed to subscribe for a trip once.');
         }
+
+        $users = User::select('phone', 'email')->whereIn('id', $args['user_id'])->get();
+        $phones = $users->pluck('phone')->toArray();
+        $emails = $users->pluck('email');
+
+        $message = 'Kindly use this code to confirm your subscription: ' . $args['subscription_code'];
+        
+        Mail::bcc($emails)->send(new TripSubscriptionCode($message));
+        Otp::dispatch(implode(",", $phones), $message); 
 
         return [
             "status" => true,
