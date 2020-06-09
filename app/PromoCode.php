@@ -24,4 +24,10 @@ class PromoCode extends Model
     protected $hidden = [
         'created_at', 'updated_at'
     ];
+
+    public function promoCodeUsage()
+    {
+        return $this->hasMany(PromoCodeUsage::class, 'promo_code_id');
+    }
+
 }

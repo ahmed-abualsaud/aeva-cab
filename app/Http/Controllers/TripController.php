@@ -336,7 +336,7 @@ class TripController extends Controller
                 $beforeschedule_time = strtotime($userRequest->schedule_at."- 1 hour");
                 $afterschedule_time = strtotime($userRequest->schedule_at."+ 1 hour");
 
-                $CheckScheduling = CabRequest::where('status','SCHEDULED')
+                $CheckScheduling = CabRequest::where('status', 'SCHEDULED')
                     ->where('driver_id', $driver_id)
                     ->whereBetween('schedule_at', [$beforeschedule_time, $afterschedule_time])
                     ->count();
@@ -366,7 +366,7 @@ class TripController extends Controller
 
             CabRequestFilter::where('request_id', '!=', $userRequest->id)
                 ->where('driver_id', $driver_id )
-                ->whereHas('request', function($query){
+                ->whereHas('request', function($query) {
                     $query->where('status', '<>', 'SCHEDULED');
                 })
                 ->delete(); 
@@ -391,52 +391,47 @@ class TripController extends Controller
         try {
             $userRequest = CabRequest::with('user')->findOrFail($id);
 
-            if($request->status == 'DROPPED' && $userRequest->payment_mode != 'CASH') {
+            if ($request->status == 'DROPPED' && $userRequest->payment_mode != 'CASH') {
                 $userRequest->status = 'COMPLETED';
             } else if ($request->status == 'COMPLETED' && $userRequest->payment_mode == 'CASH') {
                 $userRequest->status = $request->status;
                 $userRequest->paid = 1;
-                // DriverVehicle::where('driver_id',$userRequest->driver_id)->update(['status' =>'ACTIVE']);
+                // DriverVehicle::where('driver_id',$userRequest->driver_id)
+                    // ->update(['status' =>'ACTIVE']);
             } else {
                 $userRequest->status = $request->status;
+
                 if ($request->status == 'ARRIVED') {
                     (new SendPushController)->Arrived($userRequest);
+                } else if ($request->status == 'PICKEDUP') {
+                    if ($userRequest->is_track) {
+                       $userRequest->distance = 0; 
+                    }
+                    $userRequest->started_at = Carbon::now();
+                } else if ($request->status == 'DROPPED') {
+                    if ($userRequest->is_track) {
+                        $userRequest->d_latitude = $request->latitude ?: $userRequest->d_latitude;
+                        $userRequest->d_longitude = $request->longitude ?: $userRequest->d_longitude;
+                        $userRequest->d_address =  $request->address ?: $userRequest->d_address;
+                    }
+                    $userRequest->finished_at = Carbon::now();
+                    $StartedDate  = date_create($userRequest->started_at);
+                    $FinisedDate  = Carbon::now();
+                    $TimeInterval = date_diff($StartedDate,$FinisedDate);
+                    $MintuesTime  = $TimeInterval->i;
+                    $userRequest->travel_time = $MintuesTime;
+                    $userRequest->save();
+                    $userRequest->invoice = $this->invoice($userRequest);
+                    (new SendPushController)->Dropped($userRequest);
                 }
             }
-
-            if ($request->status == 'PICKEDUP') {
-                if($userRequest->is_track){
-                   $userRequest->distance = 0; 
-                }
-                $userRequest->started_at = Carbon::now();
-            }
-
+            
             $userRequest->save();
-
-            if ($request->status == 'DROPPED') {
-                if ($userRequest->is_track) {
-                    $userRequest->d_latitude = $request->latitude?:$userRequest->d_latitude;
-                    $userRequest->d_longitude = $request->longitude?:$userRequest->d_longitude;
-                    $userRequest->d_address =  $request->address?:$userRequest->d_address;
-                }
-                $userRequest->finished_at = Carbon::now();
-                $StartedDate  = date_create($userRequest->started_at);
-                $FinisedDate  = Carbon::now();
-                $TimeInterval = date_diff($StartedDate,$FinisedDate);
-                $MintuesTime  = $TimeInterval->i;
-                $userRequest->travel_time = $MintuesTime;
-                $userRequest->save();
-                $userRequest->invoice = $this->invoice($userRequest);
-
-                (new SendPushController)->Dropped($userRequest);
-            }
        
             return $userRequest;
 
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Request ID does not exist.']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Something went wrong, please try again.']);
         }
     }
 
@@ -491,19 +486,20 @@ class TripController extends Controller
             $ProviderCommission = ($Distance + $Fixed) * ( $this->driver_commission_percentage/100 );
             $ProviderPay = ($Distance + $Fixed) - $ProviderCommission;
 
-            $PromoCodeUsage = PromoCodeUsage::where('user_id', $userRequest->user_id)->where('status','ADDED')->first();
+            $PromoCodeUsage = PromoCodeUsage::where('user_id', $userRequest->user_id)
+                ->where('status', 'ADDED')
+                ->first();
 
-            if($PromoCodeUsage) {
-                if($PromoCode = PromoCode::find($PromoCodeUsage->promo_code_id)){
-                    $Discount = $PromoCode->discount;
-                    $PromoCodeUsage->status ='USED';
-                    $PromoCodeUsage->save();
-                }
+            if ($PromoCodeUsage) {
+                $PromoCode = PromoCode::find($PromoCodeUsage->promo_code_id);
+                $Discount = $PromoCode->discount;
+                $PromoCodeUsage->status ='USED';
+                $PromoCodeUsage->save();
 
-                if ($PromoCodeUsage->promocode->discount_type=='AMOUNT') {
+                if ($PromoCode->discount_type == 'AMOUNT') {
                     $Total = $Fixed + $Distance + $Tax - $Discount;
                 } else {
-                    $Total = ($Fixed + $Distance + $Tax)-(($Fixed + $Distance + $Tax) * ($Discount/100));
+                    $Total = ($Fixed + $Distance + $Tax) - (($Fixed + $Distance + $Tax) * ($Discount/100));
                     $Discount = (($Fixed + $Distance + $Tax) * ($Discount/100));
                 }
 
@@ -516,9 +512,7 @@ class TripController extends Controller
                 $Total += $Surge;
             }
 
-            if ($Total < 0) {
-                $Total = 0.00; 
-            }
+            if ($Total < 0) $Total = 0.00;
 
             $Payment = new CabRequestPayment;
             $Payment->request_id = $userRequest->id;
@@ -540,11 +534,8 @@ class TripController extends Controller
             }
 
             if ($userRequest->use_wallet == 1 && $Total > 0) {
-
                 $User = User::find($userRequest->user_id);
-
                 $Wallet = $User->wallet_balance;
-
                 if ($Wallet != 0) {
 
                     if ($Total > $Wallet) {
@@ -696,7 +687,7 @@ class TripController extends Controller
             })
             ->sum('total');
             $cancel_rides = CabRequest::where('status','CANCELLED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
-            $scheduled_rides = CabRequest::where('status','SCHEDULED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
+            $scheduled_rides = CabRequest::where('status', 'SCHEDULED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
 
             return response()->json([
                 'rides' => $rides, 

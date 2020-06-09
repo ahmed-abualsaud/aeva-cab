@@ -353,7 +353,7 @@ class RiderController extends Controller
             $user_id = auth('user')->id();
 
             $userLatestRequests = CabRequest::where('cab_requests.user_id', $user_id)
-                ->where('cab_requests.user_rated',0)
+                ->where('cab_requests.user_rated', 0)
                 ->whereNotIn('cab_requests.status', ['CANCELLED', 'SCHEDULED'])
                 ->leftJoin('driver_vehicles', 'driver_vehicles.driver_id', '=', 'cab_requests.driver_id')
                 ->leftJoin('vehicles', 'vehicles.id', '=', 'driver_vehicles.vehicle_id')
@@ -609,14 +609,16 @@ class RiderController extends Controller
      */
 
     public function promocodes() 
-    {
+    { 
         try {
             $this->check_expiry();
 
-            return PromoCodeUsage::Active()
-                ->where('user_id', auth('user')->user()->id)
-                ->with('promocode')
-                ->get();
+            return PromoCode::whereHas('promoCodeUsage', function($query) { 
+                $query->where('user_id', auth('user')->user()->id); 
+                $query->where('status', 'ADDED');
+            })
+            ->get();
+
         } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
@@ -820,7 +822,7 @@ class RiderController extends Controller
     public function promo_passbook(Request $request)
     {
         try {
-            return PromoCodeUsage::where('user_id',auth('user')->user()->id)->with('promocode')->get();
+            return PromoCodeUsage::where('user_id',auth('user')->user()->id)->with('promoCode')->get();
         } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }

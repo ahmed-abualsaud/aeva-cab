@@ -21,16 +21,9 @@ class PromoCodeUsage extends Model
     protected $hidden = ['updated_at', 'created_at'
     ];
 
-    /**
-     * The services that belong to the user.
-     */
-    public function promocode()
+    public function promoCode()
     {
-        return $this->belongsTo('App\Promocode')->withTrashed();
+        return $this->belongsTo('App\PromoCode', 'promo_code_id')->withTrashed();
     }
 
-   	public function scopeActive($query)
-    {
-        return $query->where('status', 'ADDED');
-    }
 }
