@@ -355,8 +355,8 @@ class RiderController extends Controller
             $userLatestRequests = CabRequest::where('cab_requests.user_id', $user_id)
                 ->where('cab_requests.user_rated', 0)
                 ->whereNotIn('cab_requests.status', ['CANCELLED', 'SCHEDULED'])
-                ->leftJoin('driver_vehicles', 'driver_vehicles.driver_id', '=', 'cab_requests.driver_id')
                 ->leftJoin('vehicles', 'vehicles.id', '=', 'driver_vehicles.vehicle_id')
+                ->leftJoin('driver_vehicles', 'driver_vehicles.driver_id', '=', 'cab_requests.driver_id')
                 ->leftJoin('car_makes', 'car_makes.id', '=', 'vehicles.car_make_id')
                 ->leftJoin('car_models', 'car_models.id', '=', 'vehicles.car_model_id')
                 ->selectRaw("cab_requests.*, vehicles.license_plate, CONCAT(car_makes.name, ' ', car_models.name) AS car_model")
@@ -812,17 +812,13 @@ class RiderController extends Controller
         }
     }
 
-
-    /**
-     * Show the promo usage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-
     public function promo_passbook(Request $request)
     {
         try {
-            return PromoCodeUsage::where('user_id',auth('user')->user()->id)->with('promoCode')->get();
+            return PromoCode::where('promo_code_usages.user_id', auth('user')->user()->id)
+                ->join('promo_code_usages', 'promo_code_usages.promo_code_id', '=', 'promo_codes.id')
+                ->selectRaw('promo_codes.*, promo_code_usages.status')
+                ->get();
         } catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')], 500);
         }
