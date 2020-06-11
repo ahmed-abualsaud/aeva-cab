@@ -25,12 +25,6 @@ class CreateOndemandRequestsTable extends Migration
             $table->boolean('find_people')->default(0);
             $table->string('contact_phone')->nullable();
             $table->unsignedInteger('no_of_users')->nullable();
-            $table->double('from_lat', 15, 8);
-            $table->double('from_lng', 15, 8);
-            $table->double('to_lat', 15, 8);
-            $table->double('to_lng', 15, 8);
-            $table->string('from_address')->nullable();
-            $table->string('to_address')->nullable();
             $table->dateTime('start_date');
             $table->dateTime('end_date'); 
             $table->enum('status', [

@@ -200,12 +200,12 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   partnerUsers(partner_id: ID! @eq): [User] @all
 
   # Fleet
-  fleets(orderBy: [OrderByClause] @orderBy): [Fleet!]! @paginate
+  fleets: [Fleet] @paginate
   fleet(id: ID @eq): Fleet @find
-  fleetDrivers(fleet_id: ID @eq orderBy: [OrderByClause] @orderBy): [Driver] @paginate
+  fleetDrivers(fleet_id: ID @eq): [Driver] @paginate
 
   # Driver
-  drivers: [Driver!]! @all
+  drivers: [Driver] @all
   driver(id: ID @eq): Driver @find
   driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
     @field(resolver: "PartnerTripResolver@driverLiveTrip")
@@ -213,35 +213,35 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerTripResolver@driverTrips")
 
   # Role
-  roles: [Role!]! @all
+  roles: [Role] @all
   role(id: ID @eq): Role @find 
   authRole: Role @auth
 
   # Role Type
-  roleTypes: [RoleType!]! @all
+  roleTypes: [RoleType] @all
   roleType(id: ID @eq): RoleType @find
 
   # Vehicles
-  vehicles(orderBy: [OrderByClause] @orderBy): [Vehicle!]! @paginate
+  vehicles: [Vehicle] @paginate
   vehicle(id: ID @eq): Vehicle @find
   vehicleModelsByType(type_id: ID!): [VehicleModelsByTypeResponse!]
     @field(resolver: "VehicleResolver@vehicleModelsByType")
 
   # Car Make
-  carMakes: [CarMake!]! @all
+  carMakes: [CarMake] @all
   carMake(id: ID @eq): CarMake @find
 
   # Car Model
-  carModels(orderBy: [OrderByClause] @orderBy): [CarModel!]! @all
+  carModels: [CarModel] @all
   carModel(id: ID @eq): CarModel @find
   carMakeModels(make_id: ID @eq): [CarModel] @all
 
   # Car Type
-  carTypes: [CarType!]! @all
+  carTypes: [CarType] @all
   carType(id: ID @eq): CarType @find
 
   # Promo Code
-  promoCodes: [PromoCode!]! @all
+  promoCodes: [PromoCode] @all
   promoCode(id: ID @eq): PromoCode @find
 
   # Cab Request
@@ -262,14 +262,14 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "DocumentResolver")
 
   # Driver Vehicle
-  driverVehicles(driver_id: ID! assigned: Boolean! orderBy: [OrderByClause] @orderBy): [Vehicle] 
+  driverVehicles(driver_id: ID! assigned: Boolean!): [Vehicle] 
     @paginate(scopes: ["assignedOrNot"])
 
   # Partner
-  partners: [Partner!]! @all
+  partners: [Partner] @all
   partner(id: ID @eq): Partner @find
   authPartner: Partner @auth
-  partnerTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [PartnerTrip] @all @softDeletes
+  partnerTrips(partner_id: ID! @eq): [PartnerTrip] @all @softDeletes
   partnerPredefinedStations(partner_id: ID! @eq trip_id: ID!): [PartnerTrip] @all(scopes: ["predefinedStations"])
 
   # Partner Driver
@@ -277,7 +277,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerResolver@drivers")
 
   # Trip
-  trips: [PartnerTrip!]! @all
+  trips: [PartnerTrip] @all
   trip(id: ID @eq): PartnerTrip  
     @field(resolver: "PartnerTripResolver@trip")
 

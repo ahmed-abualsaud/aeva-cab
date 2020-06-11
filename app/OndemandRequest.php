@@ -23,6 +23,11 @@ class OndemandRequest extends Model
         return $this->hasMany(OndemandRequestVehicle::class, 'request_id');
     }
 
+    public function lines()
+    {
+        return $this->hasMany(OndemandRequestLine::class, 'request_id');
+    }
+
     public function scopeFilter($query, $args) 
     {
         

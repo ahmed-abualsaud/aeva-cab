@@ -7,18 +7,13 @@ input CreateOndemandRequestInput {
   contact_phone: String
   start_date: String! @rules(apply: ["required"])
   end_date: String! @rules(apply: ["required"])
-  from_lat: String! @rules(apply: ["required"])
-  from_lng: String ! @rules(apply: ["required"])
-  to_lat: String! @rules(apply: ["required"])
-  to_lng: String! @rules(apply: ["required"])
-  from_address: String
-  to_address: String
   frequency: String @rules(apply: ["in:DAILY,ONE_TIME"])
   way: String @rules(apply: ["in:ONE_WAY,TWO_WAYS"])
   classification: String @rules(apply: ["in:EDUCATIONAL,CORPORATE,INDIVIDUAL,GROUP"])
   comment: String
   no_of_users: Int
   vehicles: [RequestVehicles!]! @rules(apply: ["required"])
+  lines: [RequestLines!]! @rules(apply: ["required"])
 }
 
 input UpdateOndemandRequestInput {
@@ -34,6 +29,15 @@ input RequestVehicles {
   count: Int! @rules(apply: ["required"])
 }
 
+input RequestLines {
+  from_lat: String! @rules(apply: ["required"])
+  from_lng: String! @rules(apply: ["required"])
+  to_lat: String! @rules(apply: ["required"])
+  to_lng: String! @rules(apply: ["required"])
+  from_address: String
+  to_address: String
+}
+
 type OndemandRequest {
   id: ID
   user: User @belongsTo
@@ -44,12 +48,6 @@ type OndemandRequest {
   contact_phone: String
   start_date: String
   end_date: String
-  from_lat: String
-  from_lng: String 
-  to_lat: String
-  to_lng: String
-  from_address: String
-  to_address: String
   frequency: String
   way: String
   classification: String
@@ -60,6 +58,7 @@ type OndemandRequest {
   created_at: String
   deleted_at: String
   vehicles: [OndemandRequestVehicle] @hasMany
+  lines: [OndemandRequestLine] @hasMany
 }
 
 type OndemandRequestVehicle {
@@ -67,4 +66,14 @@ type OndemandRequestVehicle {
   carType: CarType @belongsTo
   carModel: CarModel @belongsTo
   count: Int
+}
+
+type OndemandRequestLine {
+  id: ID
+  from_lat: String
+  from_lng: String 
+  to_lat: String
+  to_lng: String
+  from_address: String
+  to_address: String
 }

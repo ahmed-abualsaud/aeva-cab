@@ -4,6 +4,7 @@ namespace App\GraphQL\Mutations;
 
 use App\OndemandRequest;
 use App\OndemandRequestVehicle;
+use App\OndemandRequestLine;
 use App\DeviceToken;
 use App\Jobs\PushNotification;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -24,26 +25,37 @@ class OndemandRequestResolver
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         try {
-            $input = collect($args)->except(['directive', 'vehicles'])->toArray();
+            $input = collect($args)->except(['directive', 'vehicles', 'lines'])->toArray();
             $request = OndemandRequest::create($input);
  
-            $data = array(); 
-            $arr = array();
-
+            $vehicles_data = array(); 
+            $vehicles_arr = array();
             foreach($args['vehicles'] as $vehicle) {
-                $arr['request_id'] = $request->id;
-                $arr['car_type_id'] = $vehicle['car_type_id'];
-                $arr['car_model_id'] = $vehicle['car_model_id'];
-                $arr['count'] = $vehicle['count'];
-                array_push($data, $arr);
+                $vehicles_arr['request_id'] = $request->id;
+                $vehicles_arr['car_type_id'] = $vehicle['car_type_id'];
+                $vehicles_arr['car_model_id'] = $vehicle['car_model_id'];
+                $vehicles_arr['count'] = $vehicle['count'];
+                array_push($vehicles_data, $vehicles_arr);
             } 
+            $vehicles = OndemandRequestVehicle::insert($vehicles_data);
 
-            $vehicles = OndemandRequestVehicle::insert($data);
+            $lines_data = array(); 
+            $lines_arr = array();
+            foreach($args['lines'] as $line) {
+                $lines_arr['request_id'] = $request->id;
+                $lines_arr['from_lat'] = $line['from_lat'];
+                $lines_arr['from_lng'] = $line['from_lng'];
+                $lines_arr['to_lat'] = $line['to_lat'];
+                $lines_arr['to_lng'] = $line['to_lng'];
+                $lines_arr['from_address'] = $line['from_address'];
+                $lines_arr['to_address'] = $line['to_address'];
+                array_push($lines_data, $lines_arr);
+            } 
+            $lines = OndemandRequestLine::insert($lines_data);
         } catch (\Exception $e) {
             throw new \Exception('We could not able to create this request.' . $e->getMessage());
         }
         
-
         return $request;
     }
 

@@ -11,6 +11,11 @@ class CarModel extends Model
     
     protected $guarded = [];
 
+    public function type()
+    {
+        return $this->belongsTo(CarType::class);
+    }
+
     public function make()
     {
         return $this->belongsTo(CarMake::class);
