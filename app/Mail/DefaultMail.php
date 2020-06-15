@@ -7,20 +7,22 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class TripSubscriptionCode extends Mailable implements ShouldQueue
+class DefaultMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     public $message;
+    public $title;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($message)
+    public function __construct($message, $title = "Qruz")
     {
         $this->message = $message;
+        $this->title = $title;
     }
 
     /**
@@ -28,8 +30,8 @@ class TripSubscriptionCode extends Mailable implements ShouldQueue
      *
      * @return $this
      */
-    public function build()
+    public function build() 
     {
-        return $this->markdown('emails.tripSubscriptionCode');
+        return $this->markdown('emails.default')->subject($this->title);
     }
 }

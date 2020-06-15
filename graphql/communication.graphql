@@ -1,0 +1,8 @@
+input SendMessageInput {
+  recipientID: [ID!]! @rules(apply: ["required"])
+  recipientType: String! @rules(apply: ["required","in:USER,DRIVER"])
+  email: Boolean! @rules(apply: ["required"])
+  sms: Boolean! @rules(apply: ["required"])
+  push: Boolean! @rules(apply: ["required"])
+  message: String! @rules(apply: ["required"])
+}

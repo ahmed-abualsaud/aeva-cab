@@ -29,26 +29,33 @@ class PartnerTripResolver
 
         switch($status) {
             case 'subscribed':
-                $partnerTripUsers = PartnerTripUser::where('trip_id', $args['trip_id'])
-                    ->whereNotNull('subscription_verified_at')
-                    ->get()->pluck('user_id');
+                $users = User::selectRaw('users.id, users.name, users.avatar, partner_trip_stations.name AS station_name')
+                    ->where('users.partner_id', $args['partner_id'])
+                    ->where('partner_trip_users.trip_id', $args['trip_id'])
+                    ->join('partner_trip_users', function ($join) {
+                        $join->on('users.id', '=', 'partner_trip_users.user_id')
+                            ->whereNotNull('subscription_verified_at');
+                    })
+                    ->leftJoin('partner_trip_stations', 'partner_trip_stations.id', '=', 'partner_trip_users.station_id')
+                    ->get();
 
-                $users = User::where('partner_id', $args['partner_id'])
-                    ->whereIn('id', $partnerTripUsers)->get();
                 break;
             case 'notSubscribed':
                 $partnerTripUsers = PartnerTripUser::where('trip_id', $args['trip_id'])
                     ->get()->pluck('user_id');
 
-                $users = User::where('partner_id', $args['partner_id'])
+                $users = User::select('id', 'name', 'avatar')
+                    ->where('partner_id', $args['partner_id'])
                     ->whereNotIn('id', $partnerTripUsers)->get();
+
                 break;
             case 'notVerified':
                 $partnerTripUsers = PartnerTripUser::where('trip_id', $args['trip_id'])
                     ->whereNull('subscription_verified_at')
                     ->get()->pluck('user_id');
 
-                $users = User::where('partner_id', $args['partner_id'])
+                $users = User::select('id', 'name', 'avatar')
+                    ->where('partner_id', $args['partner_id'])
                     ->whereIn('id', $partnerTripUsers)->get();
                 break;
         }

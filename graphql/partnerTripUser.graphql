@@ -12,7 +12,7 @@ input DeletePartnerTripUserInput {
 input ConfirmPartnerTripUserInput {
   user_id: ID! @rules(apply: ["required"])
   subscription_code: String! @rules(apply: ["required"])
-}
+} 
 
 input GetPartnerTripUsersInput {
   partner_id: ID! @rules(apply: ["required"])
@@ -34,4 +34,11 @@ input DeletePartnerTripStationUserInput {
 type PartnerTripUserResponse {
   status: Boolean!
   message: String
+}
+
+type PartnerTripUserWithStationResponse {
+  id: ID!
+  name: String!
+  avatar: String
+  station_name: String
 }

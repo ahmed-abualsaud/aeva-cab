@@ -186,6 +186,10 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "TripLogResolver@pickUsersUp")
   changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
     @field(resolver: "TripLogResolver@changeTripUserStatus")
+
+  # Communication
+  sendMessage(input: SendMessageInput! @spread): String
+    @field(resolver: "CommunicationResolver@sendMessage")
 } 
 
 # Queries that require Auth
@@ -289,7 +293,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerTripResolver@stationUsers")
 
   # Trip User
-  partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [User] 
+  partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [PartnerTripUserWithStationResponse] 
     @field(resolver: "PartnerTripResolver@users")
 
   # Trip Log
@@ -320,6 +324,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
 #import partnerTripUser.graphql
 #import roleType.graphql
 #import role.graphql
+#import communication.graphql
 #import tripLog.graphql
 #import document.graphql
 #import promoCode.graphql

@@ -9,7 +9,7 @@ use App\PartnerTripSchedule;
 use App\Jobs\Otp;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use App\Mail\TripSubscriptionCode;
+use App\Mail\DefaultMail;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -85,9 +85,9 @@ class PartnerTripResolver
         $phones = $users->pluck('phone')->toArray();
         $emails = $users->pluck('email');
 
-        $message = 'Kindly use this code to confirm your subscription: ' . $args['subscription_code'];
+        $message = 'Dear valued user, kindly use this code to confirm your subscription: ' . $args['subscription_code'];
         
-        Mail::bcc($emails)->send(new TripSubscriptionCode($message));
+        Mail::bcc($emails)->send(new DefaultMail($message, "Trip Subscription Code"));
         Otp::dispatch(implode(",", $phones), $message); 
 
         return [
