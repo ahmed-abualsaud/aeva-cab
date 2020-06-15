@@ -97,6 +97,41 @@ class DriverResolver
 
     }
 
+    public function updatePassword($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        try {
+            $driver = Driver::findOrFail($args['id']);
+        } catch (ModelNotFoundException $e) {
+            return [
+                'status' => false, 
+                'message' => 'The provided driver ID is not found.'
+            ];
+        }
+
+        if (!(Hash::check($args['current_password'], $driver->password))) {
+            return [
+                'status' => false,
+                'message' => 'Your current password does not matches with the password you provided.'
+            ];
+        }
+
+        if (strcmp($args['current_password'], $args['new_password']) == 0) {
+            return [
+                'status' => false,
+                'message' => 'New Password cannot be same as your current password. Please choose a different password.'
+            ];
+        }
+
+        $driver->password = Hash::make($args['new_password']);
+        $driver->save();
+
+        return [
+            'status' => true,
+            'message' => 'Password changed successfully.'
+        ];
+
+    }
+
     public function assignVehicle($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $data = [];

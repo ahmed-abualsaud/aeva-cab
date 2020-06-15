@@ -53,6 +53,8 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   updateDriver(input: UpdateDriverInput! @spread): Driver 
     @field(resolver: "DriverResolver@update") @updateDriverValidation
   deleteDriver(id: ID!): Driver @delete
+  changeDriverPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! 
+    @field(resolver: "DriverResolver@updatePassword")
 
   # Role
   createRole(input: CreateRoleInput! @spread): Role
