@@ -7,13 +7,14 @@ use App\PartnerTrip;
 use App\PartnerTripUser;
 use App\PartnerTripSchedule; 
 use App\Jobs\Otp;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use App\Mail\DefaultMail;
+use App\Exceptions\CustomException;
 use GraphQL\Type\Definition\ResolveInfo;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str; 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Mail;
+use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class PartnerTripResolver
 {
@@ -101,14 +102,14 @@ class PartnerTripResolver
         try {
             $trip = PartnerTrip::where('subscription_code', $args['subscription_code'])->firstOrFail();
         } catch (\Exception $e) {
-            throw new \Exception('The provided subscription code is invalid.');
+            throw new CustomException('The provided subscription code is not valid.');
         }
         
         try {
             $tripUser = PartnerTripUser::where('trip_id', $trip['id'])
                 ->where('user_id', $args['user_id'])->firstOrFail();
             if ($tripUser->subscription_verified_at) {
-                throw new \Exception('You have already subscribed for this trip.');
+                throw new CustomException('You have already subscribed for this trip.');
             } else {
                 $tripUser->update(['subscription_verified_at' => now()]);
             }

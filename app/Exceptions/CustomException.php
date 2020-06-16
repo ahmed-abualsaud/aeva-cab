@@ -53,6 +53,7 @@ class CustomException extends Exception implements RendersErrorsExtensions
      */
     public function getCategory(): string
     {
+        if (is_null($this->category)) return "custom";
         return $this->category;
     }
 
