@@ -45,10 +45,10 @@ class ResetPassword extends ResetPasswordNotification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Reset your password')
-            ->greeting('Hello,')
-            ->line('You are receiving this email because we received a password reset request for your account.')
+            ->subject('Qruz password reset link')
+            ->greeting('Hello, here\'s how to reset your password.')
+            ->line('We have received a request to have your password reset.')
             ->action('Reset Your Password', url(config('app.url').route('password.reset', [$this->type, $this->token, urlencode($notifiable->email)], false)))
-            ->line('If you did not request a password reset, no further action is required.');
+            ->line('If you did not make this request, please ignore this email.');
     }
 }

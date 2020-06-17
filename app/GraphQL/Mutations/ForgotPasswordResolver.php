@@ -21,7 +21,7 @@ class ForgotPasswordResolver
      * @return mixed
      */
 
-    public function user($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $response = Password::broker($args['type'])->sendResetLink(['email' => $args['email']]);
         if ($response == Password::RESET_LINK_SENT) {

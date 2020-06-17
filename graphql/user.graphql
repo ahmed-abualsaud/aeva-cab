@@ -52,7 +52,7 @@ type UserPhoneVerifyPayload {
 
 input ForgotPasswordInput {
   email: String! @rules(apply: ["required", "email"])
-  type: String! @rules(apply: ["required", "in:users,drivers"])
+  type: String! @rules(apply: ["required", "in:users,drivers,partners,roles"])
 }
 
 type UpdatePasswordResponse {
@@ -62,6 +62,7 @@ type UpdatePasswordResponse {
 
 input NewPasswordWithCodeInput {
   email: String! @rules(apply: ["required", "email"])
+  type: String! @rules(apply: ["required", "in:users,drivers,partners,roles"])
   token: String! @rules(apply: ["required", "string"])
   password: String! @rules(apply: ["required", "confirmed", "min:8"])
   password_confirmation: String!

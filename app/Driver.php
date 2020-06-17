@@ -20,6 +20,7 @@ class Driver extends Authenticatable implements JWTSubject
      * Send the password reset notification.
      *
      * @param  string  $token
+     * @param  string  $type
      * @return void
      */
     public function sendPasswordResetNotification($token)

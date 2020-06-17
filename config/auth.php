@@ -130,6 +130,18 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+        'partners' => [
+            'provider' => 'partners',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'roles' => [
+            'provider' => 'roles',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
     ],
 
     /*

@@ -17,10 +17,10 @@ type Mutation {
     @field(resolver: "UserResolver@socialLogin")
   userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
     @field(resolver: "UserResolver@phoneVerification")
-  forgotUserPassword(input: ForgotPasswordInput! @spread): UpdatePasswordResponse! 
-    @field(resolver: "ForgotPasswordResolver@user")
-  updateUserForgottenPassword(input: NewPasswordWithCodeInput @spread): UpdatePasswordResponse! 
-    @field(resolver: "ResetPasswordResolver@user")
+  forgotPassword(input: ForgotPasswordInput! @spread): UpdatePasswordResponse! 
+    @field(resolver: "ForgotPasswordResolver")
+  updateForgottenPassword(input: NewPasswordWithCodeInput @spread): UpdatePasswordResponse! 
+    @field(resolver: "ResetPasswordResolver")
 
   # Driver Auth
   driverLogin(input: DriverLoginInput! @spread): DriverAuthPayload! 
