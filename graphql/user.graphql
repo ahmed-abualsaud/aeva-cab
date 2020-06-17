@@ -52,6 +52,7 @@ type UserPhoneVerifyPayload {
 
 input ForgotPasswordInput {
   email: String! @rules(apply: ["required", "email"])
+  type: String! @rules(apply: ["required", "in:users,drivers"])
 }
 
 type UpdatePasswordResponse {

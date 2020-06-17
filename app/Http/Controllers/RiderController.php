@@ -350,13 +350,13 @@ class RiderController extends Controller
     public function request_status_check() 
     {
         try {
-            $user_id = auth('user')->id();
+            $user_id = auth('user')->id(); 
 
             $userLatestRequests = CabRequest::where('cab_requests.user_id', $user_id)
                 ->where('cab_requests.user_rated', 0)
                 ->whereNotIn('cab_requests.status', ['CANCELLED', 'SCHEDULED'])
-                ->leftJoin('vehicles', 'vehicles.id', '=', 'driver_vehicles.vehicle_id')
                 ->leftJoin('driver_vehicles', 'driver_vehicles.driver_id', '=', 'cab_requests.driver_id')
+                ->leftJoin('vehicles', 'vehicles.id', '=', 'driver_vehicles.vehicle_id')
                 ->leftJoin('car_makes', 'car_makes.id', '=', 'vehicles.car_make_id')
                 ->leftJoin('car_models', 'car_models.id', '=', 'vehicles.car_model_id')
                 ->selectRaw("cab_requests.*, vehicles.license_plate, CONCAT(car_makes.name, ' ', car_models.name) AS car_model")

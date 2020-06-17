@@ -20,9 +20,10 @@ class ForgotPasswordResolver
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
+
     public function user($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $response = $this->broker()->sendResetLink(['email' => $args['email']]);
+        $response = Password::broker($args['type'])->sendResetLink(['email' => $args['email']]);
         if ($response == Password::RESET_LINK_SENT) {
             return [
                 'status'  => true,

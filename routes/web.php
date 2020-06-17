@@ -15,5 +15,5 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')
+Route::get('{type}/password/reset/{token}?email={email}', 'Auth\ResetPasswordController@showResetForm')
     ->name('password.reset');
