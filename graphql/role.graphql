@@ -40,11 +40,6 @@ input UpdateRoleInput {
   status: String
 }
 
-input QruzMemberLoginInput { 
-  emailOrPhone: String!
-  password: String!
-}
-
 type QruzMemberAuthPayload {
   access_token: String
   role: Role

@@ -20,13 +20,6 @@ input UpdateDriverInput {
   status: String
 }
 
-input DriverLoginInput {
-  emailOrPhone: String! @rules(apply: ["required"])
-  password: String! @rules(apply: ["required"])
-  platform: String @rules(apply: ["in:android,ios"])
-  device_id: String
-}
-
 type DriverAuthPayload {
   access_token: String
   driver: Driver

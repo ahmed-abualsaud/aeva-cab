@@ -132,14 +132,21 @@ class PartnerTripResolver
 
     public function unsubscribeUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        PartnerTripUser::where('trip_id', $args['trip_id'])
-        ->whereIn('user_id', $args['user_id'])
-        ->delete();
-
-      return [
-        "status" => true,
-        "message" => "Selected subscriptions have been cancelled successfully."
-      ];
+        try {
+            PartnerTripUser::where('trip_id', $args['trip_id'])
+                ->whereIn('user_id', $args['user_id'])
+                ->delete();
+        } catch (\Exception $e) {
+            return [
+                "status" => false,
+                "message" => "Subscription cancellation failed."
+            ];
+        }
+        
+        return [
+            "status" => true,
+            "message" => "Subscription cancellation done successfully."
+        ];
     }
 
     protected function tripInput($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)

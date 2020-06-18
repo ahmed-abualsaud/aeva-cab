@@ -31,11 +31,6 @@ input DeletePartnerTripStationUserInput {
   user_id: ID! @rules(apply: ["required"])
 }
 
-type PartnerTripUserResponse {
-  status: Boolean!
-  message: String
-}
-
 type PartnerTripUserWithStationResponse {
   id: ID!
   name: String!

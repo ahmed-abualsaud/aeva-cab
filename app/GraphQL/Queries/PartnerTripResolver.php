@@ -82,7 +82,7 @@ class PartnerTripResolver
 
         return $userSubscriptions;
     }
-
+ 
     public function userTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.trip_id')

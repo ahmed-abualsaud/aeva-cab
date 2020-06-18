@@ -5,29 +5,29 @@ scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload
 # Mutations that do not require Auth
 type Mutation {
   # Admin Auth
-  qruzMemberLogin(input: QruzMemberLoginInput! @spread): QruzMemberAuthPayload! 
+  qruzMemberLogin(input: LoginInput! @spread): QruzMemberAuthPayload! 
     @field(resolver: "RoleResolver@login")
 
   # User Auth
   createUser(input: CreateUserInput! @spread): UserPayload!
     @field(resolver: "UserResolver@create")
-  userLogin(input: UserLoginInput! @spread): UserPayload! 
+  userLogin(input: LoginInput! @spread): UserPayload! 
     @field(resolver: "UserResolver@login")
-  userSocialLogin(input: UserSocialLoginInput! @spread): UserPayload! 
+  userSocialLogin(input: SocialLoginInput! @spread): UserPayload! 
     @field(resolver: "UserResolver@socialLogin")
   userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
     @field(resolver: "UserResolver@phoneVerification")
-  forgotPassword(input: ForgotPasswordInput! @spread): UpdatePasswordResponse! 
+  forgotPassword(input: ForgotPasswordInput! @spread): DefaultResponse 
     @field(resolver: "ForgotPasswordResolver")
-  updateForgottenPassword(input: NewPasswordWithCodeInput @spread): UpdatePasswordResponse! 
+  updateForgottenPassword(input: NewPasswordWithCodeInput @spread): DefaultResponse 
     @field(resolver: "ResetPasswordResolver")
 
   # Driver Auth
-  driverLogin(input: DriverLoginInput! @spread): DriverAuthPayload! 
+  driverLogin(input: LoginInput! @spread): DriverAuthPayload! 
     @field(resolver: "DriverResolver@login")
 
   # Partner Auth
-  partnerLogin(input: PartnerLoginInput! @spread): PartnerAuthPayload! 
+  partnerLogin(input: LoginInput! @spread): PartnerAuthPayload! 
     @field(resolver: "PartnerResolver@login")
 }
 
@@ -37,7 +37,7 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   updateUser(input: UpdateUserInput! @spread): UserPayload 
     @field(resolver: "UserResolver@update") @updateUserValidation
   deleteUser(id: ID!): User @delete
-  changeUserPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! 
+  changeUserPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "UserResolver@updatePassword")
 
   # Fleet
@@ -53,7 +53,7 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   updateDriver(input: UpdateDriverInput! @spread): Driver 
     @field(resolver: "DriverResolver@update") @updateDriverValidation
   deleteDriver(id: ID!): Driver @delete
-  changeDriverPassword(input: ChangePasswordInput @spread): UpdatePasswordResponse! 
+  changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "DriverResolver@updatePassword")
 
   # Role
@@ -124,9 +124,9 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerResolver@updatePassword")
 
   # Partner Driver
-  createPartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse!
+  createPartnerDriver(input: PartnerDriverInput! @spread): DefaultResponse
     @field(resolver: "PartnerResolver@assignDriver")
-  deletePartnerDriver(input: PartnerDriverInput! @spread): PartnerDriverResponse! 
+  deletePartnerDriver(input: PartnerDriverInput! @spread): DefaultResponse
     @field(resolver: "PartnerResolver@unassignDriver")
 
   # Trip
@@ -160,18 +160,18 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerTripStationResolver@acceptStation") 
 
   # Station User
-  createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): PartnerTripUserResponse! 
+  createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): DefaultResponse 
     @field(resolver: "PartnerTripStationResolver@assignUser") 
-  deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): PartnerTripUserResponse! 
+  deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): DefaultResponse 
     @field(resolver: "PartnerTripStationResolver@unassignUser")
 
   # Trip User
-  createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): PartnerTripUserResponse! 
+  createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): DefaultResponse 
     @field(resolver: "PartnerTripResolver@inviteUser")
   confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): PartnerTrip!
     @field(resolver: "PartnerTripResolver@subscribeUser")
-  deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): PartnerTripUserResponse! 
-    @field(resolver: "PartnerTripResolver@unsubscribeUser")
+  deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): DefaultResponse
+    @field(resolver: "PartnerTripResolver@unsubscribeUser") 
 
   # Trip Log
   startTrip(input: StartTripInput! @spread): PartnerTrip 

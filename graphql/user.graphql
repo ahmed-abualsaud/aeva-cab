@@ -27,14 +27,14 @@ input UserPhoneVerificationInput {
   phone: String! @rules(apply: ["required"])
 }
 
-input UserLoginInput {
+input LoginInput {
   emailOrPhone: String! @rules(apply: ["required"])
   password: String! @rules(apply: ["required"])
   platform: String @rules(apply: ["in:android,ios"])
   device_id: String
 }
 
-input UserSocialLoginInput {
+input SocialLoginInput {
   provider: String! @rules(apply: ["required", "in:facebook,google"])
   token: String! @rules(apply: ["required"])
   platform: String @rules(apply: ["in:android,ios"])
@@ -55,7 +55,7 @@ input ForgotPasswordInput {
   type: String! @rules(apply: ["required", "in:users,drivers,partners,roles"])
 }
 
-type UpdatePasswordResponse {
+type DefaultResponse {
   status: Boolean!
   message: String 
 }
