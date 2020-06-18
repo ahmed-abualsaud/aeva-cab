@@ -3,6 +3,7 @@
 namespace App\GraphQL\Queries;
 
 use App\User;
+use App\Partner;
 use App\DriverVehicle;
 use App\PartnerTrip;
 use App\PartnerTripUser;
@@ -82,11 +83,36 @@ class PartnerTripResolver
 
         return $userSubscriptions;
     }
+
+    public function userTripPartners($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $partners = Partner::Join('partner_trips', 'partner_trips.partner_id', '=', 'partners.id')
+            ->join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.trip_id')
+            ->where('partner_trip_users.user_id', $args['user_id'])
+            ->whereNotNull('partner_trip_users.subscription_verified_at')
+            ->selectRaw('partners.*')
+            ->get();
+
+        return $partners;
+    }
  
     public function userTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.trip_id')
             ->where('partner_trip_users.user_id', $args['user_id'])
+            ->whereNotNull('partner_trip_users.subscription_verified_at')
+            ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
+            ->select('partner_trips.*')
+            ->get();
+        
+        return $this->scheduledTrips($userTrips);
+    }
+
+    public function userTripsByPartner($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $userTrips = PartnerTrip::join('partner_trip_users', 'partner_trips.id', '=', 'partner_trip_users.trip_id')
+            ->where('partner_trip_users.user_id', $args['user_id'])
+            ->where('partner_trips.partner_id', $args['partner_id'])
             ->whereNotNull('partner_trip_users.subscription_verified_at')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->select('partner_trips.*')
@@ -177,17 +203,19 @@ class PartnerTripResolver
         $now = strtotime(now())*1000;
 
         foreach($trips as $trip) {
-            foreach($days as $day) {
+            foreach($days as $day) { 
                 if ($trip->schedule->$day) {
-                    $tripInstance = new PartnerTrip();
                     $date = date('Y-m-d', strtotime($day));
-                    $dateTime = $date . ' ' . $trip->schedule->$day;  
+                    $dateTime = $date . ' ' . $trip->schedule->$day;
+                    $tripInstance = new PartnerTrip();
                     $trip->dayName = $day;
                     $trip->date = strtotime($dateTime) * 1000;
                     $trip->flag = $this->getFlag($trip->schedule->$day);
-                    $trip->startsAt = Carbon::parse($dateTime)->diffForHumans();
-                    $tripInstance->fill($trip->toArray());
-                    array_push($sortedTrips, $tripInstance);
+                    $trip->startsAt = $trip->date > $now ? Carbon::parse($dateTime)->diffForHumans() : "Now";
+                    if ($trip->date > $now || $trip->status) {
+                        $tripInstance->fill($trip->toArray());
+                        array_push($sortedTrips, $tripInstance);
+                    }
                 }
             }
         }

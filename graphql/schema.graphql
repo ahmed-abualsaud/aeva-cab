@@ -203,6 +203,10 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerTripResolver@userSubscriptions")
   userTrips(user_id: ID!): [PartnerTrip]
     @field(resolver: "PartnerTripResolver@userTrips")
+  userTripPartners(user_id: ID!): [Partner]
+    @field(resolver: "PartnerTripResolver@userTripPartners")
+  userTripsByPartner(user_id: ID!, partner_id: ID!): [PartnerTrip]
+    @field(resolver: "PartnerTripResolver@userTripsByPartner")
   partnerUsers(partner_id: ID! @eq): [User] @all
 
   # Fleet
