@@ -91,6 +91,7 @@ class PartnerTripResolver
             ->where('partner_trip_users.user_id', $args['user_id'])
             ->whereNotNull('partner_trip_users.subscription_verified_at')
             ->selectRaw('partners.*')
+            ->distinct()
             ->get();
 
         return $partners;
