@@ -52,11 +52,6 @@ input UserObj {
   is_picked_up: Boolean! @rules(apply: ["required"])
 }
 
-type DriverLocationResponse {
-  latitude: String!
-  longitude: String!
-}
-
 type TripLogResponse {
   created_at: DateTime!
   status: String!

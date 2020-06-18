@@ -4,8 +4,9 @@ namespace App\GraphQL\Mutations;
 
 use App\PartnerTripUser;
 use App\PartnerTripStation;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Exceptions\CustomException;
 use GraphQL\Type\Definition\ResolveInfo;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class PartnerTripStationResolver
@@ -51,7 +52,7 @@ class PartnerTripStationResolver
                 ->where('user_id', $args['user_id'])->firstOrFail();
             $userStation->update(['station_id' => $args['station_id']]);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('No subscription for the provided user ID.');
+            throw new CustomException('No subscription for the provided user ID.');
         }
  
         return [
@@ -66,7 +67,7 @@ class PartnerTripStationResolver
             PartnerTripUser::where('station_id', $args['station_id'])
                 ->where('user_id', $args['user_id'])->delete();
         } catch (\Exception $e) {
-            throw new \Exception('User station assignment cancellation faild.');
+            throw new CustomException('User station assignment cancellation faild.');
         }
  
         return [

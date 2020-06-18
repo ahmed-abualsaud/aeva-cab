@@ -354,7 +354,7 @@ class RiderController extends Controller
 
             $userLatestRequests = CabRequest::where('cab_requests.user_id', $user_id)
                 ->where('cab_requests.user_rated', 0)
-                ->whereNotIn('cab_requests.status', ['CANCELLED', 'SCHEDULED'])
+                ->whereNotIn('cab_requests.status', ['CANCELLED', 'SCHEDULED', 'COMPLETED'])
                 ->leftJoin('driver_vehicles', 'driver_vehicles.driver_id', '=', 'cab_requests.driver_id')
                 ->leftJoin('vehicles', 'vehicles.id', '=', 'driver_vehicles.vehicle_id')
                 ->leftJoin('car_makes', 'car_makes.id', '=', 'vehicles.car_make_id')

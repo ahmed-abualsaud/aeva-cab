@@ -137,10 +137,7 @@ class PartnerTripResolver
                 ->whereIn('user_id', $args['user_id'])
                 ->delete();
         } catch (\Exception $e) {
-            return [
-                "status" => false,
-                "message" => "Subscription cancellation failed."
-            ];
+            throw new CustomException('Subscription cancellation failed.');
         }
         
         return [

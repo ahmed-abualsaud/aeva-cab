@@ -41,6 +41,11 @@ input SocialLoginInput {
   device_id: String
 }
 
+type LocationCoordinatesResponse {
+  latitude: String!
+  longitude: String!
+}
+
 type UserPayload {
   access_token: String
   user: User

@@ -299,7 +299,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerTripResolver@users")
 
   # Trip Log
-  getDriverLocation(driver_id: ID!): DriverLocationResponse!
+  getDriverLocation(driver_id: ID!): LocationCoordinatesResponse
     @field(resolver: "TripLogResolver@driverLocation")
   getPickedUsers(log_id: String!): [User]
     @field(resolver: "TripLogResolver@pickedUsers")

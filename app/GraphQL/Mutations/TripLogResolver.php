@@ -194,6 +194,7 @@ class TripLogResolver
             throw new \Exception('Driver location has not updated. ' . $e->getMessage());
         }
 
+        // Broadcast driver location
         // if (array_key_exists('trip_id', $args) && $args['trip_id']) {
             // broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
         // }
