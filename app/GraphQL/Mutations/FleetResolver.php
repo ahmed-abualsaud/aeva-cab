@@ -26,8 +26,6 @@ class FleetResolver
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $fleetInput = collect($args)->except(['directive', 'avatar'])->toArray();
-        $driverInput = collect($args)->only(['name', 'email', 'phone'])->toArray();
-        $driverInput['password'] = Hash::make($driverInput['phone']);
 
         if ($args['avatar']) {
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
@@ -35,9 +33,6 @@ class FleetResolver
         }
         
         $fleet = Fleet::create($fleetInput);
-
-        $driverInput['fleet_id'] = $fleet->id;
-        Driver::create($driverInput);
 
         return $fleet;
     }
