@@ -196,12 +196,12 @@ class PartnerTripResolver
         return $trip;
     }
 
-    protected function scheduledTrips($trips) {
-
+    protected function scheduledTrips($trips) 
+    {
         $sortedTrips = array();
         $days = array('saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday');
-        $upcomingCheck = true;
-        $now = strtotime(now())*1000;
+        $now = strtotime(now()) * 1000;
+        $timeMargin = 60 * 30 * 1000; // 30 minutes in milliseconds
 
         foreach($trips as $trip) {
             foreach($days as $day) { 
@@ -212,25 +212,32 @@ class PartnerTripResolver
                     $trip->dayName = $day;
                     $trip->date = strtotime($dateTime) * 1000;
                     $trip->flag = $this->getFlag($trip->schedule->$day);
-                    $trip->startsAt = $trip->date > $now ? Carbon::parse($dateTime)->diffForHumans() : "Now";
-                    if ($trip->date > $now || $trip->status) {
+                    $trip->startsAt = $trip->date > $now 
+                        ? Carbon::parse($dateTime)->diffForHumans() 
+                        : "Now";
+                    $trip->isReturn = false;
+                    if ($trip->date > ($now - $timeMargin) || $trip->status) {
                         $tripInstance->fill($trip->toArray());
                         array_push($sortedTrips, $tripInstance);
+                    }
+                    if ($trip->return_time) {
+                        $tripInstance = new PartnerTrip();
+                        $dateTime = $date . ' ' . $trip->return_time;
+                        $trip->date = strtotime($dateTime) * 1000;
+                        $trip->startsAt = $trip->date > $now 
+                            ? Carbon::parse($dateTime)->diffForHumans() 
+                            : "Now";
+                        $trip->isReturn = true;
+                        if ($trip->date > ($now - $timeMargin)) {
+                            $tripInstance->fill($trip->toArray());
+                            array_push($sortedTrips, $tripInstance);
+                        }
                     }
                 }
             }
         }
 
         usort($sortedTrips, function ($a, $b) { return ($a['date'] > $b['date']); });
-
-        foreach($sortedTrips as $trip) {
-            if ($upcomingCheck && $now < $trip->date) {
-                $trip->upcoming = true;
-                $upcomingCheck = false;
-            } else {
-                $trip->upcoming = false;
-            }
-        }
         
         return $sortedTrips;
     }

@@ -79,5 +79,5 @@ type PartnerTrip {
   date: String
   status: Boolean
   flag: Boolean
-  upcoming: Boolean
+  isReturn: Boolean
 }
