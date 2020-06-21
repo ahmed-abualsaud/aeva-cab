@@ -208,27 +208,33 @@ class PartnerTripResolver
                 if ($trip->schedule->$day) {
                     $date = date('Y-m-d', strtotime($day));
                     $dateTime = $date . ' ' . $trip->schedule->$day;
-                    $tripInstance = new PartnerTrip();
-                    $trip->dayName = $day;
-                    $trip->date = strtotime($dateTime) * 1000;
-                    $trip->flag = $this->getFlag($trip->schedule->$day);
-                    $trip->startsAt = $trip->date > $now 
-                        ? Carbon::parse($dateTime)->diffForHumans() 
-                        : "Now";
-                    $trip->isReturn = false;
-                    if ($trip->date > ($now - $timeMargin) || $trip->status) {
+                    $tripDate = strtotime($dateTime) * 1000;
+                    
+                    if ($tripDate > ($now - $timeMargin) || $trip->status) {
+                        $tripInstance = new PartnerTrip();
+                        $trip->date = $tripDate;
+                        $trip->dayName = $day;
+                        $trip->flag = ($tripDate - $timeMargin) < $now;
+                        $trip->isReturn = false;
+                        $trip->startsAt = $tripDate > $now 
+                            ? Carbon::parse($dateTime)->diffForHumans() 
+                            : "Now";
                         $tripInstance->fill($trip->toArray());
                         array_push($sortedTrips, $tripInstance);
                     }
+
                     if ($trip->return_time) {
-                        $tripInstance = new PartnerTrip();
                         $dateTime = $date . ' ' . $trip->return_time;
-                        $trip->date = strtotime($dateTime) * 1000;
-                        $trip->startsAt = $trip->date > $now 
-                            ? Carbon::parse($dateTime)->diffForHumans() 
-                            : "Now";
-                        $trip->isReturn = true;
-                        if ($trip->date > ($now - $timeMargin)) {
+                        $tripDate = strtotime($dateTime) * 1000;
+                        if ($tripDate > ($now - $timeMargin) || $trip->status) {
+                            $tripInstance = new PartnerTrip();
+                            $trip->dayName = $day;
+                            $trip->flag = ($tripDate - $timeMargin) < $now;
+                            $trip->date = $tripDate;
+                            $trip->startsAt = $trip->date > $now 
+                                ? Carbon::parse($dateTime)->diffForHumans() 
+                                : "Now";
+                            $trip->isReturn = true;
                             $tripInstance->fill($trip->toArray());
                             array_push($sortedTrips, $tripInstance);
                         }

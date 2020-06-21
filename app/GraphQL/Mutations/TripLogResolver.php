@@ -25,9 +25,7 @@ class TripLogResolver
     {
         try {
             $trip = PartnerTrip::findOrFail($args['trip_id']);
-            if ($trip->status) {
-                throw new \Exception('Trip has already started.');
-            }
+            if ($trip->status) throw new \Exception('Trip has already started.');
 
             $logID = uniqid() . 'T' . $args['trip_id'];
 
@@ -96,16 +94,14 @@ class TripLogResolver
     {
         try {
             $trip = PartnerTrip::findOrFail($args['trip_id']);
-            if (!$trip->status) {
-                throw new \Exception('Trip has already ended.');
-            }
+            if (!$trip->status) throw new \Exception('Trip has already ended.');
 
-            $comeBack = '';
-            if ($trip->return_time) {
-                $comeBack = ' We will return back to you at ' . Carbon::parse($trip->return_time)->format('g:i A');
-            }
+            $notificationMsg = 'We have arrived. Have a great time.';
 
-            $notificationMsg = 'We have arrived. Have a great time.' . $comeBack;
+            // if ($trip->return_time) {
+            //     $notificationMsg .= ' We will return back to you at ' . Carbon::parse($trip->return_time)->format('g:i A');
+            // }
+
             $data = ["status" => "TRIP_ENDED"];
             PushNotification::dispatch($this->getTokens($trip), $notificationMsg, $data);
 
