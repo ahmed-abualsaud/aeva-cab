@@ -23,7 +23,6 @@ class CreateUsersTable extends Migration
             $table->string('avatar')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
             $table->timestamp('phone_verified_at')->nullable();
-            $table->string('employee_id')->nullable();
             $table->enum('payment_mode', ['CASH', 'CARD', 'PAYPAL'])->nullable();
             $table->double('latitude', 15, 8)->nullable();
             $table->double('longitude',15,8)->nullable();

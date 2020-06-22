@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Queries;
 
+use App\User;
 use App\Driver;
 use App\PartnerDriver;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -29,5 +30,15 @@ class PartnerResolver
         }
 
         return $drivers;
+    }
+
+    public function users($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $partnerUsers = User::Join('partner_users', 'partner_users.user_id', '=', 'users.id')
+            ->where('partner_users.partner_id', $args['partner_id'])
+            ->selectRaw('users.*, partner_users.employee_id')
+            ->get();
+
+        return $partnerUsers;
     }
 }

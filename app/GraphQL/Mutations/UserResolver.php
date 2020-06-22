@@ -3,17 +3,18 @@
 namespace App\GraphQL\Mutations;
 
 use App\User;
-use JWTAuth;
+use App\PartnerUser;
 use App\DeviceToken;
 use App\Jobs\Otp;
-use Illuminate\Support\Str; 
 use App\Traits\UploadFile;
+use GraphQL\Type\Definition\ResolveInfo;
+use Illuminate\Support\Str; 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Socialite\Facades\Socialite;
-use GraphQL\Type\Definition\ResolveInfo;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use JWTAuth;
+use Laravel\Socialite\Facades\Socialite;
+use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
  
 class UserResolver
 {
@@ -30,7 +31,9 @@ class UserResolver
      */
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $input = collect($args)->except(['directive', 'avatar', 'platform', 'device_id'])->toArray();
+        $input = collect($args)
+            ->except(['directive', 'avatar', 'platform', 'device_id'])
+            ->toArray(); 
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
@@ -54,8 +57,11 @@ class UserResolver
 
         $token = null;
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
-            $employeeID = 'P0' . $args['partner_id'] . 'U0' . $user->id;
-            User::where('id', $user->id)->update(['employee_id' => $employeeID]);
+            PartnerUser::create([
+                "partner_id" => $args['partner_id'],
+                "user_id" => $user->id,
+                "employee_id" => 'P' . $args['partner_id'] . 'U' . $user->id
+            ]);
         } else {
             Auth::onceUsingId($user->id);
             $token = JWTAuth::fromUser($user);
@@ -138,11 +144,11 @@ class UserResolver
             $user = User::where('provider', Str::lower($args['provider']))->where('provider_id', $userData->getId())->firstOrFail();
         } catch (ModelNotFoundException $e) {
             $user = User::create([
-            'name'        => $userData->getName(),
-            'email'       => $userData->getEmail(),
-            'provider'    => $args['provider'], 
-            'provider_id' => $userData->getId(),
-            'avatar'      => $userData->getAvatar(),
+                'name'        => $userData->getName(),
+                'email'       => $userData->getEmail(),
+                'provider'    => $args['provider'], 
+                'provider_id' => $userData->getId(),
+                'avatar'      => $userData->getAvatar(),
             ]);
         }
 

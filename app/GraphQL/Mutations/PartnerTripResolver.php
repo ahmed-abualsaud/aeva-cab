@@ -3,6 +3,7 @@
 namespace App\GraphQL\Mutations;
 
 use App\User;
+use App\PartnerUser;
 use App\PartnerTrip;
 use App\PartnerTripUser;
 use App\PartnerTripSchedule; 
@@ -82,7 +83,9 @@ class PartnerTripResolver
             throw new \Exception('Each user is allowed to subscribe for a trip once.');
         }
 
-        $users = User::select('phone', 'email')->whereIn('id', $args['user_id'])->get();
+        $users = User::select('phone', 'email')
+            ->whereIn('id', $args['user_id'])
+            ->get();
         $phones = $users->pluck('phone')->toArray();
         $emails = $users->pluck('email');
 
@@ -100,14 +103,16 @@ class PartnerTripResolver
     public function subscribeUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo) 
     {
         try {
-            $trip = PartnerTrip::where('subscription_code', $args['subscription_code'])->firstOrFail();
+            $trip = PartnerTrip::where('subscription_code', $args['subscription_code'])
+                ->firstOrFail();
         } catch (\Exception $e) {
             throw new CustomException('The provided subscription code is not valid.');
         }
         
         try {
             $tripUser = PartnerTripUser::where('trip_id', $trip['id'])
-                ->where('user_id', $args['user_id'])->firstOrFail();
+                ->where('user_id', $args['user_id'])
+                ->firstOrFail();
             if ($tripUser->subscription_verified_at) {
                 throw new CustomException('You have already subscribed for this trip.');
             } else {
@@ -119,12 +124,11 @@ class PartnerTripResolver
                 'user_id' => $args['user_id'],
                 'subscription_verified_at' => now()
             ]);
-            $employeeID = 'P0' . $trip['partner_id'] . 'U0' . $args['user_id'];
-            User::where('id', $args['user_id'])
-                ->update([
-                    'partner_id' => $trip['partner_id'],
-                    'employee_id' => $employeeID
-                ]);
+
+            PartnerUser::firstOrCreate([
+                'partner_id' => $trip['partner_id'], 
+                'user_id' => $args['user_id']
+            ], ['employee_id' => 'P' . $trip['partner_id'] . 'U' . $args['user_id']]);
         }
         
         return $trip;
@@ -142,7 +146,7 @@ class PartnerTripResolver
         
         return [
             "status" => true,
-            "message" => "Subscription cancellation done successfully."
+            "message" => "Subscription cancellation has done successfully."
         ];
     }
 
