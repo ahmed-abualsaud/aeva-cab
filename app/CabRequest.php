@@ -49,15 +49,6 @@ class CabRequest extends Model
             ->whereNotIn('status' , ['CANCELLED', 'COMPLETED', 'SCHEDULED']);
     }
 
-    public function scopeUserTrips($query, $user_id)
-    {
-        return $query->where('cab_requests.user_id', $user_id)
-            ->where('cab_requests.status','COMPLETED')
-            ->orderBy('cab_requests.created_at','desc')
-            ->select('cab_requests.*')
-            ->with('payment','car_type');
-    }
-
     public function scopeUserUpcomingTrips($query, $user_id)
     {
         return $query->where('cab_requests.user_id', $user_id)

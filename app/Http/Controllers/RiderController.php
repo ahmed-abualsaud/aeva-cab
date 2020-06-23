@@ -455,23 +455,11 @@ class RiderController extends Controller
     public function trips() 
     {
         try {
-            $userRequests = CabRequest::UserTrips(auth('user')->user()->id)->get();
-            if (!empty($userRequests)) {
-                $marker = '/assets/icons/marker.png';
-                foreach ($userRequests as $key => $value) {
-                    $userRequests[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                    "autoscale=1".
-                    "&size=320x130".
-                    "&maptype=terrian".
-                    "&format=png".
-                    "&visual_refresh=true".
-                    "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                    "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                    "&path=color:0x191919|weight:3|enc:".$value->route_key.
-                    "&key=".env('GOOGLE_MAP_KEY', null);
-                }
-            }
-            return $userRequests;
+            return CabRequest::where('user_id', auth('user')->user()->id)
+                ->where('status','COMPLETED')
+                ->orderBy('created_at','desc')
+                ->with('payment','car_type', 'driver')
+                ->get();
         }
         catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
