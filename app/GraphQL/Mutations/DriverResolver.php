@@ -81,7 +81,9 @@ class DriverResolver
 
         if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
             try {
-                DeviceToken::where('device_id', $args['device_id'])->firstOrFail();
+                DeviceToken::where('device_id', $args['device_id'])
+                    ->where('tokenable_type', 'App\Driver')
+                    ->firstOrFail();
             } catch (ModelNotFoundException $e) {
                 $tokenInput = collect($args)->only(['platform', 'device_id'])->toArray();
                 $tokenInput['tokenable_id'] = $driver->id;

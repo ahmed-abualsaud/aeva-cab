@@ -120,7 +120,9 @@ class UserResolver
 
         if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
             try {
-                DeviceToken::where('device_id', $args['device_id'])->firstOrFail();
+                DeviceToken::where('device_id', $args['device_id'])
+                    ->where('tokenable_type', 'App\User')
+                    ->firstOrFail();
             } catch (ModelNotFoundException $e) {
                 $this->createDeviceToken($rootValue, $args, $context, $resolveInfo, $user->id);
             }
@@ -154,7 +156,9 @@ class UserResolver
 
         if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
             try {
-                DeviceToken::where('device_id', $args['device_id'])->firstOrFail();
+                DeviceToken::where('device_id', $args['device_id'])
+                    ->where('tokenable_type', 'App\User')
+                    ->firstOrFail();
             } catch (ModelNotFoundException $e) {
                 $this->createDeviceToken($rootValue, $args, $context, $resolveInfo, $user->id);
             }

@@ -34,7 +34,7 @@ class SendPushController extends Controller
      */
     public function provider_schedule($driver){
 
-        return $this->sendPushToProvider($driver, trans('cabResponses.push.schedule_start'));
+        return $this->sendPushToDriver($driver, trans('cabResponses.push.schedule_start'));
 
     }
 
@@ -45,7 +45,7 @@ class SendPushController extends Controller
      */
     public function UserCancellRide($request){
 
-        return $this->sendPushToProvider($request->driver_id, trans('cabResponses.push.user_cancelled'));
+        return $this->sendPushToDriver($request->driver_id, trans('cabResponses.push.user_cancelled'));
     }
 
 
@@ -95,7 +95,7 @@ class SendPushController extends Controller
      */
     public function IncomingRequest($driver)
     {
-        return $this->sendPushToProvider($driver, trans('cabResponses.push.incoming_request'));
+        return $this->sendPushToDriver($driver, trans('cabResponses.push.incoming_request'));
     }
     
 
@@ -104,9 +104,19 @@ class SendPushController extends Controller
      *
      * @return void
      */
-    public function DocumentsVerfied($driver_id){
+    public function DocumentsVerfied($driver_id)
+    {
+        return $this->sendPushToDriver($driver_id, trans('cabResponses.push.document_verfied'));
+    }
 
-        return $this->sendPushToProvider($driver_id, trans('cabResponses.push.document_verfied'));
+    /**
+     * New Request
+     *
+     * @return void
+     */
+    public function newRequest($driver_id)
+    {
+        return $this->sendPushToDriver($driver_id, trans('cabResponses.push.new_request'));
     }
 
 
@@ -134,10 +144,18 @@ class SendPushController extends Controller
      * @return void
      */
     public function sendPushToUser($user_id, $push_message){
-    	$devices = DeviceToken::where('tokenable_id', $user_id)
+
+        if (is_array($user_id)) {
+            $devices = DeviceToken::whereIn('tokenable_id', $user_id)
             ->where('tokenable_type', 'App\User')
             ->select('device_id')
             ->pluck('device_id');
+        } else {
+            $devices = DeviceToken::where('tokenable_id', $user_id)
+                ->where('tokenable_type', 'App\User')
+                ->select('device_id')
+                ->pluck('device_id');
+        }
 
         if ($devices) {
             PushNotification::dispatch($devices, $push_message);
@@ -149,7 +167,7 @@ class SendPushController extends Controller
      *
      * @return void
      */
-    public function sendPushToProvider($driver_id, $push_message)
+    public function sendPushToDriver($driver_id, $push_message)
     {
         if (is_array($driver_id)) {
             $devices = DeviceToken::whereIn('tokenable_id', $driver_id)

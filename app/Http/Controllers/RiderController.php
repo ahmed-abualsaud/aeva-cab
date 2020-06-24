@@ -278,6 +278,8 @@ class RiderController extends Controller
             } 
             CabRequestFilter::insert($data);
 
+            (new SendPushController)->newRequest($drivers->pluck('id'));
+
             return response()->json([
                 'message' => 'New request Created!',
                 'request_id' => $userRequest->id
