@@ -19,6 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique()->nullable();
             $table->string('password')->nullable();
             $table->string('phone')->unique()->nullable();
+            $table->string('emergency_no')->nullable();
             $table->string('title')->nullable();
             $table->string('avatar')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
