@@ -43,8 +43,8 @@ class SendPushController extends Controller
      *
      * @return void
      */
-    public function UserCancellRide($request){
-
+    public function UserCancellRide($request)
+    {
         return $this->sendPushToDriver($request->driver_id, trans('cabResponses.push.user_cancelled'));
     }
 

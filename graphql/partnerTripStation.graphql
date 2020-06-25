@@ -17,6 +17,7 @@ input CreatePartnerTripStationsInput {
 
 input UpdatePartnerTripStationInput {
   id: ID! @rules(apply: ["required"])
+  # trip_id: ID
   name: String
   latitude: String
   longitude: String

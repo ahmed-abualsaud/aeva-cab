@@ -104,7 +104,8 @@ class TripController extends Controller
 
     public function assign_next_provider($userRequest) 
     {
-        CabRequestFilter::where('driver_id', $userRequest->current_driver_id)
+        $driverID = auth('driver')->user()->id;
+        CabRequestFilter::where('driver_id', $driverID)
             ->where('request_id', $userRequest->id)
             ->delete();
 

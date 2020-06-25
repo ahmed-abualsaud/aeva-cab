@@ -21,7 +21,7 @@ class PartnerTripStationResolver
      * @return mixed
      */
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
-    {
+    { 
         try {
             $data = array(); 
             $arr = array();
@@ -41,6 +41,27 @@ class PartnerTripStationResolver
         }
     
         return true;
+    }
+
+    public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $input = collect($args)->except(['id', 'directive', 'trip_id'])->toArray();
+
+        try {
+            $station = PartnerTripStation::findOrFail($args['id']);
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('The provided station ID is not found.');
+        }
+
+        if (array_key_exists('state', $args) && $args['state'] && $args['state'] != $station->state) {
+            PartnerTripStation::where('state', $args['state'])
+                ->where('trip_id', $args['trip_id'])
+                ->update(['state' => 'PICKABLE']);
+        }
+
+        $station->update($input);
+
+        return $station;
     }
 
     public function assignUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
