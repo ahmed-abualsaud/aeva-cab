@@ -171,17 +171,17 @@ class SendPushController extends Controller
     {
         if (is_array($driver_id)) {
             $devices = DeviceToken::whereIn('tokenable_id', $driver_id)
-            ->where('tokenable_type', 'App\Driver')
-            ->select('device_id')
-            ->pluck('device_id');
+                ->where('tokenable_type', 'App\Driver')
+                ->select('device_id')
+                ->pluck('device_id');
         } else {
             $devices = DeviceToken::where('tokenable_id', $driver_id)
-            ->where('tokenable_type', 'App\Driver')
-            ->select('device_id')
-            ->pluck('device_id');
+                ->where('tokenable_type', 'App\Driver')
+                ->select('device_id')
+                ->pluck('device_id');
         }
     	
-        if ($devices) {
+        if (count($devices)) {
             PushNotification::dispatch($devices, $push_message);
         }
 
