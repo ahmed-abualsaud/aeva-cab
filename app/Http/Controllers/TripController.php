@@ -118,7 +118,7 @@ class TripController extends Controller
             $userRequest->assigned_at = Carbon::now();
             $userRequest->save();
 
-            (new SendPushController)->IncomingRequest($next_provider->driver_id);
+            (new SendPushController)->newRequest($next_provider->driver_id);
             
         } catch (ModelNotFoundException $e) {
             CabRequest::where('id', $userRequest->id)->update(['status' => 'CANCELLED']);

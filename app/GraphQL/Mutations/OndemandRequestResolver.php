@@ -79,7 +79,8 @@ class OndemandRequestResolver
                 $token = DeviceToken::where('tokenable_id', $request->user_id)
                     ->where('tokenable_type', 'App\User')
                     ->select('device_id')
-                    ->pluck('device_id');
+                    ->pluck('device_id')
+                    ->toArray();
     
                 $response = $args['response'] ? ' '.$args['response'] : '';
                 $notificationMsg = 'Your Ondemand request ID ' . $request->id . ' has ' . strtolower($args['status']) . '.' . $response;

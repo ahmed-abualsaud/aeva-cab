@@ -25,6 +25,7 @@ class TripLogResolver
     {
         try {
             $trip = PartnerTrip::findOrFail($args['trip_id']);
+
             if ($trip->status) throw new \Exception('Trip has already started.');
 
             $logID = uniqid() . 'T' . $args['trip_id'];
@@ -34,7 +35,7 @@ class TripLogResolver
                 "status" => "TRIP_STARTED",
                 "logID" => $logID
             ];
-            PushNotification::dispatch($this->getTokens($trip), $notificationMsg, $data);
+            PushNotification::dispatch($this->getTokens($trip->id), $notificationMsg, $data);
 
             DriverVehicle::where('driver_id', $trip->driver_id)
                 ->where('vehicle_id', $trip->vehicle_id)
@@ -58,7 +59,8 @@ class TripLogResolver
             ->where('device_tokens.tokenable_type', 'App\User')
             ->join('device_tokens', 'device_tokens.tokenable_id', '=', 'partner_trip_users.user_id')
             ->select('device_tokens.device_id')
-            ->pluck('device_id');
+            ->pluck('device_id')
+            ->toArray();
         
         $notificationMsg = 'Our driver is so close to you, kindly stand by.';
         $data = ["status" => "NEAR_YOU"];
@@ -72,9 +74,10 @@ class TripLogResolver
         try {
             $user = User::select('name')->findOrFail($args['user_id']);
             $token = DeviceToken::where('tokenable_id', $args['driver_id'])
-            ->where('tokenable_type', 'App\Driver')
-            ->select('device_id')
-            ->pluck('device_id');
+                ->where('tokenable_type', 'App\Driver')
+                ->select('device_id')
+                ->pluck('device_id')
+                ->toArray();
 
             $input = collect($args)->except(['directive', 'driver_id'])->toArray();
             $input['status'] = 'ARRIVED';
@@ -96,14 +99,14 @@ class TripLogResolver
             $trip = PartnerTrip::findOrFail($args['trip_id']);
             if (!$trip->status) throw new \Exception('Trip has already ended.');
 
-            $notificationMsg = 'We have arrived. Have a great time.';
+            $notificationMsg = $trip->name . ' has arrived. Have a great time.';
 
-            // if ($trip->return_time) {
-            //     $notificationMsg .= ' We will return back to you at ' . Carbon::parse($trip->return_time)->format('g:i A');
-            // }
+            if ($trip->return_time) {
+                $notificationMsg .= ' Return trip will be at ' . Carbon::parse($trip->return_time)->format('g:i A');
+            }
 
             $data = ["status" => "TRIP_ENDED"];
-            PushNotification::dispatch($this->getTokens($trip), $notificationMsg, $data);
+            PushNotification::dispatch($this->getTokens($trip->id), $notificationMsg, $data);
 
             DriverVehicle::where('driver_id', $trip->driver_id)
                 ->where('vehicle_id', $trip->vehicle_id)
@@ -164,7 +167,8 @@ class TripLogResolver
             $devices = DeviceToken::where('tokenable_type', 'App\User')
             ->whereIn('tokenable_id', $newPickedUp)
             ->select('device_id')
-            ->pluck('device_id');
+            ->pluck('device_id')
+            ->toArray();
 
             $notificationMsg = 'Have a wonderful trip. May you be happy and safe throughout this trip.';
             $pushData = ["status" => "PICKED_UP"];
@@ -211,16 +215,18 @@ class TripLogResolver
         return 'Your status has been changed into ' . $args['status'];
     }
 
-    protected function getTokens($trip)
+    protected function getTokens($tripID)
     {
-        $tokens = array();
-        foreach ($trip->users as $user) {
-            $deviceIDs = $user->deviceTokens->pluck('device_id');
-            array_push($tokens, $deviceIDs);
-        }
-        $tokens = Arr::collapse($tokens);
+        $tokens = DeviceToken::Join('partner_trip_users', function ($join) {
+            $join->on('partner_trip_users.user_id', '=', 'device_tokens.tokenable_id')
+                ->where('device_tokens.tokenable_type', '=', 'App\User');
+            })
+            ->where('partner_trip_users.trip_id', $tripID)
+            ->select('device_tokens.device_id')
+            ->pluck('device_tokens.device_id')
+            ->toArray();
 
-        return array_filter($tokens);
+        return $tokens;
     }
 
 }

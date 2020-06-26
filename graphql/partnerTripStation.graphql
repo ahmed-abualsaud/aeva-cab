@@ -46,6 +46,5 @@ type PartnerTripStation {
   deleted_at: DateTime
   state: String
   time_from_start: String
-  shouldBeThereAt: String
   users: [User] @belongsToMany
 }

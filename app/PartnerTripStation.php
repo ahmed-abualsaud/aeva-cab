@@ -18,6 +18,7 @@ class PartnerTripStation extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'partner_trip_users', 'station_id', 'user_id');
+        return $this->belongsToMany(User::class, 'partner_trip_users', 'station_id', 'user_id')
+            ->whereNotNull('partner_trip_users.subscription_verified_at');
     }
 }

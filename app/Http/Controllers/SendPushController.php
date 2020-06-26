@@ -74,8 +74,9 @@ class SendPushController extends Controller
      *
      * @return void
      */
-    public function Dropped($request){
-        return $this->sendPushToUser($request->user_id, trans('cabResponses.push.dropped').env('CURRENCY', 'EGP').$request->payment->total.' by '.$request->payment_mode);
+    public function Dropped($request)
+    {
+        return $this->sendPushToUser($request->user_id, trans('cabResponses.push.dropped').' '.$request->payment->total.' EGP by '.$request->payment_mode);
     }
 
     /**
@@ -83,81 +84,47 @@ class SendPushController extends Controller
      *
      * @return void
      */
-    public function ProviderNotAvailable($user_id){
-
-        return $this->sendPushToUser($user_id,trans('cabResponses.push.provider_not_available'));
-    }
-
-    /**
-     * New Incoming request
-     *
-     * @return void
-     */
-    public function IncomingRequest($driver)
+    public function ProviderNotAvailable($user_id)
     {
-        return $this->sendPushToDriver($driver, trans('cabResponses.push.incoming_request'));
+        return $this->sendPushToUser($user_id, trans('cabResponses.push.provider_not_available'));
     }
     
-
-    /**
-     * Driver Documents verfied.
-     *
-     * @return void
-     */
     public function DocumentsVerfied($driver_id)
     {
         return $this->sendPushToDriver($driver_id, trans('cabResponses.push.document_verfied'));
     }
 
-    /**
-     * New Request
-     *
-     * @return void
-     */
     public function newRequest($driver_id)
     {
-        return $this->sendPushToDriver($driver_id, trans('cabResponses.push.new_request'));
+        return $this->sendPushToDriver($driver_id, trans('cabResponses.push.incoming_request'));
     }
 
-
-    /**
-     * Money added to user wallet.
-     *
-     * @return void
-     */
-    public function WalletMoney($user_id, $money){
+    public function WalletMoney($user_id, $money)
+    {
         return $this->sendPushToUser($user_id, $money.' '.trans('cabResponses.push.added_money_to_wallet'));
     }
 
-    /**
-     * Money charged from user wallet.
-     *
-     * @return void
-     */
     public function ChargedWalletMoney($user_id, $money){
         return $this->sendPushToUser($user_id, $money.' '.trans('cabResponses.push.charged_from_wallet'));
     }
 
-    /**
-     * Sending Push to a user Device.
-     *
-     * @return void
-     */
     public function sendPushToUser($user_id, $push_message){
 
         if (is_array($user_id)) {
             $devices = DeviceToken::whereIn('tokenable_id', $user_id)
             ->where('tokenable_type', 'App\User')
             ->select('device_id')
-            ->pluck('device_id');
+            ->pluck('device_id')
+            ->toArray();
         } else {
             $devices = DeviceToken::where('tokenable_id', $user_id)
                 ->where('tokenable_type', 'App\User')
                 ->select('device_id')
-                ->pluck('device_id');
+                ->pluck('device_id')
+                ->toArray();
         }
 
-        if ($devices) {
+        if (count($devices)) {
             PushNotification::dispatch($devices, $push_message);
         }
     }
@@ -173,12 +140,14 @@ class SendPushController extends Controller
             $devices = DeviceToken::whereIn('tokenable_id', $driver_id)
                 ->where('tokenable_type', 'App\Driver')
                 ->select('device_id')
-                ->pluck('device_id');
+                ->pluck('device_id')
+                ->toArray();
         } else {
             $devices = DeviceToken::where('tokenable_id', $driver_id)
                 ->where('tokenable_type', 'App\Driver')
                 ->select('device_id')
-                ->pluck('device_id');
+                ->pluck('device_id')
+                ->toArray();
         }
     	
         if (count($devices)) {

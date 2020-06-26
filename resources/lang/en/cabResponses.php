@@ -39,7 +39,6 @@ not be same as old password',
 		'request_accepted' => 'Your Ride Accepted by a Driver',
 		'arrived' => 'Driver Arrived at your Location',
 		'dropped' => 'Your ride is completed successfully. you have to pay',
-		'incoming_request' => 'New Incoming Ride',
 		'added_money_to_wallet' => ' Added to your Wallet',
 		'charged_from_wallet' => ' Charged from your Wallet',
 		'document_verfied' => 'Your Documents are verified, Now you are ready to Start your Business',
@@ -47,6 +46,6 @@ not be same as old password',
 		'user_cancelled' => 'User Cancelled the Ride',
 		'provider_cancelled' => 'Driver Cancelled the Ride',
 		'schedule_start' => 'Your schedule ride has been started',
-		'new_request' => 'New Ride Request'
+		'incoming_request' => 'New Ride Request'
 	],
 ];

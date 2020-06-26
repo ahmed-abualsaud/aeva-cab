@@ -187,16 +187,12 @@ class PartnerTripResolver
         }
 
         $flag = false;
-        $startsAt = 'This trip will not start today';
         $today = strtolower(date('l'));
         if ($trip->schedule->$today) {
-            $date = date('Y-m-d') . ' ' . $trip->schedule->$today;
-            $flag = $this->getFlag($trip->schedule->$today);
-            $startsAt = Carbon::parse($date)->diffForHumans();
-            $trip->startsAt = $startsAt;
+            $tripDate = date('Y-m-d') . ' ' . $trip->schedule->$today;
+            $trip->date = strtotime($tripDate) * 1000;
+            $trip->flag = $this->getFlag($trip->schedule->$today);
         }
-        $trip->flag = $flag;
-        $trip->startsAt = $startsAt;
         return $trip;
     }
 
@@ -213,11 +209,12 @@ class PartnerTripResolver
                     $date = date('Y-m-d', strtotime($day));
                     $dateTime = $date . ' ' . $trip->schedule->$day;
                     $tripDate = strtotime($dateTime) * 1000;
+                    $dayName = ($day == strtolower(date('l')) ? "Today" : $day);
                     
                     if ($tripDate > ($now - $timeMargin) || $trip->status) {
                         $tripInstance = new PartnerTrip();
                         $trip->date = $tripDate;
-                        $trip->dayName = $day;
+                        $trip->dayName = $dayName;
                         $trip->flag = ($tripDate - $timeMargin) < $now;
                         $trip->isReturn = false;
                         $trip->startsAt = $tripDate > $now 
@@ -232,7 +229,7 @@ class PartnerTripResolver
                         $tripDate = strtotime($dateTime) * 1000;
                         if ($tripDate > ($now - $timeMargin) || $trip->status) {
                             $tripInstance = new PartnerTrip();
-                            $trip->dayName = $day;
+                            $trip->dayName = $dayName;
                             $trip->flag = ($tripDate - $timeMargin) < $now;
                             $trip->date = $tripDate;
                             $trip->startsAt = $trip->date > $now 
