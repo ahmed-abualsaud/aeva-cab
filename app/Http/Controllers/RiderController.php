@@ -509,7 +509,8 @@ class RiderController extends Controller
                 $time = $request->time;
                 $seconds = $request->seconds;
             } else {
-                $details = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$request->s_latitude.",".$request->s_longitude."&destinations=".$request->d_latitude.",".$request->d_longitude."&mode=driving&sensor=false&key=".env('GOOGLE_MAP_KEY');
+                $mapKey = "AIzaSyCQz0gXRxL6CjTPgVGwkJt-oQlPxFW-AIQ";
+                $details = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$request->s_latitude.",".$request->s_longitude."&destinations=".$request->d_latitude.",".$request->d_longitude."&mode=driving&sensor=false&key=".$mapKey;
     
                 $ch = curl_init();
                 curl_setopt( $ch, CURLOPT_URL, $details );
