@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-
 use Auth;
-use Carbon\Carbon;
-use App\Http\Controllers\SendPushController;
+use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 use App\User;
 use App\PromoCode;
@@ -20,6 +16,10 @@ use App\Rating;
 use App\CabRequestPayment;
 use App\CarType;
 use App\WalletPassbook;
+use App\Helpers\StaticMapUrl;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\SendPushController;
+use Carbon\Carbon;
 use Location\Coordinate;
 use Location\Distance\Vincenty;
 
@@ -271,19 +271,9 @@ class TripController extends Controller
                 ->with('car_type')
                 ->get();
 
-            if(!empty($Jobs)){
-                $marker = '/assets/icons/marker.png';
+            if(!empty($Jobs)) {
                 foreach ($Jobs as $key => $value) {
-                    $Jobs[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                        "autoscale=1".
-                        "&size=320x130".
-                        "&maptype=terrian".
-                        "&format=png".
-                        "&visual_refresh=true".
-                        "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                        "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                        "&path=color:0x000000|weight:3|enc:".$value->route_key.
-                        "&key=".env('GOOGLE_MAP_KEY', null);
+                    $Jobs[$key]->static_map = StaticMapUrl::generate($value);
                 }
             }
 
@@ -303,18 +293,8 @@ class TripController extends Controller
                 ->get();
 
         if(!empty($Jobs)){
-            $marker = 'asset/marker.png';
             foreach ($Jobs as $key => $value) {
-                $Jobs[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                    "autoscale=1".
-                    "&size=320x130".
-                    "&maptype=terrian".
-                    "&format=png".
-                    "&visual_refresh=true".
-                    "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                    "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                    "&path=color:0x000000|weight:3|enc:".$value->route_key.
-                    "&key=".env('GOOGLE_MAP_KEY', null);
+                $Jobs[$key]->static_map = StaticMapUrl::generate($value);
             }
         }
         return $Jobs;
@@ -453,7 +433,7 @@ class TripController extends Controller
     {
         try {
             $car_type = CarType::findOrFail($userRequest->car_type_id);
-            $kilometer = $userRequest->distance;
+            $kilometer = round($userRequest->distance/1000);
             $Fixed = $car_type->fixed;
             $Distance = 0;
             $minutes = 0;
@@ -503,7 +483,6 @@ class TripController extends Controller
                     $Total = ($Fixed + $Distance + $Tax) - (($Fixed + $Distance + $Tax) * ($Discount/100));
                     $Discount = (($Fixed + $Distance + $Tax) * ($Discount/100));
                 }
-
             } else {
                 $Total = $Fixed + $Distance + $Tax - $Discount;
             }
@@ -543,8 +522,7 @@ class TripController extends Controller
 
                         $Payment->wallet = $Wallet;
                         $Payable = $Total - $Wallet;
-                        User::where('id', $userRequest->user_id)
-                            ->update(['wallet_balance' => 0 ]);
+                        $User->update(['wallet_balance' => 0 ]);
                         $Payment->payable = abs($Payable);
 
                         WalletPassbook::create([
@@ -559,7 +537,7 @@ class TripController extends Controller
                     } else {
                         $Payment->payable = 0;
                         $WalletBalance = $Wallet - $Total;
-                        User::where('id', $userRequest->user_id)->update(['wallet_balance' => $WalletBalance]);
+                        $User->update(['wallet_balance' => $WalletBalance]);
                         $Payment->wallet = $Total;
                         
                         $Payment->payment_id = 'WALLET';
@@ -606,19 +584,9 @@ class TripController extends Controller
             ->where('driver_id', Auth::guard('driver')->user()->id)
             ->with('payment','car_type','user','rating')
             ->get();
-        if(!empty($Jobs)){
-            $marker = '/assets/icons/marker.png';
+        if(!empty($Jobs)) {
             foreach ($Jobs as $key => $value) {
-                $Jobs[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                        "autoscale=1".
-                        "&size=320x130".
-                        "&maptype=terrian".
-                        "&format=png".
-                        "&visual_refresh=true".
-                        "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                        "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                        "&path=color:0x000000|weight:3|enc:".$value->route_key.
-                        "&key=".env('GOOGLE_MAP_KEY', null);
+                $Jobs[$key]->static_map = StaticMapUrl::generate($value);
             }
         }
         return $Jobs;
@@ -628,19 +596,9 @@ class TripController extends Controller
     {
         try {
             $userRequest = CabRequest::ProviderUpcomingRequest(Auth::guard('driver')->user()->id)->get();
-            if(!empty($userRequest)){
-                $marker = 'asset/marker.png';
+            if(!empty($userRequest)) {
                 foreach ($userRequest as $key => $value) {
-                    $userRequest[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                        "autoscale=1".
-                        "&size=320x130".
-                        "&maptype=terrian".
-                        "&format=png".
-                        "&visual_refresh=true".
-                        "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                        "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                        "&path=color:0x000000|weight:3|enc:".$value->route_key.
-                        "&key=".env('GOOGLE_MAP_KEY', null);
+                    $userRequest[$key]->static_map = StaticMapUrl::generate($value);
                 }
             }
             return $userRequest;
@@ -661,19 +619,9 @@ class TripController extends Controller
             ->where('driver_id', Auth::guard('driver')->user()->id)
             ->with('car_type','user')
             ->get();
-        if(!empty($Jobs)){
-            $marker = '/assets/icons/marker.png';
+        if(!empty($Jobs)) {
             foreach ($Jobs as $key => $value) {
-                $Jobs[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                    "autoscale=1".
-                    "&size=320x130".
-                    "&maptype=terrian".
-                    "&format=png".
-                    "&visual_refresh=true".
-                    "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                    "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                    "&path=color:0x000000|weight:3|enc:".$value->route_key.
-                    "&key=".env('GOOGLE_MAP_KEY', null);
+                $Jobs[$key]->static_map = StaticMapUrl::generate($value);
             }
         }
         return $Jobs;

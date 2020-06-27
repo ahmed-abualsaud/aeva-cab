@@ -21,6 +21,7 @@ use App\DriverVehicle;
 use App\Rating;
 use App\Http\Controllers\SendPushController;
 use App\Traits\UploadFile;
+use App\Helpers\StaticMapUrl;
 
 class RiderController extends Controller
 {
@@ -232,6 +233,20 @@ class RiderController extends Controller
             return response()->json(['message' => 'No available drivers now']);
         }
 
+        if ($request->has('route_key')) {
+            $route_key = $request->route_key;
+        } else {
+            $details = "https://maps.googleapis.com/maps/api/directions/json?origin=".$request->s_latitude.",".$request->s_longitude."&destination=".$request->d_latitude.",".$request->d_longitude."&mode=driving&key=".env('GOOGLE_MAP_KEY');
+
+            $ch = curl_init();
+            curl_setopt( $ch, CURLOPT_URL, $details );
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec( $ch );
+            curl_close( $ch );
+            $details = json_decode($result, TRUE);
+            $route_key = $details['routes'][0]['overview_polyline']['points'];
+        }
+
         try {
             $userRequest = new CabRequest;
             $userRequest->user_id = $user->id;
@@ -247,6 +262,7 @@ class RiderController extends Controller
             $userRequest->distance = $request->distance;
             $userRequest->is_track = true;
             $userRequest->assigned_at = Carbon::now();
+            $userRequest->route_key = urlencode($route_key);
 
             if($user->wallet_balance > 0) {
                 $userRequest->use_wallet = $request->use_wallet ? : 0;
@@ -457,11 +473,19 @@ class RiderController extends Controller
     public function trips() 
     {
         try {
-            return CabRequest::where('user_id', auth('user')->user()->id)
+            $userRequests = CabRequest::where('user_id', auth('user')->user()->id)
                 ->where('status','COMPLETED')
                 ->orderBy('created_at','desc')
                 ->with('payment','car_type', 'driver')
                 ->get();
+
+            if (!empty($userRequests)) {
+                foreach ($userRequests as $key => $value) {
+                    $userRequests[$key]->static_map = StaticMapUrl::generate($value);
+                }
+            }
+
+            return $userRequests;
         }
         catch (\Exception $e) {
             return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
@@ -480,19 +504,25 @@ class RiderController extends Controller
         ]);
 
         try {
-            $details = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$request->s_latitude.",".$request->s_longitude."&destinations=".$request->d_latitude.",".$request->d_longitude."&mode=driving&sensor=false&key=".env('GOOGLE_MAP_KEY', null);
-
-            $ch = curl_init();
-            curl_setopt( $ch, CURLOPT_URL, $details );
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec( $ch );
-            curl_close( $ch );
-
-            $details = json_decode($result, TRUE);
-
-            $meter = $details['rows'][0]['elements'][0]['distance']['value'];
-            $time = $details['rows'][0]['elements'][0]['duration']['text'];
-            $seconds = $details['rows'][0]['elements'][0]['duration']['value'];
+            if ($request->has('meter') && $request->has('time') && $request->has('seconds')) {
+                $meter = $request->meter;
+                $time = $request->time;
+                $seconds = $request->seconds;
+            } else {
+                $details = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$request->s_latitude.",".$request->s_longitude."&destinations=".$request->d_latitude.",".$request->d_longitude."&mode=driving&sensor=false&key=".env('GOOGLE_MAP_KEY');
+    
+                $ch = curl_init();
+                curl_setopt( $ch, CURLOPT_URL, $details );
+                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+                $result = curl_exec( $ch );
+                curl_close( $ch );
+    
+                $details = json_decode($result, TRUE);
+    
+                $meter = $details['rows'][0]['elements'][0]['distance']['value'];
+                $time = $details['rows'][0]['elements'][0]['duration']['text'];
+                $seconds = $details['rows'][0]['elements'][0]['duration']['value'];
+            }
 
             $kilometer = round($meter/1000);
             $minutes = round($seconds/60);
@@ -572,18 +602,8 @@ class RiderController extends Controller
         try {
             $userRequests = CabRequest::UserTripDetails(auth('user')->user()->id, $request->request_id)->get();
             if (!empty($userRequests)) {
-                $marker = '/assets/icons/marker.png';
                 foreach ($userRequests as $key => $value) {
-                    $userRequests[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                    "autoscale=1".
-                    "&size=320x130".
-                    "&maptype=terrian".
-                    "&format=png".
-                    "&visual_refresh=true".
-                    "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                    "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                    "&path=color:0x191919|weight:3|enc:".$value->route_key.
-                    "&key=".env('GOOGLE_MAP_KEY', null);
+                    $userRequests[$key]->static_map = StaticMapUrl::generate($value);
                 }
             }
             return $userRequests;
@@ -686,18 +706,8 @@ class RiderController extends Controller
         try {
             $userRequests = CabRequest::UserUpcomingTrips(auth('user')->user()->id)->get();
             if (!empty($userRequests)) {
-                $marker = '/assets/icons/marker.png';
                 foreach ($userRequests as $key => $value) {
-                    $userRequests[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                    "autoscale=1".
-                    "&size=320x130". 
-                    "&maptype=terrian".
-                    "&format=png".
-                    "&visual_refresh=true".
-                    "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                    "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                    "&path=color:0x000000|weight:3|enc:".$value->route_key.
-                    "&key=".env('GOOGLE_MAP_KEY', null);
+                    $userRequests[$key]->static_map = StaticMapUrl::generate($value);
                 }
             }
             return $userRequests;
@@ -721,18 +731,8 @@ class RiderController extends Controller
         try {
             $userRequests = CabRequest::UserUpcomingTripDetails(auth('user')->user()->id,$request->request_id)->get();
             if (!empty($userRequests)) {
-                $marker = '/assets/icons/marker.png';
                 foreach ($userRequests as $key => $value) {
-                    $userRequests[$key]->static_map = "https://maps.googleapis.com/maps/api/staticmap?".
-                    "autoscale=1".
-                    "&size=320x130".
-                    "&maptype=terrian".
-                    "&format=png".
-                    "&visual_refresh=true".
-                    "&markers=icon:".$marker."%7C".$value->s_latitude.",".$value->s_longitude.
-                    "&markers=icon:".$marker."%7C".$value->d_latitude.",".$value->d_longitude.
-                    "&path=color:0x000000|weight:3|enc:".$value->route_key.
-                    "&key=".env('GOOGLE_MAP_KEY', null);
+                    $userRequests[$key]->static_map = StaticMapUrl::generate($value);
                 }
             }
             return $userRequests;

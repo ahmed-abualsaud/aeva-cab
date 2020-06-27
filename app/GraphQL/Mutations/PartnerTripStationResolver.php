@@ -45,7 +45,7 @@ class PartnerTripStationResolver
 
     public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $input = collect($args)->except(['id', 'directive', 'trip_id'])->toArray();
+        $input = collect($args)->except(['id', 'directive', 'trip_id', 'state'])->toArray();
 
         try {
             $station = PartnerTripStation::findOrFail($args['id']);
@@ -54,9 +54,12 @@ class PartnerTripStationResolver
         }
 
         if (array_key_exists('state', $args) && $args['state'] && $args['state'] != $station->state) {
-            PartnerTripStation::where('state', $args['state'])
+            $input['state'] = $args['state'];
+            $updatedStation = PartnerTripStation::where('state', $args['state'])
                 ->where('trip_id', $args['trip_id'])
-                ->update(['state' => 'PICKABLE']);
+                ->where('id', '<>', $station->id)
+                ->first();
+            if ($updatedStation) $updatedStation->update(['state' => $station->state]);
         }
 
         $station->update($input);

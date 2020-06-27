@@ -12,6 +12,7 @@ class CabRequest extends Model
     use DateFilter;
 
     protected $guarded = [];
+    protected $hidden = ['route_key'];
     
     public function car_type()
     {
