@@ -7,7 +7,6 @@ class StaticMapUrl
   public static function generate($value)
   {
     return "https://maps.googleapis.com/maps/api/staticmap?".
-      "&zoom=12".
       "&size=320x130".
       "&maptype=roadmap".
       "&format=png".
