@@ -9,4 +9,9 @@ class CabRequestPayment extends Model
 
     protected $guarded = [];
     
+    public function request()
+    {
+        return $this->belongsTo('App\CabRequest');
+    }
+
 }

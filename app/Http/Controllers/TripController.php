@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -266,7 +265,7 @@ class TripController extends Controller
     public function scheduled(Request $request)
     {
         try {
-            $Jobs = CabRequest::where('driver_id', Auth::guard('driver')->user()->id)
+            $Jobs = CabRequest::where('driver_id', auth('driver')->user()->id)
                 ->where('status', 'SCHEDULED')
                 ->with('car_type')
                 ->get();
@@ -286,7 +285,7 @@ class TripController extends Controller
 
     public function history(Request $request)
     {
-        $Jobs = CabRequest::where('driver_id', Auth::guard('driver')->user()->id)
+        $Jobs = CabRequest::where('driver_id', auth('driver')->user()->id)
                 ->where('status', 'COMPLETED')
                 ->orderBy('created_at','desc')
                 ->with('payment')
@@ -308,7 +307,7 @@ class TripController extends Controller
                 return response()->json(['error' => 'Request already under progress!']);
             }
 
-            $driver_id = Auth::guard('driver')->user()->id;
+            $driver_id = auth('driver')->user()->id;
             
             $userRequest->driver_id = $driver_id;
             $userRequest->current_driver_id = $driver_id;
@@ -581,7 +580,7 @@ class TripController extends Controller
         ]); 
             
         $Jobs = CabRequest::where('id',$request->request_id)
-            ->where('driver_id', Auth::guard('driver')->user()->id)
+            ->where('driver_id', auth('driver')->user()->id)
             ->with('payment','car_type','user','rating')
             ->get();
         if(!empty($Jobs)) {
@@ -595,7 +594,7 @@ class TripController extends Controller
     public function upcoming_trips() 
     {
         try {
-            $userRequest = CabRequest::ProviderUpcomingRequest(Auth::guard('driver')->user()->id)->get();
+            $userRequest = CabRequest::ProviderUpcomingRequest(auth('driver')->user()->id)->get();
             if(!empty($userRequest)) {
                 foreach ($userRequest as $key => $value) {
                     $userRequest[$key]->static_map = StaticMapUrl::generate($value);
@@ -616,7 +615,7 @@ class TripController extends Controller
         ]);
 
         $Jobs = CabRequest::where('id',$request->request_id)
-            ->where('driver_id', Auth::guard('driver')->user()->id)
+            ->where('driver_id', auth('driver')->user()->id)
             ->with('car_type','user')
             ->get();
         if(!empty($Jobs)) {
@@ -627,16 +626,23 @@ class TripController extends Controller
         return $Jobs;
     }
 
-    public function summary(Request $request)
+    public function summary()
     {
-        try {
-            $rides = CabRequest::where('driver_id', Auth::guard('driver')->user()->id)->count();
-            $revenue = CabRequestPayment::whereHas('request', function($query) use ($request) {
-                $query->where('driver_id', Auth::guard('driver')->user()->id);
+        try { 
+            $rides = CabRequest::where('driver_id', auth('driver')->user()->id)
+                ->count();
+            $revenue = CabRequestPayment::whereHas('request', function($query) {
+                $query->where('driver_id', auth('driver')->user()->id);
             })
             ->sum('total');
-            $cancel_rides = CabRequest::where('status','CANCELLED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
-            $scheduled_rides = CabRequest::where('status', 'SCHEDULED')->where('driver_id', Auth::guard('driver')->user()->id)->count();
+
+            $cancel_rides = CabRequest::where('status','CANCELLED')
+                ->where('driver_id', auth('driver')->user()->id)
+                ->count();
+
+            $scheduled_rides = CabRequest::where('status', 'SCHEDULED')
+                ->where('driver_id', auth('driver')->user()->id)
+                ->count();
 
             return response()->json([
                 'rides' => $rides, 
@@ -646,7 +652,7 @@ class TripController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => trans('cabResponses.something_went_wrong')]);
+            return response()->json(['error' => $e->getMessage()]);
         }
 
     }

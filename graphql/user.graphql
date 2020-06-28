@@ -21,7 +21,7 @@ input UpdateUserInput {
   emergency_no: String
   title: String
   avatar: Upload
-  phone_verified_at: DateTime
+  phone_verified_at: String
 }
 
 input UserPhoneVerificationInput {
@@ -108,7 +108,7 @@ type User {
   rating: Float
   is_picked_up: Boolean
   is_arrived: Boolean
-  phone_verified_at: DateTime
+  phone_verified_at: String
   partner: Partner @belongsTo
   deviceTokens: [DeviceToken] @morphMany
 }
