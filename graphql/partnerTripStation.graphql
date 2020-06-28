@@ -7,7 +7,6 @@ input CreatePartnerTripStationInput {
   state: String
   created_by: ID
   accepted_at: DateTime
-  time_from_start: String
 }
 
 input CreatePartnerTripStationsInput {
@@ -17,13 +16,12 @@ input CreatePartnerTripStationsInput {
 
 input UpdatePartnerTripStationInput {
   id: ID! @rules(apply: ["required"])
-  # trip_id: ID
+  trip_id: ID
   name: String
   latitude: String
   longitude: String
   state: String
   accepted_at: DateTime
-  time_from_start: String
 }
 
 input GetPartnerTripStationsInput {
@@ -45,6 +43,5 @@ type PartnerTripStation {
   accepted_at: DateTime
   deleted_at: DateTime
   state: String
-  time_from_start: String
   users: [User] @belongsToMany
 }
