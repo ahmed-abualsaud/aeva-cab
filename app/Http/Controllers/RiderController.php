@@ -2,11 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
-
 use App\Card;
 use App\User;
 use App\Driver;
@@ -22,10 +17,13 @@ use App\Rating;
 use App\Http\Controllers\SendPushController;
 use App\Traits\UploadFile;
 use App\Helpers\StaticMapUrl;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Validator;
 
 class RiderController extends Controller
 {
-
     use UploadFile;
 
     public $tax_percentage = 14;
