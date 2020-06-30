@@ -759,7 +759,7 @@ class RiderController extends Controller
             $latitude = $request->latitude;
             $longitude = $request->longitude;
 
-            if ($request->has('car_type')) {
+            if ($request->has('serice_type') && !empty($request->service_type)) {
                 $car_type = $request->service_type;
 
                 $drivers = Driver::where('status', 'APPROVED')
@@ -769,11 +769,9 @@ class RiderController extends Controller
                         $query->where('status', 'ACTIVE');
                     })
                     ->get();
-
             } else {
-
                 $drivers = Driver::where('status', 'APPROVED')
-                    ->whereRaw("(1.609344 * 3956 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $this->driver_search_radius")
+                    // ->whereRaw("(1.609344 * 3956 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $this->driver_search_radius")
                     ->whereHas('vehicle', function ($query) {
                         $query->where('status','ACTIVE');
                     })
