@@ -555,10 +555,10 @@ class RiderController extends Controller
             $longitude = $request->s_longitude;
 
             $drivers = Driver::where('status', 'APPROVED')
-                ->whereRaw("(1.609344 * 3956 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $this->driver_search_radius")
+                // ->whereRaw("(1.609344 * 3956 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $this->driver_search_radius")
                 ->whereHas('vehicles', function($query) use ($car_type) { 
                     $query->where('car_type_id', $car_type); 
-                    $query->where('status','ACTIVE');
+                    $query->where('status', 'ACTIVE');
                 })
                 ->get();
 
@@ -763,7 +763,7 @@ class RiderController extends Controller
                 $car_type = $request->service_type;
 
                 $drivers = Driver::where('status', 'APPROVED')
-                    ->whereRaw("(1.609344 * 3956 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $this->driver_search_radius")
+                    // ->whereRaw("(1.609344 * 3956 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $this->driver_search_radius")
                     ->whereHas('vehicles', function($query) use ($car_type) { 
                         $query->where('car_type_id', $car_type); 
                         $query->where('status', 'ACTIVE');

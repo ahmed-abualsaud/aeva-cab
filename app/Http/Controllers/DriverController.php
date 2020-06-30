@@ -9,14 +9,13 @@ use App\Http\Controllers\Controller;
 // use App\Events\DriverLocationUpdated; 
 
 use Auth;
-use Exception;
-use Carbon\Carbon;
-
 use App\Driver;
 use App\CabRequest;
 use App\DriverVehicle;
 use App\Fleet;
 use App\CabRequestFilter;
+use Carbon\Carbon;
+use Exception;
 
 class DriverController extends Controller
 {
@@ -157,26 +156,10 @@ class DriverController extends Controller
         ]);
 
         $driver = Auth::guard('driver')->user();
-        
-        if($driver->vehicle) {
-            
-            $driver_id = $driver->id;
-            $OfflineOpenRequest = CabRequestFilter::with(['request.driver','request'])
-                ->where('driver_id', $driver_id)
-                ->whereHas('request', function($query) use ($driver_id){
-                    $query->where('status','SEARCHING');
-                    $query->where('current_driver_id','<>',$driver_id);
-                    $query->orWhereNull('current_driver_id');
-                    })->pluck('id');
 
-            if(count($OfflineOpenRequest)>0) {
-                CabRequestFilter::whereIn('id',$OfflineOpenRequest)->delete();
-            }   
-           
-            $driver->vehicle->update(['status' => $request->service_status]);
-        } else {
-            return response()->json(['error' => 'You account has not been approved for driving']);
-        }
+        CabRequestFilter::where('driver_id', $driver->id)->delete();
+        DriverVehicle::where('driver_id', $driver->id)
+            ->update(['status' => $request->service_status]);
 
         return $driver;
     }

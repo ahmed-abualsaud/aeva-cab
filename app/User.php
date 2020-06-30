@@ -62,5 +62,14 @@ class User extends Authenticatable implements JWTSubject
     {
         $this->attributes['name'] = ucwords($value);
     }
+
+    public function scopeFilterByPartner($query, $args) 
+    {
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            $query->where('partner_id', $args['partner_id']);
+        }
+
+        return $query->orderBy('created_at', 'DESC');
+    }
 }
  
