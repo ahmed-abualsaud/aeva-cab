@@ -211,6 +211,7 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   users(partner_id: ID): [User] @paginate(scopes: ["filterByPartner"])
   partnerUsers(partner_id: ID!): [User] 
     @field(resolver: "PartnerResolver@users")
+  user(id: ID @eq): User @find
 
   # Fleet
   fleets: [Fleet] @paginate
