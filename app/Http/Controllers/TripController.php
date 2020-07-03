@@ -39,7 +39,7 @@ class TripController extends Controller
                 ->join('cab_request_filters', 'cab_request_filters.request_id', 'cab_requests.id')
                 ->where('cab_request_filters.driver_id', $driver->id)
                 ->whereNotIn('cab_requests.status', ['CANCELLED', 'SCHEDULED'])
-                ->selectRaw("cab_requests.*, 180 - (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(cab_requests.assigned_at)) AS time_left_to_respond");
+                ->selectRaw("cab_requests.*, 180 - (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(CONVERT_TZ(cab_requests.assigned_at, '+00:00', '+02:00'))) AS time_left_to_respond");
             
             $latestRequest = [];
             
