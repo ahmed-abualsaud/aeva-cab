@@ -384,7 +384,7 @@ class RiderController extends Controller
 
             $requestCheck = CabRequest::where('user_id', $user_id)
                 ->where('status', 'SEARCHING')
-                ->whereRaw("180 - (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(CONVERT_TZ(assigned_at, 'Africa/Cairo', 'SYSTEM'))) < 0");
+                ->whereRaw("180 - (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(assigned_at)) < 0");
 
             if ($requestCheck->count()) {
                 $requestCheck->update(['status' => 'CANCELLED']);
