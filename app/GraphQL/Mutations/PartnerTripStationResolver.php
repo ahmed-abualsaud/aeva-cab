@@ -5,6 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\PartnerTripUser;
 use App\PartnerTripStation;
 use App\Exceptions\CustomException;
+use Carbon\Carbon;
 use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -65,6 +66,34 @@ class PartnerTripStationResolver
         $station->update($input);
 
         return $station;
+    }
+
+    public function updateRoute($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        try {
+            $cases = []; $ids = []; $distance = []; $duration = [];
+
+            foreach ($args['stations'] as $value) {
+                $id = (int) $value['id'];
+                $cases[] = "WHEN {$id} then ?";
+                $distance[] = $value['distance'];
+                $duration[] = $value['duration'];
+                $ids[] = $id;
+            }
+
+            $ids = implode(',', $ids);
+            $cases = implode(' ', $cases);
+            $params = array_merge($distance, $duration);
+            $params[] = Carbon::now();
+
+            return \DB::update("UPDATE `partner_trip_stations` SET 
+                `distance` = CASE `id` {$cases} END, 
+                `duration` = CASE `id` {$cases} END, 
+                `updated_at` = ? 
+                WHERE `id` in ({$ids})", $params);
+        } catch (\Exception $e) {
+            throw new \Exception('Could not able to update. '.$e->getMessage());
+        }
     }
 
     public function assignUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)

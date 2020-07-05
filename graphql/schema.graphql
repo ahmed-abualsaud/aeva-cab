@@ -152,9 +152,11 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   # Trip Station
   createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
   createPartnerTripStations(input: CreatePartnerTripStationsInput! @spread): Boolean 
-    @field(resolver: "PartnerTripStationResolver@create") 
+    @field(resolver: "PartnerTripStationResolver@create")
   updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation 
     @field(resolver: "PartnerTripStationResolver@update")
+  updateStationsRoute(input: UpdateStationsRouteInput! @spread): Boolean 
+    @field(resolver: "PartnerTripStationResolver@updateRoute")
   deletePartnerTripStation(id: ID!): PartnerTripStation @delete
   restorePartnerTripStation(id: ID!): PartnerTripStation @restore
   acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): PartnerTripStation

@@ -17,9 +17,10 @@ class CreatePartnerTripStationsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->nullable();
             $table->double('latitude', 15, 8);
-            $table->double('longitude', 15, 8);
+            $table->double('longitude', 15, 8); 
             $table->unsignedBigInteger('trip_id');
-            $table->time('time_from_start')->nullable();
+            $table->integer('duration')->nullable();
+            $table->integer('distance')->nullable();
             $table->timestamp('accepted_at')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->string('state')->default('PENDING');
