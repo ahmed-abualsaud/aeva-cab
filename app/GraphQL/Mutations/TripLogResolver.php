@@ -12,7 +12,7 @@ use App\DriverVehicle;
 use App\Jobs\PushNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
-// use App\Events\DriverLocationUpdated; 
+use App\Events\DriverLocationUpdated; 
 // use App\Events\TripLogPost; 
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -194,10 +194,9 @@ class TripLogResolver
             throw new \Exception('Driver location has not updated. ' . $e->getMessage());
         }
 
-        // Broadcast driver location
-        // if (array_key_exists('trip_id', $args) && $args['trip_id']) {
-            // broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
-        // }
+        if (array_key_exists('trip_id', $args) && $args['trip_id']) {
+            broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
+        }
 
         return 'Driver location has been updated successfully.';
     }
