@@ -6,9 +6,9 @@ class Otp
 {
     public static function send($to, $message)
     {
-        $OTP_USERNAME = env('OTP_USERNAME');
-        $OTP_PASSWORD = env('OTP_PASSWORD');
-        $OTP_SENDER_ID = env('OTP_SENDER_ID');
+        $OTP_USERNAME = config('custom.otp_username');
+        $OTP_PASSWORD = config('custom.otp_password');
+        $OTP_SENDER_ID = config('custom.otp_sender_id');
         
         $ch = curl_init();
         $msg = curl_escape($ch, $message);

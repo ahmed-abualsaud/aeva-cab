@@ -6,7 +6,7 @@ class FirebasePushNotification
 {
     public static function push($token, $title, $message, $data = false)
     {
-        $API_ACCESS_KEY = env('FIREBASE_ACCESS_KEY');
+        $API_ACCESS_KEY = config('custom.firebase_access_key');
         
         if ( $data == false ) {
             $fields = [

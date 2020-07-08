@@ -12,7 +12,7 @@ trait UploadFile
             $fileHash = str_replace('.' . $file->extension(), '', $file->hashName());
             $fileName = $fileHash . '.' . $file->getClientOriginalExtension();
             $uploadedFile = Storage::disk('azure')->putFileAs($folder, $file, $fileName);
-            $url = env('AZURE_STORAGE_URL') . '/' . $uploadedFile;
+            $url = config('custom.azure_storage_url') . '/' . $uploadedFile;
         } catch(\Exception $e) {
             throw new \Exception('We could not able to upload this file. ' . $e->getMessage());
         }

@@ -234,7 +234,7 @@ class RiderController extends Controller
         if ($request->has('route_key')) {
             $route_key = $request->route_key;
         } else {
-            $details = "https://maps.googleapis.com/maps/api/directions/json?origin=".$request->s_latitude.",".$request->s_longitude."&destination=".$request->d_latitude.",".$request->d_longitude."&mode=driving&key=".env('GOOGLE_MAP_KEY');
+            $details = "https://maps.googleapis.com/maps/api/directions/json?origin=".$request->s_latitude.",".$request->s_longitude."&destination=".$request->d_latitude.",".$request->d_longitude."&mode=driving&key=".config('custom.google_dynamic_map_key');
 
             $ch = curl_init();
             curl_setopt( $ch, CURLOPT_URL, $details );
@@ -507,8 +507,7 @@ class RiderController extends Controller
                 $time = $request->time;
                 $seconds = $request->seconds;
             } else {
-                $mapKey = "AIzaSyCQz0gXRxL6CjTPgVGwkJt-oQlPxFW-AIQ";
-                $details = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$request->s_latitude.",".$request->s_longitude."&destinations=".$request->d_latitude.",".$request->d_longitude."&mode=driving&sensor=false&key=".$mapKey;
+                $details = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=".$request->s_latitude.",".$request->s_longitude."&destinations=".$request->d_latitude.",".$request->d_longitude."&mode=driving&sensor=false&key=".config('custom.google_dynamic_map_key');
     
                 $ch = curl_init();
                 curl_setopt( $ch, CURLOPT_URL, $details );
