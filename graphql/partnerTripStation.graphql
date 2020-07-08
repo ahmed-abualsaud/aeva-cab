@@ -5,8 +5,11 @@ input CreatePartnerTripStationInput {
   longitude: String! @rules(apply: ["required"])
   trip_id: ID
   state: String
+  distance: Int
+  duration: Int
   created_by: ID
   accepted_at: DateTime
+  deleted_at: DateTime
 } 
 
 input CreatePartnerTripStationsInput {

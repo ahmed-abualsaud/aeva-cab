@@ -33,7 +33,8 @@ class PartnerTripStationResolver
                 $arr['longitude'] = $station['longitude'];
                 $arr['state'] = $station['state'];
                 $arr['accepted_at'] = $station['accepted_at'];
-                $arr['time_from_start'] = $station['time_from_start'];
+                $arr['duration'] = $station['duration'];
+                $arr['distance'] = $station['distance'];
                 array_push($data, $arr);
             } 
             PartnerTripStation::insert($data);
