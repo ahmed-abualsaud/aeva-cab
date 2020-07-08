@@ -33,16 +33,15 @@ class PartnerTripStationResolver
                 $arr['longitude'] = $station['longitude'];
                 $arr['state'] = $station['state'];
                 $arr['accepted_at'] = $station['accepted_at'];
-                $arr['duration'] = $station['duration'];
-                $arr['distance'] = $station['distance'];
                 array_push($data, $arr);
             } 
             PartnerTripStation::insert($data);
         } catch (\Exception $e) {
             throw new \Exception('We could not able to insert these stations.' . $e->getMessage());
         }
-    
-        return true;
+
+        return PartnerTripStation::where('trip_id', $args['trip_id'])
+            ->get();
     }
 
     public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
