@@ -212,16 +212,15 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "PartnerTripResolver@userTripsByPartner")
   users(partner_id: ID): [User] @paginate(scopes: ["filterByPartner"])
   partnerUsers(partner_id: ID!): [User] 
-    @field(resolver: "PartnerResolver@users")
+    @field(resolver: "PartnerResolver@users") 
   user(id: ID @eq): User @find
 
   # Fleet
   fleets: [Fleet] @paginate
   fleet(id: ID @eq): Fleet @find
-  fleetDrivers(fleet_id: ID @eq): [Driver] @paginate
 
   # Driver
-  drivers: [Driver] @all
+  drivers(fleet_id: ID): [Driver] @paginate(scopes: ["filterByFleet"])
   driver(id: ID @eq): Driver @find
   driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
     @field(resolver: "PartnerTripResolver@driverLiveTrip")

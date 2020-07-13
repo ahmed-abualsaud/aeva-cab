@@ -40,7 +40,7 @@ type Driver {
   status: Boolean
   city: String
   vehicle: String
-  fleet: Fleet! @belongsTo
+  fleet: Fleet @belongsTo
   trips: [PartnerTrip] @hasMany
   vehicles: [Vehicle] @hasMany
   deviceTokens: [DeviceToken] @morphMany

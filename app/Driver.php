@@ -105,4 +105,13 @@ class Driver extends Authenticatable implements JWTSubject
     {
         $this->attributes['name'] = ucwords($value);
     }
+
+    public function scopeFilterByFleet($query, $args) 
+    {
+        if (array_key_exists('fleet_id', $args) && $args['fleet_id']) {
+            $query->where('fleet_id', $args['fleet_id']);
+        }
+
+        return $query->orderBy('created_at', 'DESC');
+    }
 } 
