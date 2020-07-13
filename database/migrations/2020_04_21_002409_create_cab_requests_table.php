@@ -62,6 +62,8 @@ class CreateCabRequestsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            $table->index('created_at'); 
+
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
             $table->foreign('current_driver_id')->references('id')->on('drivers')->onDelete('cascade');

@@ -70,7 +70,7 @@ type PartnerTrip {
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
-  schedule: PartnerTripSchedule @hasOne
+  schedule: PartnerTripSchedule
   stations: [PartnerTripStation] @hasMany
   users: [User] @hasMany
   log_id: String

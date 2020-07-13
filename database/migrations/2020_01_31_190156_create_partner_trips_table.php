@@ -28,6 +28,8 @@ class CreatePartnerTripsTable extends Migration
             $table->string('log_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['start_date', 'end_date']);
             
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('cascade');
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');

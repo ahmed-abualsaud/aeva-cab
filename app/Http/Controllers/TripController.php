@@ -198,7 +198,7 @@ class TripController extends Controller
 
             CabRequestFilter::where('request_id', $userRequest->id)->delete();
 
-            DriverVehicle::where('driver_id',$userRequest->driver_id)
+            DriverVehicle::where('driver_id', $userRequest->driver_id)
                 ->update(['status' =>'ACTIVE', 'trip_type' => null, 'trip_id' => null]);
 
             (new SendPushController)->ProviderCancellRide($userRequest);

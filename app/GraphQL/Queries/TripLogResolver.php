@@ -79,7 +79,7 @@ class TripLogResolver
     public function arrivedAndPickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $users = PartnerTripUser::selectRaw('
-            users.id, users.name, users.email, users.phone, users.avatar, 
+            users.id, users.name, users.phone, users.avatar, 
             (CASE WHEN isPickedLog.status IS NULL THEN 0 ELSE 1 END) AS is_picked_up, 
             (CASE WHEN isArrivedLog.status IS NULL THEN 0 ELSE 1 END) AS is_arrived
         ')
@@ -96,9 +96,27 @@ class TripLogResolver
                 function ($join) use ($args) {
                     $join->on('partner_trip_users.user_id', '=', 'isArrivedLog.user_id')
                         ->where('isArrivedLog.log_id', $args['log_id'])
-                        ->where('isArrivedLog.status', 'USER_ARRIVED');
+                        ->where('isArrivedLog.status', 'ARRIVED');
                 }
             )
+            ->get();
+
+        return $users;
+    }
+
+    public function arrivedAndPickedUsersLite($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        $users = PartnerTripUser::select(['users.id', 'users.name', 'users.avatar'])
+            ->where('station_id', $args['station_id'])
+            ->join('users', 'users.id', '=', 'partner_trip_users.user_id')
+            ->addSelect(['is_picked_up' => TripLog::select('status')
+                ->whereColumn('user_id', 'partner_trip_users.user_id')
+                ->where('status', 'PICKED_UP')
+            ])
+            ->addSelect(['is_arrived' => TripLog::select('status')
+                ->whereColumn('user_id', 'partner_trip_users.user_id')
+                ->where('status', 'ARRIVED')
+            ])
             ->get();
 
         return $users;
@@ -111,7 +129,7 @@ class TripLogResolver
             ->leftJoin('trip_logs', function ($join) use ($args) {
                 $join->on('users.id', '=', 'trip_logs.user_id')
                     ->where('trip_logs.log_id', $args['log_id'])
-                    ->where('status', 'USER_ARRIVED');
+                    ->where('status', 'ARRIVED');
             })
             ->selectRaw('users.*, (CASE WHEN trip_logs.status IS NULL THEN 0 ELSE 1 END) AS is_arrived
             ')

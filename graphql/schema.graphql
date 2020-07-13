@@ -315,6 +315,8 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "TripLogResolver@pickedUsers")
   getArrivedAndPickedUsers(log_id: String!, station_id: ID!): [User]
     @field(resolver: "TripLogResolver@arrivedAndPickedUsers")
+  getArrivedAndPickedUsersLite(log_id: String!, station_id: ID!): [User]
+    @field(resolver: "TripLogResolver@arrivedAndPickedUsersLite")
   tripLog(log_id: String!): [TripLogResponse]
     @field(resolver: "TripLogResolver@tripLog")
   tripLogHistory(trip_id: ID! period: String): [TripLogHistoryResponse]

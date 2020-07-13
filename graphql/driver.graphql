@@ -1,12 +1,14 @@
 input CreateDriverInput {
   name: String! @rules(apply: ["required"])
-  fleet_id: ID! @rules(apply: ["required"])
+  fleet_id: ID
   email: String @rules(apply: ["email", "unique:drivers,email"])
   phone: String @rules(apply: ["unique:drivers,phone"])
   password: String
   license_expires_on: Date
   avatar: Upload
-  status: String
+  city: String
+  vehicle: String
+  status: Boolean
 }
 
 input UpdateDriverInput {
@@ -17,7 +19,7 @@ input UpdateDriverInput {
   fleet_id: ID
   license_expires_on: Date
   avatar: Upload
-  status: String
+  status: Boolean
 }
 
 type DriverAuthPayload {
@@ -35,7 +37,9 @@ type Driver {
   latitude: String
   longitude: String
   rating: Float
-  status: String
+  status: Boolean
+  city: String
+  vehicle: String
   fleet: Fleet! @belongsTo
   trips: [PartnerTrip] @hasMany
   vehicles: [Vehicle] @hasMany

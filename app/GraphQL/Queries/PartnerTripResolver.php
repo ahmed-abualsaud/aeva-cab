@@ -188,6 +188,7 @@ class PartnerTripResolver
 
         $flag = false;
         $today = strtolower(date('l'));
+        $trip->schedule = $trip->schedule;
         if ($trip->schedule->$today) {
             $tripDate = date('Y-m-d') . ' ' . $trip->schedule->$today;
             $trip->date = strtotime($tripDate) * 1000;

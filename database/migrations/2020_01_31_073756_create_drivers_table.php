@@ -21,11 +21,13 @@ class CreateDriversTable extends Migration
             $table->string('phone')->unique()->nullable();
             $table->date('license_expires_on')->nullable();
             $table->string('avatar')->nullable();
+            $table->string('city')->nullable();
+            $table->string('vehicle')->nullable();
             $table->unsignedBigInteger('fleet_id')->nullable();
             $table->double('latitude', 15, 8)->nullable();
             $table->double('longitude', 15, 8)->nullable();
             $table->decimal('rating', 4, 2)->default(5);
-            $table->string('status')->nullable();
+            $table->boolean('status')->default(0);
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
             $table->timestamps();

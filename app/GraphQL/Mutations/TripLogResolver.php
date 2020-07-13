@@ -13,7 +13,7 @@ use App\Jobs\PushNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use App\Events\DriverLocationUpdated; 
-// use App\Events\TripLogPost; 
+use App\Events\TripLogPost; 
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -49,6 +49,8 @@ class TripLogResolver
         } catch (ModelNotFoundException $e) {
             throw new \Exception('We could not find a trip with the provided ID.');
         }
+
+        $this->broadcastTripLog($input['status'], $args['trip_id'], $logID);
 
         return $trip;
     }
@@ -87,8 +89,10 @@ class TripLogResolver
         }
         
         $notificationMsg = $user->name . ' has arrived';
-        $data = ["status" => "USER_ARRIVED"];
+        $data = ["status" => "ARRIVED"];
         PushNotification::dispatch($token, $notificationMsg, $data);
+
+        $this->broadcastTripLog($input['status'], $args['trip_id'], $input['log_id'], $user->name);
 
         return "Notification has been sent to the driver";
     }
@@ -120,15 +124,7 @@ class TripLogResolver
             throw new \Exception('We could not find a trip with the provided ID.');
         }
 
-        // $log = [
-        //     "created_at" => Carbon::now(),
-        //     "status" => $input['status'],
-        //     "latitude" => $args['latitude'],
-        //     "longitude" => $args['longitude'],
-        //     "user" => null
-        // ];
-
-        // broadcast(new TripLogPost($log, 'business.'.$args['trip_id']))->toOthers();
+        $this->broadcastTripLog($input);
 
         return 'Trip has ended.';
     }
@@ -165,14 +161,22 @@ class TripLogResolver
 
         if ($newPickedUp) {
             $devices = DeviceToken::where('tokenable_type', 'App\User')
-            ->whereIn('tokenable_id', $newPickedUp)
-            ->select('device_id')
-            ->pluck('device_id')
-            ->toArray();
+                ->whereIn('tokenable_id', $newPickedUp)
+                ->select('device_id')
+                ->pluck('device_id')
+                ->toArray();
 
             $notificationMsg = 'Have a wonderful trip. May you be happy and safe throughout this trip.';
             $pushData = ["status" => "PICKED_UP"];
             PushNotification::dispatch($devices, $notificationMsg, $pushData);
+
+            $usernames = User::select('name')
+                ->whereIn('id', $newPickedUp)
+                ->pluck('name')
+                ->toArray();
+
+            $this->broadcastTripLog('PICKED_UP', $args['trip_id'], implode(', ', $usernames));
+
         }
 
         $tripLogs->delete();
@@ -205,11 +209,15 @@ class TripLogResolver
     {
         try {
             $tripLog = TripLog::where('log_id', $args['log_id'])
-                ->where('user_id', $args['user_id'])->firstOrFail();
+                ->where('user_id', $args['user_id'])
+                ->firstOrFail();
             $tripLog->update(['status' => $args['status'], 'updated_at' => now()]);
         } catch (ModelNotFoundException $e) {
             throw new \Exception('We could not find a trip log with the provided log ID.' . $e->getMessage());
         }
+
+        $user = User::select('name')->find($args['user_id']);
+        $this->broadcastTripLog($input['status'], $args['trip_id'], $user->name);
         
         return 'Your status has been changed into ' . $args['status'];
     }
@@ -226,6 +234,22 @@ class TripLogResolver
             ->toArray();
 
         return $tokens;
+    }
+
+    protected function broadcastTripLog($input, $user = null)
+    {
+        $log = [
+            "id" => $input['log_id'],
+            "post" => [
+                "created_at" => date("Y-m-d H:i:s"),
+                "status" => $input['status'],
+                "latitude" => $input['latitude'],
+                "longitude" => $input['longitude'],
+                "user" => $user
+            ]
+        ];
+
+        broadcast(new TripLogPost($log, 'business.'.$input['trip_id']))->toOthers();
     }
 
 }
