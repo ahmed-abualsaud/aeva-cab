@@ -181,6 +181,8 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
     @field(resolver: "TripLogResolver@startTrip")
   updateDriverLocation(input: UpdateDriverLocationInput! @spread): String 
     @field(resolver: "TripLogResolver@updateDriverLocation")
+  updateUserLocation(input: UpdateUserLocationInput! @spread): String 
+    @field(resolver: "TripLogResolver@updateUserLocation")
   nearYou(input: NearYouInput! @spread): String
     @field(resolver: "TripLogResolver@nearYou")
   userArrived(input: UserArrivedInput! @spread): String
