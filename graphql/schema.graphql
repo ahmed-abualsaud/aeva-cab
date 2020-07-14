@@ -23,6 +23,8 @@ type Mutation {
     @field(resolver: "ResetPasswordResolver")
 
   # Driver Auth
+  createDriver(input: CreateDriverInput! @spread): Driver 
+    @field(resolver: "DriverResolver@create")
   driverLogin(input: LoginInput! @spread): DriverAuthPayload! 
     @field(resolver: "DriverResolver@login")
 
@@ -48,8 +50,6 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   deleteFleet(id: ID!): Fleet @delete
 
   # Driver
-  createDriver(input: CreateDriverInput! @spread): Driver 
-    @field(resolver: "DriverResolver@create")
   updateDriver(input: UpdateDriverInput! @spread): Driver 
     @field(resolver: "DriverResolver@update") @updateDriverValidation
   deleteDriver(id: ID!): Driver @delete
