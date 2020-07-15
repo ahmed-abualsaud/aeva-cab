@@ -12,8 +12,7 @@ use App\DriverVehicle;
 use App\Jobs\PushNotification;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
-use App\Events\DriverLocationUpdated; 
-use App\Events\UserLocationUpdated; 
+use App\Events\DriverLocationUpdated;
 use App\Events\TripLogPost; 
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -204,18 +203,6 @@ class TripLogResolver
         }
 
         return 'Driver location has been updated successfully.';
-    }
-
-    public function updateUserLocation($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
-    {
-        $location = [
-            'latitude' => $args['latitude'],
-            'longitude' => $args['longitude']
-        ];
-
-        broadcast(new UserLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
-
-        return 'User location has been updated successfully.';
     }
 
     public function changeTripUserStatus($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
