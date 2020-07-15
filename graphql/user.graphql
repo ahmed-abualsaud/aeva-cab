@@ -109,6 +109,8 @@ type User {
   is_picked_up: Boolean
   is_arrived: Boolean
   phone_verified_at: String
+  created_at: String
+  updated_at: String
   partner: Partner @belongsTo
   deviceTokens: [DeviceToken] @morphMany
 }

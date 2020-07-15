@@ -7,10 +7,11 @@ use App\DeviceToken;
 use App\DriverVehicle;
 use App\Traits\UploadFile;
 use Illuminate\Support\Arr;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Exceptions\CustomException;
+use Illuminate\Support\Facades\Hash;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DriverResolver 
 {
@@ -46,7 +47,7 @@ class DriverResolver
         try {
             $driver = Driver::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided driver ID is not found.');
+            throw new CustomException('The provided driver ID is not found.');
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -74,7 +75,7 @@ class DriverResolver
         $credentials["password"] = $args['password'];
 
         if (! $token = auth('driver')->attempt($credentials)) {
-            throw new \Exception('The provided authentication credentials are invalid.');
+            throw new CustomException('The provided authentication credentials are invalid.');
         }
 
         $driver = auth('driver')->user();
@@ -148,7 +149,7 @@ class DriverResolver
         try {
             DriverVehicle::insert($data);
         } catch (\Exception $e) {
-            throw new \Exception('Assignment faild.' . $e->getMessage());
+            throw new CustomException('Assignment faild.' . $e->getMessage());
         }
  
         return [
@@ -164,7 +165,7 @@ class DriverResolver
                 ->whereIn('vehicle_id', $args['vehicle_id'])
                 ->delete();
         } catch (\Exception $e) {
-            throw new \Exception('Assignment cancellation faild.' . $e->getMessage());
+            throw new CustomException('Assignment cancellation faild.' . $e->getMessage());
         }
 
         return [

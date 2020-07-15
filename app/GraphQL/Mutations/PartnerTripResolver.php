@@ -3,19 +3,19 @@
 namespace App\GraphQL\Mutations;
 
 use App\User;
-use App\PartnerUser;
-use App\PartnerTrip;
-use App\PartnerTripUser;
-use App\PartnerTripSchedule; 
 use App\Jobs\Otp;
+use App\PartnerTrip;
+use App\PartnerUser;
+use App\PartnerTripUser;
 use App\Mail\DefaultMail;
-use App\Exceptions\CustomException;
-use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str; 
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\PartnerTripSchedule; 
+use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Mail;
+use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PartnerTripResolver
 {
@@ -51,7 +51,7 @@ class PartnerTripResolver
             $trip = PartnerTrip::findOrFail($args['id']);
             $trip->update($tripInput);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('Trip with the provided ID is not found.');
+            throw new CustomException('Trip with the provided ID is not found.');
         }
         
         $scheduleInput = $this->scheduleInput($rootValue, $args, $context, $resolveInfo);
@@ -80,7 +80,7 @@ class PartnerTripResolver
         try {
             PartnerTripUser::insert($data);
         } catch (\Exception $e) {
-            throw new \Exception('Each user is allowed to subscribe for a trip once.');
+            throw new CustomException('Each user is allowed to subscribe for a trip once.');
         }
 
         $users = User::select('phone', 'email')

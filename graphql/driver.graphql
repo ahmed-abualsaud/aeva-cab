@@ -40,6 +40,8 @@ type Driver {
   status: Boolean
   city: String
   vehicle: String
+  created_at: String
+  updated_at: String
   fleet: Fleet @belongsTo
   trips: [PartnerTrip] @hasMany
   vehicles: [Vehicle] @hasMany

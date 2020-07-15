@@ -179,7 +179,7 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   # Trip Log
   startTrip(input: StartTripInput! @spread): PartnerTrip 
     @field(resolver: "TripLogResolver@startTrip")
-  updateDriverLocation(input: UpdateDriverLocationInput! @spread): String 
+  updateDriverLocation(input: UpdateDriverLocationInput! @spread): Boolean 
     @field(resolver: "TripLogResolver@updateDriverLocation")
   nearYou(input: NearYouInput! @spread): String
     @field(resolver: "TripLogResolver@nearYou")

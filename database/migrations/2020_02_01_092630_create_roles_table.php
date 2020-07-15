@@ -24,7 +24,7 @@ class CreateRolesTable extends Migration
             $table->string('avatar')->nullable();
             $table->boolean('dashboard')->default(0);
             $table->boolean('roles')->default(0);
-            $table->boolean('archive')->default(0);
+            $table->boolean('users')->default(0);
             $table->boolean('communication')->default(0);
             $table->boolean('promocodes')->default(0);
             $table->boolean('business')->default(0);
@@ -32,8 +32,7 @@ class CreateRolesTable extends Migration
             $table->boolean('ondemand')->default(0);
             $table->boolean('cab')->default(0);
             $table->boolean('fleet')->default(0);
-            $table->boolean('payment')->default(0); 
-            $table->boolean('cancellation')->default(0);
+            $table->boolean('payment')->default(0);
             $table->string('status')->nullable();
             $table->timestamps();
             $table->softDeletes();

@@ -2,11 +2,12 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\OndemandRequest;
-use App\OndemandRequestVehicle;
-use App\OndemandRequestLine;
 use App\DeviceToken;
+use App\OndemandRequest;
+use App\OndemandRequestLine;
 use App\Jobs\PushNotification;
+use App\OndemandRequestVehicle;
+use App\Exceptions\CustomException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -53,7 +54,7 @@ class OndemandRequestResolver
             } 
             $lines = OndemandRequestLine::insert($lines_data);
         } catch (\Exception $e) {
-            throw new \Exception('We could not able to create this request.' . $e->getMessage());
+            throw new CustomException('We could not able to create this request.' . $e->getMessage());
         }
         
         return $request;
@@ -66,13 +67,13 @@ class OndemandRequestResolver
         try {
             $request = OndemandRequest::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided request ID is not found.');
+            throw new CustomException('The provided request ID is not found.');
         }
 
         if (array_key_exists('status', $args) && $args['status']) { 
             
             if ($args['status'] === 'CANCELLED' && $request->status !== 'PENDING') {
-                throw new \Exception('This request can not be cancelled.');
+                throw new CustomException('This request can not be cancelled.');
             }
 
             if ($args['status'] !== 'CANCELLED') {

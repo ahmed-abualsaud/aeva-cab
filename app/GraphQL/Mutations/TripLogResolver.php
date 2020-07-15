@@ -5,15 +5,16 @@ namespace App\GraphQL\Mutations;
 use App\User;
 use App\Driver;
 use App\TripLog;
-use App\PartnerTrip;
-use App\DeviceToken;
-use App\PartnerTripUser;
-use App\DriverVehicle;
-use App\Jobs\PushNotification;
 use Carbon\Carbon;
+use App\DeviceToken;
+use App\PartnerTrip;
+use App\DriverVehicle;
+use App\PartnerTripUser;
 use Illuminate\Support\Arr;
-use App\Events\DriverLocationUpdated;
 use App\Events\TripLogPost; 
+use App\Jobs\PushNotification;
+use App\Exceptions\CustomException;
+use App\Events\DriverLocationUpdated;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -26,7 +27,7 @@ class TripLogResolver
         try {
             $trip = PartnerTrip::findOrFail($args['trip_id']);
 
-            if ($trip->status) throw new \Exception('Trip has already started.');
+            if ($trip->status) throw new CustomException('Trip has already started.');
 
             $logID = uniqid() . 'T' . $args['trip_id'];
 
@@ -47,7 +48,7 @@ class TripLogResolver
             $input['log_id'] = $logID;
             TripLog::create($input);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('We could not find a trip with the provided ID.');
+            throw new CustomException('We could not find a trip with the provided ID.');
         }
 
         $this->broadcastTripLog($input['status'], $args['trip_id'], $logID);
@@ -85,7 +86,7 @@ class TripLogResolver
             $input['status'] = 'ARRIVED';
             TripLog::create($input);
         } catch (\Exception $e) {
-            throw new \Exception('Notification has not been sent to the driver. ' . $e->getMessage());
+            throw new CustomException('Notification has not been sent to the driver. ' . $e->getMessage());
         }
         
         $notificationMsg = $user->name . ' has arrived';
@@ -101,7 +102,7 @@ class TripLogResolver
     {
         try {
             $trip = PartnerTrip::findOrFail($args['trip_id']);
-            if (!$trip->status) throw new \Exception('Trip has already ended.');
+            if (!$trip->status) throw new CustomException('Trip has already ended.');
 
             $notificationMsg = $trip->name . ' has arrived. Have a great time.';
 
@@ -121,7 +122,7 @@ class TripLogResolver
             $input['status'] = 'ENDED';
             TripLog::create($input);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('We could not find a trip with the provided ID.');
+            throw new CustomException('We could not find a trip with the provided ID.');
         }
 
         $this->broadcastTripLog($input);
@@ -192,17 +193,12 @@ class TripLogResolver
             'longitude' => $args['longitude']
         ];
 
-        try {
-            Driver::findOrFail($args['driver_id'])->update($location);
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception('Driver location has not updated. ' . $e->getMessage());
-        }
-
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
-            broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
+            return broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
+        } else {
+            return auth('driver')->user()->update($location);
         }
 
-        return 'Driver location has been updated successfully.';
     }
 
     public function changeTripUserStatus($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
@@ -213,7 +209,7 @@ class TripLogResolver
                 ->firstOrFail();
             $tripLog->update(['status' => $args['status'], 'updated_at' => now()]);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('We could not find a trip log with the provided log ID.' . $e->getMessage());
+            throw new CustomException('We could not find a trip log with the provided log ID.' . $e->getMessage());
         }
 
         $user = User::select('name')->find($args['user_id']);

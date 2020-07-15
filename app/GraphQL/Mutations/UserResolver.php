@@ -2,19 +2,20 @@
 
 namespace App\GraphQL\Mutations;
 
+use JWTAuth;
 use App\User;
+use App\Jobs\Otp;
 use App\PartnerUser;
 use App\DeviceToken;
-use App\Jobs\Otp;
 use App\Traits\UploadFile;
-use GraphQL\Type\Definition\ResolveInfo;
 use Illuminate\Support\Str; 
-use Illuminate\Support\Facades\Hash;
+use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use JWTAuth;
+use Illuminate\Support\Facades\Hash;
+use GraphQL\Type\Definition\ResolveInfo;
 use Laravel\Socialite\Facades\Socialite;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
  
 class UserResolver
 {
@@ -45,7 +46,7 @@ class UserResolver
         } elseif (array_key_exists('phone', $input)) {
             $password = $input['phone'];
         } else {
-            throw new \Exception('Password or phone is required but not provided.');
+            throw new CustomException('Password or phone is required but not provided.');
         }
         $input['password'] = Hash::make($password);
 
@@ -80,7 +81,7 @@ class UserResolver
         try {
             $user = User::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided user ID is not found.');
+            throw new CustomException('The provided user ID is not found.');
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -110,10 +111,10 @@ class UserResolver
             $credentials["phone"] = $args['emailOrPhone'];
         } 
 
-        $credentials["password"] = $args['password']; 
+        $credentials["password"] = $args['password'];  
 
         if (! $token = auth('user')->attempt($credentials)) {
-            throw new \Exception('The provided authentication credentials are invalid.');
+            throw new CustomException('The provided authentication credentials are invalid.');
         }
 
         $user = auth('user')->user();
@@ -139,7 +140,7 @@ class UserResolver
         try {
             $userData = Socialite::driver($args['provider'])->userFromToken($args['token']);
         } catch (\Exception $e) {
-            throw new \Exception('The provided token is invalid.');
+            throw new CustomException('The provided token is invalid.');
         }
 
         try {

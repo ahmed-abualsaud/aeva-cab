@@ -6,7 +6,7 @@ input CreateRoleInput {
   avatar: Upload
   dashboard: Boolean
   roles: Boolean
-  archive: Boolean
+  users: Boolean
   communication: Boolean
   promocodes: Boolean
   business: Boolean
@@ -15,7 +15,6 @@ input CreateRoleInput {
   cab: Boolean
   fleet: Boolean
   payment: Boolean
-  cancellation: Boolean
 }
 
 input UpdateRoleInput {
@@ -27,7 +26,7 @@ input UpdateRoleInput {
   avatar: Upload
   dashboard: Boolean
   roles: Boolean
-  archive: Boolean
+  users: Boolean
   communication: Boolean
   promocodes: Boolean
   business: Boolean
@@ -36,7 +35,6 @@ input UpdateRoleInput {
   cab: Boolean
   fleet: Boolean
   payment: Boolean
-  cancellation: Boolean
   status: String
 }
 
@@ -54,7 +52,7 @@ type Role {
   avatar: String
   dashboard: Boolean
   roles: Boolean
-  archive: Boolean
+  users: Boolean
   communication: Boolean
   promocodes: Boolean
   business: Boolean
@@ -63,7 +61,6 @@ type Role {
   cab: Boolean
   fleet: Boolean
   payment: Boolean
-  cancellation: Boolean
   employee_id: String
   status: String
 }
