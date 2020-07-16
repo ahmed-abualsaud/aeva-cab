@@ -5,8 +5,8 @@ scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload
 # Mutations that do not require Auth
 type Mutation {
   # Admin Auth
-  qruzMemberLogin(input: LoginInput! @spread): QruzMemberAuthPayload! 
-    @field(resolver: "RoleResolver@login")
+  adminLogin(input: LoginInput! @spread): AdminAuthPayload! 
+    @field(resolver: "AdminResolver@login")
 
   # User Auth
   createUser(input: CreateUserInput! @spread): UserPayload!
@@ -34,7 +34,7 @@ type Mutation {
 }
 
 # Mutations that require Auth
-extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
+extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # User
   updateUser(input: UpdateUserInput! @spread): UserPayload 
     @field(resolver: "UserResolver@update") @updateUserValidation
@@ -56,19 +56,19 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
   changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "DriverResolver@updatePassword")
 
-  # Role
-  createRole(input: CreateRoleInput! @spread): Role
-    @field(resolver: "RoleResolver@create")
-  updateRole(input: UpdateRoleInput! @spread): Role 
-    @field(resolver: "RoleResolver@update") @updateRoleValidation
-  changeRolePassword(input: ChangePasswordInput @spread): String 
-    @field(resolver: "RoleResolver@updatePassword")
-  deleteRole(id: ID!): Role @delete
+  # Admin
+  createAdmin(input: CreateAdminInput! @spread): Admin
+    @field(resolver: "AdminResolver@create")
+  updateAdmin(input: UpdateAdminInput! @spread): Admin 
+    @field(resolver: "AdminResolver@update") @updateAdminValidation
+  changeAdminPassword(input: ChangePasswordInput @spread): String 
+    @field(resolver: "AdminResolver@updatePassword")
+  deleteAdmin(id: ID!): Admin @delete
 
   # Role Type
-  createRoleType(input: CreateRoleTypeInput! @spread): RoleType @create
-  updateRoleType(input: UpdateRoleTypeInput! @spread): RoleType @update @updateRoleTypeValidation
-  deleteRoleType(id: ID!): RoleType @delete
+  createRole(input: CreateRoleInput! @spread): Role @create
+  updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
+  deleteRole(id: ID!): Role @delete
 
   # Vehicles
   createVehicle(input: CreateVehicleInput! @spread): Vehicle 
@@ -198,7 +198,7 @@ extend type Mutation @guard(with: ["role", "partner", "user", "driver"]) {
 } 
 
 # Queries that require Auth
-type Query @guard(with: ["role", "partner", "user", "driver"]) {
+type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # User
   userLiveTrip(user_id: ID!): LiveTripResponse!
     @field(resolver: "PartnerTripResolver@userLiveTrip")
@@ -227,14 +227,14 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
   driverTrips(driver_id: ID!): [PartnerTrip]
     @field(resolver: "PartnerTripResolver@driverTrips")
 
+  # Admin
+  admins: [Admin] @all
+  admin(id: ID @eq): Admin @find 
+  authAdmin: Admin @auth
+
   # Role
   roles: [Role] @all
-  role(id: ID @eq): Role @find 
-  authRole: Role @auth
-
-  # Role Type
-  roleTypes: [RoleType] @all
-  roleType(id: ID @eq): RoleType @find
+  role(id: ID @eq): Role @find
 
   # Vehicles
   vehicles: [Vehicle] @paginate
@@ -335,8 +335,8 @@ type Query @guard(with: ["role", "partner", "user", "driver"]) {
 #import partnerTrip.graphql
 #import partnerTripStation.graphql
 #import partnerTripUser.graphql
-#import roleType.graphql
 #import role.graphql
+#import admin.graphql
 #import communication.graphql
 #import tripLog.graphql
 #import document.graphql

@@ -15,29 +15,17 @@ class CreateRolesTable extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('email')->unique()->nullable();
-            $table->string('password');
-            $table->string('phone')->unique();
-            $table->unsignedBigInteger('role_type_id');
-            $table->string('employee_id')->nullable();
-            $table->string('avatar')->nullable();
-            $table->boolean('dashboard')->default(0);
+            $table->string('name')->unique();
             $table->boolean('roles')->default(0);
+            $table->boolean('stats')->default(0);
             $table->boolean('users')->default(0);
-            $table->boolean('communication')->default(0);
+            $table->boolean('fleets')->default(0);
             $table->boolean('promocodes')->default(0);
             $table->boolean('business')->default(0);
             $table->boolean('commute')->default(0);
             $table->boolean('ondemand')->default(0);
             $table->boolean('cab')->default(0);
-            $table->boolean('fleet')->default(0);
-            $table->boolean('payment')->default(0);
-            $table->string('status')->nullable();
             $table->timestamps();
-            $table->softDeletes();
-            
-            $table->foreign('role_type_id')->references('id')->on('role_types')->onDelete('cascade');
         });
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\Role;
+use App\Admin;
 use App\Traits\UploadFile;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Arr;
@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
-class RoleResolver
+class AdminResolver
 {
     use UploadFile;
     /**
@@ -33,9 +33,9 @@ class RoleResolver
             $input['avatar'] = $url;
         }
          
-        $role = Role::create($input);
+        $admin = Admin::create($input);
 
-        return $role;
+        return $admin;
     }
 
     public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
@@ -43,20 +43,20 @@ class RoleResolver
         $input = collect($args)->except(['id', 'directive', 'avatar'])->toArray();
 
         try {
-            $role = Role::findOrFail($args['id']);
+            $admin = Admin::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided role ID is not found.');
+            throw new \Exception('The provided admin ID is not found.');
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
-            if ($role->avatar) $this->deleteOneFile($role->avatar, 'avatars');
+            if ($admin->avatar) $this->deleteOneFile($admin->avatar, 'avatars');
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $input['avatar'] = $url;
         }
 
-        $role->update($input);
+        $admin->update($input);
 
-        return $role;
+        return $admin;
     }
 
     public function login($rootValue, array $args, GraphQLContext $context = null, ResolveInfo $resolveInfo)
@@ -72,30 +72,30 @@ class RoleResolver
 
         $credentials["password"] = $args['password'];
 
-        if (! $token = auth('role')->attempt($credentials)) {
+        if (! $token = auth('admin')->attempt($credentials)) {
         throw new CustomException(
             'The provided authentication credentials are invalid.',
             'customValidation'
         );
         }
 
-        $role = auth('role')->user();
+        $admin = auth('admin')->user();
 
         return [
             'access_token' => $token,
-            'role' => $role
+            'admin' => $admin
         ];
     }
 
     public function updatePassword($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         try {
-            $role = Role::findOrFail($args['id']);
+            $admin = Admin::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided role ID is not found.');
+            throw new \Exception('The provided admin ID is not found.');
         }
 
-        if (!(Hash::check($args['current_password'], $role->password))) {
+        if (!(Hash::check($args['current_password'], $admin->password))) {
             throw new CustomException(
                 'Your current password does not matches with the password you provided.',
                 'customValidation'
@@ -109,8 +109,8 @@ class RoleResolver
             );
         }
 
-        $role->password = Hash::make($args['new_password']);
-        $role->save();
+        $admin->password = Hash::make($args['new_password']);
+        $admin->save();
 
         return 'Password changed successfully.';
     }

@@ -1,66 +1,40 @@
 input CreateRoleInput {
-  name: String! @rules(apply: ["required"])
-  email: String @rules(apply: ["email", "unique:roles,email"])
-  role_type_id: ID! @rules(apply: ["required"])
-  phone: String! @rules(apply: ["required", "unique:roles,phone"])
-  avatar: Upload
-  dashboard: Boolean
+  name: String! @rules(apply: ["required", "unique:roles,name"])
+  stats: Boolean
   roles: Boolean
   users: Boolean
-  communication: Boolean
   promocodes: Boolean
   business: Boolean
   commute: Boolean 
   ondemand: Boolean
   cab: Boolean
-  fleet: Boolean
-  payment: Boolean
+  fleets: Boolean
 }
 
 input UpdateRoleInput {
   id: ID! @rules(apply: ["required"])
   name: String
-  email: String
-  phone: String
-  role_type_id: ID
-  avatar: Upload
-  dashboard: Boolean
+  stats: Boolean
   roles: Boolean
   users: Boolean
-  communication: Boolean
   promocodes: Boolean
   business: Boolean
-  commute: Boolean
+  commute: Boolean 
   ondemand: Boolean
   cab: Boolean
-  fleet: Boolean
-  payment: Boolean
-  status: String
-}
-
-type QruzMemberAuthPayload {
-  access_token: String
-  role: Role
+  fleets: Boolean
 }
 
 type Role {
-  id: ID
-  name: String
-  email: String
-  phone: String
-  role_type: RoleType @belongsTo
-  avatar: String
-  dashboard: Boolean
+  id: ID!
+  name: String!
+  stats: Boolean
   roles: Boolean
   users: Boolean
-  communication: Boolean
   promocodes: Boolean
   business: Boolean
-  commute: Boolean
+  commute: Boolean 
   ondemand: Boolean
   cab: Boolean
-  fleet: Boolean
-  payment: Boolean
-  employee_id: String
-  status: String
+  fleets: Boolean
 }

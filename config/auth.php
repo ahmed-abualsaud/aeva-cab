@@ -41,9 +41,9 @@ return [
             'provider' => 'users',
         ],
  
-        'role' => [
+        'admin' => [
             'driver' => 'jwt',
-            'provider' => 'roles'
+            'provider' => 'admins'
         ],
 
         'partner' => [
@@ -81,9 +81,9 @@ return [
     */
 
     'providers' => [
-        'roles' => [
+        'admins' => [
             'driver' => 'eloquent',
-            'model' => App\Role::class,
+            'model' => App\Admin::class,
         ],
 
         'partners' => [
@@ -136,8 +136,8 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-        'roles' => [
-            'provider' => 'roles',
+        'admins' => [
+            'provider' => 'admins',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
