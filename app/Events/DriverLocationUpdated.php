@@ -37,4 +37,14 @@ class DriverLocationUpdated implements ShouldBroadcast
     {
         return new PrivateChannel($this->tripID);
     }
+
+    /**
+     * The event's broadcast name.
+     *
+     * @return string
+     */
+    public function broadcastAs()
+    {
+        return 'client-driver.location';
+    }
 }
