@@ -4,23 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Card;
 use App\User;
+use App\Rating;
 use App\Driver;
-use App\PromoCode;
-use App\DeviceToken;
 use App\CarType;
+use Carbon\Carbon;
+use App\PromoCode;
 use App\CabRequest;
-use App\CabRequestFilter;
+use App\DeviceToken;
+use App\DriverVehicle;
 use App\PromoCodeUsage;
 use App\WalletPassbook;
-use App\DriverVehicle;
-use App\Rating;
-use App\Http\Controllers\SendPushController;
+use App\CabRequestFilter;
 use App\Traits\UploadFile;
-use App\Helpers\StaticMapUrl;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Helpers\StaticMapUrl;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\SendPushController;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RiderController extends Controller
 {

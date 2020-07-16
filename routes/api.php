@@ -45,6 +45,7 @@ Route::group(['middleware' => ['auth:user']], function () {
 });
 
 Route::group(['middleware' => ['auth:driver']], function () {
+    Route::post('/driver/avatar/update', 'DriverController@handleAvatar');
     Route::group(['prefix' => 'provider'], function () {
         Route::get('/target', 'DriverController@target');
         Route::resource('trip', 'TripController');
