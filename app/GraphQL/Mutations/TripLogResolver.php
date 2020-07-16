@@ -194,7 +194,8 @@ class TripLogResolver
         ];
 
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
-            return broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))->toOthers();
+            return broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))
+                ->toOthers();
         } else {
             return auth('driver')->user()->update($location);
         }
