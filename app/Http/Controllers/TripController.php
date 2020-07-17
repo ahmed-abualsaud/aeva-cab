@@ -76,7 +76,7 @@ class TripController extends Controller
 
             $response = [
                 'account_status' => $driver->status,
-                'service_status' => $driver->vehicle ? $driver->vehicle->status : 'OFFLINE',
+                'service_status' => $driver->car ? $driver->car->status : 'OFFLINE',
                 'requests' => $latestRequest,
             ];
 
