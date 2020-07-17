@@ -20,9 +20,8 @@ class CreateTripLogsTable extends Migration
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8);
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->string('status')->default('MOVING');
-            $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->nullable();
+            $table->string('status');
+            $table->timestamps();
 
             $table->foreign('trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

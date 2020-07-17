@@ -142,6 +142,7 @@ class TripLogResolver
             $arr['longitude'] = $args['longitude'];
             $arr['user_id'] = $user['id'];
             $arr['status'] = $user['is_picked_up'] ? 'PICKED_UP' : 'NOT_PICKED_UP';
+            $arr['created_at'] = $arr['updated_at'] = now();
             array_push($data, $arr);
         } 
         
