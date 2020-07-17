@@ -51,7 +51,7 @@ class TripLogResolver
             throw new CustomException('We could not find a trip with the provided ID.');
         }
 
-        $this->broadcastTripLog($input['status'], $args['trip_id'], $logID);
+        $this->broadcastTripLog($input);
 
         return $trip;
     }
@@ -93,7 +93,7 @@ class TripLogResolver
         $data = ["status" => "ARRIVED"];
         PushNotification::dispatch($token, $notificationMsg, $data);
 
-        $this->broadcastTripLog($input['status'], $args['trip_id'], $input['log_id'], $user->name);
+        $this->broadcastTripLog($input, $user->name);
 
         return "Notification has been sent to the driver";
     }
@@ -176,7 +176,15 @@ class TripLogResolver
                 ->pluck('name')
                 ->toArray();
 
-            $this->broadcastTripLog('PICKED_UP', $args['trip_id'], implode(', ', $usernames));
+            $input = [
+                "trip_id" => $args['trip_id'],
+                "log_id" => $args['log_id'],
+                "status" => "PICKED_UP",
+                "latitude" => $args['latitude'],
+                "longitude" => $args['longitude']
+            ];
+
+            $this->broadcastTripLog($input, implode(', ', $usernames));
 
         }
 
@@ -214,7 +222,16 @@ class TripLogResolver
         }
 
         $user = User::select('name')->find($args['user_id']);
-        $this->broadcastTripLog($input['status'], $args['trip_id'], $user->name);
+
+        $input = [
+            "trip_id" => $args['trip_id'],
+            "log_id" => $args['log_id'],
+            "status" => $args['status'],
+            "latitude" => $args['latitude'],
+            "longitude" => $args['longitude']
+        ];
+
+        $this->broadcastTripLog($input, $user->name);
         
         return 'Your status has been changed into ' . $args['status'];
     }
