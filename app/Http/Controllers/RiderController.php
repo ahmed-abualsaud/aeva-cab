@@ -771,7 +771,7 @@ class RiderController extends Controller
             } else {
                 $drivers = Driver::where('status', true)
                     // ->whereRaw("(1.609344 * 3956 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $this->driver_search_radius")
-                    ->whereHas('vehicle', function ($query) {
+                    ->whereHas('car', function ($query) {
                         $query->where('status','ACTIVE');
                     })
                     ->get();
