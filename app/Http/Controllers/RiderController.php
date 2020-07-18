@@ -750,16 +750,15 @@ class RiderController extends Controller
     {
         $this->validate($request, [
             'latitude' => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'service_type' => 'numeric',
+            'longitude' => 'required|numeric'
         ]);
 
         try {
             $latitude = $request->latitude;
             $longitude = $request->longitude;
 
-            if ($request->has('serice_type') && !empty($request->service_type)) {
-                $car_type = $request->service_type;
+            if ($request->has('service') && !empty($request->service)) {
+                $car_type = $request->service;
 
                 $drivers = Driver::where('status', true)
                     // ->whereRaw("(1.609344 * 3956 * acos( cos( radians('$latitude') ) * cos( radians(latitude) ) * cos( radians(longitude) - radians('$longitude') ) + sin( radians('$latitude') ) * sin( radians(latitude) ) ) ) <= $this->driver_search_radius")
