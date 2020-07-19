@@ -294,8 +294,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Trip
   trips: [PartnerTrip] @all
-  trip(id: ID @eq): PartnerTrip  
-    @field(resolver: "PartnerTripResolver@trip")
+  trip(id: ID @eq): PartnerTrip @find
 
   # Trip Station
   partnerTripStations(trip_id: ID! @eq): [PartnerTripStation] @all @softDeletes

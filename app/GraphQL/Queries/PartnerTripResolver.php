@@ -176,25 +176,6 @@ class PartnerTripResolver
             "tripType" => null,
             "tripID" => null
         ];
-    } 
-
-    public function trip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
-    {   
-        try {
-            $trip = PartnerTrip::findOrFail($args['id']);
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception('Provided trip ID is not found.');
-        }
-
-        $flag = false;
-        $today = strtolower(date('l'));
-        $trip->schedule = $trip->schedule;
-        if ($trip->schedule->$today) {
-            $tripDate = date('Y-m-d') . ' ' . $trip->schedule->$today;
-            $trip->date = strtotime($tripDate) * 1000;
-            $trip->flag = $this->getFlag($trip->schedule->$today);
-        }
-        return $trip;
     }
 
     protected function scheduledTrips($trips) 
