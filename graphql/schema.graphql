@@ -285,6 +285,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   partner(id: ID @eq): Partner @find
   authPartner: Partner @auth
   partnerTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [PartnerTrip] @all @softDeletes
+  partnerLiveTrips(partner_id: ID! @eq status: Boolean! @eq): [PartnerTrip] @all
   partnerPredefinedStations(partner_id: ID! @eq trip_id: ID!): [PartnerTrip] @all(scopes: ["predefinedStations"])
 
   # Partner Driver
