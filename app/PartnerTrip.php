@@ -30,7 +30,8 @@ class PartnerTrip extends Model
     public function stations() 
     {
         return $this->hasMany(PartnerTripStation::class, 'trip_id')
-            ->whereNotNull('accepted_at');
+            ->whereNotNull('accepted_at')
+            ->orderBy('distance', 'ASC');
     }
 
     public function users()

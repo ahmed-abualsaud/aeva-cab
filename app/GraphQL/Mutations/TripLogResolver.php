@@ -10,12 +10,13 @@ use App\DeviceToken;
 use App\PartnerTrip;
 use App\DriverVehicle;
 use App\PartnerTripUser;
-use Illuminate\Support\Arr;
 use App\Events\TripLogPost; 
+use Illuminate\Support\Arr;
 use App\Jobs\PushNotification;
 use App\Exceptions\CustomException;
 use App\Events\DriverLocationUpdated;
 use GraphQL\Type\Definition\ResolveInfo;
+// use App\Notifications\BusinessTripStatus;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -26,9 +27,7 @@ class TripLogResolver
     {
         try {
             $trip = PartnerTrip::findOrFail($args['trip_id']);
-
             if ($trip->status) throw new CustomException('Trip has already started.');
-
             $logID = uniqid() . 'T' . $args['trip_id'];
 
             $notificationMsg = $trip->name . ' has started.';
@@ -52,6 +51,13 @@ class TripLogResolver
         }
 
         $this->broadcastTripLog($input);
+
+        $dbNotification = [
+            "id" => $trip->id,
+            "name" => $trip->name,
+            "status" => $input['status']
+        ];
+        // $trip->partner->notify(new BusinessTripStatus($dbNotification));
 
         return $trip;
     }
@@ -126,6 +132,13 @@ class TripLogResolver
         }
 
         $this->broadcastTripLog($input);
+
+        $dbNotification = [
+            "id" => $trip->id,
+            "name" => $trip->name,
+            "status" => $input['status']
+        ];
+        // $trip->partner->notify(new BusinessTripStatus($dbNotification));
 
         return 'Trip has ended.';
     }

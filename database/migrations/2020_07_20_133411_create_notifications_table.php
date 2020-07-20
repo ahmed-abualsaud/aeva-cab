@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDeviceTokensTable extends Migration
+class CreateNotificationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class CreateDeviceTokensTable extends Migration
      */
     public function up()
     {
-        Schema::create('device_tokens', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->morphs('tokenable');
-            $table->enum('platform', ['ios', 'android']);
-            $table->string('device_id');
+        Schema::create('notifications', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('type');
+            $table->morphs('notifiable');
+            $table->text('data');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ class CreateDeviceTokensTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('device_tokens');
+        Schema::dropIfExists('notifications');
     }
 }
