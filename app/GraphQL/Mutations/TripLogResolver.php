@@ -54,6 +54,7 @@ class TripLogResolver
 
         $dbNotification = [
             "id" => $trip->id,
+            "log_id" => $input['log_id'],
             "name" => $trip->name,
             "status" => $input['status']
         ];
@@ -135,6 +136,7 @@ class TripLogResolver
 
         $dbNotification = [
             "id" => $trip->id,
+            "log_id" => null,
             "name" => $trip->name,
             "status" => $input['status']
         ];

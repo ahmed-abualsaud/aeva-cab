@@ -45,9 +45,25 @@ class BusinessTripStatus extends Notification implements ShouldQueue
     {
         return [
             'trip_id' => $this->trip['id'],
-            "name" => $this->trip['name'],
+            'name' => $this->trip['name'],
             'status' => $this->trip['status'],
         ];
+    }
+
+    /**
+     * Get the broadcastable representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return BroadcastMessage
+     */
+    public function toBroadcast($notifiable)
+    {
+        return new BroadcastMessage([
+            'trip_id' => $this->trip['id'],
+            'log_id' => $this->trip['log_id'],
+            'name' => $this->trip['name'],
+            'status' => $this->trip['status'],
+        ]);
     }
 
 }
