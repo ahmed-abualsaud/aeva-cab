@@ -6,6 +6,7 @@ input StartTripInput {
 
 input UpdateDriverLocationInput {
   trip_id: ID
+  driver_id: ID
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
 }

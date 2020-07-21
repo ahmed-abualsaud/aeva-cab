@@ -16,7 +16,7 @@ use App\Jobs\PushNotification;
 use App\Exceptions\CustomException;
 use App\Events\DriverLocationUpdated;
 use GraphQL\Type\Definition\ResolveInfo;
-// use App\Notifications\BusinessTripStatus;
+use App\Notifications\BusinessTripStatus;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -57,7 +57,7 @@ class TripLogResolver
             "name" => $trip->name,
             "status" => $input['status']
         ];
-        // $trip->partner->notify(new BusinessTripStatus($dbNotification));
+        $trip->partner->notify(new BusinessTripStatus($dbNotification));
 
         return $trip;
     }
@@ -138,7 +138,7 @@ class TripLogResolver
             "name" => $trip->name,
             "status" => $input['status']
         ];
-        // $trip->partner->notify(new BusinessTripStatus($dbNotification));
+        $trip->partner->notify(new BusinessTripStatus($dbNotification));
 
         return 'Trip has ended.';
     }
@@ -218,6 +218,8 @@ class TripLogResolver
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
             return broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))
                 ->toOthers();
+        } else if (array_key_exists('driver_id', $args) && $args['driver_id']) {
+            return Driver::findOrFail($args['driver_id'])->update($location);
         } else {
             return auth('driver')->user()->update($location);
         }
