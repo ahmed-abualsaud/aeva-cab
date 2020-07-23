@@ -181,8 +181,18 @@ class DriverController extends Controller
         $driver = Auth::guard('driver')->user();
 
         CabRequestFilter::where('driver_id', $driver->id)->delete();
-        DriverVehicle::where('driver_id', $driver->id)
-            ->update(['status' => $request->service_status]);
+
+        $driverVehicle = DriverVehicle::where('driver_id', $driver->id);
+
+        $input = ['status' => $request->service_status];
+
+        if ($request->service_status == 'offline') {
+            $driverVehicle->where('trip_type', 'CAB');
+            $input['trip_type'] = null;
+            $input['trip_id'] = null;
+        }
+
+        $driverVehicle->update($input);
 
         return $driver;
     }
