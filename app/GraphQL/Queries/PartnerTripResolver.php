@@ -126,6 +126,14 @@ class PartnerTripResolver
         return $this->scheduledTrips($userTrips);
     }
 
+    public function partnerLiveTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        return PartnerTrip::select('id', 'name')
+            ->where('partner_id', $args['partner_id'])
+            ->where('status', true)
+            ->get();
+    }
+
     public function driverTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $driverTrips = PartnerTrip::where('driver_id', $args['driver_id'])

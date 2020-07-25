@@ -81,3 +81,8 @@ type PartnerTrip {
   flag: Boolean
   isReturn: Boolean
 }
+
+type PartnerLiveTrip {
+  id: ID
+  name: String
+}
