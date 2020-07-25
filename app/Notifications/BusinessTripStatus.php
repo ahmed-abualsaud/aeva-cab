@@ -32,7 +32,22 @@ class BusinessTripStatus extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['broadcast'];
+        return ['broadcast', 'database', 'mail'];
+    }
+
+    /**
+     * Get the mail representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
+     */
+    public function toMail($notifiable)
+    {
+        $msg = $this->trip['name'] . ' has been ' . strtolower($this->trip['status']);
+        return (new MailMessage)
+            ->subject('Trip '. $msg)
+            ->greeting('Dear Valued Partner,')
+            ->line('Kindly note that trip '. $msg);
     }
 
     /**

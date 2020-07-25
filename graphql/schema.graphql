@@ -320,6 +320,10 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "TripLogResolver@tripLog")
   tripLogHistory(trip_id: ID! period: String): [TripLogHistoryResponse]
     @field(resolver: "TripLogResolver@tripLogHistory")
+
+  # Notifications
+  unreadNotifications: [Notification]!
+    @field(resolver: "NotificationResolver@unreadNotifications")
 }
 
 #import fleet.graphql 
@@ -344,3 +348,4 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import cabRequest.graphql
 #import cabRequestPayment.graphql
 #import ondemandRequest.graphql
+#import notification.graphql

@@ -41,6 +41,8 @@ type Partner {
   size: String 
   license_expires_on: Date
   insurance_expires_on: Date
+  created_at: DateTime
+  updated_at: DateTime
   max_no_of_trips: Int
   users: [User] @hasMany
   drivers: [Driver] @belongsToMany

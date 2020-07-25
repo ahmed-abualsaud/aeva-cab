@@ -52,13 +52,13 @@ class TripLogResolver
 
         $this->broadcastTripLog($input);
 
-        $dbNotification = [
+        $notification = [
             "id" => $trip->id,
             "log_id" => $input['log_id'],
             "name" => $trip->name,
             "status" => $input['status']
         ];
-        $trip->partner->notify(new BusinessTripStatus($dbNotification));
+        $trip->partner->notify(new BusinessTripStatus($notification));
 
         return $trip;
     }
@@ -134,15 +134,15 @@ class TripLogResolver
 
         $this->broadcastTripLog($input);
 
-        $dbNotification = [
+        $notification = [
             "id" => $trip->id,
             "log_id" => null,
             "name" => $trip->name,
             "status" => $input['status']
         ];
-        $trip->partner->notify(new BusinessTripStatus($dbNotification));
+        $trip->partner->notify(new BusinessTripStatus($notification));
 
-        return 'Trip has ended.';
+        return 'Trip has been ended.';
     }
 
     public function pickUsersUp($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
