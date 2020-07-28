@@ -3,7 +3,7 @@
 namespace App\GraphQL\Mutations;
 
 use App\User;
-use App\Jobs\Otp;
+use App\Jobs\SendOtp;
 use App\PartnerTrip;
 use App\PartnerUser;
 use App\PartnerTripUser;
@@ -92,7 +92,7 @@ class PartnerTripResolver
         $message = 'Dear valued user, kindly use this code to confirm your subscription: ' . $args['subscription_code'];
         
         Mail::bcc($emails)->send(new DefaultMail($message, "Trip Subscription Code"));
-        Otp::dispatch(implode(",", $phones), $message); 
+        SendOtp::dispatch(implode(",", $phones), $message); 
 
         return [
             "status" => true,

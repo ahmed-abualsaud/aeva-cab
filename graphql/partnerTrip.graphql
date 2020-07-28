@@ -19,6 +19,8 @@ input CreatePartnerTripInput {
 input UpdatePartnerTripInput {
   id: ID! @rules(apply: ["required"])
   name: String
+  log_id: String
+  status: Boolean
   driver_id: ID
   vehicle_id: ID
   subscription_code: String

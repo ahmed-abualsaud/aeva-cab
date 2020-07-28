@@ -10,9 +10,9 @@ use App\DeviceToken;
 use App\PartnerTrip;
 use App\DriverVehicle;
 use App\PartnerTripUser;
-use App\Events\TripLogPost; 
 use Illuminate\Support\Arr;
-use App\Jobs\PushNotification;
+use App\Events\TripLogPosted;
+use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
 use App\Events\DriverLocationUpdated;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -27,15 +27,12 @@ class TripLogResolver
     {
         try {
             $trip = PartnerTrip::findOrFail($args['trip_id']);
-            if ($trip->status) throw new CustomException('Trip has already started.');
+            if ($trip->status) throw new CustomException('Trip has already been started.');
             $logID = uniqid() . 'T' . $args['trip_id'];
 
-            $notificationMsg = $trip->name . ' has started.';
-            $data = [
-                "status" => "TRIP_STARTED",
-                "logID" => $logID
-            ];
-            PushNotification::dispatch($this->getTokens($trip->id), $notificationMsg, $data);
+            $notificationMsg = $trip->name . ' has been started.';
+            $data = ["status" => "TRIP_STARTED", "logID" => $logID];
+            SendPushNotification::dispatch($this->getTokens($trip->id), $notificationMsg, $data);
 
             DriverVehicle::where('driver_id', $trip->driver_id)
                 ->where('vehicle_id', $trip->vehicle_id)
@@ -74,7 +71,7 @@ class TripLogResolver
         
         $notificationMsg = 'Our driver is so close to you, kindly stand by.';
         $data = ["status" => "NEAR_YOU"];
-        PushNotification::dispatch($tokens, $notificationMsg, $data);
+        SendPushNotification::dispatch($tokens, $notificationMsg, $data);
 
         return "Notification has been sent to selected station users.";
     }
@@ -98,7 +95,7 @@ class TripLogResolver
         
         $notificationMsg = $user->name . ' has arrived';
         $data = ["status" => "ARRIVED"];
-        PushNotification::dispatch($token, $notificationMsg, $data);
+        SendPushNotification::dispatch($token, $notificationMsg, $data);
 
         $this->broadcastTripLog($input, $user->name);
 
@@ -109,7 +106,7 @@ class TripLogResolver
     {
         try {
             $trip = PartnerTrip::findOrFail($args['trip_id']);
-            if (!$trip->status) throw new CustomException('Trip has already ended.');
+            if (!$trip->status) throw new CustomException('Trip has already been ended.');
 
             $notificationMsg = $trip->name . ' has arrived. Have a great time.';
 
@@ -118,7 +115,7 @@ class TripLogResolver
             }
 
             $data = ["status" => "TRIP_ENDED"];
-            PushNotification::dispatch($this->getTokens($trip->id), $notificationMsg, $data);
+            SendPushNotification::dispatch($this->getTokens($trip->id), $notificationMsg, $data);
 
             DriverVehicle::where('driver_id', $trip->driver_id)
                 ->where('vehicle_id', $trip->vehicle_id)
@@ -185,7 +182,7 @@ class TripLogResolver
 
             $notificationMsg = 'Have a wonderful trip. May you be happy and safe throughout this trip.';
             $pushData = ["status" => "PICKED_UP"];
-            PushNotification::dispatch($devices, $notificationMsg, $pushData);
+            SendPushNotification::dispatch($devices, $notificationMsg, $pushData);
 
             $usernames = User::select('name')
                 ->whereIn('id', $newPickedUp)
@@ -281,7 +278,7 @@ class TripLogResolver
             ]
         ];
 
-        broadcast(new TripLogPost($log, 'business.'.$input['trip_id']))->toOthers();
+        broadcast(new TripLogPosted($log, 'business.'.$input['trip_id']))->toOthers();
     }
 
 }

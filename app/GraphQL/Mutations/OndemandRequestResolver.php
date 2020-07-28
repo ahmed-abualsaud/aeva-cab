@@ -5,8 +5,8 @@ namespace App\GraphQL\Mutations;
 use App\DeviceToken;
 use App\OndemandRequest;
 use App\OndemandRequestLine;
-use App\Jobs\PushNotification;
 use App\OndemandRequestVehicle;
+use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -91,8 +91,8 @@ class OndemandRequestResolver
                     "status" => $args['status']
                 ];
     
-                PushNotification::dispatch($token, $notificationMsg, $data);
             }
+            SendPushNotification::dispatch($token, $notificationMsg, $data);
         }
 
         $request->update($input);

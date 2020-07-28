@@ -4,9 +4,9 @@ namespace App\GraphQL\Mutations;
 
 use JWTAuth;
 use App\User;
-use App\Jobs\Otp;
 use App\PartnerUser;
 use App\DeviceToken;
+use App\Jobs\SendOtp;
 use App\Traits\UploadFile;
 use Illuminate\Support\Str; 
 use App\Exceptions\CustomException;
@@ -181,7 +181,7 @@ class UserResolver
 
         $message = $verification_code . " is your Qruz verification code";
 
-        Otp::dispatch($args['phone'], $message);
+        SendOtp::dispatch($args['phone'], $message);
 
         return [
             "verificationCode" => $verification_code

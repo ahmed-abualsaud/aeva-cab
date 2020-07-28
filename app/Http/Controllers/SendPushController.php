@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\DeviceToken;
-use App\Jobs\PushNotification;
+use App\Jobs\SendPushNotification;
 
 class SendPushController extends Controller
 {
@@ -125,7 +125,7 @@ class SendPushController extends Controller
         }
 
         if (count($devices)) {
-            PushNotification::dispatch($devices, $push_message);
+            SendPushNotification::dispatch($devices, $push_message);
         }
     }
 
@@ -151,7 +151,7 @@ class SendPushController extends Controller
         }
     	
         if (count($devices)) {
-            PushNotification::dispatch($devices, $push_message);
+            SendPushNotification::dispatch($devices, $push_message);
         }
 
     }

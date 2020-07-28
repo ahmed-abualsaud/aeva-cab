@@ -73,10 +73,10 @@ class AdminResolver
         $credentials["password"] = $args['password'];
 
         if (! $token = auth('admin')->attempt($credentials)) {
-        throw new CustomException(
-            'The provided authentication credentials are invalid.',
-            'customValidation'
-        );
+            throw new CustomException(
+                'The provided authentication credentials are invalid.',
+                'customValidation'
+            );
         }
 
         $admin = auth('admin')->user();

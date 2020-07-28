@@ -5,8 +5,9 @@ namespace App\GraphQL\Mutations;
 use App\User;
 use App\Driver;
 use App\DeviceToken;
-use App\Jobs\Otp;
+use App\Jobs\SendOtp;
 use App\Mail\DefaultMail;
+use App\Jobs\SendPushNotification;
 use Illuminate\Support\Facades\Mail;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -47,8 +48,8 @@ class CommunicationResolver
         $tokens = $recipient->pluck('device_id')->filter()->toArray();
         
         if ($args['email']) Mail::bcc($emails)->send(new DefaultMail($args['message']));
-        if ($args['sms']) Otp::dispatch(implode(",", $phones), $args['message']);
-        if ($args['push']) PushNotification::dispatch($tokens, $args['message']);
+        if ($args['sms']) SendOtp::dispatch(implode(",", $phones), $args['message']);
+        if ($args['push']) SendPushNotification::dispatch($tokens, $args['message']);
 
         return "Message has sent";
     }
