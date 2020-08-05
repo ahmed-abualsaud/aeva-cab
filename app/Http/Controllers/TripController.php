@@ -338,7 +338,11 @@ class TripController extends Controller
                 $userRequest->save();
 
                 DriverVehicle::where('driver_id', $userRequest->driver_id)
-                    ->update(['status' => 'RIDING', 'trip_type' => 'CAB', 'trip_id' => $userRequest->id]);
+                    ->update([
+                        'status' => 'RIDING', 
+                        'trip_type' => 'App\CabRequest', 
+                        'trip_id' => $userRequest->id
+                    ]);
 
                 CabRequestFilter::where('request_id', $userRequest->id)
                     ->where('driver_id', '!=', $driver_id)->delete();

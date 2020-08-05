@@ -2,11 +2,11 @@
 
 namespace App;
 
-use App\PartnerTripSchedule;
+use App\BusinessTripSchedule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PartnerTrip extends Model
+class BusinessTrip extends Model
 {
     use SoftDeletes;
     
@@ -29,20 +29,20 @@ class PartnerTrip extends Model
 
     public function stations() 
     {
-        return $this->hasMany(PartnerTripStation::class, 'trip_id')
+        return $this->hasMany(BusinessTripStation::class, 'trip_id')
             ->whereNotNull('accepted_at')
             ->orderBy('distance', 'ASC');
     }
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'partner_trip_users', 'trip_id', 'user_id')
-            ->whereNotNull('partner_trip_users.subscription_verified_at');
+        return $this->belongsToMany(User::class, 'business_trip_users', 'trip_id', 'user_id')
+            ->whereNotNull('business_trip_users.subscription_verified_at');
     } 
 
     public function schedule()
     {
-        return $this->hasOne(PartnerTripSchedule::class, 'trip_id');
+        return $this->hasOne(BusinessTripSchedule::class, 'trip_id');
     }
 
     public function scopePredefinedStations($query, $args) 

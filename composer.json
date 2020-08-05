@@ -13,6 +13,7 @@
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "^6.2",
+        "laravel/horizon": "~3.0",
         "laravel/socialite": "^4.3",
         "laravel/tinker": "^2.0",
         "matthewbdaly/laravel-azure-storage": "^1.3",

@@ -1,37 +1,37 @@
-input CreatePartnerTripUserInput {
+input CreateBusinessTripUserInput {
   trip_id: ID! @rules(apply: ["required"])
   user_id: [ID!]! @rules(apply: ["required"])
   subscription_code: String! @rules(apply: ["required"])
 }
 
-input DeletePartnerTripUserInput {
+input DeleteBusinessTripUserInput {
   trip_id: ID! @rules(apply: ["required"])
   user_id: [ID!]! @rules(apply: ["required"])
 } 
 
-input ConfirmPartnerTripUserInput {
+input ConfirmBusinessTripUserInput {
   user_id: ID! @rules(apply: ["required"])
   subscription_code: String! @rules(apply: ["required"])
 } 
 
-input GetPartnerTripUsersInput {
+input GetBusinessTripUsersInput {
   partner_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
   status: String! @rules(apply: ["required", "in:subscribed,notSubscribed,notVerified"])
 }
 
-input CreatePartnerTripStationUserInput {
+input CreateBusinessTripStationUserInput {
   trip_id: ID! @rules(apply: ["required"])
   station_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
 }
  
-input DeletePartnerTripStationUserInput {
+input DeleteBusinessTripStationUserInput {
   station_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
 }
 
-type PartnerTripUserWithStationResponse {
+type BusinessTripUserWithStationResponse {
   id: ID!
   name: String!
   avatar: String

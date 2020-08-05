@@ -3,21 +3,22 @@
 namespace App\GraphQL\Mutations;
 
 use App\User;
-use App\Jobs\SendOtp;
-use App\PartnerTrip;
 use App\PartnerUser;
-use App\PartnerTripUser;
+use App\Jobs\SendOtp;
+use App\BusinessTrip;
+use App\DriverVehicle;
+use App\BusinessTripUser;
 use App\Mail\DefaultMail;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str; 
-use App\PartnerTripSchedule; 
+use App\BusinessTripSchedule; 
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Mail;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class PartnerTripResolver
+class BusinessTripResolver
 {
     /**
      * Return a value for the field.
@@ -28,45 +29,80 @@ class PartnerTripResolver
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function create($_, array $args)
     {
-        $tripInput = $this->tripInput($rootValue, $args, $context, $resolveInfo);
-        $newTrip = PartnerTrip::create($tripInput);
+        $tripInput = $this->tripInput($args);
+        $newTrip = BusinessTrip::create($tripInput);
 
         $subscriptionCode = Str::random(4) . 'P' . $newTrip->partner_id . 'T' . $newTrip->id;
         $newTrip->update(['subscription_code' => $subscriptionCode]);
          
-        $scheduleInput = $this->scheduleInput($rootValue, $args, $context, $resolveInfo);
+        $scheduleInput = $this->scheduleInput($args);
 
         $scheduleInput['trip_id'] = $newTrip->id;
-        PartnerTripSchedule::create($scheduleInput);
+        BusinessTripSchedule::create($scheduleInput);
 
         return $newTrip;
     }
 
-    public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function update($_, array $args)
     {
-        $tripInput = $this->tripInput($rootValue, $args, $context, $resolveInfo);
+        $tripInput = $this->tripInput($args);
         try {
-            $trip = PartnerTrip::findOrFail($args['id']);
+            $trip = BusinessTrip::findOrFail($args['id']);
             $trip->update($tripInput);
         } catch (ModelNotFoundException $e) {
             throw new CustomException('Trip with the provided ID is not found.');
         }
         
-        $scheduleInput = $this->scheduleInput($rootValue, $args, $context, $resolveInfo);
+        $scheduleInput = $this->scheduleInput($args);
         try {
-            $tripSchedule = PartnerTripSchedule::findOrFail($trip->schedule->id);
+            $tripSchedule = BusinessTripSchedule::findOrFail($trip->schedule->id);
             $tripSchedule->update($scheduleInput);
         } catch (ModelNotFoundException $e) {
             $scheduleInput['trip_id'] = $trip->id;
-            PartnerTripSchedule::create($scheduleInput);
+            BusinessTripSchedule::create($scheduleInput);
         }
     
         return $trip;
     }
 
-    public function inviteUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function updateStatus($_, array $args)
+    {
+        try {
+            $trip = BusinessTrip::findOrFail($args['id']);
+            $driverVehicle = DriverVehicle::where('driver_id', $trip->driver_id)
+                ->where('vehicle_id', $trip->vehicle_id);
+        } catch (\Exception $e) {
+            throw new CustomException($e->getMessage());
+        }
+
+        $tripInput = [
+            "status" => $args['status'],
+            "log_id" => $args['log_id']
+        ];
+
+        if ($args['status']) {
+            $driverVehicleInput = [
+                "status" => "RIDING",
+                "trip_type" => "App\BusinessTrip",
+                "trip_id" => $args['id']
+            ];
+        } else {
+            $driverVehicleInput = [
+                "status" => "ACTIVE",
+                "trip_type" => null,
+                "trip_id" => null
+            ];
+        }
+
+        $trip->update($tripInput);
+        $driverVehicle->update($driverVehicleInput);
+
+        return $trip;
+    }
+
+    public function inviteUser($_, array $args)
     {
         $data = [];
         $arr = [];
@@ -78,7 +114,7 @@ class PartnerTripResolver
         } 
 
         try {
-            PartnerTripUser::insert($data);
+            BusinessTripUser::insert($data);
         } catch (\Exception $e) {
             throw new CustomException('Each user is allowed to subscribe for a trip once.');
         }
@@ -100,17 +136,17 @@ class PartnerTripResolver
         ];
     }
 
-    public function subscribeUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo) 
+    public function subscribeUser($_, array $args) 
     {
         try {
-            $trip = PartnerTrip::where('subscription_code', $args['subscription_code'])
+            $trip = BusinessTrip::where('subscription_code', $args['subscription_code'])
                 ->firstOrFail();
         } catch (\Exception $e) {
             throw new CustomException('The provided subscription code is not valid.');
         }
         
         try {
-            $tripUser = PartnerTripUser::where('trip_id', $trip['id'])
+            $tripUser = BusinessTripUser::where('trip_id', $trip['id'])
                 ->where('user_id', $args['user_id'])
                 ->firstOrFail();
             if ($tripUser->subscription_verified_at) {
@@ -119,7 +155,7 @@ class PartnerTripResolver
                 $tripUser->update(['subscription_verified_at' => now()]);
             }
         } catch (ModelNotFoundException $e) {
-            PartnerTripUser::create([
+            BusinessTripUser::create([
                 'trip_id' => $trip['id'],
                 'user_id' => $args['user_id'],
                 'subscription_verified_at' => now()
@@ -134,10 +170,10 @@ class PartnerTripResolver
         return $trip;
     }
 
-    public function unsubscribeUser($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function unsubscribeUser($_, array $args)
     {
         try {
-            PartnerTripUser::where('trip_id', $args['trip_id'])
+            BusinessTripUser::where('trip_id', $args['trip_id'])
                 ->whereIn('user_id', $args['user_id'])
                 ->delete();
         } catch (\Exception $e) {
@@ -150,12 +186,12 @@ class PartnerTripResolver
         ];
     }
 
-    protected function tripInput($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    protected function tripInput(array $args)
     {
         return Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'start_date', 'end_date', 'return_time']);
     }
 
-    protected function scheduleInput($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    protected function scheduleInput(array $args)
     {
         return Arr::only($args, ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
     }

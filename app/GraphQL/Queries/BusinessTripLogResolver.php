@@ -2,15 +2,15 @@
 
 namespace App\GraphQL\Queries;
 
-use App\TripLog;
 use App\Driver;
-use App\PartnerTripUser;
+use App\TripLog;
+use App\BusinessTripUser;
 use App\Traits\DateFilter;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class TripLogResolver
+class BusinessTripLogResolver
 {
     use DateFilter;
     /**
@@ -22,7 +22,7 @@ class TripLogResolver
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function tripLog($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function businessTripLog($_, array $args)
     {
         $log = TripLog::selectRaw('trip_logs.status, trip_logs.latitude, trip_logs.longitude, trip_logs.created_at, users.name as user')
             ->leftJoin('users', 'users.id', '=', 'trip_logs.user_id')
@@ -34,7 +34,7 @@ class TripLogResolver
         return $log; 
     }
 
-    public function tripLogHistory($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function businessTripLogHistory($_, array $args)
     {
         $logHistory = TripLog::selectRaw('log_id, DATE(created_at) as date');
 
@@ -50,7 +50,7 @@ class TripLogResolver
         return $logHistory;
     }
 
-    public function driverLocation($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function driverLocation($_, array $args)
     {
         try {
             $location = Driver::select(['latitude', 'longitude'])
@@ -65,7 +65,7 @@ class TripLogResolver
         ];
     }
 
-    public function pickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function pickedUsers($_, array $args)
     {
         $users = TripLog::where('log_id', $args['log_id'])
             ->where('status', 'PICKED_UP')
@@ -76,25 +76,25 @@ class TripLogResolver
         return $users;
     }
 
-    public function arrivedAndPickedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function arrivedAndPickedUsers($_, array $args)
     {
-        $users = PartnerTripUser::selectRaw('
+        $users = BusinessTripUser::selectRaw('
             users.id, users.name, users.phone, users.avatar, 
             (CASE WHEN isPickedLog.status IS NULL THEN 0 ELSE 1 END) AS is_picked_up, 
             (CASE WHEN isArrivedLog.status IS NULL THEN 0 ELSE 1 END) AS is_arrived
         ')
             ->where('station_id', $args['station_id'])
-            ->join('users', 'users.id', '=', 'partner_trip_users.user_id')
+            ->join('users', 'users.id', '=', 'business_trip_users.user_id')
             ->leftJoin(\DB::raw('(SELECT user_id, log_id, status FROM trip_logs) isPickedLog'), 
                 function ($join) use ($args) {
-                    $join->on('partner_trip_users.user_id', '=', 'isPickedLog.user_id')
+                    $join->on('business_trip_users.user_id', '=', 'isPickedLog.user_id')
                         ->where('isPickedLog.log_id', $args['log_id'])
                         ->where('isPickedLog.status', 'PICKED_UP');
                 }
             )
             ->leftJoin(\DB::raw('(SELECT user_id, log_id, status FROM trip_logs) isArrivedLog'), 
                 function ($join) use ($args) {
-                    $join->on('partner_trip_users.user_id', '=', 'isArrivedLog.user_id')
+                    $join->on('business_trip_users.user_id', '=', 'isArrivedLog.user_id')
                         ->where('isArrivedLog.log_id', $args['log_id'])
                         ->where('isArrivedLog.status', 'ARRIVED');
                 }
@@ -104,17 +104,17 @@ class TripLogResolver
         return $users;
     }
 
-    public function arrivedAndPickedUsersLite($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function arrivedAndPickedUsersLite($_, array $args)
     {
-        $users = PartnerTripUser::select(['users.id', 'users.name', 'users.avatar'])
+        $users = BusinessTripUser::select(['users.id', 'users.name', 'users.avatar'])
             ->where('station_id', $args['station_id'])
-            ->join('users', 'users.id', '=', 'partner_trip_users.user_id')
+            ->join('users', 'users.id', '=', 'business_trip_users.user_id')
             ->addSelect(['is_picked_up' => TripLog::select('status')
-                ->whereColumn('user_id', 'partner_trip_users.user_id')
+                ->whereColumn('user_id', 'business_trip_users.user_id')
                 ->where('status', 'PICKED_UP')
             ])
             ->addSelect(['is_arrived' => TripLog::select('status')
-                ->whereColumn('user_id', 'partner_trip_users.user_id')
+                ->whereColumn('user_id', 'business_trip_users.user_id')
                 ->where('status', 'ARRIVED')
             ])
             ->get();
@@ -122,10 +122,10 @@ class TripLogResolver
         return $users;
     }
 
-    public function arrivedAndNotArrivedUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function arrivedAndNotArrivedUsers($_, array $args)
     {
-        $users = PartnerTripUser::where('station_id', $args['station_id'])
-            ->join('users', 'users.id', '=', 'partner_trip_users.user_id')
+        $users = BusinessTripUser::where('station_id', $args['station_id'])
+            ->join('users', 'users.id', '=', 'business_trip_users.user_id')
             ->leftJoin('trip_logs', function ($join) use ($args) {
                 $join->on('users.id', '=', 'trip_logs.user_id')
                     ->where('trip_logs.log_id', $args['log_id'])

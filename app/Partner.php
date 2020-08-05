@@ -61,7 +61,7 @@ class Partner extends Authenticatable implements JWTSubject
 
     public function trips()
     {
-        return $this->hasMany(PartnerTrip::class);
+        return $this->hasMany(BusinessTrip::class);
     }
 
     public function documents()

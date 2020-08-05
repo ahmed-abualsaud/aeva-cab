@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PartnerTripStation extends Model
+class BusinessTripStation extends Model
 {
     use SoftDeletes;
     
@@ -18,7 +18,7 @@ class PartnerTripStation extends Model
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'partner_trip_users', 'station_id', 'user_id')
-            ->whereNotNull('partner_trip_users.subscription_verified_at');
+        return $this->belongsToMany(User::class, 'business_trip_users', 'station_id', 'user_id')
+            ->whereNotNull('business_trip_users.subscription_verified_at');
     }
 }

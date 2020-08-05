@@ -19,13 +19,13 @@ class TripLogPosted implements ShouldBroadcast
      *
      * @return void
      */
+    protected $channel;
     public $log;
-    protected $tripID;
 
-    public function __construct($log, $tripID)
+    public function __construct($channel, $log)
     {
+        $this->channel = $channel;
         $this->log = $log;
-        $this->tripID = $tripID;
     }
 
     /**
@@ -35,7 +35,7 @@ class TripLogPosted implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel($this->tripID);
+        return new PrivateChannel($this->channel);
     }
 
     /**

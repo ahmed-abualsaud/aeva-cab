@@ -129,14 +129,15 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   deletePartnerDriver(input: PartnerDriverInput! @spread): DefaultResponse
     @field(resolver: "PartnerResolver@unassignDriver")
 
-  # Trip
-  createPartnerTrip(input: CreatePartnerTripInput! @spread): PartnerTrip 
-    @field(resolver: "PartnerTripResolver@create")
-  updatePartnerTrip(input: UpdatePartnerTripInput! @spread): PartnerTrip 
-    @field(resolver: "PartnerTripResolver@update")
-  updatePartnerTripStatus(input: UpdatePartnerTripInput! @spread): PartnerTrip @update
-  deletePartnerTrip(id: ID!): PartnerTrip @delete
-  restorePartnerTrip(id: ID!): PartnerTrip @restore
+  # Business Trip
+  createBusinessTrip(input: CreateBusinessTripInput! @spread): BusinessTrip 
+    @field(resolver: "BusinessTripResolver@create")
+  updateBusinessTrip(input: UpdateBusinessTripInput! @spread): BusinessTrip 
+    @field(resolver: "BusinessTripResolver@update")
+  updateBusinessTripStatus(input: UpdateBusinessTripInput! @spread): BusinessTrip 
+    @field(resolver: "BusinessTripResolver@updateStatus")
+  deleteBusinessTrip(id: ID!): BusinessTrip @delete
+  restoreBusinessTrip(id: ID!): BusinessTrip @restore
 
   # Cab Request
   deleteCabRequest(id: ID!): CabRequest @delete
@@ -150,67 +151,69 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   deleteOndemandRequest(id: ID!): OndemandRequest @delete
   restoreOndemandRequest(id: ID!): OndemandRequest @restore
 
-  # Trip Station
-  createPartnerTripStation(input: CreatePartnerTripStationInput! @spread): PartnerTripStation @create
-  createPartnerTripStations(input: CreatePartnerTripStationsInput! @spread): [PartnerTripStation] 
-    @field(resolver: "PartnerTripStationResolver@create")
-  updatePartnerTripStation(input: UpdatePartnerTripStationInput! @spread): PartnerTripStation 
-    @field(resolver: "PartnerTripStationResolver@update")
+  # Business Trip Station
+  createBusinessTripStation(input: CreateBusinessTripStationInput! @spread): BusinessTripStation @create
+  createBusinessTripStations(input: CreateBusinessTripStationsInput! @spread): [BusinessTripStation] 
+    @field(resolver: "BusinessTripStationResolver@create")
+  updateBusinessTripStation(input: UpdateBusinessTripStationInput! @spread): BusinessTripStation 
+    @field(resolver: "BusinessTripStationResolver@update")
   updateStationsRoute(input: UpdateStationsRouteInput! @spread): Boolean 
-    @field(resolver: "PartnerTripStationResolver@updateRoute")
-  deletePartnerTripStation(id: ID!): PartnerTripStation @delete
-  restorePartnerTripStation(id: ID!): PartnerTripStation @restore
-  acceptPartnerTripStation(input: AcceptPartnerTripStationInput! @spread): PartnerTripStation
-    @field(resolver: "PartnerTripStationResolver@acceptStation") 
+    @field(resolver: "BusinessTripStationResolver@updateRoute")
+  deleteBusinessTripStation(id: ID!): BusinessTripStation @delete
+  restoreBusinessTripStation(id: ID!): BusinessTripStation @restore
+  acceptBusinessTripStation(input: AcceptBusinessTripStationInput! @spread): BusinessTripStation
+    @field(resolver: "BusinessTripStationResolver@acceptStation") 
 
-  # Station User
-  createPartnerTripStationUser(input: CreatePartnerTripStationUserInput! @spread): DefaultResponse 
-    @field(resolver: "PartnerTripStationResolver@assignUser") 
-  deletePartnerTripStationUser(input: DeletePartnerTripStationUserInput! @spread): DefaultResponse 
-    @field(resolver: "PartnerTripStationResolver@unassignUser")
+  # Business Trip Station User
+  createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
+    @field(resolver: "BusinessTripStationResolver@assignUser") 
+  deleteBusinessTripStationUser(input: DeleteBusinessTripStationUserInput! @spread): DefaultResponse 
+    @field(resolver: "BusinessTripStationResolver@unassignUser")
 
-  # Trip User
-  createPartnerTripUser(input: CreatePartnerTripUserInput! @spread): DefaultResponse 
-    @field(resolver: "PartnerTripResolver@inviteUser")
-  confirmPartnerTripUser(input: ConfirmPartnerTripUserInput! @spread): PartnerTrip!
-    @field(resolver: "PartnerTripResolver@subscribeUser")
-  deletePartnerTripUser(input: DeletePartnerTripUserInput! @spread): DefaultResponse
-    @field(resolver: "PartnerTripResolver@unsubscribeUser") 
+  # Business Trip User
+  createBusinessTripUser(input: CreateBusinessTripUserInput! @spread): DefaultResponse 
+    @field(resolver: "BusinessTripResolver@inviteUser")
+  confirmBusinessTripUser(input: ConfirmBusinessTripUserInput! @spread): BusinessTrip!
+    @field(resolver: "BusinessTripResolver@subscribeUser")
+  deleteBusinessTripUser(input: DeleteBusinessTripUserInput! @spread): DefaultResponse
+    @field(resolver: "BusinessTripResolver@unsubscribeUser") 
 
-  # Trip Log
-  startTrip(input: StartTripInput! @spread): PartnerTrip 
-    @field(resolver: "TripLogResolver@startTrip")
+  # Business Trip Log
+  startTrip(input: StartTripInput! @spread): BusinessTrip 
+    @field(resolver: "BusinessTripLogResolver@startTrip")
   updateDriverLocation(input: UpdateDriverLocationInput! @spread): Boolean 
-    @field(resolver: "TripLogResolver@updateDriverLocation")
+    @field(resolver: "BusinessTripLogResolver@updateDriverLocation")
   nearYou(input: NearYouInput! @spread): String
-    @field(resolver: "TripLogResolver@nearYou")
+    @field(resolver: "BusinessTripLogResolver@nearYou")
   userArrived(input: UserArrivedInput! @spread): String
-    @field(resolver: "TripLogResolver@userArrived")
+    @field(resolver: "BusinessTripLogResolver@userArrived")
   endTrip(input: EndTripInput! @spread): String
-    @field(resolver: "TripLogResolver@endTrip")
+    @field(resolver: "BusinessTripLogResolver@endTrip")
   pickUsersUp(input: PickUsersUpInput! @spread): String
-    @field(resolver: "TripLogResolver@pickUsersUp")
+    @field(resolver: "BusinessTripLogResolver@pickUsersUp")
   changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
-    @field(resolver: "TripLogResolver@changeTripUserStatus")
+    @field(resolver: "BusinessTripLogResolver@changeTripUserStatus")
 
   # Communication
-  sendMessage(input: SendMessageInput! @spread): String
-    @field(resolver: "CommunicationResolver@sendMessage")
+  sendDirectMessage(input: SendDirectMessageInput! @spread): String
+    @field(resolver: "CommunicationResolver@sendDirectMessage")
+  sendChatMessage(input: SendChatMessageInput! @spread): Message
+    @field(resolver: "CommunicationResolver@sendChatMessage")
 } 
 
 # Queries that require Auth
 type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # User
   userLiveTrip(user_id: ID!): LiveTripResponse!
-    @field(resolver: "PartnerTripResolver@userLiveTrip")
-  userSubscriptions(user_id: ID!): [PartnerTrip]
-    @field(resolver: "PartnerTripResolver@userSubscriptions")
-  userTrips(user_id: ID!): [PartnerTrip]
-    @field(resolver: "PartnerTripResolver@userTrips")
+    @field(resolver: "BusinessTripResolver@userLiveTrip")
+  userSubscriptions(user_id: ID!): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@userSubscriptions")
+  userTrips(user_id: ID!): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@userTrips")
   userTripPartners(user_id: ID!): [Partner]
-    @field(resolver: "PartnerTripResolver@userTripPartners")
-  userTripsByPartner(user_id: ID!, partner_id: ID!): [PartnerTrip]
-    @field(resolver: "PartnerTripResolver@userTripsByPartner")
+    @field(resolver: "BusinessTripResolver@userTripPartners")
+  userTripsByPartner(user_id: ID!, partner_id: ID!): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@userTripsByPartner")
   users(partner_id: ID): [User] @paginate(scopes: ["filterByPartner"])
   partnerUsers(partner_id: ID!): [User] 
     @field(resolver: "PartnerResolver@users") 
@@ -224,9 +227,9 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   drivers(fleet_id: ID): [Driver] @paginate(scopes: ["filterByFleet"])
   driver(id: ID @eq): Driver @find
   driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
-    @field(resolver: "PartnerTripResolver@driverLiveTrip")
-  driverTrips(driver_id: ID!): [PartnerTrip]
-    @field(resolver: "PartnerTripResolver@driverTrips")
+    @field(resolver: "BusinessTripResolver@driverLiveTrip")
+  driverTrips(driver_id: ID!): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@driverTrips")
 
   # Admin
   admins: [Admin] @all
@@ -285,49 +288,53 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   partners: [Partner] @all
   partner(id: ID @eq): Partner @find
   authPartner: Partner @auth
-  partnerTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [PartnerTrip] 
+  businessTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [BusinessTrip] 
     @all @softDeletes
   partnerLiveTrips(partner_id: ID!): [PartnerLiveTrip]
-    @field(resolver: "PartnerTripResolver@partnerLiveTrips")
-  partnerPredefinedStations(partner_id: ID! @eq trip_id: ID!): [PartnerTrip] 
+    @field(resolver: "BusinessTripResolver@partnerLiveTrips")
+  partnerPredefinedStations(partner_id: ID! @eq trip_id: ID!): [BusinessTrip] 
     @all(scopes: ["predefinedStations"])
 
   # Partner Driver
   partnerDrivers(partner_id: ID! assigned: Boolean!): [Driver] 
     @field(resolver: "PartnerResolver@drivers")
 
-  # Trip
-  trips: [PartnerTrip] @all
-  trip(id: ID @eq): PartnerTrip @find
+  # Business Trip
+  trips: [BusinessTrip] @all
+  trip(id: ID @eq): BusinessTrip @find
 
-  # Trip Station
-  partnerTripStations(trip_id: ID! @eq): [PartnerTripStation] @all @softDeletes
+  # Business Trip Station
+  businessTripStations(trip_id: ID! @eq): [BusinessTripStation] @all @softDeletes
 
-  # Station User
-  partnerTripStationUsers(station_id: ID!): [User] 
-    @field(resolver: "PartnerTripResolver@stationUsers")
+  # Business Trip Station User
+  businessTripStationUsers(station_id: ID!): [User] 
+    @field(resolver: "BusinessTripResolver@stationUsers")
 
-  # Trip User
-  partnerTripUsers(input: GetPartnerTripUsersInput! @spread): [PartnerTripUserWithStationResponse] 
-    @field(resolver: "PartnerTripResolver@users")
+  # Business Trip User
+  businessTripUsers(input: GetBusinessTripUsersInput! @spread): [BusinessTripUserWithStationResponse] 
+    @field(resolver: "BusinessTripResolver@users")
 
-  # Trip Log
+  # Business Trip Log
   getDriverLocation(driver_id: ID!): LocationCoordinatesResponse
-    @field(resolver: "TripLogResolver@driverLocation")
+    @field(resolver: "BusinessTripLogResolver@driverLocation")
   getPickedUsers(log_id: String!): [User]
-    @field(resolver: "TripLogResolver@pickedUsers")
+    @field(resolver: "BusinessTripLogResolver@pickedUsers")
   getArrivedAndPickedUsers(log_id: String!, station_id: ID!): [User]
-    @field(resolver: "TripLogResolver@arrivedAndPickedUsers")
+    @field(resolver: "BusinessTripLogResolver@arrivedAndPickedUsers")
   getArrivedAndPickedUsersLite(log_id: String!, station_id: ID!): [User]
-    @field(resolver: "TripLogResolver@arrivedAndPickedUsersLite")
-  tripLog(log_id: String!): [TripLogResponse]
-    @field(resolver: "TripLogResolver@tripLog")
-  tripLogHistory(trip_id: ID! period: String): [TripLogHistoryResponse]
-    @field(resolver: "TripLogResolver@tripLogHistory")
+    @field(resolver: "BusinessTripLogResolver@arrivedAndPickedUsersLite")
+  businessTripLog(log_id: String!): [BusinessTripLogResponse]
+    @field(resolver: "BusinessTripLogResolver@businessTripLog")
+  businessTripLogHistory(trip_id: ID! period: String): [BusinessTripLogHistoryResponse]
+    @field(resolver: "BusinessTripLogResolver@businessTripLogHistory")
 
   # Notifications
   unreadNotifications: [Notification]!
     @field(resolver: "NotificationResolver@unreadNotifications")
+
+  # Communication
+  chatMessages(trip_id: String!, trip_type: String!): [Message] 
+    @field(resolver: "CommunicationResolver@chatMessages")
 }
 
 #import fleet.graphql 
@@ -340,13 +347,13 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import partner.graphql
 #import user.graphql
 #import partnerDriver.graphql
-#import partnerTrip.graphql
-#import partnerTripStation.graphql
-#import partnerTripUser.graphql
+#import businessTrip.graphql
+#import businessTripStation.graphql
+#import businessTripUser.graphql
 #import role.graphql
 #import admin.graphql
 #import communication.graphql
-#import tripLog.graphql
+#import businessTripLog.graphql
 #import document.graphql
 #import promoCode.graphql
 #import cabRequest.graphql

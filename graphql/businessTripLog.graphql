@@ -5,7 +5,7 @@ input StartTripInput {
 }
 
 input UpdateDriverLocationInput {
-  trip_id: ID
+  trip_id: String
   driver_id: ID
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
@@ -52,7 +52,7 @@ input UserObj {
   is_picked_up: Boolean! @rules(apply: ["required"])
 }
 
-type TripLogResponse {
+type BusinessTripLogResponse {
   created_at: DateTime!
   status: String!
   latitude: String
@@ -60,7 +60,7 @@ type TripLogResponse {
   user: String
 }
 
-type TripLogHistoryResponse {
+type BusinessTripLogHistoryResponse {
   log_id: String
   date: Date
 }

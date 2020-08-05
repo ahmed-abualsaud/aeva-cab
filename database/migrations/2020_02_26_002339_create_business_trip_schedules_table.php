@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePartnerTripSchedulesTable extends Migration
+class CreateBusinessTripSchedulesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePartnerTripSchedulesTable extends Migration
      */
     public function up()
     {
-        Schema::create('partner_trip_schedules', function (Blueprint $table) {
+        Schema::create('business_trip_schedules', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('trip_id');
             $table->time('saturday')->nullable();
@@ -25,7 +25,7 @@ class CreatePartnerTripSchedulesTable extends Migration
             $table->time('friday')->nullable();
             $table->timestamps();
 
-            $table->foreign('trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
+            $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
         });
     }
 
@@ -36,6 +36,6 @@ class CreatePartnerTripSchedulesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('partner_trip_schedules');
+        Schema::dropIfExists('business_trip_schedules');
     }
 }

@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PartnerTripUser extends Model
+class BusinessTripUser extends Model
 { 
     protected $guarded = [];
     

@@ -4,9 +4,11 @@ namespace App\GraphQL\Mutations;
 
 use App\User;
 use App\Driver;
+use App\Message;
 use App\DeviceToken;
 use App\Jobs\SendOtp;
 use App\Mail\DefaultMail;
+use App\Events\MessageSent;
 use App\Jobs\SendPushNotification;
 use Illuminate\Support\Facades\Mail;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -23,7 +25,7 @@ class CommunicationResolver
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function sendMessage($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function sendDirectMessage($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         if ($args['recipientType'] == "USER") {
             $recipient = User::select('users.phone', 'users.email', 'device_tokens.device_id')
@@ -52,5 +54,32 @@ class CommunicationResolver
         if ($args['push']) SendPushNotification::dispatch($tokens, $args['message']);
 
         return "Message has sent";
+    }
+
+    public function sendChatMessage($_, array $args)
+    {
+        $input = collect($args)->except(['directive'])->toArray();
+        $message = Message::create($input);
+
+        $sender = $args['sender_type']::select('id','name')->find($args['sender_id']);
+
+        $response = [
+            "id" => $message['id'],
+            "message" => $message['message'],
+            "created_at" => date("Y-m-d H:i:s"),
+            "sender" => [
+                "id" => $sender->id,
+                "name" => $sender->name,
+                "__typename" => "Sender"
+            ],
+            "sender_type" => $message['sender_type'],
+            "__typename" => "Message"
+        ];
+
+        $channel = str_replace("\\", ".", $args['trip_type']) .'.'. $args['trip_id'];
+
+        broadcast(new MessageSent($channel, $response))->toOthers();
+
+        return $message;
     }
 }

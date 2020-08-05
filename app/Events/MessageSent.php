@@ -10,22 +10,30 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class DriverLocationUpdated implements ShouldBroadcast
+class MessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    protected $channel;
+    public $message;
+
+
+    /**
+     * The name of the queue on which to place the event.
+     *
+     * @var string
+     */
+    public $broadcastQueue = 'high';
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    protected $channel;
-    public $location;
-
-    public function __construct($channel, $location)
+    public function __construct($channel, $message)
     {
         $this->channel = $channel;
-        $this->location = $location;
+        $this->message = $message;
     }
 
     /**
@@ -45,6 +53,6 @@ class DriverLocationUpdated implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'client-driver.location';
+        return 'client-chat.message';
     }
 }

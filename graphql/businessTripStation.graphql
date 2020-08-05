@@ -1,4 +1,4 @@
-input CreatePartnerTripStationInput {
+input CreateBusinessTripStationInput {
   id: ID
   name: String
   latitude: String! @rules(apply: ["required"])
@@ -12,12 +12,12 @@ input CreatePartnerTripStationInput {
   deleted_at: DateTime
 } 
 
-input CreatePartnerTripStationsInput {
+input CreateBusinessTripStationsInput {
   trip_id: ID! @rules(apply: ["required"])
-  stations: [CreatePartnerTripStationInput!]! @rules(apply: ["required"])
+  stations: [CreateBusinessTripStationInput!]! @rules(apply: ["required"])
 }
 
-input UpdatePartnerTripStationInput {
+input UpdateBusinessTripStationInput {
   id: ID! @rules(apply: ["required"])
   trip_id: ID
   name: String
@@ -37,17 +37,17 @@ input StationsRouteInput {
   distance: Int
 }
 
-input GetPartnerTripStationsInput {
+input GetBusinessTripStationsInput {
   trip_id: ID! @rules(apply: ["required"])
   status: String! @rules(apply: ["required", "in:accepted,notAccepted"])
 }
 
-input AcceptPartnerTripStationInput {
+input AcceptBusinessTripStationInput {
   trip_id: ID! @rules(apply: ["required"])
   station_id: ID! @rules(apply: ["required"])
 }
 
-type PartnerTripStation {
+type BusinessTripStation {
   id: ID
   name: String
   latitude: String

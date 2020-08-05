@@ -61,12 +61,21 @@ return [
         'redis' => [
             'driver' => 'redis',
             'connection' => 'default',
-            'queue' => env('REDIS_QUEUE', 'default'),
+            'queue' => env('REDIS_QUEUE', 'low'),
             'retry_after' => 90,
             'block_for' => null,
         ],
 
+        'azure' => [
+            'driver' => 'azure',
+            'protocol' => 'https',
+            'accountname' => env('AZURE_STORAGE_NAME'),
+            'key' => env('AZURE_STORAGE_KEY'),
+            'queue' => env('AZURE_QUEUE', 'default'),
+            'timeout' => 90,
+        ],
     ],
+
 
     /*
     |--------------------------------------------------------------------------

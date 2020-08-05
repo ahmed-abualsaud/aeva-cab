@@ -23,7 +23,7 @@ class CreateTripLogsTable extends Migration
             $table->string('status');
             $table->timestamps();
 
-            $table->foreign('trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
+            $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

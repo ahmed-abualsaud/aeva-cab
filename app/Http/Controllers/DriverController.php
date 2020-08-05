@@ -186,7 +186,7 @@ class DriverController extends Controller
 
         $input = ['status' => $request->service_status];
 
-        if ($request->service_status == 'offline') $driverVehicle->where('trip_type', 'CAB');
+        if ($request->service_status == 'offline') $driverVehicle->where('trip_type', 'App\CabRequest');
 
         $driverVehicle->update($input);
 

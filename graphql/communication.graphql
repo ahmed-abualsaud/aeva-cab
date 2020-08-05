@@ -1,8 +1,29 @@
-input SendMessageInput {
+input SendDirectMessageInput {
   recipientID: [ID!]! @rules(apply: ["required"])
   recipientType: String! @rules(apply: ["required","in:USER,DRIVER"])
   email: Boolean! @rules(apply: ["required"])
   sms: Boolean! @rules(apply: ["required"])
   push: Boolean! @rules(apply: ["required"])
   message: String! @rules(apply: ["required"])
+}
+
+input SendChatMessageInput {
+  sender_type: String!
+  sender_id: ID!
+  trip_type: String!
+  trip_id: String!
+  message: String!
+}
+
+type Message {
+  id: ID
+  message: String
+  created_at: String
+  sender_type: String
+  sender: Sender! @morphTo
+}
+
+type Sender {
+  id: ID
+  name: String
 }

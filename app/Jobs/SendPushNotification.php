@@ -27,6 +27,7 @@ class SendPushNotification implements ShouldQueue
         $this->devices = $devices;
         $this->message = $message;
         $this->data = $data;
+        $this->queue = 'high';
     }
 
     /**

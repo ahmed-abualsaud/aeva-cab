@@ -43,7 +43,7 @@ type Driver {
   created_at: String
   updated_at: String
   fleet: Fleet @belongsTo
-  trips: [PartnerTrip] @hasMany
+  trips: [BusinessTrip] @hasMany
   vehicles: [Vehicle] @hasMany
   deviceTokens: [DeviceToken] @morphMany
 }

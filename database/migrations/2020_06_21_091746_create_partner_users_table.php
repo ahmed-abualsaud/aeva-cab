@@ -14,12 +14,11 @@ class CreatePartnerUsersTable extends Migration
     public function up()
     {
         Schema::create('partner_users', function (Blueprint $table) {
-            $table->bigIncrements('id');
             $table->unsignedBigInteger('partner_id');
             $table->unsignedBigInteger('user_id');
             $table->string('employee_id')->nullable();
 
-            $table->unique(['partner_id', 'user_id']);
+            $table->primary(['partner_id', 'user_id']);
 
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

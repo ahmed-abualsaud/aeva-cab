@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePartnerTripStationsTable extends Migration
+class CreateBusinessTripStationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreatePartnerTripStationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('partner_trip_stations', function (Blueprint $table) {
+        Schema::create('business_trip_stations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
             $table->double('latitude', 15, 8);
@@ -28,7 +28,7 @@ class CreatePartnerTripStationsTable extends Migration
             $table->softDeletes();
             
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
+            $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
         });
     }
 
@@ -39,6 +39,6 @@ class CreatePartnerTripStationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('partner_trip_stations');
+        Schema::dropIfExists('business_trip_stations');
     }
 }

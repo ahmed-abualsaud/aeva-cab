@@ -7,9 +7,9 @@ use App\Driver;
 use App\TripLog;
 use Carbon\Carbon;
 use App\DeviceToken;
-use App\PartnerTrip;
+use App\BusinessTrip;
 use App\DriverVehicle;
-use App\PartnerTripUser;
+use App\BusinessTripUser;
 use Illuminate\Support\Arr;
 use App\Events\TripLogPosted;
 use App\Jobs\SendPushNotification;
@@ -20,23 +20,25 @@ use App\Notifications\BusinessTripStatus;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class TripLogResolver
+class BusinessTripLogResolver
 {
     
-    public function startTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function startTrip($_, array $args)
     {
         try {
-            $trip = PartnerTrip::findOrFail($args['trip_id']);
+            $trip = BusinessTrip::findOrFail($args['trip_id']);
             if ($trip->status) throw new CustomException('Trip has already been started.');
             $logID = uniqid() . 'T' . $args['trip_id'];
 
             $notificationMsg = $trip->name . ' has been started.';
-            $data = ["status" => "TRIP_STARTED", "logID" => $logID];
-            SendPushNotification::dispatch($this->getTokens($trip->id), $notificationMsg, $data);
 
             DriverVehicle::where('driver_id', $trip->driver_id)
                 ->where('vehicle_id', $trip->vehicle_id)
-                ->update(['status' => 'RIDING', 'trip_type' => 'BUSINESS', 'trip_id' => $trip->id]);
+                ->update([
+                    'status' => 'RIDING', 
+                    'trip_type' => 'App\BusinessTrip', 
+                    'trip_id' => $trip->id
+                ]);
 
             $trip->update(['status' => true, 'log_id' => $logID]);
             $input = Arr::except($args, ['directive']);
@@ -47,36 +49,36 @@ class TripLogResolver
             throw new CustomException('We could not find a trip with the provided ID.');
         }
 
-        $this->broadcastTripLog($input);
-
         $notification = [
             "id" => $trip->id,
             "log_id" => $input['log_id'],
             "name" => $trip->name,
             "status" => $input['status']
         ];
+
+        SendPushNotification::dispatch($this->getTokens($trip->id), $notificationMsg);
+        $this->broadcastTripLog($input);
         $trip->partner->notify(new BusinessTripStatus($notification));
 
         return $trip;
     }
 
-    public function nearYou($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function nearYou($_, array $args)
     {
-        $tokens = PartnerTripUser::where('station_id', $args['station_id'])
+        $tokens = BusinessTripUser::where('station_id', $args['station_id'])
             ->where('device_tokens.tokenable_type', 'App\User')
-            ->join('device_tokens', 'device_tokens.tokenable_id', '=', 'partner_trip_users.user_id')
+            ->join('device_tokens', 'device_tokens.tokenable_id', '=', 'business_trip_users.user_id')
             ->select('device_tokens.device_id')
             ->pluck('device_id')
             ->toArray();
         
-        $notificationMsg = 'Our driver is so close to you, kindly stand by.';
-        $data = ["status" => "NEAR_YOU"];
-        SendPushNotification::dispatch($tokens, $notificationMsg, $data);
+        $notificationMsg = 'Our driver is so close to you, please stand by.';
+        SendPushNotification::dispatch($tokens, $notificationMsg);
 
         return "Notification has been sent to selected station users.";
     }
 
-    public function userArrived($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function userArrived($_, array $args)
     {  
         try {
             $user = User::select('name')->findOrFail($args['user_id']);
@@ -94,55 +96,14 @@ class TripLogResolver
         }
         
         $notificationMsg = $user->name . ' has arrived';
-        $data = ["status" => "ARRIVED"];
-        SendPushNotification::dispatch($token, $notificationMsg, $data);
+        SendPushNotification::dispatch($token, $notificationMsg);
 
         $this->broadcastTripLog($input, $user->name);
 
         return "Notification has been sent to the driver";
     }
 
-    public function endTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
-    {
-        try {
-            $trip = PartnerTrip::findOrFail($args['trip_id']);
-            if (!$trip->status) throw new CustomException('Trip has already been ended.');
-
-            $notificationMsg = $trip->name . ' has arrived. Have a great time.';
-
-            if ($trip->return_time) {
-                $notificationMsg .= ' Return trip will be at ' . Carbon::parse($trip->return_time)->format('g:i A');
-            }
-
-            $data = ["status" => "TRIP_ENDED"];
-            SendPushNotification::dispatch($this->getTokens($trip->id), $notificationMsg, $data);
-
-            DriverVehicle::where('driver_id', $trip->driver_id)
-                ->where('vehicle_id', $trip->vehicle_id)
-                ->update(['status' => 'ACTIVE', 'trip_type' => null, 'trip_id' => null]);
-
-            $trip->update(['status' => false, 'log_id' => null]);
-            $input = Arr::except($args, ['directive']);
-            $input['status'] = 'ENDED';
-            TripLog::create($input);
-        } catch (ModelNotFoundException $e) {
-            throw new CustomException('We could not find a trip with the provided ID.');
-        }
-
-        $this->broadcastTripLog($input);
-
-        $notification = [
-            "id" => $trip->id,
-            "log_id" => null,
-            "name" => $trip->name,
-            "status" => $input['status']
-        ];
-        $trip->partner->notify(new BusinessTripStatus($notification));
-
-        return 'Trip has been ended.';
-    }
-
-    public function pickUsersUp($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function pickUsersUp($_, array $args)
     {
         $data = array(); 
         $arr = array();
@@ -181,8 +142,6 @@ class TripLogResolver
                 ->toArray();
 
             $notificationMsg = 'Have a wonderful trip. May you be happy and safe throughout this trip.';
-            $pushData = ["status" => "PICKED_UP"];
-            SendPushNotification::dispatch($devices, $notificationMsg, $pushData);
 
             $usernames = User::select('name')
                 ->whereIn('id', $newPickedUp)
@@ -197,6 +156,7 @@ class TripLogResolver
                 "longitude" => $args['longitude']
             ];
 
+            SendPushNotification::dispatch($devices, $notificationMsg);
             $this->broadcastTripLog($input, implode(', ', $usernames));
 
         }
@@ -207,7 +167,7 @@ class TripLogResolver
         return 'Selected users status have been changed.';
     }
 
-    public function updateDriverLocation($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function updateDriverLocation($_, array $args)
     {
         $location = [
             'latitude' => $args['latitude'],
@@ -215,7 +175,8 @@ class TripLogResolver
         ];
 
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
-            return broadcast(new DriverLocationUpdated($location, 'business.'.$args['trip_id']))
+            $channel = 'App.BusinessTrip.'.$args['trip_id'];
+            return broadcast(new DriverLocationUpdated($channel, $location))
                 ->toOthers();
         } else if (array_key_exists('driver_id', $args) && $args['driver_id']) {
             return Driver::findOrFail($args['driver_id'])->update($location);
@@ -225,7 +186,7 @@ class TripLogResolver
 
     }
 
-    public function changeTripUserStatus($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function changeTripUserStatus($_, array $args)
     {
         try {
             $tripLog = TripLog::where('log_id', $args['log_id'])
@@ -251,13 +212,47 @@ class TripLogResolver
         return 'Your status has been changed into ' . $args['status'];
     }
 
+    public function endTrip($_, array $args)
+    {
+        try {
+            $trip = BusinessTrip::findOrFail($args['trip_id']);
+            if (!$trip->status) throw new CustomException('Trip has already been ended.');
+
+            $notificationMsg = $trip->name . ' has arrived. Have a great time.';
+
+            DriverVehicle::where('driver_id', $trip->driver_id)
+                ->where('vehicle_id', $trip->vehicle_id)
+                ->update(['status' => 'ACTIVE', 'trip_type' => null, 'trip_id' => null]);
+
+            $trip->update(['status' => false, 'log_id' => null]);
+            $input = Arr::except($args, ['directive']);
+            $input['status'] = 'ENDED';
+            TripLog::create($input);
+        } catch (ModelNotFoundException $e) {
+            throw new CustomException('We could not find a trip with the provided ID.');
+        }
+
+        $notification = [
+            "id" => $trip->id,
+            "log_id" => null,
+            "name" => $trip->name,
+            "status" => $input['status']
+        ];
+
+        SendPushNotification::dispatch($this->getTokens($trip->id), $notificationMsg);
+        $this->broadcastTripLog($input);
+        $trip->partner->notify(new BusinessTripStatus($notification));
+
+        return 'Trip has been ended.';
+    }
+
     protected function getTokens($tripID)
     {
-        $tokens = DeviceToken::Join('partner_trip_users', function ($join) {
-            $join->on('partner_trip_users.user_id', '=', 'device_tokens.tokenable_id')
+        $tokens = DeviceToken::Join('business_trip_users', function ($join) {
+            $join->on('business_trip_users.user_id', '=', 'device_tokens.tokenable_id')
                 ->where('device_tokens.tokenable_type', '=', 'App\User');
             })
-            ->where('partner_trip_users.trip_id', $tripID)
+            ->where('business_trip_users.trip_id', $tripID)
             ->select('device_tokens.device_id')
             ->pluck('device_tokens.device_id')
             ->toArray();
@@ -274,11 +269,14 @@ class TripLogResolver
                 "status" => $input['status'],
                 "latitude" => $input['latitude'],
                 "longitude" => $input['longitude'],
-                "user" => $user
+                "user" => $user,
+                "__typename" => "BusinessTripLogResponse"
             ]
         ];
 
-        broadcast(new TripLogPosted($log, 'business.'.$input['trip_id']))->toOthers();
+        $channel = 'App.BusinessTrip.'.$input['log_id'];
+
+        broadcast(new TripLogPosted($channel, $log))->toOthers();
     }
 
 }

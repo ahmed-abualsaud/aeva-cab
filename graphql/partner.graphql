@@ -46,5 +46,5 @@ type Partner {
   max_no_of_trips: Int
   users: [User] @hasMany
   drivers: [Driver] @belongsToMany
-  trips: [PartnerTrip] @hasMany
+  trips: [BusinessTrip] @hasMany
 }

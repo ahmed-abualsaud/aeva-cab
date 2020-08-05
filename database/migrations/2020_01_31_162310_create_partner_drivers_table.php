@@ -14,11 +14,10 @@ class CreatePartnerDriversTable extends Migration
     public function up()
     {
         Schema::create('partner_drivers', function (Blueprint $table) {
-            $table->bigIncrements('id');
             $table->unsignedBigInteger('partner_id');
             $table->unsignedBigInteger('driver_id');
-
-            $table->unique(['partner_id', 'driver_id']);
+            
+            $table->primary(['partner_id', 'driver_id']);
 
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');

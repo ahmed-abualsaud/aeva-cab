@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePartnerTripUsersTable extends Migration
+class CreateBusinessTripUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,18 @@ class CreatePartnerTripUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('partner_trip_users', function (Blueprint $table) {
-            $table->bigIncrements('id');
+        Schema::create('business_trip_users', function (Blueprint $table) {
             $table->unsignedBigInteger('trip_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('station_id')->nullable();
             $table->timestamp('subscription_verified_at')->nullable();
             $table->timestamps();
 
-            $table->unique(['trip_id', 'user_id'], 'trip_user');
+            $table->primary(['trip_id', 'user_id']);
 
-            $table->foreign('trip_id')->references('id')->on('partner_trips')->onDelete('cascade');
+            $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('station_id')->references('id')->on('partner_trip_stations')->onDelete('cascade');
+            $table->foreign('station_id')->references('id')->on('business_trip_stations')->onDelete('cascade');
         });
     }
 
@@ -36,6 +35,6 @@ class CreatePartnerTripUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('partner_trip_users');
+        Schema::dropIfExists('business_trip_users');
     }
 }
