@@ -59,27 +59,27 @@ class CommunicationResolver
     public function sendChatMessage($_, array $args)
     {
         $input = collect($args)->except(['directive'])->toArray();
-        $message = Message::create($input);
+        $msg = Message::create($input);
 
         $sender = $args['sender_type']::select('id','name')->find($args['sender_id']);
 
-        $response = [
-            "id" => $message['id'],
-            "message" => $message['message'],
+        $res = [ 
+            "id" => $msg['id'],
+            "message" => $msg['message'],
             "created_at" => date("Y-m-d H:i:s"),
             "sender" => [
                 "id" => $sender->id,
                 "name" => $sender->name,
                 "__typename" => "Sender"
             ],
-            "sender_type" => $message['sender_type'],
+            "sender_type" => $msg['sender_type'],
             "__typename" => "Message"
         ];
 
         $channel = str_replace("\\", ".", $args['trip_type']) .'.'. $args['trip_id'];
 
-        broadcast(new MessageSent($channel, $response))->toOthers();
+        broadcast(new MessageSent($channel, $res))->toOthers();
 
-        return $message;
+        return $msg;
     }
 }
