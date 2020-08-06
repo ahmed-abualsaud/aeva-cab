@@ -55,4 +55,14 @@ class MessageSent implements ShouldBroadcast
     {
         return 'client-chat.message';
     }
+
+    /**
+     * Get the data to broadcast.
+     *
+     * @return object
+     */
+    public function broadcastWith()
+    {
+        return $this->message;
+    }
 }
