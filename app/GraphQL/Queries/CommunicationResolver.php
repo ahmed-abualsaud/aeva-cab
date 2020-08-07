@@ -14,6 +14,7 @@ class CommunicationResolver
     {
         return Message::where('trip_id', $args['trip_id'])
             ->where('trip_type', $args['trip_type'])
+            ->selectRaw('messages.*, DATE_FORMAT(created_at, "%l:%i %p") as time')
             ->get();
     }
 }

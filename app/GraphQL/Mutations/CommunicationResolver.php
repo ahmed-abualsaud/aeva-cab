@@ -67,6 +67,7 @@ class CommunicationResolver
             "id" => $msg['id'],
             "message" => $msg['message'],
             "created_at" => date("Y-m-d H:i:s"),
+            "time" => date("h:i a"),
             "sender" => [
                 "id" => $sender->id,
                 "name" => $sender->name,
@@ -80,6 +81,8 @@ class CommunicationResolver
 
         broadcast(new MessageSent($channel, $res))->toOthers();
 
+        $msg->time = date("h:i a");
+        
         return $msg;
     }
 }

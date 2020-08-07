@@ -19,6 +19,7 @@ type Message {
   id: ID
   message: String
   created_at: String
+  time: String
   sender_type: String
   sender: Sender! @morphTo
 }
