@@ -110,6 +110,7 @@ class BusinessTripResolver
         foreach($args['user_id'] as $val) {
             $arr['trip_id'] = $args['trip_id'];
             $arr['user_id'] = $val;
+            $arr['created_at'] = $arr['updated_at'] = now();
             array_push($data, $arr);
         } 
 
