@@ -176,8 +176,7 @@ class BusinessTripLogResolver
 
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
             $channel = 'App.BusinessTrip.'.$args['trip_id'];
-            return broadcast(new DriverLocationUpdated($channel, $location))
-                ->toOthers();
+            return broadcast(new DriverLocationUpdated($channel, $location));
         } else if (array_key_exists('driver_id', $args) && $args['driver_id']) {
             return Driver::findOrFail($args['driver_id'])->update($location);
         } else {
@@ -263,20 +262,17 @@ class BusinessTripLogResolver
     protected function broadcastTripLog($input, $user = null)
     {
         $log = [
-            "id" => $input['log_id'],
-            "post" => [
-                "created_at" => date("Y-m-d H:i:s"),
-                "status" => $input['status'],
-                "latitude" => $input['latitude'],
-                "longitude" => $input['longitude'],
-                "user" => $user,
-                "__typename" => "BusinessTripLogResponse"
-            ]
+            "created_at" => date("Y-m-d H:i:s"),
+            "status" => $input['status'],
+            "latitude" => $input['latitude'],
+            "longitude" => $input['longitude'],
+            "user" => $user,
+            "__typename" => "BusinessTripLogResponse"
         ];
 
         $channel = 'App.BusinessTrip.'.$input['log_id'];
 
-        broadcast(new TripLogPosted($channel, $log))->toOthers();
+        broadcast(new TripLogPosted($channel, $log));
     }
 
 }

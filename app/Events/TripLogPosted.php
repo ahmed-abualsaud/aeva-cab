@@ -47,4 +47,14 @@ class TripLogPosted implements ShouldBroadcast
     {
         return 'client-trip.log';
     }
+
+    /**
+     * Get the data to broadcast.
+     *
+     * @return object
+     */
+    public function broadcastWith()
+    {
+        return $this->log;
+    }
 }
