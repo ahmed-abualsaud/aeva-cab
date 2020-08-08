@@ -2,7 +2,7 @@
 
 namespace App\Jobs;
 
-use App\Helpers\Otp as SMS;
+use App\Helpers\Otp;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -25,6 +25,7 @@ class SendOtp implements ShouldQueue
     {
         $this->to = $to;
         $this->message = $message;
+        $this->queue = 'high';
     }
 
     /**
@@ -34,6 +35,6 @@ class SendOtp implements ShouldQueue
      */
     public function handle()
     {
-        SMS::send($this->to, $this->message);
+        Otp::send($this->to, $this->message);
     }
 }
