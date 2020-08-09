@@ -63,7 +63,7 @@ class OndemandRequestResolver
         $message = "New On-Demand Request";
         $url = config('custom.app_url')."/ondemand/".$request->id;
 
-        Notification::route('mail', 'help.ahmadghallab@gmail.com')
+        Notification::route('mail', 'sales@qruz.app')
             ->notify(new NewRequest($url, $message));
         
         return $request;
