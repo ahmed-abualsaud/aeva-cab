@@ -1,7 +1,8 @@
 <?php 
 
 return [
-
+    
+    'app_url' => env('APP_URL'),
     'google_dynamic_map_key' => env('GOOGLE_DYNAMIC_MAP_KEY'),
     'google_static_map_key' => env('GOOGLE_STATIC_MAP_KEY'),
     'azure_storage_url' => env('AZURE_STORAGE_URL'),

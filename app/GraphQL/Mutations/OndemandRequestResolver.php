@@ -6,9 +6,12 @@ use App\DeviceToken;
 use App\OndemandRequest;
 use App\OndemandRequestLine;
 use App\OndemandRequestVehicle;
+use App\Notifications\NewRequest;
 use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
+use Illuminate\Support\Facades\Mail;
 use GraphQL\Type\Definition\ResolveInfo;
+use Illuminate\Support\Facades\Notification;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -56,6 +59,12 @@ class OndemandRequestResolver
         } catch (\Exception $e) {
             throw new CustomException('We could not able to create this request.' . $e->getMessage());
         }
+
+        $message = "New On-Demand Request";
+        $url = config('custom.app_url')."/ondemand/".$request->id;
+
+        Notification::route('mail', 'help.ahmadghallab@gmail.com')
+            ->notify(new NewRequest($url, $message));
         
         return $request;
     }
