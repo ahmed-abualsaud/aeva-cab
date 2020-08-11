@@ -68,6 +68,8 @@ type BusinessTrip {
   start_date: Date
   end_date: Date
   subscription_code: String
+  distance: Int
+  duration: Int
   deleted_at: DateTime
   partner: Partner @belongsTo
   driver: Driver @belongsTo

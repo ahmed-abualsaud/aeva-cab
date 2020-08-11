@@ -2,13 +2,14 @@
 
 namespace App\GraphQL\Mutations;
 
+use Carbon\Carbon;
+use App\BusinessTrip;
 use App\BusinessTripUser;
 use App\BusinessTripStation;
 use App\Exceptions\CustomException;
-use Carbon\Carbon;
 use GraphQL\Type\Definition\ResolveInfo;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripStationResolver
 {
@@ -71,6 +72,7 @@ class BusinessTripStationResolver
     public function updateRoute($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         try {
+            
             $cases = []; $ids = []; $distance = []; $duration = [];
 
             foreach ($args['stations'] as $value) {
@@ -86,11 +88,19 @@ class BusinessTripStationResolver
             $params = array_merge($distance, $duration);
             $params[] = Carbon::now();
 
-            return \DB::update("UPDATE `business_trip_stations` SET 
+            \DB::update("UPDATE `business_trip_stations` SET 
                 `distance` = CASE `id` {$cases} END, 
                 `duration` = CASE `id` {$cases} END, 
                 `updated_at` = ? 
                 WHERE `id` in ({$ids})", $params);
+
+            $total = end($args['stations']);
+
+            BusinessTrip::find($args['trip_id'])
+                ->update(['distance' => $total['distance'], 'duration' => $total['duration']]);
+
+            return true;
+            
         } catch (\Exception $e) {
             throw new \Exception('Could not able to update. '.$e->getMessage());
         }

@@ -4,9 +4,10 @@ namespace App\GraphQL\Mutations;
 
 use App\DeviceToken;
 use App\OndemandRequest;
+use App\Mail\DefaultMail;
 use App\OndemandRequestLine;
 use App\OndemandRequestVehicle;
-use App\Notifications\NewRequest;
+// use App\Events\RequestSubmitted;
 use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Mail;
@@ -60,12 +61,23 @@ class OndemandRequestResolver
             throw new CustomException('We could not able to create this request.' . $e->getMessage());
         }
 
-        $message = "New On-Demand Request";
+        $title = "New On-Demand Request";
+        $message = "New On-Demand request has been submitted!";
         $url = config('custom.app_url')."/ondemand/".$request->id;
+        $view = 'emails.requests.submitted';
 
-        Notification::route('mail', 'sales@qruz.app')
-            ->notify(new NewRequest($url, $message));
+        Mail::to('sales@qruz.app')->send(new DefaultMail($message, $title, $url, $view));
+
+        // $req = [
+        //     'id' => $request->id,
+        //     'status' => 'PENDING',
+        //     'created_at' => date("Y-m-d H:i:s"),
+        //     'deleted_at' => null,
+        //     '__typename' => 'OndemandRequest'
+        // ];
         
+        // broadcast(new RequestSubmitted('App.Admin', 'ondemand.request', $req));
+
         return $request;
     }
 

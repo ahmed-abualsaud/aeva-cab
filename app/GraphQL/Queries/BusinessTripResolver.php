@@ -191,9 +191,9 @@ class BusinessTripResolver
         $sortedTrips = array();
         $days = array('saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday');
         $now = strtotime(now()) * 1000;
-        $timeMargin = 60 * 30 * 1000; // 30 minutes in milliseconds
 
         foreach($trips as $trip) {
+            $timeMargin = $now - ($trip->duration * 1000);
             foreach($days as $day) { 
                 if ($trip->schedule->$day) {
                     $date = date('Y-m-d', strtotime($day));
@@ -201,7 +201,7 @@ class BusinessTripResolver
                     $tripDate = strtotime($dateTime) * 1000;
                     $dayName = ($day == strtolower(date('l')) ? "Today" : $day);
                     
-                    if ($tripDate > ($now - $timeMargin) || $trip->status) {
+                    if ($tripDate > $timeMargin) {
                         $tripInstance = new BusinessTrip();
                         $trip->date = $tripDate;
                         $trip->dayName = $dayName;
@@ -217,7 +217,7 @@ class BusinessTripResolver
                     if ($trip->return_time) {
                         $dateTime = $date . ' ' . $trip->return_time;
                         $tripDate = strtotime($dateTime) * 1000;
-                        if ($tripDate > ($now - $timeMargin) || $trip->status) {
+                        if ($tripDate > $timeMargin) {
                             $tripInstance = new BusinessTrip();
                             $trip->dayName = $dayName;
                             $trip->flag = ($tripDate - $timeMargin) < $now;

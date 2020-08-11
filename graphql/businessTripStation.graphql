@@ -28,6 +28,7 @@ input UpdateBusinessTripStationInput {
 }
 
 input UpdateStationsRouteInput {
+  trip_id: ID!
   stations: [StationsRouteInput!]! @rules(apply: ["required"])
 }
 

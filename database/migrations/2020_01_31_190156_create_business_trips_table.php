@@ -24,6 +24,8 @@ class CreateBusinessTripsTable extends Migration
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->time('return_time')->nullable();
+            $table->integer('duration')->nullable();
+            $table->integer('distance')->nullable();
             $table->boolean('status')->default(0);
             $table->string('log_id')->nullable();
             $table->timestamps();

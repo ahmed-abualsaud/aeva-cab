@@ -13,16 +13,20 @@ class DefaultMail extends Mailable implements ShouldQueue
 
     public $message;
     public $title;
+    public $url;
+    public $view;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($message, $title = "Qruz")
+    public function __construct($message, $title = "Qruz", $url = null, $view = 'emails.default')
     {
         $this->message = $message;
         $this->title = $title;
+        $this->url = $url;
+        $this->view = $view;
     }
 
     /**
@@ -32,6 +36,6 @@ class DefaultMail extends Mailable implements ShouldQueue
      */
     public function build() 
     {
-        return $this->markdown('emails.default')->subject($this->title);
+        return $this->markdown($this->view)->subject($this->title);
     }
 }
