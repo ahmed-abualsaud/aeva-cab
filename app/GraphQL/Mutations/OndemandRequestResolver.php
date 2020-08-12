@@ -7,7 +7,7 @@ use App\OndemandRequest;
 use App\Mail\DefaultMail;
 use App\OndemandRequestLine;
 use App\OndemandRequestVehicle;
-// use App\Events\RequestSubmitted;
+use App\Events\RequestSubmitted;
 use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Mail;
@@ -27,7 +27,7 @@ class OndemandRequestResolver
      * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
      * @return mixed
      */
-    public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function create($_, array $args)
     {
         try {
             $input = collect($args)->except(['directive', 'vehicles', 'lines'])->toArray();
@@ -68,20 +68,20 @@ class OndemandRequestResolver
 
         Mail::to('sales@qruz.app')->send(new DefaultMail($message, $title, $url, $view));
 
-        // $req = [
-        //     'id' => $request->id,
-        //     'status' => 'PENDING',
-        //     'created_at' => date("Y-m-d H:i:s"),
-        //     'deleted_at' => null,
-        //     '__typename' => 'OndemandRequest'
-        // ];
+        $req = [
+            'id' => $request->id,
+            'status' => 'PENDING',
+            'created_at' => date("Y-m-d H:i:s"),
+            'deleted_at' => null,
+            '__typename' => 'OndemandRequest'
+        ];
         
-        // broadcast(new RequestSubmitted('App.Admin', 'ondemand.request', $req));
+        broadcast(new RequestSubmitted('App.Admin', 'ondemand.request', $req));
 
         return $request;
     }
 
-    public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function update($_, array $args)
     {
         $input = collect($args)->except(['id', 'directive'])->toArray();
 
@@ -105,15 +105,10 @@ class OndemandRequestResolver
                     ->toArray();
     
                 $response = $args['response'] ? ' '.$args['response'] : '';
-                $notificationMsg = 'Your Ondemand request ID ' . $request->id . ' has ' . strtolower($args['status']) . '.' . $response;
-    
-                $data = [
-                    "request_id" => $request->id, 
-                    "status" => $args['status']
-                ];
+                $notificationMsg = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']) . '.' . $response;
     
             }
-            SendPushNotification::dispatch($token, $notificationMsg, $data);
+            SendPushNotification::dispatch($token, $notificationMsg);
         }
 
         $request->update($input);
