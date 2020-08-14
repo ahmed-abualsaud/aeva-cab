@@ -21,7 +21,7 @@ type Message {
   created_at: String
   time: String
   sender_type: String
-  sender: Sender! @morphTo
+  sender: Sender!
 }
 
 type Sender {

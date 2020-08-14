@@ -301,6 +301,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Business Trip
   trips: [BusinessTrip] @all
+  businessLiveTrips: [BusinessTrip] @all(scopes: ["live"])
   trip(id: ID @eq): BusinessTrip @find
 
   # Business Trip Station

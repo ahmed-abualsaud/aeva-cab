@@ -10,13 +10,15 @@ use App\DeviceToken;
 use App\BusinessTrip;
 use App\DriverVehicle;
 use App\BusinessTripUser;
+use App\Mail\DefaultMail;
 use Illuminate\Support\Arr;
 use App\Events\TripLogPosted;
 use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
+use Illuminate\Support\Facades\Mail;
 use App\Events\DriverLocationUpdated;
 use GraphQL\Type\Definition\ResolveInfo;
-use App\Notifications\BusinessTripStatus;
+use App\Events\BusinessTripStatusChanged;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -28,9 +30,7 @@ class BusinessTripLogResolver
         try {
             $trip = BusinessTrip::findOrFail($args['trip_id']);
             if ($trip->status) throw new CustomException('Trip has already been started.');
-            $logID = uniqid() . 'T' . $args['trip_id'];
-
-            $notificationMsg = $trip->name . ' has been started.';
+            $log_id = uniqid() . 'T' . $args['trip_id'];
 
             DriverVehicle::where('driver_id', $trip->driver_id)
                 ->where('vehicle_id', $trip->vehicle_id)
@@ -40,26 +40,22 @@ class BusinessTripLogResolver
                     'trip_id' => $trip->id
                 ]);
 
-            $trip->update(['status' => true, 'log_id' => $logID]);
+            $trip->update(['status' => true, 'log_id' => $log_id]);
             $input = Arr::except($args, ['directive']);
             $input['status'] = 'STARTED';
-            $input['log_id'] = $logID;
+            $input['log_id'] = $log_id;
             TripLog::create($input);
         } catch (ModelNotFoundException $e) {
             throw new CustomException('We could not find a trip with the provided ID.');
         }
 
-        $notification = [
-            "id" => $trip->id,
-            "log_id" => $input['log_id'],
-            "name" => $trip->name,
-            "status" => $input['status']
-        ];
-
-        SendPushNotification::dispatch($this->getTokens($trip->id), $notificationMsg);
+        $push_msg = $trip->name . ' has been started.';
+        SendPushNotification::dispatch($this->getTokens($trip->id), $push_msg);
+        
         $this->broadcastTripLog($input);
-        $trip->partner->notify(new BusinessTripStatus($notification));
 
+        $this->broadcastTripStatus($trip, $input);
+ 
         return $trip;
     }
 
@@ -72,8 +68,8 @@ class BusinessTripLogResolver
             ->pluck('device_id')
             ->toArray();
         
-        $notificationMsg = 'Our driver is so close to you, please stand by.';
-        SendPushNotification::dispatch($tokens, $notificationMsg);
+        $push_msg = 'Our driver is so close to you, please stand by.';
+        SendPushNotification::dispatch($tokens, $push_msg);
 
         return "Notification has been sent to selected station users.";
     }
@@ -95,8 +91,8 @@ class BusinessTripLogResolver
             throw new CustomException('Notification has not been sent to the driver. ' . $e->getMessage());
         }
         
-        $notificationMsg = $user->name . ' has arrived';
-        SendPushNotification::dispatch($token, $notificationMsg);
+        $push_msg = $user->name . ' has arrived';
+        SendPushNotification::dispatch($token, $push_msg);
 
         $this->broadcastTripLog($input, $user->name);
 
@@ -141,7 +137,7 @@ class BusinessTripLogResolver
                 ->pluck('device_id')
                 ->toArray();
 
-            $notificationMsg = 'Have a wonderful trip. May you be happy and safe throughout this trip.';
+            $push_msg = 'Have a wonderful trip. May you be happy and safe throughout this trip.';
 
             $usernames = User::select('name')
                 ->whereIn('id', $newPickedUp)
@@ -156,7 +152,8 @@ class BusinessTripLogResolver
                 "longitude" => $args['longitude']
             ];
 
-            SendPushNotification::dispatch($devices, $notificationMsg);
+            SendPushNotification::dispatch($devices, $push_msg);
+
             $this->broadcastTripLog($input, implode(', ', $usernames));
 
         }
@@ -217,8 +214,6 @@ class BusinessTripLogResolver
             $trip = BusinessTrip::findOrFail($args['trip_id']);
             if (!$trip->status) throw new CustomException('Trip has already been ended.');
 
-            $notificationMsg = $trip->name . ' has arrived. Have a great time.';
-
             DriverVehicle::where('driver_id', $trip->driver_id)
                 ->where('vehicle_id', $trip->vehicle_id)
                 ->update(['status' => 'ACTIVE', 'trip_type' => null, 'trip_id' => null]);
@@ -231,16 +226,12 @@ class BusinessTripLogResolver
             throw new CustomException('We could not find a trip with the provided ID.');
         }
 
-        $notification = [
-            "id" => $trip->id,
-            "log_id" => null,
-            "name" => $trip->name,
-            "status" => $input['status']
-        ];
+        $push_msg = $trip->name . ' has arrived. Have a great time.';
+        SendPushNotification::dispatch($this->getTokens($trip->id), $push_msg);
 
-        SendPushNotification::dispatch($this->getTokens($trip->id), $notificationMsg);
         $this->broadcastTripLog($input);
-        $trip->partner->notify(new BusinessTripStatus($notification));
+
+        $this->broadcastTripStatus($trip, $input);
 
         return 'Trip has been ended.';
     }
@@ -273,6 +264,27 @@ class BusinessTripLogResolver
         $channel = 'App.BusinessTrip.'.$input['log_id'];
 
         broadcast(new TripLogPosted($channel, $log));
+    }
+
+    protected function broadcastTripStatus($trip, $input)
+    {
+        $data = [
+            "id" => $trip->id,
+            "log_id" => $input['log_id'],
+            "name" => $trip->name,
+            "status" => $input['status'],
+            "partner" => [
+                "id" => $trip->partner->id,
+                "name" => $trip->partner->name,
+                "logo" => $trip->partner->logo,
+            ]
+        ];
+        broadcast(new BusinessTripStatusChanged($data));
+        
+        $msg = $trip->name . ' trip has been ' . strtolower($input['status']);
+        Mail::to(config('custom.mail_to_address'))
+            ->cc($trip->partner->email)
+            ->send(new DefaultMail($msg, $msg));
     }
 
 }

@@ -61,22 +61,7 @@ class OndemandRequestResolver
             throw new CustomException('We could not able to create this request.' . $e->getMessage());
         }
 
-        $title = "New On-Demand Request";
-        $message = "New On-Demand request has been submitted!";
-        $url = config('custom.app_url')."/ondemand/".$request->id;
-        $view = 'emails.requests.submitted';
-
-        Mail::to('sales@qruz.app')->send(new DefaultMail($message, $title, $url, $view));
-
-        $req = [
-            'id' => $request->id,
-            'status' => 'PENDING',
-            'created_at' => date("Y-m-d H:i:s"),
-            'deleted_at' => null,
-            '__typename' => 'OndemandRequest'
-        ];
-        
-        broadcast(new RequestSubmitted('App.Admin', 'ondemand.request', $req));
+        $this->broadcastRequest($request);
 
         return $request;
     }
@@ -105,14 +90,38 @@ class OndemandRequestResolver
                     ->toArray();
     
                 $response = $args['response'] ? ' '.$args['response'] : '';
-                $notificationMsg = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']) . '.' . $response;
+                $responseTitle = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']);
+                $responseMsg = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']) . '.' . $response;
     
             }
-            SendPushNotification::dispatch($token, $notificationMsg);
+            SendPushNotification::dispatch($token, $responseMsg);
+            Mail::to($request->user->email)
+                ->send(new DefaultMail($responseMsg, $responseTitle));
         }
 
         $request->update($input);
 
         return $request;
+    }
+
+    protected function broadcastRequest($request)
+    {
+        $title = "New On-Demand Request";
+        $message = "New On-Demand request has been submitted!";
+        $url = config('custom.app_url')."/ondemand/".$request->id;
+        $view = 'emails.requests.submitted';
+
+        Mail::to(config('custom.mail_to_address'))
+            ->send(new DefaultMail($message, $title, $url, $view)); 
+
+        $req = [
+            'id' => $request->id,
+            'status' => 'PENDING',
+            'created_at' => date("Y-m-d H:i:s"),
+            'deleted_at' => null,
+            '__typename' => 'OndemandRequest'
+        ];
+        
+        broadcast(new RequestSubmitted('App.Admin', 'ondemand.request', $req));
     }
 }

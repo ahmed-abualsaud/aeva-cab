@@ -49,5 +49,10 @@ class BusinessTrip extends Model
     {
         return $query->where('id', '<>', $args['trip_id']);
     }
+
+    public function scopeLive($query) 
+    {
+        return $query->where('status', true);
+    }
     
 }
