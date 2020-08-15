@@ -191,9 +191,10 @@ class BusinessTripResolver
         $sortedTrips = array();
         $days = array('saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday');
         $now = strtotime(now()) * 1000;
+        $flagTimeMargin = 60 * 30 * 1000; // 30 minutes in milliseconds
 
         foreach($trips as $trip) {
-            $timeMargin = $now - ($trip->duration * 1000);
+            $tripTimeMargin = $now - ($trip->duration * 1000);
             foreach($days as $day) { 
                 if ($trip->schedule->$day) {
                     $date = date('Y-m-d', strtotime($day));
@@ -201,11 +202,11 @@ class BusinessTripResolver
                     $tripDate = strtotime($dateTime) * 1000;
                     $dayName = ($day == strtolower(date('l')) ? "Today" : $day);
                     
-                    if ($tripDate > $timeMargin) {
+                    if ($tripDate > $tripTimeMargin) {
                         $tripInstance = new BusinessTrip();
                         $trip->date = $tripDate;
                         $trip->dayName = $dayName;
-                        $trip->flag = ($tripDate - $timeMargin) < $now;
+                        $trip->flag = ($tripDate - $flagTimeMargin) < $now;
                         $trip->isReturn = false;
                         $trip->startsAt = $tripDate > $now 
                             ? Carbon::parse($dateTime)->diffForHumans() 
@@ -217,10 +218,10 @@ class BusinessTripResolver
                     if ($trip->return_time) {
                         $dateTime = $date . ' ' . $trip->return_time;
                         $tripDate = strtotime($dateTime) * 1000;
-                        if ($tripDate > $timeMargin) {
+                        if ($tripDate > $tripTimeMargin) {
                             $tripInstance = new BusinessTrip();
                             $trip->dayName = $dayName;
-                            $trip->flag = ($tripDate - $timeMargin) < $now;
+                            $trip->flag = ($tripDate - $flagTimeMargin) < $now;
                             $trip->date = $tripDate;
                             $trip->startsAt = $trip->date > $now 
                                 ? Carbon::parse($dateTime)->diffForHumans() 
