@@ -4,12 +4,13 @@ namespace App\GraphQL\Mutations;
 
 use JWTAuth;
 use App\User;
-use App\PartnerUser;
 use App\DeviceToken;
+use App\PartnerUser;
 use App\Jobs\SendOtp;
 use App\Traits\UploadFile;
 use Illuminate\Support\Str; 
 use App\Exceptions\CustomException;
+use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -33,7 +34,7 @@ class UserResolver
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         $input = collect($args)
-            ->except(['directive', 'avatar', 'platform', 'device_id'])
+            ->except(['directive', 'avatar', 'platform', 'device_id', 'ref_code'])
             ->toArray(); 
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -51,6 +52,22 @@ class UserResolver
         $input['password'] = Hash::make($password);
 
         $user = User::create($input);
+
+        $user->update(["ref_code" => Hashids::encode($user->id)]);
+
+        if (array_key_exists('ref_code', $args) && $args['ref_code']) {
+            $referrer_id = Hashids::decode($args['ref_code']);
+            if (isset($referrer_id[0]) || is_int($referrer_id[0])) {
+                $referrer = User::find($referrer_id[0]);
+                if ($referrer) {
+                    $referrer->wallet_balance += 15;
+                    $user->referrer_id = $referrer->id;
+                    $user->wallet_balance += 15;
+                    $referrer->save();
+                    $user->save();
+                }
+            }
+        }
 
         if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
             $this->createDeviceToken($rootValue, $args, $context, $resolveInfo, $user->id);

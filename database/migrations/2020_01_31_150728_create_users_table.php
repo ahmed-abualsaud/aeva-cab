@@ -19,23 +19,26 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique()->nullable();
             $table->string('password')->nullable();
             $table->string('phone')->unique()->nullable();
+            $table->timestamp('phone_verified_at')->nullable();
             $table->string('emergency_no')->nullable();
             $table->string('title')->nullable();
             $table->string('avatar')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
-            $table->timestamp('phone_verified_at')->nullable();
+            $table->unsignedBigInteger('referrer_id')->nullable();
             $table->enum('payment_mode', ['CASH', 'CARD', 'PAYPAL'])->nullable();
             $table->double('latitude', 15, 8)->nullable();
             $table->double('longitude',15,8)->nullable();
-            $table->string('stripe_cust_id')->nullable();
             $table->float('wallet_balance')->default(0);
             $table->decimal('rating', 4, 2)->default(5);
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
+            $table->string('ref_code')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
             
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
+            $table->foreign('referrer_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 

@@ -10,6 +10,7 @@ input CreateUserInput {
   avatar: Upload
   platform: String @rules(apply: ["in:android,ios"])
   device_id: String
+  ref_code: String
 }
 
 input UpdateUserInput {
@@ -109,6 +110,7 @@ type User {
   is_picked_up: Boolean
   is_arrived: Boolean
   phone_verified_at: String
+  ref_code: String
   created_at: String
   updated_at: String
   partner: Partner @belongsTo

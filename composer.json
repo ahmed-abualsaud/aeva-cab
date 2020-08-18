@@ -22,7 +22,8 @@
         "nuwave/lighthouse": "^4.8",
         "predis/predis": "^1.1",
         "pusher/pusher-php-server": "^4.1",
-        "tymon/jwt-auth": "dev-develop"
+        "tymon/jwt-auth": "dev-develop",
+        "vinkla/hashids": "^7.0.0"
     },
     "require-dev": {
         "facade/ignition": "^1.4",
