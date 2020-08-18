@@ -13,13 +13,14 @@ class CreateOndemandRequestVehiclesTable extends Migration
      */
     public function up()
     {
-        Schema::create('ondemand_request_vehicles', function (Blueprint $table) {
+        Schema::create('ondemand_request_vehicles', function (Blueprint $table) { 
+            $table->bigIncrements('id');
             $table->unsignedBigInteger('request_id');
             $table->unsignedBigInteger('car_type_id');
             $table->unsignedBigInteger('car_model_id');
             $table->unsignedInteger('count');
 
-            $table->primary(['request_id', 'car_model_id']);
+            $table->unique(['request_id', 'car_model_id']);
 
             $table->foreign('request_id')->references('id')->on('ondemand_requests')->onDelete('cascade');
             $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('cascade');

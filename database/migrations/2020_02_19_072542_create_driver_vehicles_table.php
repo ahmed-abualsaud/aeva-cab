@@ -14,13 +14,14 @@ class CreateDriverVehiclesTable extends Migration
     public function up()
     {
         Schema::create('driver_vehicles', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->unsignedBigInteger('driver_id');
             $table->unsignedBigInteger('vehicle_id');
             $table->enum('status', ['ACTIVE', 'OFFLINE', 'RIDING'])->default('OFFLINE');
             $table->string('trip_type')->nullable();
             $table->unsignedInteger('trip_id')->nullable();
 
-            $table->primary(['driver_id', 'vehicle_id']);
+            $table->unique(['driver_id', 'vehicle_id']);
 
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('cascade');
