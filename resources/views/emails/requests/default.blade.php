@@ -1,5 +1,5 @@
 @component('mail::message')
-# Request Submitted
+# Hello
 
 {{ $message }}
 
@@ -8,5 +8,5 @@ View Request
 @endcomponent
 
 Regards,<br>
-{{ config('app.name') }}
+Qruz Team
 @endcomponent

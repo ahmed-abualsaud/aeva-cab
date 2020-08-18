@@ -76,7 +76,11 @@ class OndemandRequestResolver
             throw new CustomException('The provided request ID is not found.');
         }
 
-        if (array_key_exists('status', $args) && $args['status']) { 
+        if (array_key_exists('status', $args) && $args['status']) {
+            
+            if ($request->status === 'CANCELLED' || $request->status === 'REJECTED') {
+                throw new CustomException('Request status can not be changed.');
+            }
             
             if ($args['status'] === 'CANCELLED' && $request->status !== 'PENDING') {
                 throw new CustomException('This request can not be cancelled.');
@@ -89,14 +93,22 @@ class OndemandRequestResolver
                     ->pluck('device_id')
                     ->toArray();
     
-                $response = $args['response'] ? ' '.$args['response'] : '';
                 $responseTitle = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']);
-                $responseMsg = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']) . '.' . $response;
+                $responseMsg = $responseTitle;
+                if ($args['response']) $responseMsg .= '. '. $args['response'];
     
+                SendPushNotification::dispatch($token, $responseMsg);
+                Mail::to($request->user->email)
+                    ->send(new DefaultMail($responseMsg, $responseTitle));
+            } else {
+                $title = "On-Demand Request Cancelled";
+                $message = "On-Demand request ID ". $request->id ." has been cancelled by user";
+                if (array_key_exists('comment', $args) && $args['comment']) { 
+                    $message .= ". ".$args['comment'];
+                }
+
+                $this->mailRequest($message, $title, $request->id);
             }
-            SendPushNotification::dispatch($token, $responseMsg);
-            Mail::to($request->user->email)
-                ->send(new DefaultMail($responseMsg, $responseTitle));
         }
 
         $request->update($input);
@@ -108,11 +120,8 @@ class OndemandRequestResolver
     {
         $title = "New On-Demand Request";
         $message = "New On-Demand request has been submitted!";
-        $url = config('custom.app_url')."/ondemand/".$request->id;
-        $view = 'emails.requests.submitted';
 
-        Mail::to(config('custom.mail_to_address'))
-            ->send(new DefaultMail($message, $title, $url, $view)); 
+        $this->mailRequest($message, $title, $request->id);
 
         $req = [
             'id' => $request->id,
@@ -124,5 +133,14 @@ class OndemandRequestResolver
         ];
         
         broadcast(new RequestSubmitted('App.Admin', 'ondemand.request', $req));
+    }
+
+    protected function mailRequest($message, $title, $request_id)
+    {
+        $view = 'emails.requests.default';
+        $url = config('custom.app_url')."/ondemand/".$request_id;
+        
+        Mail::to(config('custom.mail_to_address'))
+            ->send(new DefaultMail($message, $title, $url, $view));
     }
 }

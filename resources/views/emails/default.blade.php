@@ -3,6 +3,6 @@
 
 {{ $message }}
 
-Thanks,<br>
+Regards,<br>
 Qruz Team
 @endcomponent
