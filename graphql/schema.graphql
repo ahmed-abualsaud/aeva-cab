@@ -281,8 +281,10 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "DocumentResolver")
 
   # Driver Vehicle
-  driverVehicles(driver_id: ID! assigned: Boolean!): [Vehicle] 
-    @paginate(scopes: ["assignedOrNot"])
+  driverAssignedVehicles(driver_id: ID!): [Vehicle] 
+    @field(resolver: "VehicleResolver@driverAssignedVehicles")
+  driverNotAssignedVehicles(driver_id: ID!): [Vehicle] 
+    @paginate(scopes: ["notAssigned"])
 
   # Partner
   partners: [Partner] @all
@@ -327,8 +329,8 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   businessTripLog(log_id: String!): [BusinessTripLogResponse]
     @field(resolver: "BusinessTripLogResolver@businessTripLog")
   businessTripLogHistory(trip_id: ID! period: String): [BusinessTripLogHistoryResponse]
-    @field(resolver: "BusinessTripLogResolver@businessTripLogHistory")
-
+    @paginate(builder: "App\\TripLog@history")
+ 
   # Notifications
   unreadNotifications: [Notification]!
     @field(resolver: "NotificationResolver@unreadNotifications")

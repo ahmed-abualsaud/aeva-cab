@@ -5,14 +5,12 @@ namespace App\GraphQL\Queries;
 use App\Driver;
 use App\TripLog;
 use App\BusinessTripUser;
-use App\Traits\DateFilter;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripLogResolver
 {
-    use DateFilter;
     /**
      * Return a value for the field.
      *
@@ -32,22 +30,6 @@ class BusinessTripLogResolver
             ->get();
 
         return $log; 
-    }
-
-    public function businessTripLogHistory($_, array $args)
-    {
-        $logHistory = TripLog::selectRaw('log_id, DATE(created_at) as date');
-
-        if (array_key_exists('period', $args) && $args['period']) {
-            $logHistory = $this->dateFilter($args['period'], $logHistory, 'created_at');
-        }
-
-        $logHistory = $logHistory->where('trip_id', $args['trip_id'])
-            ->groupBy('log_id','date')
-            ->orderBy('date', 'desc')
-            ->get();
-        
-        return $logHistory;
     }
 
     public function driverLocation($_, array $args)

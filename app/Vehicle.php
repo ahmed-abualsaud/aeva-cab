@@ -27,14 +27,10 @@ class Vehicle extends Model
         return $this->belongsTo(CarType::class, 'car_type_id');
     }
 
-    public function scopeAssignedOrNot($query, $args) 
+    public function scopeNotAssigned($query, $args) 
     {
         $driverVehicles = DriverVehicle::where('driver_id', $args['driver_id'])->get()->pluck('vehicle_id');
 
-        if ($args['assigned']) {
-            return $query->whereIn('id', $driverVehicles);
-        } else {
-            return $query->whereNotIn('id', $driverVehicles);
-        }
+        return $query->whereNotIn('id', $driverVehicles);
     }
 }
