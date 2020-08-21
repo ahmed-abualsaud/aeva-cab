@@ -2,10 +2,11 @@
 
 namespace App;
 
+use App\PartnerDriver;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 
 class Driver extends Authenticatable implements JWTSubject
@@ -113,5 +114,12 @@ class Driver extends Authenticatable implements JWTSubject
         }
 
         return $query->orderBy('created_at', 'DESC');
+    }
+
+    public function scopeNotAssigned($query, $args) 
+    {
+        $partnerDrivers = PartnerDriver::where('partner_id', $args['partner_id'])->pluck('driver_id');
+
+        return $query->whereNotIn('id', $partnerDrivers);
     }
 } 

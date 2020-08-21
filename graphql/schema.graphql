@@ -290,19 +290,19 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   partners: [Partner] @all
   partner(id: ID @eq): Partner @find
   authPartner: Partner @auth
-  businessTrips(partner_id: ID! @eq orderBy: [OrderByClause] @orderBy): [BusinessTrip] 
-    @all @softDeletes
   partnerLiveTrips(partner_id: ID!): [PartnerLiveTrip]
     @field(resolver: "BusinessTripResolver@partnerLiveTrips")
   partnerPredefinedStations(partner_id: ID! @eq trip_id: ID!): [BusinessTrip] 
     @all(scopes: ["predefinedStations"])
 
-  # Partner Driver
-  partnerDrivers(partner_id: ID! assigned: Boolean!): [Driver] 
-    @field(resolver: "PartnerResolver@drivers")
+  # Partner Driver 
+  partnerAssignedDrivers(partner_id: ID!): [Driver] 
+    @field(resolver: "PartnerResolver@partnerAssignedDrivers")
+  partnerNotAssignedDrivers(partner_id: ID!): [Driver] 
+    @paginate(scopes: ["notAssigned"])
 
   # Business Trip
-  trips: [BusinessTrip] @all
+  businessTrips(partner_id: ID): [BusinessTrip] @paginate(scopes: ["filterByPartner"]) @softDeletes
   businessLiveTrips: [BusinessTrip] @all(scopes: ["live"])
   trip(id: ID @eq): BusinessTrip @find
 
