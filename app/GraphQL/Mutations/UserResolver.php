@@ -57,7 +57,7 @@ class UserResolver
 
         if (array_key_exists('ref_code', $args) && $args['ref_code']) {
             $referrer_id = Hashids::decode($args['ref_code']);
-            if (isset($referrer_id[0]) || is_int($referrer_id[0])) {
+            if ($referrer_id && isset($referrer_id[0]) && is_int($referrer_id[0])) {
                 $referrer = User::find($referrer_id[0]);
                 if ($referrer) {
                     $referrer->wallet_balance += 15;
