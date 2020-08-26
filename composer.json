@@ -22,6 +22,7 @@
         "nuwave/lighthouse": "^4.8",
         "predis/predis": "^1.1",
         "pusher/pusher-php-server": "^4.1",
+        "rennokki/laravel-eloquent-query-cache": "^2.2",
         "tymon/jwt-auth": "dev-develop",
         "vinkla/hashids": "^7.0.0"
     },
