@@ -4,15 +4,15 @@ namespace App\GraphQL\Mutations;
 
 use App\User;
 use App\PartnerUser;
-use App\Jobs\SendOtp;
 use App\BusinessTrip;
+use App\Jobs\SendOtp;
 use App\DriverVehicle;
 use App\BusinessTripUser;
 use App\Mail\DefaultMail;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str; 
 use App\BusinessTripSchedule; 
 use App\Exceptions\CustomException;
+use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Support\Facades\Mail;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -34,12 +34,11 @@ class BusinessTripResolver
         $tripInput = $this->tripInput($args);
         $newTrip = BusinessTrip::create($tripInput);
 
-        $subscriptionCode = Str::random(4) . 'P' . $newTrip->partner_id . 'T' . $newTrip->id;
-        $newTrip->update(['subscription_code' => $subscriptionCode]);
+        $newTrip->update(['subscription_code' => Hashids::encode($newTrip->id)]);
          
         $scheduleInput = $this->scheduleInput($args);
 
-        $scheduleInput['trip_id'] = $newTrip->id;
+        $scheduleInput['trip_id'] = $newTrip->id; 
         BusinessTripSchedule::create($scheduleInput);
 
         return $newTrip;
@@ -140,14 +139,14 @@ class BusinessTripResolver
     public function subscribeUser($_, array $args) 
     {
         try {
-            $trip = BusinessTrip::where('subscription_code', $args['subscription_code'])
-                ->firstOrFail();
+            $trip_id = Hashids::decode($args['subscription_code']);
+            $trip = BusinessTrip::findOrFail($trip_id[0]);
         } catch (\Exception $e) {
-            throw new CustomException('The provided subscription code is not valid.');
+            throw new CustomException('Subscription code is not valid.');
         }
         
         try {
-            $tripUser = BusinessTripUser::where('trip_id', $trip['id'])
+            $tripUser = BusinessTripUser::where('trip_id', $trip->id)
                 ->where('user_id', $args['user_id'])
                 ->firstOrFail();
             if ($tripUser->subscription_verified_at) {
@@ -157,15 +156,15 @@ class BusinessTripResolver
             }
         } catch (ModelNotFoundException $e) {
             BusinessTripUser::create([
-                'trip_id' => $trip['id'],
+                'trip_id' => $trip->id,
                 'user_id' => $args['user_id'],
                 'subscription_verified_at' => now()
             ]);
 
             PartnerUser::firstOrCreate([
-                'partner_id' => $trip['partner_id'], 
+                'partner_id' => $trip->partner_id, 
                 'user_id' => $args['user_id']
-            ], ['employee_id' => 'P' . $trip['partner_id'] . 'U' . $args['user_id']]);
+            ]);
         }
         
         return $trip;

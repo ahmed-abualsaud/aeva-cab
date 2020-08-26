@@ -16,7 +16,6 @@ class CreatePartnerUsersTable extends Migration
         Schema::create('partner_users', function (Blueprint $table) {
             $table->unsignedBigInteger('partner_id');
             $table->unsignedBigInteger('user_id');
-            $table->string('employee_id')->nullable();
 
             $table->primary(['partner_id', 'user_id']);
 
