@@ -155,7 +155,7 @@ class UserResolver
             }
             $userData = Socialite::driver($args['provider'])->userFromToken($args['token']);
         } catch (\Exception $e) {
-            throw new CustomException('The provided token is invalid. '.$e->getMessage());
+            throw new CustomException('The provided token is invalid.');
         }
 
         try {
