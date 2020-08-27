@@ -149,9 +149,13 @@ class UserResolver
     public function socialLogin($_, array $args)
     {
         try {
+            if (array_key_exists('platform', $args) && $args['platform'] == 'android' && $args['provider'] == 'google') {
+                $args['token'] = Socialite::driver('google')
+                    ->getAccessTokenResponse($args['token'])['access_token'];
+            }
             $userData = Socialite::driver($args['provider'])->userFromToken($args['token']);
         } catch (\Exception $e) {
-            throw new CustomException('The provided token is invalid.');
+            throw new CustomException('The provided token is invalid. '.$e->getMessage());
         }
 
         try {

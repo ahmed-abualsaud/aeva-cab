@@ -17,7 +17,7 @@ class CreateDeviceTokensTable extends Migration
             $table->bigIncrements('id');
             $table->morphs('tokenable');
             $table->enum('platform', ['ios', 'android']);
-            $table->string('device_id');
+            $table->string('device_id')->index();
             $table->timestamps();
         });
     }
