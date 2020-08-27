@@ -101,7 +101,6 @@ type User {
   avatar: String
   title: String
   partner_id: ID
-  employee_id: String
   payment_mode: String
   latitude: String
   longitude: String

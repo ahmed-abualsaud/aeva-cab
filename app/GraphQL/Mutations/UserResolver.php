@@ -23,15 +23,10 @@ class UserResolver
     use UploadFile;
 
     /**
-     * Return a value for the field.
-     *
-     * @param  null  $rootValue Usually contains the result returned from the parent field. In this case, it is always `null`.
-     * @param  mixed[]  $args The arguments that were passed into the field.
-     * @param  \Nuwave\Lighthouse\Support\Contracts\GraphQLContext  $context Arbitrary data that is shared between all fields of a single query.
-     * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
-     * @return mixed
+     * @param  null  $_
+     * @param  array<string, mixed>  $args
      */
-    public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function create($_, array $args)
     {
         $input = collect($args)
             ->except(['directive', 'avatar', 'platform', 'device_id', 'ref_code'])
@@ -70,15 +65,14 @@ class UserResolver
         }
 
         if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
-            $this->createDeviceToken($rootValue, $args, $context, $resolveInfo, $user->id);
+            $this->createDeviceToken($_, $args, $user->id);
         }
 
         $token = null;
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             PartnerUser::create([
                 "partner_id" => $args['partner_id'],
-                "user_id" => $user->id,
-                "employee_id" => 'P' . $args['partner_id'] . 'U' . $user->id
+                "user_id" => $user->id
             ]);
         } else {
             Auth::onceUsingId($user->id);
@@ -91,7 +85,7 @@ class UserResolver
         ];
     }
 
-    public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function update($_, array $args)
     {
         $input = collect($args)->except(['id', 'directive', 'avatar'])->toArray();
 
@@ -116,7 +110,7 @@ class UserResolver
         return ['user' => $user];
     }
 
-    public function login($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function login($_, array $args)
     {
 
         $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
@@ -142,7 +136,7 @@ class UserResolver
                     ->where('tokenable_type', 'App\User')
                     ->firstOrFail();
             } catch (ModelNotFoundException $e) {
-                $this->createDeviceToken($rootValue, $args, $context, $resolveInfo, $user->id);
+                $this->createDeviceToken($_, $args, $user->id);
             }
         }
 
@@ -152,7 +146,7 @@ class UserResolver
         ];
     } 
 
-    public function socialLogin($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function socialLogin($_, array $args)
     {
         try {
             $userData = Socialite::driver($args['provider'])->userFromToken($args['token']);
@@ -170,6 +164,7 @@ class UserResolver
                 'provider_id' => $userData->getId(),
                 'avatar'      => $userData->getAvatar(),
             ]);
+            $user->update(["ref_code" => Hashids::encode($user->id)]);
         }
 
         if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
@@ -178,7 +173,7 @@ class UserResolver
                     ->where('tokenable_type', 'App\User')
                     ->firstOrFail();
             } catch (ModelNotFoundException $e) {
-                $this->createDeviceToken($rootValue, $args, $context, $resolveInfo, $user->id);
+                $this->createDeviceToken($_, $args, $user->id);
             }
         }
 
@@ -192,7 +187,7 @@ class UserResolver
         ];
     }
 
-    public function phoneVerification($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function phoneVerification($_, array $args)
     {
         $verification_code = mt_rand(1000, 9999);
 
@@ -205,7 +200,7 @@ class UserResolver
         ];
     }
 
-    public function updatePassword($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function updatePassword($_, array $args)
     {
         try {
             $user = User::findOrFail($args['id']);
@@ -240,7 +235,7 @@ class UserResolver
 
     }
 
-    protected function createDeviceToken($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo, $user_id)
+    protected function createDeviceToken($_, $args, $user_id)
     {
         $tokenInput = collect($args)->only(['platform', 'device_id'])->toArray();
         $tokenInput['tokenable_id'] = $user_id;

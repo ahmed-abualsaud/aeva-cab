@@ -23,7 +23,6 @@ class PartnerResolver
     {
         $partnerUsers = User::Join('partner_users', 'partner_users.user_id', '=', 'users.id')
             ->where('partner_users.partner_id', $args['partner_id'])
-            ->selectRaw('users.*, partner_users.employee_id')
             ->get();
 
         return $partnerUsers;
