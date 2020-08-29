@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Socialite\Contracts\Factory;
+use GeneaLabs\LaravelSignInWithApple\Providers\SignInWithAppleProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,5 +30,20 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+        $this->bootSocialiteDriver();
+    }
+
+    public function bootSocialiteDriver()
+    {
+        $socialite = $this->app->make(Factory::class);
+        $socialite->extend(
+            'apple',
+            function ($app) use ($socialite) {
+                $config = $app['config']['services.apple'];
+
+                return $socialite
+                    ->buildProvider(SignInWithAppleProvider::class, $config);
+            }
+        );
     }
 }

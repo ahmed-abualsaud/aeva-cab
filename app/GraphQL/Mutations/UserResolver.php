@@ -154,20 +154,26 @@ class UserResolver
                     ->getAccessTokenResponse($args['token'])['access_token'];
             }
             $userData = Socialite::driver($args['provider'])->userFromToken($args['token']);
+            $input = ['provider' => $args['provider']];
+            if ($args['provider'] == 'apple') {
+                $input['provider_id'] = $userData->id;
+                $input['name'] = $userData->name ?? explode('@', $userData->email)[0];
+                $input['email'] = $userData->email;
+            } else {
+                $input['provider_id'] = $userData->getId();
+                $input['name'] = $userData->getName();
+                $input['email'] = $userData->getEmail();
+                $input['avatar'] = $userData->getAvatar();
+            }
         } catch (\Exception $e) {
-            throw new CustomException('The provided token is invalid.');
+            throw new CustomException('The provided token is invalid.'.$e->getMessage());
         }
 
         try {
-            $user = User::where('provider', Str::lower($args['provider']))->where('provider_id', $userData->getId())->firstOrFail();
+            $user = User::where('provider', Str::lower($args['provider']))
+                ->where('provider_id', $input['provider_id'])->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            $user = User::create([
-                'name'        => $userData->getName(),
-                'email'       => $userData->getEmail(),
-                'provider'    => $args['provider'], 
-                'provider_id' => $userData->getId(),
-                'avatar'      => $userData->getAvatar(),
-            ]);
+            $user = User::create($input);
             $user->update(["ref_code" => Hashids::encode($user->id)]);
         }
 

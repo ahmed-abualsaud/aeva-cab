@@ -12,6 +12,7 @@
         "beyondcode/laravel-websockets": "^1.4",
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.0",
+        "genealabs/laravel-sign-in-with-apple": "0.3.1",
         "laravel/framework": "^6.2",
         "laravel/horizon": "~3.0",
         "laravel/socialite": "^4.3",
