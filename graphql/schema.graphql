@@ -38,7 +38,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # User
   updateUser(input: UpdateUserInput! @spread): UserPayload 
     @field(resolver: "UserResolver@update") @updateUserValidation
-  deleteUser(id: ID!): User @delete
+  deleteUser(id: ID!): User @forceDelete
   changeUserPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "UserResolver@updatePassword")
 
@@ -47,12 +47,12 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "FleetResolver@create")
   updateFleet(input: UpdateFleetInput! @spread): Fleet 
     @field(resolver: "FleetResolver@update") @updateFleetValidation
-  deleteFleet(id: ID!): Fleet @delete
+  deleteFleet(id: ID!): Fleet @forceDelete
 
   # Driver
   updateDriver(input: UpdateDriverInput! @spread): Driver 
     @field(resolver: "DriverResolver@update") @updateDriverValidation
-  deleteDriver(id: ID!): Driver @delete
+  deleteDriver(id: ID!): Driver @forceDelete
   changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "DriverResolver@updatePassword")
 
@@ -63,7 +63,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "AdminResolver@update") @updateAdminValidation
   changeAdminPassword(input: ChangePasswordInput @spread): String 
     @field(resolver: "AdminResolver@updatePassword")
-  deleteAdmin(id: ID!): Admin @delete
+  deleteAdmin(id: ID!): Admin @forceDelete
 
   # Role Type
   createRole(input: CreateRoleInput! @spread): Role @create
@@ -75,31 +75,31 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "VehicleResolver@create")
   updateVehicle(input: UpdateVehicleInput! @spread): Vehicle 
     @field(resolver: "VehicleResolver@update") @updateVehicleValidation
-  deleteVehicle(id: ID!): Vehicle @delete
+  deleteVehicle(id: ID!): Vehicle @forceDelete
 
   # Car Make
   createCarMake(input: CreateCarMakeInput! @spread): CarMake @create
   updateCarMake(input: UpdateCarMakeInput! @spread): CarMake @update @updateCarMakeValidation
-  deleteCarMake(id: ID!): CarMake @delete
+  deleteCarMake(id: ID!): CarMake @forceDelete
 
   # Car Model
   createCarModel(input: CreateCarModelInput! @spread): CarModel 
     @field(resolver: "CarModelResolver@create")
   updateCarModel(input: UpdateCarModelInput! @spread): CarModel
     @field(resolver: "CarModelResolver@update")
-  deleteCarModel(id: ID!): CarModel @delete
+  deleteCarModel(id: ID!): CarModel @forceDelete
 
   # Car Type
   createCarType(input: CreateCarTypeInput! @spread): CarType
     @field(resolver: "CarTypeResolver@create")
   updateCarType(input: UpdateCarTypeInput! @spread): CarType 
     @field(resolver: "CarTypeResolver@update") @updateCarTypeValidation
-  deleteCarType(id: ID!): CarType @delete
+  deleteCarType(id: ID!): CarType @forceDelete
 
   # Promo Code
   createPromoCode(input: CreatePromoCodeInput! @spread): PromoCode @create
   updatePromoCode(input: UpdatePromoCodeInput! @spread): PromoCode @update @updatePromoCodeValidation
-  deletePromoCode(id: ID!): PromoCode @delete
+  deletePromoCode(id: ID!): PromoCode @forceDelete
 
   # Document
   uploadDocument(input: UploadDocumentInput @spread): Document
@@ -119,7 +119,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "PartnerResolver@create")
   updatePartner(input: UpdatePartnerInput! @spread): Partner 
     @field(resolver: "PartnerResolver@update") @updatePartnerValidation
-  deletePartner(id: ID!): Partner @delete
+  deletePartner(id: ID!): Partner @forceDelete
   changePartnerPassword(input: ChangePasswordInput @spread): String 
     @field(resolver: "PartnerResolver@updatePassword")
 
