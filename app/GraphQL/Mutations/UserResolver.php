@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use GraphQL\Type\Definition\ResolveInfo;
 use Laravel\Socialite\Facades\Socialite;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
  
 class UserResolver
@@ -201,7 +200,7 @@ class UserResolver
     {
         $verification_code = mt_rand(1000, 9999);
 
-        $message = $verification_code . " is your Qruz verification code";
+        $message = "Your Qruz code is: ".$verification_code;
 
         SendOtp::dispatch($args['phone'], $message);
 
