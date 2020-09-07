@@ -20,6 +20,7 @@ class CreateCarModelsTable extends Migration
             $table->unsignedBigInteger('make_id');
             $table->unsignedSmallInteger('seats')->nullable();
             $table->string('photo')->nullable();
+            $table->boolean('ondemand')->default(1);
             $table->timestamps();
             $table->softDeletes();
 

@@ -22,4 +22,13 @@ class CarType extends Model
      * @var bool
      */
     protected static $flushCacheOnUpdate = true;
+
+    public function scopeFilter($query, $args) 
+    {
+        if (array_key_exists('ondemand', $args) && !$args['ondemand']) {
+            return $query;
+        }
+
+        return $query->where('ondemand', true);;
+    }
 }

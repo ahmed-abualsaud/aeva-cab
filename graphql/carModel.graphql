@@ -4,6 +4,7 @@ input CreateCarModelInput {
   make_id: ID! @rules(apply: ["required"])
   seats: Int! @rules(apply: ["required"])
   photo: Upload
+  ondemand: Boolean
 }
 
 input UpdateCarModelInput {
@@ -13,6 +14,7 @@ input UpdateCarModelInput {
   make_id: ID
   seats: Int
   photo: Upload
+  ondemand: Boolean
 }
 
 type CarModel {
@@ -22,4 +24,5 @@ type CarModel {
   make: CarMake @belongsTo
   seats: Int
   photo: String
+  ondemand: Boolean
 }

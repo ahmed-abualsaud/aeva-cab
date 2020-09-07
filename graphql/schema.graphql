@@ -199,6 +199,16 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "CommunicationResolver@sendDirectMessage")
   sendChatMessage(input: SendChatMessageInput! @spread): Message
     @field(resolver: "CommunicationResolver@sendChatMessage")
+
+  # Payment
+  addCard(input: addCard! @spread): DefaultResponse
+    @field(resolver: "PaymentResolver@addCard")
+  resendCode(card_id: ID!): DefaultResponse 
+    @field(resolver: "PaymentResolver@resendCode")
+  validateOTP(input: validateOTP! @spread): DefaultResponse 
+    @field(resolver: "PaymentResolver@validateOTP")
+  makePayment(input: makePayment! @spread): DefaultResponse 
+    @field(resolver: "PaymentResolver@makePayment")
 } 
 
 # Queries that require Auth
@@ -256,7 +266,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   carMakeModels(make_id: ID @eq): [CarModel] @all
 
   # Car Type
-  carTypes: [CarType] @all
+  carTypes(ondemand: Boolean): [CarType] @all(scopes: ["filter"])
   carType(id: ID @eq): CarType @find
 
   # Promo Code
@@ -338,6 +348,10 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Communication
   chatMessages(trip_id: String!, trip_type: String!): [Message] 
     @field(resolver: "CommunicationResolver@chatMessages")
+
+  # Payment
+  paymentCards(user_id: ID! @eq): [Card] @all
+  paymentCard(id: ID @eq): Card @find
 }
 
 #import fleet.graphql 
@@ -363,3 +377,4 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import cabRequestPayment.graphql
 #import ondemandRequest.graphql
 #import notification.graphql
+#import payment.graphql

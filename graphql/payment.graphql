@@ -1,0 +1,31 @@
+input addCard {
+  user_id: ID! @rules(apply: ["required"])
+  holder_name: String! @rules(apply: ["required"])
+  email: String! @rules(apply: ["required", "email"])
+  mobile_number: String! @rules(apply: ["required"])
+  card_num: String! @rules(apply: ["required"])
+  card_exp_m: Int! @rules(apply: ["required", "max:2"])
+  card_exp_y: Int! @rules(apply: ["required", "max:2"])
+  card_cvc: Int! @rules(apply: ["required"])
+}
+
+input validateOTP {
+  card_id: ID! @rules(apply: ["required"])
+  validation_code: String! @rules(apply: ["required"])
+}
+
+input makePayment {
+  card_id: ID! @rules(apply: ["required"])
+  amount: Float! @rules(apply: ["required"])
+}
+
+type Card {
+  id: ID
+  holder_name: String
+  card_exp: String
+  last_four: Int
+  is_default: Boolean
+  payer_id: String
+  card_id: String
+  created_at: String
+}

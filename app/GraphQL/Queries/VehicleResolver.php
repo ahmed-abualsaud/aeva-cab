@@ -22,6 +22,7 @@ class VehicleResolver
     public function vehicleModelsByType($_, array $args)
     {
         $models = CarModel::where('car_models.type_id', $args['type_id'])
+            ->where('ondemand', true)
             ->join('car_makes', 'car_makes.id', '=', 'car_models.make_id')
             ->selectRaw("
                 car_models.id AS id, 

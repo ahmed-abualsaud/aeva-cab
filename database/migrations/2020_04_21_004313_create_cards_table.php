@@ -15,10 +15,12 @@ class CreateCardsTable extends Migration
     {
         Schema::create('cards', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id');
-            $table->string('last_four');
+            $table->unsignedBigInteger('user_id')->index();
+            $table->string('payer_id');
             $table->string('card_id');
-            $table->string('brand')->nullable();
+            $table->string('holder_name');
+            $table->date('card_exp');
+            $table->smallInteger('last_four');
             $table->boolean('is_default')->default(0);
             $table->timestamps();
 

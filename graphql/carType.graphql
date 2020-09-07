@@ -7,18 +7,20 @@ input CreateCarTypeInput {
   distance: Int! @rules(apply: ["required"])
   calculator: String! @rules(apply: ["required", "in:MIN,HOUR,DISTANCE,DISTANCEMIN,DISTANCEHOUR"])
   photo: Upload
+  ondemand: Boolean
 }
 
 input UpdateCarTypeInput {
   id: ID! @rules(apply: ["required"])
   name: String
-  seats: Int!
+  seats: Int
   fixed: Int
   price: Int
   minute: Int
   distance: Int
   calculator: String @rules(apply: ["in:MIN,HOUR,DISTANCE,DISTANCEMIN,DISTANCEHOUR"])
   photo: Upload
+  ondemand: Boolean
 }
 
 type CarType {
@@ -31,4 +33,5 @@ type CarType {
   distance: Int
   calculator: String
   photo: String
+  ondemand: Boolean
 }
