@@ -32,7 +32,7 @@
         .form-control {
             border: 0 !important;
             background-color: transparent !important;
-            border-bottom: 2px solid #ddd !important;
+            border-bottom: 1px solid #ddd !important;
             border-radius: 0 !important;
             padding-left: 1px !important;
         }
