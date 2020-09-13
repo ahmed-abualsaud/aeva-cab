@@ -102,8 +102,6 @@
                         <div id="feedback"></div>
                         <div class="form-row">
                             <input type="hidden" id="token" value="{{ app('request')->input('token') }}">
-                            <input type="hidden" id="payable_id" value="{{ app('request')->input('payable_id') }}">
-                            <input type="hidden" id="payable_type" value="{{ app('request')->input('payable_type') }}">
                             <div class="form-group col-12">
                                 <label for="cardNumber" class="mb-0 font-weight-bold">Card Number</label>
                                 <input type="text" id="cardNumber" class="form-control" value="" readonly  />
@@ -174,9 +172,7 @@
                                     type:'POST',
                                     url:'/api/user/pay',
                                     data: { 
-                                        session_id: response.data.sessionId, 
-                                        payable_id: $("#payable_id").val(), 
-                                        payable_type: $("#payable_type").val(),
+                                        session_id: response.data.sessionId,
                                         amount: $("#amount").val()
                                     },
                                     success: function(data) {
