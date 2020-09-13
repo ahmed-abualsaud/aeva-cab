@@ -85,9 +85,9 @@
 </head>
 
 <body>
-    <nav class="py-3 bg-black text-center">
-        <h4 class="jumbotron-heading mb-1"><span class="font-weight-light">Qruz</span> <span class="font-weight-bold">Wallet</span></h4>
-        <p class="mb-0">Add money to wallet from credit card</p>
+    <nav class="py-4 bg-black text-center">
+        <h4 class="jumbotron-heading mb-0"><span class="font-weight-light">Qruz</span> <span class="font-weight-bold">Wallet</span></h4>
+        <!-- <p class="mb-0">Add money to wallet from credit card</p> -->
     </nav>
     <!-- CREATE THE HTML FOR THE PAYMENT PAGE -->
     <div class="container mt-4 pt-2">
@@ -122,7 +122,7 @@
                                 <label for="amount" class="mb-0 font-weight-bold">Amount</label>
                                 <input type="text" placeholder="EGP" id="amount" class="form-control" value="" autocomplete="off" />
                             </div>
-                            <button class="btn btn-primary btn-block btn-lg" id="payButton" onclick="pay();">Add to my wallet</button>
+                            <button class="btn btn-primary btn-block btn-lg" id="payButton" onclick="pay();">Add <span class="font-weight-bold" id="payAmount"></span> to my wallet</button>
                         </div>
                     </div>
                 </div>
@@ -142,9 +142,10 @@
             }
         });
         $("#cardForm").hide();
-        // $("#amount").on('keyup', function() {
-        //     $("#payAmount").text($(this).val());
-        // })
+        $("#amount").on('keyup', function() {
+            $("#payAmount").text($(this).val()+' EGP');
+            if ($(this).val() === '') $("#payAmount").text('');
+        })
         // Your code to run since DOM is loaded and ready
         if(window.PaymentSession){
             PaymentSession.configure({
