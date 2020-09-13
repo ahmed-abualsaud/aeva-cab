@@ -40,7 +40,7 @@
             outline: none !important;
             box-shadow: none !important;
         }
-        .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+        .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:focus, .bg-black {
             background-color: #000 !important;
             border-color: #000 !important;
             color: #fff !important;
@@ -85,7 +85,7 @@
 </head>
 
 <body>
-    <nav class="py-3 bg-dark text-center text-white">
+    <nav class="py-3 bg-black text-center">
         <h4 class="jumbotron-heading mb-1"><span class="font-weight-light">Qruz</span> <span class="font-weight-bold">Wallet</span></h4>
         <p class="mb-0">Thanks for trusting us</p>
     </nav>
