@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Qruz Payment</title>
+    <title>Qruz Wallet</title>
     <link rel="shortcut icon" type="image/png" href="/favicon.ico">
 
     <meta name="csrf-token" content="{{ csrf_token() }}" />
@@ -86,8 +86,8 @@
 
 <body>
     <nav class="py-3 bg-dark text-center text-white">
-        <h4 class="jumbotron-heading mb-1"><span class="font-weight-light">Qruz</span> <span class="font-weight-bold">Payment</span></h4>
-        <p class="mb-0">Thanks for trusting us.</p>
+        <h4 class="jumbotron-heading mb-1"><span class="font-weight-light">Qruz</span> <span class="font-weight-bold">Wallet</span></h4>
+        <p class="mb-0">Thanks for trusting us</p>
     </nav>
     <!-- CREATE THE HTML FOR THE PAYMENT PAGE -->
     <div class="container mt-4 pt-2">
@@ -104,24 +104,27 @@
                             <input type="hidden" id="token" value="{{ app('request')->input('token') }}">
                             <input type="hidden" id="payable_id" value="{{ app('request')->input('payable_id') }}">
                             <input type="hidden" id="payable_type" value="{{ app('request')->input('payable_type') }}">
-                            <input type="hidden" id="amount" value="{{ app('request')->input('amount') }}">
                             <div class="form-group col-12">
                                 <label for="cardNumber" class="mb-0 font-weight-bold">Card Number</label>
                                 <input type="text" id="cardNumber" class="form-control" value="" readonly  />
                             </div>
                             <div class="form-group col-4">
                                 <label for="cardMonth" class="mb-0 font-weight-bold">Exp. Month</label>
-                                <input type="text" id="cardMonth" class="form-control" placeholder="MM" value="" />
+                                <input type="text" id="cardMonth" class="form-control" placeholder="MM" value="" autocomplete="off" />
                             </div>
                             <div class="form-group col-4">
                                 <label for="cardYear" class="mb-0 font-weight-bold">Exp. Year</label>
-                                <input type="text" id="cardYear" class="form-control" placeholder="YYYY" value="" />
+                                <input type="text" id="cardYear" class="form-control" placeholder="YYYY" value="" autocomplete="off" />
                             </div>
                             <div class="form-group col-4">
                                 <label for="cardCVC" class="mb-0 font-weight-bold">CVC</label>
                                 <input type="text" id="cardCVC" class="form-control" value="" readonly />
                             </div>
-                            <button class="btn btn-primary btn-block btn-lg" id="payButton" onclick="pay();">Pay <strong>{{ app('request')->input('amount') }}</strong> EGP</button>
+                            <div class="form-group col-12">
+                                <label for="amount" class="mb-0 font-weight-bold">Amount</label>
+                                <input type="text" placeholder="EGP" id="amount" class="form-control" value="" autocomplete="off" />
+                            </div>
+                            <button class="btn btn-primary btn-block btn-lg" id="payButton" onclick="pay();">Add to my wallet</button>
                         </div>
                     </div>
                 </div>
@@ -141,6 +144,9 @@
             }
         });
         $("#cardForm").hide();
+        // $("#amount").on('keyup', function() {
+        //     $("#payAmount").text($(this).val());
+        // })
         // Your code to run since DOM is loaded and ready
         if(window.PaymentSession){
             PaymentSession.configure({
@@ -176,7 +182,7 @@
                                     success: function(data) {
                                         $("#loader").hide();
                                         if (data.statusCode === 200) {
-                                            $("#card-content").html('<div class="text-center my-4"><div class="placeholder rounded-circle bg-success"><svg viewBox="0 0 512 512" width="35" height="35" fill="#fff"><path d="M504.502,75.496c-9.997-9.998-26.205-9.998-36.204,0L161.594,382.203L43.702,264.311c-9.997-9.998-26.205-9.997-36.204,0 c-9.998,9.997-9.998,26.205,0,36.203l135.994,135.992c9.994,9.997,26.214,9.99,36.204,0L504.502,111.7 C514.5,101.703,514.499,85.494,504.502,75.496z"/></svg></div><h4 class="text-success font-weight-bold mb-1 mt-4">Successfull Payment</h4><p class="text-success">Thanks for using Qruz</p></div>')
+                                            $("#card-content").html('<div class="text-center my-4"><div class="placeholder rounded-circle bg-success"><svg viewBox="0 0 512 512" width="35" height="35" fill="#fff"><path d="M504.502,75.496c-9.997-9.998-26.205-9.998-36.204,0L161.594,382.203L43.702,264.311c-9.997-9.998-26.205-9.997-36.204,0 c-9.998,9.997-9.998,26.205,0,36.203l135.994,135.992c9.994,9.997,26.214,9.99,36.204,0L504.502,111.7 C514.5,101.703,514.499,85.494,504.502,75.496z"/></svg></div><h4 class="text-success font-weight-bold mb-2 mt-4">Successfull Payment</h4><p class="text-success"><span class="font-weight-bold">'+$("#amount").val()+' EGP</span> has been added to your wallet</p></div>')
                                         } else {
                                             $("#feedback").html('<div class="mb-3 alert alert-danger border-0">'+data.message+'</div>');
                                             $('#cardForm').show();

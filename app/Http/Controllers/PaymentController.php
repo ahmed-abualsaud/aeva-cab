@@ -23,6 +23,10 @@ class PaymentController extends Controller
             ];
             $output = $this->output($postData, 'session/pay');
             $res = json_decode($output);
+            if ($res->statusCode == 200) {
+                $user->wallet_balance += $request->amount;
+                $user->save();
+            }
             return response()->json([
                 "statusCode" => $res->statusCode,
                 "message" => $res->message
