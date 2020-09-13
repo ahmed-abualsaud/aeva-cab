@@ -87,7 +87,7 @@
 <body>
     <nav class="py-3 bg-black text-center">
         <h4 class="jumbotron-heading mb-1"><span class="font-weight-light">Qruz</span> <span class="font-weight-bold">Wallet</span></h4>
-        <p class="mb-0">Thanks for trusting us</p>
+        <p class="mb-0">Add money to wallet from credit card</p>
     </nav>
     <!-- CREATE THE HTML FOR THE PAYMENT PAGE -->
     <div class="container mt-4 pt-2">
