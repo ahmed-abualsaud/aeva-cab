@@ -32,7 +32,7 @@
         .form-control {
             border: 0 !important;
             background-color: transparent !important;
-            border-bottom: 1px solid #ddd !important;
+            border-bottom: 2px solid #ddd !important;
             border-radius: 0 !important;
             padding-left: 1px !important;
         }
@@ -104,23 +104,23 @@
                             <input type="hidden" id="token" value="{{ app('request')->input('token') }}">
                             <div class="form-group col-12">
                                 <label for="cardNumber" class="mb-0 font-weight-bold">Card Number</label>
-                                <input type="text" id="cardNumber" class="form-control" value="" readonly  />
+                                <input type="number" id="cardNumber" class="form-control" value="" readonly  />
                             </div>
                             <div class="form-group col-4">
                                 <label for="cardMonth" class="mb-0 font-weight-bold">Exp. Month</label>
-                                <input type="text" id="cardMonth" class="form-control" placeholder="MM" value="" autocomplete="off" />
+                                <input type="number" id="cardMonth" class="form-control" placeholder="MM" value="" autocomplete="off" />
                             </div>
                             <div class="form-group col-4">
                                 <label for="cardYear" class="mb-0 font-weight-bold">Exp. Year</label>
-                                <input type="text" id="cardYear" class="form-control" placeholder="YYYY" value="" autocomplete="off" />
+                                <input type="number" id="cardYear" class="form-control" placeholder="YYYY" value="" autocomplete="off" />
                             </div>
                             <div class="form-group col-4">
                                 <label for="cardCVC" class="mb-0 font-weight-bold">CVC</label>
-                                <input type="text" id="cardCVC" class="form-control" value="" readonly />
+                                <input type="number" id="cardCVC" class="form-control" value="" readonly />
                             </div>
                             <div class="form-group col-12">
                                 <label for="amount" class="mb-0 font-weight-bold">Amount</label>
-                                <input type="text" placeholder="EGP" id="amount" class="form-control" value="" autocomplete="off" />
+                                <input type="number" placeholder="EGP" id="amount" class="form-control" value="" autocomplete="off" />
                             </div>
                             <button class="btn btn-primary btn-block btn-lg" id="payButton" onclick="pay();">Add <span class="font-weight-bold" id="payAmount"></span> to my wallet</button>
                         </div>
