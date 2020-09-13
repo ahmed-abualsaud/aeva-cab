@@ -45,11 +45,16 @@ class BusinessTripResolver
                     ->where('trip_id', $args['trip_id'])
                     ->pluck('user_id');
 
-                $users = User::Join('partner_users', 'partner_users.user_id', '=', 'users.id')
-                    ->where('partner_users.partner_id', $args['partner_id'])
-                    ->select('users.id', 'users.name', 'users.avatar')
-                    ->whereNotIn('users.id', $businessTripUsers)
+                $users = User::select('id', 'name', 'avatar')
+                    ->where('partner_id', $args['partner_id'])
+                    ->whereNotIn('id', $businessTripUsers)
                     ->get();
+
+                // $users = User::Join('partner_users', 'partner_users.user_id', '=', 'users.id')
+                //     ->where('partner_users.partner_id', $args['partner_id'])
+                //     ->select('users.id', 'users.name', 'users.avatar')
+                //     ->whereNotIn('users.id', $businessTripUsers)
+                //     ->get();
 
                 break;
             case 'notVerified':

@@ -24,7 +24,7 @@ class PaymentResolver
                 'email' => $args['email']
             ];
             $output = $this->output($postData, 'addCard');
-            print_r($output);
+            $res = json_decode($output);
         } catch (\Exception $e) {
             throw new \Exception('We could not able to add this card.'.$e->getMessage());
         }
@@ -36,8 +36,8 @@ class PaymentResolver
                 'holder_name' => $args['holder_name'],
                 'card_exp' => Carbon::parse($exp_date)->endOfMonth()->toDateString(),
                 'last_four' => substr($args['card_num'], -4),
-                'payer_id' => $output->userId,
-                'card_id' => $output->cardId,
+                'payer_id' => $res->userId,
+                'card_id' => $res->cardId,
             ]);
         } catch (\Exception $e) {
             throw new \Exception('We could not able to add this card.'.$e->getMessage());
@@ -60,7 +60,6 @@ class PaymentResolver
                 'cardId' => $card->card_id,
             ];
             $output = $this->output($postData, 'resendCode');
-            print_r($output);
         } catch (\Exception $e) {
             throw new \Exception('We could not able to resend the code.'.$e->getMessage());
         }
@@ -83,7 +82,6 @@ class PaymentResolver
                 'validationCode' => $args['validation_code']
             ];
             $output = $this->output($postData, 'validateOTP');
-            print_r($output);
         } catch (\Exception $e) {
             throw new \Exception('We could not able to validate the OTP.'.$e->getMessage());
         }
@@ -105,15 +103,31 @@ class PaymentResolver
                 'cardId' => $card->card_id,
                 'amount' => $args['amount']
             ];
+            
             $output = $this->output($postData, 'makePayment');
-            print_r($output);
         } catch (\Exception $e) {
             throw new \Exception('We could not able to process this payment.'.$e->getMessage());
         }
 
         return [
             "status" => true,
-            "message" => 'Transaction status is '. $output->data->status
+            "message" => "Ok"
+        ];
+
+    }
+
+    public function sessionRetrieve($_, array $args)
+    {
+        try {
+            $postData = ['sessionId' => $args['session_id']];
+            $output = $this->output($postData, 'session/retrieve');
+        } catch (\Exception $e) {
+            throw new \Exception('We could not able to process this payment.'.$e->getMessage());
+        }
+
+        return [
+            "status" => true,
+            "message" => "Done"
         ];
 
     }
@@ -134,10 +148,10 @@ class PaymentResolver
 
     protected function output(array $postData, string $endpoint)
     {
-        $secureHash = config('custom.valpulus_hash_secret');
+        $secureHash = config('custom.valulus_hash_secret');
         $postData['hashSecret'] = $this->generateHash($secureHash, $postData);
-        $postData['appId'] = config('custom.valpulus_app_id');
-        $postData['password'] = config('custom.valpulus_password');
+        $postData['appId'] = config('custom.valulus_app_id');
+        $postData['password'] = config('custom.valulus_password');
         $url = 'https://api.vapulus.com:1338/app/'.$endpoint;
         
         return $this->HTTPPost($url, $postData);

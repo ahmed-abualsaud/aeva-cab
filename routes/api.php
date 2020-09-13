@@ -18,6 +18,7 @@ Route::post('/driver/login' , 'DriverController@login');
 
 Route::group(['middleware' => ['auth:user']], function () {
     Route::group(['prefix' => 'user'], function () { 
+        Route::post('/pay', 'PaymentController@pay');
         Route::post('/update/location', 'RiderController@update_location');
         Route::post('/update/avatar', 'RiderController@handleAvatar');
         Route::get('/details', 'RiderController@details');
@@ -32,8 +33,6 @@ Route::group(['middleware' => ['auth:user']], function () {
         Route::get('/upcoming/trips', 'RiderController@upcoming_trips');
         Route::get('/trip/details', 'RiderController@trip_details');
         Route::get('/upcoming/trip/details', 'RiderController@upcoming_trip_details');
-        Route::post('/payment', 'PaymentController@payment');
-        Route::post('/add/money', 'PaymentController@add_money');
         Route::get('/estimated/fare', 'RiderController@estimated_fare');
         Route::get('/promocodes', 'RiderController@promocodes');
         Route::post('/promocode/add', 'RiderController@add_promocode');

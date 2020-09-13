@@ -328,6 +328,9 @@
     'otp_username' => '5NFU1SZf',
     'otp_password' => '3iZFppXQxD',
     'otp_sender_id' => 'Qruz',
+    'valulus_app_id' => '3b0d7231-7586-49e3-944b-27f63b50f569',
+    'valulus_password' => 'Ah3210779',
+    'valulus_hash_secret' => 'b7b8909732336565353931302d666165',
   ),
   'database' => 
   array (

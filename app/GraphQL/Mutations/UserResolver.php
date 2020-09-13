@@ -9,6 +9,7 @@ use App\PartnerUser;
 use App\Jobs\SendOtp;
 use App\Traits\UploadFile;
 use Illuminate\Support\Str; 
+use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Support\Facades\Auth;
@@ -84,6 +85,32 @@ class UserResolver
         ];
     }
 
+    public function createMultipleUsers($_, array $args)
+    {
+        try {
+            $data = []; $arr = [];
+            foreach($args['users'] as $user) {
+                $arr['partner_id'] = $args['partner_id'];
+                $arr['name'] = $user['name'];
+                $arr['email'] = $user['email'];
+                $arr['phone'] = $user['phone'];
+                $arr['title'] = $user['title'];
+                $arr['password'] = Hash::make($user['phone']);
+                $arr['created_at'] = $arr['updated_at'] = now();
+                array_push($data, $arr);
+            }
+            User::insert($data);
+            User::flushQueryCache();
+        } catch (\Exception $e) {
+            throw new CustomException(
+                'Some or all users already exist', 
+                'customValidation'
+            );
+        }
+
+        return true;
+    }
+
     public function update($_, array $args)
     {
         $input = collect($args)->except(['id', 'directive', 'avatar'])->toArray();
@@ -128,6 +155,8 @@ class UserResolver
         }
 
         $user = auth('user')->user();
+
+        if (!$user->ref_code) $user->update(["ref_code" => Hashids::encode($user->id)]);
 
         if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
             try {

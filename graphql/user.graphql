@@ -13,6 +13,18 @@ input CreateUserInput {
   ref_code: String
 }
 
+input CreateMultipleUsersInput {
+  partner_id: ID
+  users: [UserFromFileInput]
+}
+
+input UserFromFileInput {
+  name: String
+  email: String
+  phone: String
+  title: String
+}
+
 input UpdateUserInput {
   id: ID! @rules(apply: ["required"])
   name: String

@@ -41,6 +41,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   deleteUser(id: ID!): User @forceDelete
   changeUserPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "UserResolver@updatePassword")
+  createMultipleUsers(input: CreateMultipleUsersInput! @spread): Boolean 
+    @field(resolver: "UserResolver@createMultipleUsers")
 
   # Fleet
   createFleet(input: CreateFleetInput! @spread): Fleet
