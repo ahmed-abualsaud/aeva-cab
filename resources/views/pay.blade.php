@@ -164,7 +164,6 @@
                         // HANDLE RESPONSE FOR UPDATE SESSION
                         if (response.statusCode) {
                             if (200 == response.statusCode) {
-                                console.log("Session updated with data: " + response.data.sessionId);
                                 $("#loaderStatus").text('Payment processing...');
                                 $.ajax({
                                     type:'POST',
@@ -176,7 +175,7 @@
                                     success: function(data) {
                                         $("#loader").hide();
                                         if (data.statusCode === 200) {
-                                            $("#card-content").html('<div class="card border-0 text-center text-success"><div class="card-body"><div class="placeholder rounded-circle bg-success"><svg viewBox="0 0 512 512" width="35" height="35" fill="#fff"><path d="M504.502,75.496c-9.997-9.998-26.205-9.998-36.204,0L161.594,382.203L43.702,264.311c-9.997-9.998-26.205-9.997-36.204,0 c-9.998,9.997-9.998,26.205,0,36.203l135.994,135.992c9.994,9.997,26.214,9.99,36.204,0L504.502,111.7 C514.5,101.703,514.499,85.494,504.502,75.496z"/></svg></div><h4 class="font-weight-bold mb-1 mt-4">Successfull Payment</h4><p class="mb-0"><span class="font-weight-bold">'+$("#amount").val()+' EGP</span> has been added to your wallet</p></div></div>')
+                                            $("#card-content").html('<div class="mt-4 text-center text-success"><div class="placeholder rounded-circle bg-success"><svg viewBox="0 0 512 512" width="35" height="35" fill="#fff"><path d="M504.502,75.496c-9.997-9.998-26.205-9.998-36.204,0L161.594,382.203L43.702,264.311c-9.997-9.998-26.205-9.997-36.204,0 c-9.998,9.997-9.998,26.205,0,36.203l135.994,135.992c9.994,9.997,26.214,9.99,36.204,0L504.502,111.7 C514.5,101.703,514.499,85.494,504.502,75.496z"/></svg></div><h4 class="font-weight-bold mb-1 mt-4">Successfull Payment</h4><p class="mb-0"><span class="font-weight-bold">'+$("#amount").val()+' EGP</span> has been added to your wallet</p></div>')
                                         } else {
                                             $("#feedback").html('<div class="mb-3 alert alert-danger border-0">'+data.message+'</div>');
                                             $('#cardForm').show();
@@ -190,7 +189,6 @@
                                 if (response.message) {
                                     var field = response.message.indexOf('valid')
                                     field = response.message.slice(field + 5, response.message.length);
-                                    console.log(field + " is invalid or missing.");
                                     $("#feedback").html('<div class="mb-3 alert alert-danger border-0">'+field + ' is invalid or missing.</div>')
                                 }
                             } else {
