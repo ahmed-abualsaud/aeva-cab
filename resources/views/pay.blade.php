@@ -46,12 +46,6 @@
         .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:focus, .bg-black {
             background-color: #000 !important;
             border-color: #000 !important;
-            color: #fff !important;
-        }
-        .btn:disabled {
-            background-color: #e8ebed !important;
-            border-color: #e8ebed !important;
-            color: #bbb !important;
         }
         input[type=text] {
             -webkit-appearance: none !important;
@@ -88,7 +82,7 @@
 </head>
 
 <body>
-    <nav class="py-4 bg-black text-center">
+    <nav class="py-4 bg-black text-white text-center">
         <h4 class="jumbotron-heading mb-0"><span class="font-weight-light">Qruz</span> <span class="font-weight-bold">Wallet</span></h4>
         <!-- <p class="mb-0">Add money to wallet from credit card</p> -->
     </nav>
@@ -110,11 +104,11 @@
                                 <input type="number" id="cardNumber" class="form-control" value="" readonly  />
                             </div>
                             <div class="form-group col-4">
-                                <label for="cardMonth" class="mb-0 font-weight-bold">Exp. Month</label>
+                                <label for="cardMonth" class="mb-0 font-weight-bold">Month</label>
                                 <input type="number" id="cardMonth" class="form-control" placeholder="MM" value="" autocomplete="off" />
                             </div>
                             <div class="form-group col-4">
-                                <label for="cardYear" class="mb-0 font-weight-bold">Exp. Year</label>
+                                <label for="cardYear" class="mb-0 font-weight-bold">Year</label>
                                 <input type="number" id="cardYear" class="form-control" placeholder="YYYY" value="" autocomplete="off" />
                             </div>
                             <div class="form-group col-4">
