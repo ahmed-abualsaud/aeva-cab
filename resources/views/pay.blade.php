@@ -21,6 +21,9 @@
         body {
             background-color: #edeff0 !important;
         }
+        .card, .alert {
+            border-radius: 1rem !important;
+        }
         .placeholder {
             width: 75px;
             height: 75px;
@@ -90,7 +93,7 @@
         <!-- <p class="mb-0">Add money to wallet from credit card</p> -->
     </nav>
     <!-- CREATE THE HTML FOR THE PAYMENT PAGE -->
-    <div class="container mt-4 pt-2">
+    <div class="container mt-4">
         <div class="row justify-content-center">
             <div class="col-md-4" id="card-content">
                 <div id="loader">
@@ -122,7 +125,7 @@
                                 <label for="amount" class="mb-0 font-weight-bold">Amount</label>
                                 <input type="number" placeholder="EGP" id="amount" class="form-control" value="" autocomplete="off" />
                             </div>
-                            <button class="btn btn-primary btn-block btn-lg" id="payButton" onclick="pay();">Add <span class="font-weight-bold" id="payAmount"></span> to my wallet</button>
+                            <button class="btn btn-primary btn-block btn-lg rounded-pill mt-2" id="payButton" onclick="pay();">Add <span class="font-weight-bold" id="payAmount"></span> to my wallet</button>
                         </div>
                     </div>
                 </div>
@@ -179,7 +182,7 @@
                                     success: function(data) {
                                         $("#loader").hide();
                                         if (data.statusCode === 200) {
-                                            $("#card-content").html('<div class="text-center my-4"><div class="placeholder rounded-circle bg-success"><svg viewBox="0 0 512 512" width="35" height="35" fill="#fff"><path d="M504.502,75.496c-9.997-9.998-26.205-9.998-36.204,0L161.594,382.203L43.702,264.311c-9.997-9.998-26.205-9.997-36.204,0 c-9.998,9.997-9.998,26.205,0,36.203l135.994,135.992c9.994,9.997,26.214,9.99,36.204,0L504.502,111.7 C514.5,101.703,514.499,85.494,504.502,75.496z"/></svg></div><h4 class="text-success font-weight-bold mb-2 mt-4">Successfull Payment</h4><p class="text-success"><span class="font-weight-bold">'+$("#amount").val()+' EGP</span> has been added to your wallet</p></div>')
+                                            $("#card-content").html('<div class="card border-0 text-center text-success"><div class="card-body"><div class="placeholder rounded-circle bg-success"><svg viewBox="0 0 512 512" width="35" height="35" fill="#fff"><path d="M504.502,75.496c-9.997-9.998-26.205-9.998-36.204,0L161.594,382.203L43.702,264.311c-9.997-9.998-26.205-9.997-36.204,0 c-9.998,9.997-9.998,26.205,0,36.203l135.994,135.992c9.994,9.997,26.214,9.99,36.204,0L504.502,111.7 C514.5,101.703,514.499,85.494,504.502,75.496z"/></svg></div><h4 class="font-weight-bold mb-1 mt-4">Successfull Payment</h4><p class="mb-0"><span class="font-weight-bold">'+$("#amount").val()+' EGP</span> has been added to your wallet</p></div></div>')
                                         } else {
                                             $("#feedback").html('<div class="mb-3 alert alert-danger border-0">'+data.message+'</div>');
                                             $('#cardForm').show();
