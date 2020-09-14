@@ -43,7 +43,7 @@
             outline: none !important;
             box-shadow: none !important;
         }
-        .btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:focus, .bg-black {
+        .bg-black {
             background-color: #000 !important;
             border-color: #000 !important;
         }
@@ -119,7 +119,7 @@
                                 <label for="amount" class="mb-0 font-weight-bold">Amount</label>
                                 <input type="number" placeholder="EGP" id="amount" class="form-control" value="" autocomplete="off" />
                             </div>
-                            <button class="btn btn-primary btn-block btn-lg rounded-pill mt-2" id="payButton" onclick="pay();">Add <span class="font-weight-bold" id="payAmount"></span> to my wallet</button>
+                            <button class="btn bg-black text-white btn-block btn-lg rounded-pill mt-2" id="payButton" onclick="pay();">Add <span class="font-weight-bold" id="payAmount"></span> to my wallet</button>
                         </div>
                     </div>
                 </div>
@@ -192,6 +192,7 @@
                                     $("#feedback").html('<div class="mb-3 alert alert-danger border-0">'+field + ' is invalid or missing.</div>')
                                 }
                             } else {
+                                $("#loader").hide();
                                 $("#feedback").html('<div class="mb-3 alert alert-danger border-0">Something went wrong! Please try again</div>');
                                 $('#cardForm').show();
                             }
