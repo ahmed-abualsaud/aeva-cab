@@ -5,27 +5,16 @@ namespace App;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Rennokki\QueryCache\Traits\QueryCacheable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use SoftDeletes, Notifiable, QueryCacheable;
+    use SoftDeletes, Notifiable;
     
     protected $guarded = [];
 
     protected $hidden = ['password'];
-
-    public $cacheFor = 3600;
-
-    /**
-     * Invalidate the cache automatically
-     * upon update in the database.
-     *
-     * @var bool
-     */
-    protected static $flushCacheOnUpdate = true;
 
     /**
      * Send the password reset notification.

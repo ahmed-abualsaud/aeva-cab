@@ -100,7 +100,6 @@ class UserResolver
                 array_push($data, $arr);
             }
             User::insert($data);
-            User::flushQueryCache();
         } catch (\Exception $e) {
             throw new CustomException(
                 'Some or all users already exist', 

@@ -1,7 +1,7 @@
 input CreateOndemandRequestInput {
   user_id: ID! @rules(apply: ["required"])
   verb: String! @rules(apply: ["required", "in:RENT,ORGANIZE,SUBSCRIBE"])
-  type: String @rules(apply: ["in:RENT,EVENT,TRIP,RIDESHARE,CARSHARE"])
+  type: String @rules(apply: ["max:10"])
   event_name: String
   find_people: Boolean
   contact_phone: String

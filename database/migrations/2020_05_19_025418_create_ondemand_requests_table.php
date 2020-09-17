@@ -17,7 +17,7 @@ class CreateOndemandRequestsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->enum('verb', ['RENT', 'ORGANIZE', 'SUBSCRIBE']);
-            $table->enum('type', ['RENT', 'EVENT', 'TRIP', 'RIDESHARE', 'CARSHARE'])->nullable();
+            $table->string('type', 10)->nullable();
             $table->string('event_name')->nullable();
             $table->enum('frequency', ['DAILY', 'ONE_TIME'])->nullable();
             $table->enum('way', ['ONE_WAY', 'TWO_WAYS'])->nullable();
