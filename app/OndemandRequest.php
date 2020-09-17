@@ -11,11 +11,11 @@ class OndemandRequest extends Model
 { 
     use SoftDeletes;
     use DateFilter;
-    // use QueryCacheable;
+    use QueryCacheable;
     
     protected $guarded = [];
 
-    // public $cacheFor = 3600;
+    public $cacheFor = 3600;
 
     /**
      * Invalidate the cache automatically
@@ -23,7 +23,7 @@ class OndemandRequest extends Model
      *
      * @var bool
      */
-    // protected static $flushCacheOnUpdate = true;
+    protected static $flushCacheOnUpdate = true;
 
     public function user()
     {

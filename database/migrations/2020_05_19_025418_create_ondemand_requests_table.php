@@ -37,8 +37,8 @@ class CreateOndemandRequestsTable extends Migration
             ])->default('PENDING');
             $table->string('comment')->nullable();
             $table->string('response')->nullable();
-            $table->timestamp('read_at')->nullable();
             $table->timestamps(); 
+            $table->timestamp('read_at')->nullable();
             
             $table->softDeletes();
 
