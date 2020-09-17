@@ -128,7 +128,7 @@ class OndemandRequestResolver
             'verb' => $request->verb,
             'status' => 'PENDING',
             'created_at' => date("Y-m-d H:i:s"),
-            'deleted_at' => null,
+            'read_at' => null,
             '__typename' => 'OndemandRequest'
         ];
         

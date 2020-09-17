@@ -150,7 +150,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "OndemandRequestResolver@create")
   updateOndemandRequest(input: UpdateOndemandRequestInput! @spread): OndemandRequest
     @field(resolver: "OndemandRequestResolver@update")
-  deleteOndemandRequest(id: ID!): OndemandRequest @delete
+  deleteOndemandRequest(id: ID!): OndemandRequest @forceDelete
   restoreOndemandRequest(id: ID!): OndemandRequest @restore
 
   # Business Trip Station
@@ -284,9 +284,10 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Ondemand Request
   ondemandRequests(status: String period: String): [OndemandRequest]
-    @paginate(scopes: ["filter"]) @softDeletes
+    @paginate(scopes: ["filter"])
   ondemandRequestsByUser(user_id: ID! @eq): [OndemandRequest] @all
-  ondemandRequest(id: ID @eq): OndemandRequest @find
+  ondemandRequest(id: ID): OndemandRequest 
+    @field(resolver: "OndemandRequestResolver")
 
   # Document
   documents(documentable_id: ID!, documentable_type: String!): [Document]

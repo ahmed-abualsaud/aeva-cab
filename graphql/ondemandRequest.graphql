@@ -56,7 +56,7 @@ type OndemandRequest {
   comment: String
   response: String
   created_at: String
-  deleted_at: String
+  read_at: String
   vehicles: [OndemandRequestVehicle] @hasMany
   lines: [OndemandRequestLine] @hasMany
 }
