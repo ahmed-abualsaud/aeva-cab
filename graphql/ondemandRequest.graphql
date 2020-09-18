@@ -59,6 +59,8 @@ type OndemandRequest {
   read_at: String
   vehicles: [OndemandRequestVehicle] @hasMany
   lines: [OndemandRequestLine] @hasMany
+  next: ID
+  previous: ID
 }
 
 type OndemandRequestVehicle {

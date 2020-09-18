@@ -13,7 +13,22 @@ class OndemandRequestResolver
     public function __invoke($_, array $args)
     {
         $req = OndemandRequest::findOrFail($args['id']);
-        if (!$req->read_at) $req->update(["read_at" => now()]);
+
+        if (array_key_exists('nav', $args) && $args['nav']) {
+            if (!$req->read_at) $req->update(["read_at" => now()]);
+
+            $next = OndemandRequest::select('id')
+                ->where('id', '<', $req->id)
+                ->orderBy('id','desc')
+                ->first();
+            $previous = OndemandRequest::select('id')
+                ->where('id', '>', $req->id)
+                ->orderBy('id','asc')
+                ->first();
+
+            $req->next = $next ? $next->id : null;
+            $req->previous = $previous ? $previous->id : null;
+        }
 
         return $req;
     }

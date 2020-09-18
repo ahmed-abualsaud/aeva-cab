@@ -286,7 +286,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   ondemandRequests(status: String period: String): [OndemandRequest]
     @paginate(scopes: ["filter"])
   ondemandRequestsByUser(user_id: ID! @eq): [OndemandRequest] @all
-  ondemandRequest(id: ID): OndemandRequest 
+  ondemandRequest(id: ID, nav: Boolean): OndemandRequest 
     @field(resolver: "OndemandRequestResolver")
 
   # Document
