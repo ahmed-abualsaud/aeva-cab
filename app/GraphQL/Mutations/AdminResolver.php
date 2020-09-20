@@ -3,7 +3,7 @@
 namespace App\GraphQL\Mutations;
 
 use App\Admin;
-use App\Traits\UploadFile;
+use App\Traits\Uploadable;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +12,7 @@ use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class AdminResolver
 {
-    use UploadFile;
+    use Uploadable;
     /**
      * @param $rootValue
      * @param array                                                    $args

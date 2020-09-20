@@ -2,14 +2,14 @@
 
 namespace App;
 
-use App\Traits\DateFilter;
+use App\Traits\Filterable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class TripLog extends Model
 {
-    use DateFilter;
+    use Filterable;
     
     protected $guarded = [];
 

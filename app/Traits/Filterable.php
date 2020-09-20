@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use Carbon\Carbon;
 
-trait DateFilter
+trait Filterable
 {
     protected function dateFilter($period, $result, $field)
     {

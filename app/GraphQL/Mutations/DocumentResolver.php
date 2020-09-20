@@ -3,12 +3,12 @@
 namespace App\GraphQL\Mutations;
 
 use \App\Document;
-use \App\Traits\UploadFile;
+use \App\Traits\Uploadable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DocumentResolver
 {
-    use UploadFile;
+    use Uploadable;
 
     /**
      * Upload a file, store it on the server and return the model.

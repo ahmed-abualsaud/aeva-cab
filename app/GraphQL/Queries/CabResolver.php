@@ -4,13 +4,13 @@ namespace App\GraphQL\Queries;
 
 use App\CabRequest;
 use App\CabRequestPayment;
-use App\Traits\DateFilter;
+use App\Traits\Filterable;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class CabResolver
 {
-    use DateFilter;
+    use Filterable;
     /**
      * Return a value for the field.
      *

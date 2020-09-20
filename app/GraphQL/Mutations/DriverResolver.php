@@ -5,7 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\Driver;
 use App\DeviceToken;
 use App\DriverVehicle;
-use App\Traits\UploadFile;
+use App\Traits\Uploadable;
 use Illuminate\Support\Arr;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Hash;
@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DriverResolver 
 {
-    use UploadFile;
+    use Uploadable;
     /**
      * Return a value for the field.
      *

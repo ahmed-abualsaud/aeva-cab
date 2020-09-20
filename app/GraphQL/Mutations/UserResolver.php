@@ -7,7 +7,7 @@ use App\User;
 use App\DeviceToken;
 use App\PartnerUser;
 use App\Jobs\SendOtp;
-use App\Traits\UploadFile;
+use App\Traits\Uploadable;
 use Illuminate\Support\Str; 
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  
 class UserResolver
 {
-    use UploadFile;
+    use Uploadable;
 
     /**
      * @param  null  $_
@@ -193,7 +193,7 @@ class UserResolver
                 $input['avatar'] = $userData->getAvatar();
             }
         } catch (\Exception $e) {
-            throw new CustomException('The provided token is invalid.'.$e->getMessage());
+            throw new CustomException('The provided token is invalid.');
         }
 
         try {

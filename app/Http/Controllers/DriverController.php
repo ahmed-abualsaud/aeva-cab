@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use App\CabRequest;
 use App\DriverVehicle;
 use App\CabRequestFilter;
-use App\Traits\UploadFile;
+use App\Traits\Uploadable;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 // use App\Events\DriverLocationUpdated; 
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DriverController extends Controller
 {
-    use UploadFile;
+    use Uploadable;
 
     public function signup(Request $request)
     {

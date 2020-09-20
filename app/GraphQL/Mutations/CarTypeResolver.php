@@ -3,14 +3,14 @@
 namespace App\GraphQL\Mutations;
 
 use App\CarType;
-use App\Traits\UploadFile;
+use App\Traits\Uploadable;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CarTypeResolver 
 {
-    use UploadFile;
+    use Uploadable;
     /**
      * Return a value for the field.
      *

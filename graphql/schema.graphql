@@ -226,7 +226,8 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripResolver@userTripPartners")
   userTripsByPartner(user_id: ID!, partner_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userTripsByPartner")
-  users(partner_id: ID): [User] @paginate(scopes: ["filterByPartner"])
+  users(partner_id: ID, searchFor: String, searchQuery: String): [User] 
+    @paginate(scopes: ["filterByPartner", "search"])
   partnerUsers(partner_id: ID!): [User] 
     @field(resolver: "PartnerResolver@users") 
   user(id: ID @eq): User @find
@@ -236,7 +237,8 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   fleet(id: ID @eq): Fleet @find
 
   # Driver
-  drivers(fleet_id: ID): [Driver] @paginate(scopes: ["filterByFleet"])
+  drivers(fleet_id: ID, searchFor: String, searchQuery: String): [Driver] 
+    @paginate(scopes: ["filterByFleet", "search"])
   driver(id: ID @eq): Driver @find
   driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
     @field(resolver: "BusinessTripResolver@driverLiveTrip")

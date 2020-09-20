@@ -3,6 +3,7 @@
 namespace App;
 
 use App\PartnerDriver;
+use App\Traits\Searchable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
 
 class Driver extends Authenticatable implements JWTSubject
 {
-    use SoftDeletes, Notifiable;
+    use SoftDeletes, Notifiable, Searchable;
     
     protected $guarded = [];
 
@@ -121,5 +122,15 @@ class Driver extends Authenticatable implements JWTSubject
         $partnerDrivers = PartnerDriver::where('partner_id', $args['partner_id'])->pluck('driver_id');
 
         return $query->whereNotIn('id', $partnerDrivers);
+    }
+
+    public function scopeSearch($query, $args) 
+    {
+        
+        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+            $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
+        }
+
+        return $query;
     }
 } 

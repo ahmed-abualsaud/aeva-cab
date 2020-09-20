@@ -2,14 +2,14 @@
 
 namespace App;
 
-use App\Traits\DateFilter;
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CabRequest extends Model
 {
     use SoftDeletes;
-    use DateFilter;
+    use Filterable;
 
     protected $guarded = [];
     protected $hidden = ['route_key'];
