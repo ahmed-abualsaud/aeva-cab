@@ -237,7 +237,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   userTripsByPartner(user_id: ID!, partner_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userTripsByPartner")
   users(searchFor: String, searchQuery: String): [User] 
-    @paginate(scopes: ["search", "orderBy"])
+    @paginate(scopes: ["sort", "search"])
   partnerUsers(partner_id: ID!, searchFor: String, searchQuery: String, assigned: Boolean): [User] 
     @paginate(scopes: ["assignedOrNotAssigned", "search"])
   user(id: ID @eq): User @find
