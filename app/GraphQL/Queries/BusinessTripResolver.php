@@ -4,27 +4,19 @@ namespace App\GraphQL\Queries;
 
 use App\User;
 use App\Partner;
-use App\DriverVehicle;
+use Carbon\Carbon;
 use App\BusinessTrip;
+use App\DriverVehicle;
 use App\BusinessTripUser;
 use App\BusinessTripStation;
-use Carbon\Carbon;
-use GraphQL\Type\Definition\ResolveInfo;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class BusinessTripResolver
 {
     /**
-     * Return a value for the field.
-     *
-     * @param  null  $rootValue Usually contains the result returned from the parent field. In this case, it is always `null`.
-     * @param  mixed[]  $args The arguments that were passed into the field.
-     * @param  \Nuwave\Lighthouse\Support\Contracts\GraphQLContext  $context Arbitrary data that is shared between all fields of a single query.
-     * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
-     * @return mixed
+     * @param  null  $_
+     * @param  array<string, mixed>  $args
      */
-
-    public function users($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function users($_, array $args)
     {
         $status = $args['status'];
 
@@ -45,16 +37,11 @@ class BusinessTripResolver
                     ->where('trip_id', $args['trip_id'])
                     ->pluck('user_id');
 
-                $users = User::select('id', 'name', 'avatar')
-                    ->where('partner_id', $args['partner_id'])
-                    ->whereNotIn('id', $businessTripUsers)
+                $users = User::Join('partner_users', 'partner_users.user_id', '=', 'users.id')
+                    ->where('partner_users.partner_id', $args['partner_id'])
+                    ->select('users.id', 'users.name', 'users.avatar')
+                    ->whereNotIn('users.id', $businessTripUsers)
                     ->get();
-
-                // $users = User::Join('partner_users', 'partner_users.user_id', '=', 'users.id')
-                //     ->where('partner_users.partner_id', $args['partner_id'])
-                //     ->select('users.id', 'users.name', 'users.avatar')
-                //     ->whereNotIn('users.id', $businessTripUsers)
-                //     ->get();
 
                 break;
             case 'notVerified':
@@ -72,17 +59,33 @@ class BusinessTripResolver
         return $users;
     }
 
-    public function stationUsers($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function stationAssignedUsers($_, array $args)
     {
         $stationUsers = BusinessTripUser::where('station_id', $args['station_id'])
             ->join('users', 'users.id', '=', 'business_trip_users.user_id')
-            ->select('users.*')
+            ->select('users.id', 'users.name', 'users.avatar')
             ->get();
 
         return $stationUsers;
     }
 
-    public function userSubscriptions($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function stationNotAssignedUsers($_, array $args)
+    {
+        $stationAssignedUsers = BusinessTripUser::select('user_id')
+            ->where('station_id', $args['station_id'])
+            ->get()->pluck('user_id');
+
+        $stationNotAssignedUsers = User::select('users.id', 'users.name', 'users.avatar')
+            ->join('partner_users', function ($join) use ($args, $stationAssignedUsers) {
+                $join->on('users.id', '=', 'partner_users.user_id')
+                    ->where('partner_users.partner_id', $args['partner_id'])
+                    ->whereNotIn('partner_users.user_id', $stationAssignedUsers);
+            })->get();
+
+        return $stationNotAssignedUsers;
+    }
+
+    public function userSubscriptions($_, array $args)
     {
         $userSubscriptions = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
@@ -93,7 +96,7 @@ class BusinessTripResolver
         return $userSubscriptions;
     }
 
-    public function userTripPartners($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function userTripPartners($_, array $args)
     {
         $partners = Partner::Join('business_trips', 'business_trips.partner_id', '=', 'partners.id')
             ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
@@ -106,7 +109,7 @@ class BusinessTripResolver
         return $partners;
     }
  
-    public function userTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function userTrips($_, array $args)
     {
         $userTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
@@ -118,7 +121,7 @@ class BusinessTripResolver
         return $this->scheduledTrips($userTrips);
     }
 
-    public function userTripsByPartner($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function userTripsByPartner($_, array $args)
     {
         $userTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
@@ -131,7 +134,7 @@ class BusinessTripResolver
         return $this->scheduledTrips($userTrips);
     }
 
-    public function partnerLiveTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function partnerLiveTrips($_, array $args)
     {
         return BusinessTrip::select('id', 'name')
             ->where('partner_id', $args['partner_id'])
@@ -139,7 +142,7 @@ class BusinessTripResolver
             ->get();
     }
 
-    public function driverTrips($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function driverTrips($_, array $args)
     {
         $driverTrips = BusinessTrip::where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
@@ -149,7 +152,7 @@ class BusinessTripResolver
         return $this->scheduledTrips($driverTrips);
     }
 
-    public function userLiveTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function userLiveTrip($_, array $args)
     {
         $liveTrip = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
@@ -169,7 +172,7 @@ class BusinessTripResolver
         ];
     }
 
-    public function driverLiveTrip($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function driverLiveTrip($_, array $args)
     {
         $liveTrip = DriverVehicle::select('trip_type', 'trip_id')
             ->where('driver_id', $args['driver_id'])

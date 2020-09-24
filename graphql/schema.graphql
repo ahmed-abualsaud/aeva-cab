@@ -125,6 +125,12 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   changePartnerPassword(input: ChangePasswordInput @spread): String 
     @field(resolver: "PartnerResolver@updatePassword")
 
+  # Partner User
+  createPartnerUser(input: PartnerUserInput! @spread): DefaultResponse
+    @field(resolver: "PartnerResolver@assignUser")
+  deletePartnerUser(input: PartnerUserInput! @spread): DefaultResponse
+    @field(resolver: "PartnerResolver@unassignUser")
+
   # Partner Driver
   createPartnerDriver(input: PartnerDriverInput! @spread): DefaultResponse
     @field(resolver: "PartnerResolver@assignDriver")
@@ -171,6 +177,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripStationResolver@assignUser") 
   deleteBusinessTripStationUser(input: DeleteBusinessTripStationUserInput! @spread): DefaultResponse 
     @field(resolver: "BusinessTripStationResolver@unassignUser")
+  createBusinessTripStationUsers(input: CreateBusinessTripStationUsersInput! @spread): DefaultResponse 
+    @field(resolver: "BusinessTripStationResolver@assignUsers") 
+  deleteBusinessTripStationUsers(input: DeleteBusinessTripStationUsersInput! @spread): DefaultResponse 
+    @field(resolver: "BusinessTripStationResolver@unassignUsers")
 
   # Business Trip User
   createBusinessTripUser(input: CreateBusinessTripUserInput! @spread): DefaultResponse 
@@ -226,10 +236,10 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripResolver@userTripPartners")
   userTripsByPartner(user_id: ID!, partner_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userTripsByPartner")
-  users(partner_id: ID, searchFor: String, searchQuery: String): [User] 
-    @paginate(scopes: ["filterByPartner", "search"])
-  partnerUsers(partner_id: ID!): [User] 
-    @field(resolver: "PartnerResolver@users") 
+  users(searchFor: String, searchQuery: String): [User] 
+    @paginate(scopes: ["search"])
+  partnerUsers(partner_id: ID!, searchFor: String, searchQuery: String, assigned: Boolean): [User] 
+    @paginate(scopes: ["assignedOrNotAssigned", "search"])
   user(id: ID @eq): User @find
 
   # Fleet
@@ -325,8 +335,10 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   businessTripStations(trip_id: ID! @eq): [BusinessTripStation] @all @softDeletes
 
   # Business Trip Station User
-  businessTripStationUsers(station_id: ID!): [User] 
-    @field(resolver: "BusinessTripResolver@stationUsers")
+  businessTripStationAssignedUsers(station_id: ID!): [User] 
+    @field(resolver: "BusinessTripResolver@stationAssignedUsers")
+  businessTripStationNotAssignedUsers(partner_id: ID!, station_id: ID!): [User] 
+    @field(resolver: "BusinessTripResolver@stationNotAssignedUsers")
 
   # Business Trip User
   businessTripUsers(input: GetBusinessTripUsersInput! @spread): [BusinessTripUserWithStationResponse] 
@@ -368,7 +380,6 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import carModel.graphql
 #import partner.graphql
 #import user.graphql
-#import partnerDriver.graphql
 #import businessTrip.graphql
 #import businessTripStation.graphql
 #import businessTripUser.graphql

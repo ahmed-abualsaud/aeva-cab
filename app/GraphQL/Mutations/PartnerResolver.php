@@ -3,28 +3,22 @@
 namespace App\GraphQL\Mutations;
 
 use App\Partner;
+use App\PartnerUser;
 use App\PartnerDriver;
 use App\Traits\Uploadable;
 use Illuminate\Support\Arr;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use GraphQL\Type\Definition\ResolveInfo;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class PartnerResolver
 {
     use Uploadable;
     /**
-     * Return a value for the field.
-     *
-     * @param  null  $rootValue Usually contains the result returned from the parent field. In this case, it is always `null`.
-     * @param  mixed[]  $args The arguments that were passed into the field.
-     * @param  \Nuwave\Lighthouse\Support\Contracts\GraphQLContext  $context Arbitrary data that is shared between all fields of a single query.
-     * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
-     * @return mixed
+     * @param  null  $_
+     * @param  array<string, mixed>  $args
      */
-    public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function create($_, array $args)
     {
         $input = collect($args)->except(['directive', 'logo'])->toArray();
         $input['password'] = Hash::make($input['phone1']);
@@ -39,7 +33,7 @@ class PartnerResolver
         return $partner;
     }
 
-    public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function update($_, array $args)
     {
         $input = collect($args)->except(['id', 'directive', 'logo'])->toArray();
 
@@ -60,7 +54,7 @@ class PartnerResolver
         return $partner;
     }
 
-    public function login($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function login($_, array $args)
     {
         $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
         $credentials = [];
@@ -89,11 +83,9 @@ class PartnerResolver
 
     }
 
-    public function assignDriver($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function assignDriver($_, array $args)
     {
-        $data = [];
-        $arr = [];
-
+        $data = []; $arr = [];
         foreach($args['driver_id'] as $val) {
             $arr['partner_id'] = $args['partner_id'];
             $arr['driver_id'] = $val;
@@ -116,7 +108,7 @@ class PartnerResolver
         ];
     }
 
-    public function unassignDriver($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function unassignDriver($_, array $args)
     {
         try {
             PartnerDriver::where('partner_id', $args['partner_id'])
@@ -135,7 +127,51 @@ class PartnerResolver
         ];
     }
 
-    public function updatePassword($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function assignUser($_, array $args)
+    {
+        $data = []; $arr = [];
+        foreach($args['user_id'] as $val) {
+            $arr['partner_id'] = $args['partner_id'];
+            $arr['user_id'] = $val;
+
+            array_push($data, $arr);
+        } 
+
+        try {
+            PartnerUser::insert($data);
+        } catch (\Exception $e) {
+            throw new CustomException(
+              'User can not be assigned to the same partner more than once.',
+              'customValidation'
+            );
+        }
+ 
+        return [
+            "status" => true,
+            "message" => "Selected users have been assigned successfully."
+        ];
+    }
+
+    public function unassignUser($_, array $args)
+    {
+        try {
+            PartnerUser::where('partner_id', $args['partner_id'])
+                ->whereIn('user_id', $args['user_id'])
+                ->delete();
+        } catch (\Exception $e) {
+            throw new CustomException(
+                'Assignment cancellation faild.',
+                'customValidation'
+            );
+        }
+
+        return [
+            "status" => true,
+            "message" => "Selected users have been unassigned successfully."
+        ];
+    }
+
+    public function updatePassword($_, array $args)
     {
         try {
             $partner = Partner::findOrFail($args['id']);

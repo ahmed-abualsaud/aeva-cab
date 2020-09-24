@@ -25,6 +25,16 @@ input UpdatePartnerInput {
   max_no_of_trips: Int
 }
 
+input PartnerDriverInput {
+  partner_id: ID! @rules(apply: ["required"])
+  driver_id: [ID!]! @rules(apply: ["required"])
+}
+
+input PartnerUserInput {
+  partner_id: ID! @rules(apply: ["required"])
+  user_id: [ID!]! @rules(apply: ["required"])
+}
+
 type PartnerAuthPayload {
   access_token: String
   partner: Partner

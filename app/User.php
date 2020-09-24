@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\PartnerUser;
 use App\Traits\Searchable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
@@ -64,15 +65,6 @@ class User extends Authenticatable implements JWTSubject
         $this->attributes['name'] = ucwords($value);
     }
 
-    public function scopeFilterByPartner($query, $args) 
-    {
-        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
-            $query->where('partner_id', $args['partner_id']);
-        }
- 
-        return $query->orderBy('created_at', 'DESC');
-    }
-
     public function scopeSearch($query, $args) 
     {
         
@@ -81,6 +73,19 @@ class User extends Authenticatable implements JWTSubject
         }
 
         return $query;
+    }
+
+    public function scopeAssignedOrNotAssigned($query, $args) 
+    {
+        $partnerUsers = PartnerUser::where('partner_id', $args['partner_id'])->get()->pluck('user_id');
+
+        if ($args['assigned']) {
+            $query->whereIn('id', $partnerUsers);
+        } else {
+            $query->whereNotIn('id', $partnerUsers);
+        }
+
+        return $query->orderBy('created_at', 'DESC');
     }
 }
  
