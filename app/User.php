@@ -65,6 +65,11 @@ class User extends Authenticatable implements JWTSubject
         $this->attributes['name'] = ucwords($value);
     }
 
+    public function scopeOrderBy($query) 
+    { 
+        return $query->orderBy('created_at', 'DESC');
+    }
+
     public function scopeSearch($query, $args) 
     {
         
