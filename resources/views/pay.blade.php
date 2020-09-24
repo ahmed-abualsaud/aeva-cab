@@ -3,7 +3,7 @@
 
 <head>
     <title>Qruz Wallet</title>
-    <link rel="shortcut icon" type="image/png" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('assets/favicon.ico') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 
@@ -87,43 +87,58 @@
         <!-- <p class="mb-0">Add money to wallet from credit card</p> -->
     </nav>
     <!-- CREATE THE HTML FOR THE PAYMENT PAGE -->
-    <div class="container mt-4">
-        <div class="row justify-content-center">
-            <div class="col-md-4" id="card-content">
-                <div id="loader">
-                    <div class='spinner spinner-dark'></div>
-                    <p class="text-muted text-center" id="loaderStatus">Initializing..</p>
-                </div>
-                <div class="card border-0" id="cardForm">
-                    <div class="card-body">
-                        <div id="feedback"></div>
-                        <div class="form-row">
-                            <input type="hidden" id="token" value="{{ app('request')->input('token') }}">
-                            <div class="form-group col-12">
-                                <label for="cardNumber" class="mb-0 font-weight-bold">Card Number</label>
-                                <input type="number" id="cardNumber" class="form-control" value="" readonly  />
+    <div class="d-flex flex-column" style="height: calc(100vh - 76px);">
+        <div class="container mb-auto mt-4">
+            <div class="row justify-content-center">
+                <div class="col-md-4" id="card-content">
+                    <div id="loader">
+                        <div class='spinner spinner-dark'></div>
+                        <p class="text-muted text-center" id="loaderStatus">Initializing..</p>
+                    </div>
+                    <div class="card border-0" id="cardForm">
+                        <div class="card-body">
+                            <div id="feedback"></div>
+                            <div class="form-row">
+                                <input type="hidden" id="token" value="{{ app('request')->input('token') }}">
+                                <div class="form-group col-12">
+                                    <label for="cardNumber" class="mb-0 font-weight-bold">Card Number</label>
+                                    <input type="number" id="cardNumber" class="form-control" value="" readonly  />
+                                </div>
+                                <div class="form-group col-4">
+                                    <label for="cardMonth" class="mb-0 font-weight-bold">Month</label>
+                                    <input type="number" id="cardMonth" class="form-control" placeholder="MM" value="" autocomplete="off" />
+                                </div>
+                                <div class="form-group col-4">
+                                    <label for="cardYear" class="mb-0 font-weight-bold">Year</label>
+                                    <input type="number" id="cardYear" class="form-control" placeholder="YYYY" value="" autocomplete="off" />
+                                </div>
+                                <div class="form-group col-4">
+                                    <label for="cardCVC" class="mb-0 font-weight-bold">CVC</label>
+                                    <input type="number" id="cardCVC" class="form-control" value="" readonly />
+                                </div>
+                                <div class="d-inline-flex font-weight-bold mb-4">
+                                    <p class="mb-0 align-self-center">Add</p>
+                                    <input type="number" placeholder="type amount" id="amount" class="form-control mx-2" autocomplete="off" style="width: 35%" />
+                                    <p class="mb-0 align-self-center">EGP to my wallet</p>
+                                </div>
+                                <!-- <div class="form-group col-12">
+                                    <label for="amount" class="mb-0 font-weight-bold">Amount</label>
+                                    <input type="number" placeholder="EGP" id="amount" class="form-control" value="" autocomplete="off" />
+                                </div> -->
+                                <img src="{{ asset('assets/vapulus-checkout.png') }}"   
+                                    class="img-fluid" id="payButton" onclick="pay();" 
+                                    style="cursor: pointer;" 
+                                />
                             </div>
-                            <div class="form-group col-4">
-                                <label for="cardMonth" class="mb-0 font-weight-bold">Month</label>
-                                <input type="number" id="cardMonth" class="form-control" placeholder="MM" value="" autocomplete="off" />
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="cardYear" class="mb-0 font-weight-bold">Year</label>
-                                <input type="number" id="cardYear" class="form-control" placeholder="YYYY" value="" autocomplete="off" />
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="cardCVC" class="mb-0 font-weight-bold">CVC</label>
-                                <input type="number" id="cardCVC" class="form-control" value="" readonly />
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="amount" class="mb-0 font-weight-bold">Amount</label>
-                                <input type="number" placeholder="EGP" id="amount" class="form-control" value="" autocomplete="off" />
-                            </div>
-                            <button class="btn bg-black text-white btn-block btn-lg rounded-pill mt-2" id="payButton" onclick="pay();">Add <span class="font-weight-bold" id="payAmount"></span> to my wallet</button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="mx-auto my-4">
+            <a href="https://www.vapulus.com" target="_blank">
+                <img src="{{ asset('assets/powered-by-vapulus.png') }}" />
+            </a>
         </div>
     </div>
 
@@ -139,10 +154,10 @@
             }
         });
         $("#cardForm").hide();
-        $("#amount").on('keyup', function() {
-            $("#payAmount").text($(this).val()+' EGP');
-            if ($(this).val() === '') $("#payAmount").text('');
-        })
+        // $("#amount").on('keyup', function() {
+        //     $("#payAmount").text($(this).val()+' EGP');
+        //     if ($(this).val() === '') $("#payAmount").text('');
+        // })
         // Your code to run since DOM is loaded and ready
         if(window.PaymentSession){
             PaymentSession.configure({
