@@ -37,7 +37,7 @@ input UpdateBusinessTripInput {
   friday: String
 }
 
-type LiveTripResponse {
+type UserLiveTripResponse {
   status: Boolean
   trip: BusinessTrip
 }
@@ -70,13 +70,6 @@ type BusinessTrip {
   subscription_code: String
   distance: Int
   duration: Int
-  deleted_at: DateTime
-  partner: Partner @belongsTo
-  driver: Driver @belongsTo
-  vehicle: Vehicle @belongsTo
-  schedule: BusinessTripSchedule @hasOne
-  stations: [BusinessTripStation] @hasMany
-  users: [User] @hasMany
   log_id: String
   startsAt: String
   dayName: String
@@ -84,9 +77,16 @@ type BusinessTrip {
   status: Boolean
   flag: Boolean
   isReturn: Boolean
+  deleted_at: DateTime
+  partner: Partner @belongsTo
+  driver: Driver @belongsTo
+  vehicle: Vehicle @belongsTo
+  schedule: BusinessTripSchedule @hasOne
+  stations: [BusinessTripStation] @hasMany
+  users: [User] @hasMany
 }
 
-type PartnerLiveTrip {
+type PartnerLiveTripResponse {
   id: ID
   name: String
 }

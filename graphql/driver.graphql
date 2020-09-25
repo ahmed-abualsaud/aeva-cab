@@ -22,9 +22,20 @@ input UpdateDriverInput {
   status: Boolean
 }
 
+input DriverVehicleInput {
+  driver_id: ID! @rules(apply: ["required"])
+  vehicle_id: [ID!]! @rules(apply: ["required"])
+}
+
 type DriverAuthPayload {
   access_token: String
   driver: Driver
+}
+
+type DriverVehicle {
+  id: ID
+  driver_id: ID
+  vehicle_id: ID
 }
 
 type Driver {

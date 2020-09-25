@@ -108,30 +108,47 @@ class BusinessTripResolver
 
         return $partners;
     }
- 
+
     public function userTrips($_, array $args)
     {
+        if (!array_key_exists('day', $args)) $args['day'] = strtolower(date("l"));
+
         $userTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
-            ->where('business_trip_users.user_id', $args['user_id'])
-            ->whereNotNull('business_trip_users.subscription_verified_at')
+            ->where('business_trip_users.user_id', $args['user_id']);
+        
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            $userTrips->where('business_trips.partner_id', $args['partner_id']);
+        }
+
+        $userTrips = $userTrips->whereNotNull('business_trip_users.subscription_verified_at')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->select('business_trips.*')
+            ->selectRaw('business_trips.*, '. $args['day'] .' AS time')
+            ->join('business_trip_schedules', function ($join) use ($args) {
+                $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
+                    ->whereNotNull($args['day']);
+            })
             ->get();
         
-        return $this->scheduledTrips($userTrips);
+        return $this->scheduledTrips($userTrips, $args['day']);
     }
 
     public function userTripsByPartner($_, array $args)
     {
+        if (!array_key_exists('day', $args)) $args['day'] = strtolower(date("l"));
+
         $userTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
             ->where('business_trips.partner_id', $args['partner_id'])
             ->whereNotNull('business_trip_users.subscription_verified_at')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->select('business_trips.*')
+            ->selectRaw('business_trips.*, '. $args['day'] .' AS time')
+            ->join('business_trip_schedules', function ($join) use ($args) {
+                $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
+                    ->whereNotNull($args['day']);
+            })
             ->get();
         
-        return $this->scheduledTrips($userTrips);
+        return $this->scheduledTrips($userTrips, $args['day']);
     }
 
     public function partnerLiveTrips($_, array $args)
@@ -144,12 +161,18 @@ class BusinessTripResolver
 
     public function driverTrips($_, array $args)
     {
+        if (!array_key_exists('day', $args)) $args['day'] = strtolower(date("l"));
+
         $driverTrips = BusinessTrip::where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->select('business_trips.*')
+            ->selectRaw('business_trips.*, '. $args['day'] .' AS time')
+            ->join('business_trip_schedules', function ($join) use ($args) {
+                $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
+                    ->whereNotNull($args['day']);
+            })
             ->get();
 
-        return $this->scheduledTrips($driverTrips);
+        return $this->scheduledTrips($driverTrips, $args['day']);
     }
 
     public function userLiveTrip($_, array $args)
@@ -194,51 +217,43 @@ class BusinessTripResolver
         ];
     }
 
-    protected function scheduledTrips($trips) 
+    protected function scheduledTrips($trips, $day) 
     {
         $sortedTrips = array();
-        $days = array('saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday');
         $now = strtotime(now()) * 1000;
-        $flagTimeMargin = 60 * 30 * 1000; // 30 minutes in milliseconds
+        $flagTimeMargin = 60 * 30 * 1000;
 
         foreach($trips as $trip) {
             $tripTimeMargin = $now - ($trip->duration * 1000);
-            foreach($days as $day) { 
-                if ($trip->schedule->$day) {
-                    $date = date('Y-m-d', strtotime($day));
-                    $dateTime = $date . ' ' . $trip->schedule->$day;
-                    $tripDate = strtotime($dateTime) * 1000;
-                    $dayName = ($day == strtolower(date('l')) ? "Today" : $day);
-                    
-                    if ($tripDate > $tripTimeMargin) {
-                        $tripInstance = new BusinessTrip();
-                        $trip->date = $tripDate;
-                        $trip->dayName = $dayName;
-                        $trip->flag = ($tripDate - $flagTimeMargin) < $now;
-                        $trip->isReturn = false;
-                        $trip->startsAt = $tripDate > $now 
-                            ? Carbon::parse($dateTime)->diffForHumans() 
-                            : "Now";
-                        $tripInstance->fill($trip->toArray());
-                        array_push($sortedTrips, $tripInstance);
-                    }
+            $dateTime = date('Y-m-d', strtotime($trip->time)) . ' ' . $trip->time;
+            $tripDate = strtotime($dateTime) * 1000;
+            $trip->dayName = $day;
+            
+            if ($tripDate > $tripTimeMargin) {
+                $tripInstance = new BusinessTrip();
+                $trip->date = $tripDate;
+                $trip->flag = ($tripDate - $flagTimeMargin) < $now;
+                $trip->isReturn = false;
+                $trip->startsAt = $tripDate > $now 
+                    ? Carbon::parse($dateTime)->format('h:i a') 
+                    : "Now";
+                $tripInstance->fill($trip->toArray());
+                array_push($sortedTrips, $tripInstance);
+            }
 
-                    if ($trip->return_time) {
-                        $dateTime = $date . ' ' . $trip->return_time;
-                        $tripDate = strtotime($dateTime) * 1000;
-                        if ($tripDate > $tripTimeMargin) {
-                            $tripInstance = new BusinessTrip();
-                            $trip->dayName = $dayName;
-                            $trip->flag = ($tripDate - $flagTimeMargin) < $now;
-                            $trip->date = $tripDate;
-                            $trip->startsAt = $trip->date > $now 
-                                ? Carbon::parse($dateTime)->diffForHumans() 
-                                : "Now";
-                            $trip->isReturn = true;
-                            $tripInstance->fill($trip->toArray());
-                            array_push($sortedTrips, $tripInstance);
-                        }
-                    }
+            if ($trip->return_time) {
+                $dateTime = date('Y-m-d', strtotime($trip->return_time)) . ' ' . $trip->return_time;
+                $tripDate = strtotime($dateTime) * 1000;
+                if ($tripDate > $tripTimeMargin) {
+                    $tripInstance = new BusinessTrip();
+                    $trip->flag = ($tripDate - $flagTimeMargin) < $now;
+                    $trip->date = $tripDate;
+                    $trip->startsAt = $trip->date > $now 
+                        ? Carbon::parse($dateTime)->format('h:i a') 
+                        : "Now";
+                    $trip->isReturn = true;
+                    $tripInstance->fill($trip->toArray());
+                    array_push($sortedTrips, $tripInstance);
                 }
             }
         }
