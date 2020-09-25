@@ -128,6 +128,8 @@ class BusinessTripResolver
                     ->whereNotNull($args['day']);
             })
             ->get();
+
+        if ($userTrips->isEmpty()) return;
         
         return $this->scheduledTrips($userTrips, $args['day']);
     }
@@ -147,6 +149,8 @@ class BusinessTripResolver
                     ->whereNotNull($args['day']);
             })
             ->get();
+
+        if ($userTrips->isEmpty()) return;
         
         return $this->scheduledTrips($userTrips, $args['day']);
     }
@@ -171,6 +175,8 @@ class BusinessTripResolver
                     ->whereNotNull($args['day']);
             })
             ->get();
+
+        if ($driverTrips->isEmpty()) return;
 
         return $this->scheduledTrips($driverTrips, $args['day']);
     }
