@@ -129,7 +129,7 @@ class BusinessTripResolver
             })
             ->get();
 
-        if ($userTrips->isEmpty()) return;
+        if ($userTrips->isEmpty()) return [];
         
         return $this->scheduledTrips($userTrips, $args['day']);
     }
@@ -150,7 +150,7 @@ class BusinessTripResolver
             })
             ->get();
 
-        if ($userTrips->isEmpty()) return;
+        if ($userTrips->isEmpty()) return [];
         
         return $this->scheduledTrips($userTrips, $args['day']);
     }
@@ -176,7 +176,7 @@ class BusinessTripResolver
             })
             ->get();
 
-        if ($driverTrips->isEmpty()) return;
+        if ($driverTrips->isEmpty()) return [];
 
         return $this->scheduledTrips($driverTrips, $args['day']);
     }
