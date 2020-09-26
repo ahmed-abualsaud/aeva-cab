@@ -17,9 +17,7 @@ use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Mail;
 use App\Events\DriverLocationUpdated;
-use GraphQL\Type\Definition\ResolveInfo;
 use App\Events\BusinessTripStatusChanged;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripLogResolver

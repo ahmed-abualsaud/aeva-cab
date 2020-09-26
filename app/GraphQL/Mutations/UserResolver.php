@@ -41,6 +41,7 @@ class UserResolver
             $password = $input['password'];
         } elseif (array_key_exists('phone', $input)) {
             $password = $input['phone'];
+            $input['phone_verified_at'] = now();
         } else {
             throw new CustomException('Password or phone is required but not provided.');
         }
