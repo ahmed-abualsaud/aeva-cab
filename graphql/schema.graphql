@@ -323,8 +323,8 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Partner Driver 
   partnerAssignedDrivers(partner_id: ID!): [Driver] 
     @field(resolver: "PartnerResolver@partnerAssignedDrivers")
-  partnerNotAssignedDrivers(partner_id: ID!): [Driver] 
-    @paginate(scopes: ["notAssigned"])
+  partnerNotAssignedDrivers(partner_id: ID!, searchFor: String, searchQuery: String): [Driver] 
+    @paginate(scopes: ["notAssigned", "search"])
 
   # Business Trip
   businessTrips(partner_id: ID): [BusinessTrip] @paginate(scopes: ["filterByPartner"]) @softDeletes

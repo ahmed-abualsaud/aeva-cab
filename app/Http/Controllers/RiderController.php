@@ -15,7 +15,7 @@ use App\DriverVehicle;
 use App\PromoCodeUsage;
 use App\WalletPassbook;
 use App\CabRequestFilter;
-use App\Traits\Uploadable;
+use App\Traits\HandleUpload;
 use Illuminate\Http\Request;
 use App\Helpers\StaticMapUrl;
 use Illuminate\Support\Facades\Validator;
@@ -24,7 +24,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RiderController extends Controller
 {
-    use Uploadable;
+    use HandleUpload;
 
     public $tax_percentage = 14;
     public $driver_search_radius = 10;

@@ -5,7 +5,7 @@ namespace App\Traits;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-trait Uploadable
+trait HandleUpload
 {
     protected function uploadOneFile(UploadedFile $file, $folder)
     {

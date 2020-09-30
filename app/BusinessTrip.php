@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\BusinessTripUser;
 use App\BusinessTripSchedule;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -29,9 +30,20 @@ class BusinessTrip extends Model
 
     public function stations() 
     {
-        return $this->hasMany(BusinessTripStation::class, 'trip_id')
-            ->whereNotNull('accepted_at')
+        $stations = $this->hasMany(BusinessTripStation::class, 'trip_id');
+
+        if (auth('user')->user()) {
+            $stations->leftJoin('business_trip_users', function ($join) {
+                $join->on('business_trip_users.station_id', '=', 'business_trip_stations.id')
+                    ->where('business_trip_users.user_id', auth('user')->user()->id);
+            })
+            ->selectRaw('business_trip_stations.*, business_trip_users.station_id AS is_my_station');
+        }
+
+        $stations->whereNotNull('accepted_at')
             ->orderBy('distance', 'ASC');
+
+        return $stations;
     }
 
     public function users()

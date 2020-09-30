@@ -4,7 +4,7 @@ namespace App\GraphQL\Mutations;
 
 use \App\Fleet;
 use \App\Driver;
-use \App\Traits\Uploadable;
+use \App\Traits\HandleUpload;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class FleetResolver
 { 
-    use Uploadable;
+    use HandleUpload;
 
     /**
      * Return a value for the field.

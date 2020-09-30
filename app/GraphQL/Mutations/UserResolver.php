@@ -7,7 +7,7 @@ use App\User;
 use App\DeviceToken;
 use App\PartnerUser;
 use App\Jobs\SendOtp;
-use App\Traits\Uploadable;
+use App\Traits\HandleUpload;
 use Illuminate\Support\Str; 
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  
 class UserResolver
 {
-    use Uploadable;
+    use HandleUpload;
 
     /**
      * @param  null  $_

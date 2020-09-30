@@ -60,5 +60,6 @@ type BusinessTripStation {
   state: String
   distance: Int
   duration: Int
+  is_my_station: Boolean
   users: [User] @belongsToMany
 }

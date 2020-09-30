@@ -5,7 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\Partner;
 use App\PartnerUser;
 use App\PartnerDriver;
-use App\Traits\Uploadable;
+use App\Traits\HandleUpload;
 use Illuminate\Support\Arr;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Hash;
@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PartnerResolver
 {
-    use Uploadable;
+    use HandleUpload;
     /**
      * @param  null  $_
      * @param  array<string, mixed>  $args
