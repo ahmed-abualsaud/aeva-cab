@@ -63,33 +63,34 @@ class BusinessTripResolver
     {
         try {
             $trip = BusinessTrip::findOrFail($args['id']);
-            $driverVehicle = DriverVehicle::where('driver_id', $trip->driver_id)
+            $driverStatus = DriverVehicle::where('driver_id', $trip->driver_id)
                 ->where('vehicle_id', $trip->vehicle_id);
+            $usersStatus = BusinessTripUser::where('trip_id', $trip->id);
         } catch (\Exception $e) {
-            throw new CustomException($e->getMessage());
+            throw new CustomException('We could not find a trip with the provided ID.');
         }
 
-        $tripInput = [
-            "status" => $args['status'],
-            "log_id" => $args['log_id']
-        ];
+        $tripInput = ["status" => $args['status'], "log_id" => $args['log_id']];
 
         if ($args['status']) {
-            $driverVehicleInput = [
+            $driverStatusInput = [
                 "status" => "RIDING",
                 "trip_type" => "App\BusinessTrip",
                 "trip_id" => $args['id']
             ];
         } else {
-            $driverVehicleInput = [
+            $driverStatusInput = [
                 "status" => "ACTIVE",
                 "trip_type" => null,
                 "trip_id" => null
             ];
         }
 
+        $usersStatusInput = ["is_arrived" => false, "is_picked" => false];
+
         $trip->update($tripInput);
-        $driverVehicle->update($driverVehicleInput);
+        $driverStatus->update($driverStatusInput);
+        $usersStatus->update($usersStatusInput);
 
         return $trip;
     }

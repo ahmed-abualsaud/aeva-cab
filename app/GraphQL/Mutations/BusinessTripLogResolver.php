@@ -239,7 +239,7 @@ class BusinessTripLogResolver
         
         $this->changeUserStatus($args['trip_id'], ['is_picked' => false, 'is_arrived' => false]);
 
-        $push_msg = $trip->name . ' has arrived. Have a great time.';
+        $push_msg = $trip->name . ' has been ended. Thanks for choosing Qruz.';
         $tokens = $this->getUsersTokens($trip->id, null, null);
         SendPushNotification::dispatch($tokens, $push_msg);
 
