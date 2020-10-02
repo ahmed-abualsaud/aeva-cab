@@ -39,6 +39,14 @@ input PickUsersUpInput {
   users: [UserObj!]! @rules(apply: ["required"])
 }
 
+input SelectUsersInput {
+  trip_id: ID! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+  users: [ID!]! @rules(apply: ["required"])
+}
+
 input ChangeTripUserStatusInput {
   trip_id: ID! @rules(apply: ["required"])
   log_id: String! @rules(apply: ["required"])

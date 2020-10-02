@@ -19,9 +19,13 @@ class CreateBusinessTripUsersTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('station_id')->nullable();
             $table->timestamp('subscription_verified_at')->nullable();
+            $table->boolean('is_arrived')->default(false);
+            $table->boolean('is_picked')->default(false);
             $table->timestamps();
 
             $table->unique(['trip_id', 'user_id']);
+            $table->index('user_id');
+            $table->index('station_id');
 
             $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

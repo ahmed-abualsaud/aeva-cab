@@ -201,10 +201,12 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripLogResolver@userArrived")
   endTrip(input: EndTripInput! @spread): String
     @field(resolver: "BusinessTripLogResolver@endTrip")
-  pickUsersUp(input: PickUsersUpInput! @spread): String
-    @field(resolver: "BusinessTripLogResolver@pickUsersUp")
   changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
     @field(resolver: "BusinessTripLogResolver@changeTripUserStatus")
+  pickUsers(input: SelectUsersInput! @spread): String
+    @field(resolver: "BusinessTripLogResolver@pickUsers")
+  dropUsers(input: SelectUsersInput! @spread): String
+      @field(resolver: "BusinessTripLogResolver@dropUsers")
 
   # Communication
   sendDirectMessage(input: SendDirectMessageInput! @spread): String
@@ -343,20 +345,20 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Business Trip User
   businessTripUsers(input: GetBusinessTripUsersInput! @spread): [BusinessTripUserWithStationResponse] 
     @field(resolver: "BusinessTripResolver@users")
-
+ 
   # Business Trip Log
-  getDriverLocation(driver_id: ID!): LocationCoordinatesResponse
+  driverLocation(driver_id: ID!): LocationCoordinatesResponse
     @field(resolver: "BusinessTripLogResolver@driverLocation")
   getPickedUsers(log_id: String!): [User]
     @field(resolver: "BusinessTripLogResolver@pickedUsers")
-  getArrivedAndPickedUsers(log_id: String!, station_id: ID!): [User]
+  arrivedAndPickedUsers(station_id: ID!): [User]
     @field(resolver: "BusinessTripLogResolver@arrivedAndPickedUsers")
-  getArrivedAndPickedUsersLite(log_id: String!, station_id: ID!): [User]
-    @field(resolver: "BusinessTripLogResolver@arrivedAndPickedUsersLite")
   businessTripLog(log_id: String!): [BusinessTripLogResponse]
     @field(resolver: "BusinessTripLogResolver@businessTripLog")
   businessTripLogHistory(trip_id: ID! period: String): [BusinessTripLogHistoryResponse]
     @paginate(builder: "App\\TripLog@history")
+  businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
+    @field(resolver: "BusinessTripLogResolver@businessTripSubscribers")
  
   # Notifications
   unreadNotifications: [Notification]!
