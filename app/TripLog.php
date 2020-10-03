@@ -27,6 +27,10 @@ class TripLog extends Model
             $logHistory = $this->dateFilter($args['period'], $logHistory, 'created_at');
         }
 
+        if (array_key_exists('user_id', $args) && $args['user_id']) {
+            $logHistory = $logHistory->where('user_id', $args['user_id']);
+        }
+
         $logHistory = $logHistory->where('trip_id', $args['trip_id'])
             ->groupBy(DB::raw('log_id, DATE(created_at)'))
             ->orderBy('date', 'desc');

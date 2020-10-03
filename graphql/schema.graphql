@@ -206,7 +206,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   pickUsers(input: SelectUsersInput! @spread): String
     @field(resolver: "BusinessTripLogResolver@pickUsers")
   dropUsers(input: SelectUsersInput! @spread): String
-      @field(resolver: "BusinessTripLogResolver@dropUsers")
+    @field(resolver: "BusinessTripLogResolver@dropUsers")
 
   # Communication
   sendDirectMessage(input: SendDirectMessageInput! @spread): String
@@ -355,7 +355,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripLogResolver@arrivedAndPickedUsers")
   businessTripLog(log_id: String!): [BusinessTripLogResponse]
     @field(resolver: "BusinessTripLogResolver@businessTripLog")
-  businessTripLogHistory(trip_id: ID! period: String): [BusinessTripLogHistoryResponse]
+  businessTripLogHistory(trip_id: ID!, user_id: ID, period: String): [BusinessTripLogHistoryResponse]
     @paginate(builder: "App\\TripLog@history")
   businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
     @field(resolver: "BusinessTripLogResolver@businessTripSubscribers")

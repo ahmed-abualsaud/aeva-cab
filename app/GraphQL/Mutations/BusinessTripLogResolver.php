@@ -30,7 +30,7 @@ class BusinessTripLogResolver
 
             if ($trip->status) throw new CustomException('Trip has already been started.');
 
-            $log_id = uniqid() . $trip->subscription_code;
+            $log_id = uniqid() .'-'. $trip->subscription_code;
 
             $trip->update(['status' => true, 'log_id' => $log_id]);
 
@@ -93,86 +93,18 @@ class BusinessTripLogResolver
 
     public function pickUsers($_, array $args)
     {
-        $data = array(); 
-        $arr = array();
+        $msg = 'Welcome! May you be happy and safe throughout this trip.';
+        $this->pickOrDropUsers($args, 'PICKED_UP', true, $msg);
 
-        foreach($args['users'] as $user) {
-            $arr['log_id'] = $args['log_id'];
-            $arr['trip_id'] = $args['trip_id'];
-            $arr['latitude'] = $args['latitude'];
-            $arr['longitude'] = $args['longitude'];
-            $arr['user_id'] = $user;
-            $arr['status'] = 'PICKED_UP';
-            $arr['created_at'] = $arr['updated_at'] = now();
-            array_push($data, $arr);
-        } 
-
-        $this->changeUserStatus($args['trip_id'], ['is_picked' => true], $args['users']);
-
-        $push_msg = 'Welcome! May you be happy and safe throughout this trip.';
-        $tokens = $this->getUsersTokens(null, null, $args['users']);
-        SendPushNotification::dispatch($tokens, $msg);
-        
-        $usernames = User::select('name')
-            ->whereIn('id', $args['users'])
-            ->pluck('name')
-            ->toArray();
-
-        $input = [
-            "trip_id" => $args['trip_id'],
-            "log_id" => $args['log_id'],
-            "status" => "PICKED_UP",
-            "latitude" => $args['latitude'],
-            "longitude" => $args['longitude']
-        ];
-
-        $this->broadcastTripLog($input, implode(', ', $usernames));
-
-        TripLog::insert($data);
-
-        return 'Selected users have been picked up';
+        return $msg;
     }
 
     public function dropUsers($_, array $args)
     {
-        $data = array(); 
-        $arr = array();
+        $msg = 'Bye! We can\'t wait to see you next time.';
+        $this->pickOrDropUsers($args, 'DROPPED_OFF', false, $msg);
 
-        foreach($args['users'] as $user) {
-            $arr['log_id'] = $args['log_id'];
-            $arr['trip_id'] = $args['trip_id'];
-            $arr['latitude'] = $args['latitude'];
-            $arr['longitude'] = $args['longitude'];
-            $arr['user_id'] = $user;
-            $arr['status'] = 'DROPPED_OFF';
-            $arr['created_at'] = $arr['updated_at'] = now();
-            array_push($data, $arr);
-        } 
-
-        $this->changeUserStatus($args['trip_id'], ['is_picked' => false], $args['users']);
-
-        $push_msg = 'Bye! We can\'t wait to see you next time.';
-        $tokens = $this->getUsersTokens(null, null, $args['users']);
-        SendPushNotification::dispatch($tokens, $push_msg);
-
-        $usernames = User::select('name')
-            ->whereIn('id', $args['users'])
-            ->pluck('name')
-            ->toArray();
-
-        $input = [
-            "trip_id" => $args['trip_id'],
-            "log_id" => $args['log_id'],
-            "status" => "DROPPED_OFF",
-            "latitude" => $args['latitude'],
-            "longitude" => $args['longitude']
-        ];
-
-        $this->broadcastTripLog($input, implode(', ', $usernames));
-
-        TripLog::insert($data);
-
-        return 'Selected users have been dropped off';
+        return $msg;
     }
 
     public function updateDriverLocation($_, array $args)
@@ -342,6 +274,43 @@ class BusinessTripLogResolver
                 'trip_type' => $status === 'RIDING' ? 'App\BusinessTrip' : null, 
                 'trip_id' => $status === 'RIDING' ? $trip->id : null
             ]);
+    }
+
+    protected function pickOrDropUsers($args, $status, $is_picked, $msg)
+    {
+        $data = []; $arr = [];
+        foreach($args['users'] as $user) {
+            $arr['log_id'] = $args['log_id'];
+            $arr['trip_id'] = $args['trip_id'];
+            $arr['latitude'] = $args['latitude'];
+            $arr['longitude'] = $args['longitude'];
+            $arr['user_id'] = $user;
+            $arr['status'] = $status;
+            $arr['created_at'] = $arr['updated_at'] = now();
+            array_push($data, $arr);
+        } 
+
+        $this->changeUserStatus($args['trip_id'], ['is_picked' => $is_picked], $args['users']);
+
+        $tokens = $this->getUsersTokens(null, null, $args['users']);
+        SendPushNotification::dispatch($tokens, $msg);
+        
+        $usernames = User::select('name')
+            ->whereIn('id', $args['users'])
+            ->pluck('name')
+            ->toArray();
+
+        $input = [
+            "trip_id" => $args['trip_id'],
+            "log_id" => $args['log_id'],
+            "status" => $status,
+            "latitude" => $args['latitude'],
+            "longitude" => $args['longitude']
+        ];
+
+        $this->broadcastTripLog($input, implode(', ', $usernames));
+
+        TripLog::insert($data);
     }
 
 }
