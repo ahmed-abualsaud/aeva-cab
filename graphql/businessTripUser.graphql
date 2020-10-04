@@ -46,5 +46,6 @@ type BusinessTripUserWithStationResponse {
   id: ID!
   name: String!
   avatar: String
+  phone: String
   station_name: String
 }

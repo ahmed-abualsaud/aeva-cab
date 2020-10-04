@@ -60,11 +60,17 @@ class BusinessTripLogResolver
                 (CASE WHEN is_picked = 1 THEN 1 ELSE 0 END) AS is_picked_up, 
                 (CASE WHEN is_arrived = 1 THEN 1 ELSE 0 END) AS is_arrived
             ')
-            ->join('business_trip_users', 'users.id', '=', 'business_trip_users.user_id')
-            ->where('business_trip_users.station_id', $args['station_id'])
-            ->get();
+            ->join('business_trip_users', 'users.id', '=', 'business_trip_users.user_id');
 
-        return $users;
+            if (array_key_exists('trip_id', $args) && $args['trip_id']) {
+                $users = $users->where('business_trip_users.trip_id', $args['trip_id']);
+            }
+            
+            if (array_key_exists('station_id', $args) && $args['station_id']) {
+                $users = $users->where('business_trip_users.station_id', $args['station_id']);
+            }
+
+        return $users->get();
     }
 
     public function businessTripLog($_, array $args)

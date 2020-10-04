@@ -22,7 +22,7 @@ class BusinessTripResolver
 
         switch($status) {
             case 'subscribed':
-                $users = User::selectRaw('users.id, users.name, users.avatar, business_trip_stations.name AS station_name')
+                $users = User::selectRaw('users.id, users.name, users.avatar, users.phone, business_trip_stations.name AS station_name')
                     ->where('business_trip_users.trip_id', $args['trip_id'])
                     ->join('business_trip_users', function ($join) {
                         $join->on('users.id', '=', 'business_trip_users.user_id')
@@ -39,7 +39,7 @@ class BusinessTripResolver
 
                 $users = User::Join('partner_users', 'partner_users.user_id', '=', 'users.id')
                     ->where('partner_users.partner_id', $args['partner_id'])
-                    ->select('users.id', 'users.name', 'users.avatar')
+                    ->select('users.id', 'users.name', 'users.avatar', 'users.phone')
                     ->whereNotIn('users.id', $businessTripUsers)
                     ->get();
 
@@ -50,7 +50,7 @@ class BusinessTripResolver
                     ->whereNull('subscription_verified_at')
                     ->pluck('user_id');
 
-                $users = User::select('id', 'name', 'avatar')
+                $users = User::select('id', 'name', 'avatar', 'phone')
                     ->whereIn('id', $businessTripUsers)
                     ->get();
                 break;
@@ -63,7 +63,7 @@ class BusinessTripResolver
     {
         $stationUsers = BusinessTripUser::where('station_id', $args['station_id'])
             ->join('users', 'users.id', '=', 'business_trip_users.user_id')
-            ->select('users.id', 'users.name', 'users.avatar')
+            ->select('users.id', 'users.name', 'users.avatar', 'users.phone')
             ->get();
 
         return $stationUsers;
@@ -75,7 +75,7 @@ class BusinessTripResolver
             ->where('station_id', $args['station_id'])
             ->get()->pluck('user_id');
 
-        $stationNotAssignedUsers = User::select('users.id', 'users.name', 'users.avatar')
+        $stationNotAssignedUsers = User::select('users.id', 'users.name', 'users.avatar', 'users.phone')
             ->join('partner_users', function ($join) use ($args, $stationAssignedUsers) {
                 $join->on('users.id', '=', 'partner_users.user_id')
                     ->where('partner_users.partner_id', $args['partner_id'])
@@ -228,6 +228,7 @@ class BusinessTripResolver
         $sortedTrips = array();
         $now = strtotime(now()) * 1000;
         $flagTimeMargin = 60 * 30 * 1000;
+        $today = $day == strtolower(date('l'));
 
         foreach($trips as $trip) {
             $tripTimeMargin = $now - ($trip->duration * 1000);
@@ -235,12 +236,12 @@ class BusinessTripResolver
             $tripDate = strtotime($dateTime) * 1000;
             $trip->dayName = $day;
             
-            if ($tripDate > $tripTimeMargin) {
+            if ($tripDate > $tripTimeMargin || !$today) {
                 $tripInstance = new BusinessTrip();
                 $trip->date = $tripDate;
                 $trip->flag = ($tripDate - $flagTimeMargin) < $now;
                 $trip->isReturn = false;
-                $trip->startsAt = $tripDate > $now 
+                $trip->startsAt = $trip->date > $now || !$today
                     ? Carbon::parse($dateTime)->format('h:i a') 
                     : "Now";
                 $tripInstance->fill($trip->toArray());
@@ -250,11 +251,11 @@ class BusinessTripResolver
             if ($trip->return_time) {
                 $dateTime = date('Y-m-d', strtotime($trip->return_time)) . ' ' . $trip->return_time;
                 $tripDate = strtotime($dateTime) * 1000;
-                if ($tripDate > $tripTimeMargin) {
+                if ($tripDate > $tripTimeMargin || !$today) {
                     $tripInstance = new BusinessTrip();
                     $trip->flag = ($tripDate - $flagTimeMargin) < $now;
                     $trip->date = $tripDate;
-                    $trip->startsAt = $trip->date > $now 
+                    $trip->startsAt = $trip->date > $now || !$today
                         ? Carbon::parse($dateTime)->format('h:i a') 
                         : "Now";
                     $trip->isReturn = true;

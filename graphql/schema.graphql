@@ -351,7 +351,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripLogResolver@driverLocation")
   getPickedUsers(log_id: String!): [User]
     @field(resolver: "BusinessTripLogResolver@pickedUsers")
-  arrivedAndPickedUsers(station_id: ID!): [User]
+  arrivedAndPickedUsers(trip_id: ID, station_id: ID): [User]
     @field(resolver: "BusinessTripLogResolver@arrivedAndPickedUsers")
   businessTripLog(log_id: String!): [BusinessTripLogResponse]
     @field(resolver: "BusinessTripLogResolver@businessTripLog")

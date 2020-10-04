@@ -36,6 +36,8 @@ class CreateUsersTable extends Migration
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['provider', 'provider_id']);
             
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->foreign('referrer_id')->references('id')->on('users')->onDelete('set null');
