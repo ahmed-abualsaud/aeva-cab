@@ -67,10 +67,14 @@ class BusinessTrip extends Model
         return $query->where('status', true);
     }
 
-    public function scopeFilterByPartner($query, $args) 
+    public function scopeFilter($query, $args) 
     {
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $query->where('partner_id', $args['partner_id']);
+        }
+
+        if (array_key_exists('driver_id', $args) && $args['driver_id']) {
+            $query->where('driver_id', $args['driver_id']);
         }
  
         return $query->orderBy('created_at', 'DESC');

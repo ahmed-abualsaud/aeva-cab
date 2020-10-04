@@ -23,6 +23,8 @@ class CreateOndemandRequestLinesTable extends Migration
             $table->string('from_address')->nullable();
             $table->string('to_address')->nullable();
 
+            $table->index('request_id');
+
             $table->foreign('request_id')->references('id')->on('ondemand_requests')->onDelete('cascade');
         });
     }

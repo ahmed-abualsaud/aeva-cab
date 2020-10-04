@@ -15,13 +15,16 @@ class CreateTripLogsTable extends Migration
     {
         Schema::create('trip_logs', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('log_id')->index();
+            $table->string('log_id');
             $table->unsignedBigInteger('trip_id');
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8);
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('status');
             $table->timestamps();
+
+            $table->index('log_id');
+            $table->index('trip_id');
 
             $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

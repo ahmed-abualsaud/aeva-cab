@@ -25,6 +25,8 @@ class CreateBusinessTripSchedulesTable extends Migration
             $table->time('friday')->nullable();
             $table->timestamps();
 
+            $table->index('trip_id');
+
             $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
         });
     }

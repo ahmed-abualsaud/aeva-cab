@@ -43,6 +43,7 @@ class CreateOndemandRequestsTable extends Migration
             $table->softDeletes();
 
             $table->index('created_at');
+            $table->index('user_id');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });

@@ -26,6 +26,8 @@ class CreateBusinessTripStationsTable extends Migration
             $table->string('state')->default('PENDING');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index('trip_id');
             
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');

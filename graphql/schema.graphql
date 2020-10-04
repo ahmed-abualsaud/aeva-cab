@@ -144,7 +144,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripResolver@update")
   updateBusinessTripStatus(input: UpdateBusinessTripInput! @spread): BusinessTrip 
     @field(resolver: "BusinessTripResolver@updateStatus")
-  deleteBusinessTrip(id: ID!): BusinessTrip @delete
+  deleteBusinessTrip(id: ID!): BusinessTrip @forceDelete
   restoreBusinessTrip(id: ID!): BusinessTrip @restore
 
   # Cab Request
@@ -167,7 +167,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripStationResolver@update")
   updateStationsRoute(input: UpdateStationsRouteInput! @spread): Boolean 
     @field(resolver: "BusinessTripStationResolver@updateRoute")
-  deleteBusinessTripStation(id: ID!): BusinessTripStation @delete
+  deleteBusinessTripStation(id: ID!): BusinessTripStation @forceDelete
   restoreBusinessTripStation(id: ID!): BusinessTripStation @restore
   acceptBusinessTripStation(input: AcceptBusinessTripStationInput! @spread): BusinessTripStation
     @field(resolver: "BusinessTripStationResolver@acceptStation") 
@@ -329,7 +329,8 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @paginate(scopes: ["notAssigned", "search"])
 
   # Business Trip
-  businessTrips(partner_id: ID): [BusinessTrip] @paginate(scopes: ["filterByPartner"]) @softDeletes
+  businessTrips(partner_id: ID, driver_id: ID): [BusinessTrip] 
+    @paginate(scopes: ["filter"]) @softDeletes
   businessLiveTrips: [BusinessTrip] @all(scopes: ["live"])
   trip(id: ID @eq): BusinessTrip @find
 
