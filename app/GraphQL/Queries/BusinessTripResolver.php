@@ -231,7 +231,7 @@ class BusinessTripResolver
         $today = $day == strtolower(date('l'));
 
         foreach($trips as $trip) {
-            $tripTimeMargin = $now - ($trip->duration * 1000);
+            $tripTimeMargin = $now - (($trip->duration + 7200) * 1000);
             $dateTime = date('Y-m-d', strtotime($trip->time)) . ' ' . $trip->time;
             $tripDate = strtotime($dateTime) * 1000;
             $trip->dayName = $day;
