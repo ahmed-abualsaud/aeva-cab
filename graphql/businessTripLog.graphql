@@ -53,8 +53,8 @@ type BusinessTripLogsResponse {
 }
 
 type BusinessTripLogResponse {
-  created_at: DateTime!
-  status: String!
+  time: String
+  status: String
   latitude: String
   longitude: String
   user: String

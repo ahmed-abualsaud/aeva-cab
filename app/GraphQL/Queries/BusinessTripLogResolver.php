@@ -75,7 +75,7 @@ class BusinessTripLogResolver
 
     public function show($_, array $args)
     {
-        $log = TripLog::selectRaw('trip_logs.status, trip_logs.latitude, trip_logs.longitude, trip_logs.created_at, users.name as user');
+        $log = TripLog::selectRaw('trip_logs.status, trip_logs.latitude, trip_logs.longitude, DATE_FORMAT(trip_logs.created_at, "%l:%i %p") as time, users.name as user');
 
             if (array_key_exists('user_id', $args) && $args['user_id']) {
                 $log = $log->join('users', function ($join) use ($args) {
@@ -88,7 +88,7 @@ class BusinessTripLogResolver
 
             
             $log = $log->where('log_id', $args['log_id'])
-                ->orderBy('trip_logs.created_at')
+                ->orderBy('time')
                 ->get();
 
         return $log; 

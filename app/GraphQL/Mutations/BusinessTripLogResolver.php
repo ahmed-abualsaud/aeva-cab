@@ -222,7 +222,7 @@ class BusinessTripLogResolver
     protected function broadcastTripLog($input, $user = null)
     {
         $log = [
-            "created_at" => date("Y-m-d H:i:s"),
+            "time" => date("h:i a"),
             "status" => $input['status'],
             "latitude" => $input['latitude'],
             "longitude" => $input['longitude'],
