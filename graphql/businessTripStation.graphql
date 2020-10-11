@@ -4,7 +4,7 @@ input CreateBusinessTripStationInput {
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
   trip_id: ID
-  state: String
+  state: String @rules(apply: ["in:START,END,PICKABLE,PENDING"])
   distance: Int
   duration: Int
   created_by: ID

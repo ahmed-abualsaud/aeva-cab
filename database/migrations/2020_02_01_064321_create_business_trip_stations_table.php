@@ -23,7 +23,7 @@ class CreateBusinessTripStationsTable extends Migration
             $table->integer('distance')->nullable();
             $table->timestamp('accepted_at')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
-            $table->string('state')->default('PENDING');
+            $table->enum('state', ['START','END','PICKABLE','PENDING'])->default('PENDING');
             $table->timestamps();
             $table->softDeletes();
 

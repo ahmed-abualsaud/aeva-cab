@@ -18,7 +18,7 @@ class TripLog extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function history($_, array $args): Builder
+    public function index($_, array $args): Builder
     {
         $logHistory = DB::table('trip_logs')
             ->select(DB::raw('log_id, DATE(created_at) as date'));

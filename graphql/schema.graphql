@@ -354,10 +354,10 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripLogResolver@pickedUsers")
   arrivedAndPickedUsers(trip_id: ID, station_id: ID): [User]
     @field(resolver: "BusinessTripLogResolver@arrivedAndPickedUsers")
-  businessTripLog(log_id: String!): [BusinessTripLogResponse]
-    @field(resolver: "BusinessTripLogResolver@businessTripLog")
-  businessTripLogHistory(trip_id: ID!, user_id: ID, period: String): [BusinessTripLogHistoryResponse]
-    @paginate(builder: "App\\TripLog@history")
+  businessTripLogs(trip_id: ID!, user_id: ID, period: String): [BusinessTripLogsResponse]
+    @paginate(builder: "App\\TripLog@index")
+  businessTripLog(log_id: String!, user_id: ID): [BusinessTripLogResponse]
+    @field(resolver: "BusinessTripLogResolver@show")
   businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
     @field(resolver: "BusinessTripLogResolver@businessTripSubscribers")
  

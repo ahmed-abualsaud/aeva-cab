@@ -73,13 +73,23 @@ class BusinessTripLogResolver
         return $users->get();
     }
 
-    public function businessTripLog($_, array $args)
+    public function show($_, array $args)
     {
-        $log = TripLog::selectRaw('trip_logs.status, trip_logs.latitude, trip_logs.longitude, trip_logs.created_at, users.name as user')
-            ->leftJoin('users', 'users.id', '=', 'trip_logs.user_id')
-            ->where('log_id', $args['log_id'])
-            ->orderBy('trip_logs.created_at')
-            ->get();
+        $log = TripLog::selectRaw('trip_logs.status, trip_logs.latitude, trip_logs.longitude, trip_logs.created_at, users.name as user');
+
+            if (array_key_exists('user_id', $args) && $args['user_id']) {
+                $log = $log->join('users', function ($join) use ($args) {
+                    $join->on('users.id', '=', 'trip_logs.user_id')
+                        ->where('trip_logs.user_id', $args['user_id']);
+                });
+            } else {
+                $log = $log->leftJoin('users', 'users.id', '=', 'trip_logs.user_id');
+            }
+
+            
+            $log = $log->where('log_id', $args['log_id'])
+                ->orderBy('trip_logs.created_at')
+                ->get();
 
         return $log; 
     }

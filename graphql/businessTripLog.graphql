@@ -31,14 +31,6 @@ input UserArrivedInput {
   user_id: ID! @rules(apply: ["required"])
 }
 
-input PickUsersUpInput {
-  trip_id: ID! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: String! @rules(apply: ["required"])
-  longitude: String! @rules(apply: ["required"])
-  users: [UserObj!]! @rules(apply: ["required"])
-}
-
 input SelectUsersInput {
   trip_id: ID! @rules(apply: ["required"])
   log_id: String! @rules(apply: ["required"])
@@ -55,9 +47,9 @@ input ChangeTripUserStatusInput {
   status: String! @rules(apply: ["in:PICKED_UP,NOT_PICKED_UP,DROPPED_OFF"])
 }
 
-input UserObj {
-  id: ID! @rules(apply: ["required"])
-  is_picked_up: Boolean! @rules(apply: ["required"])
+type BusinessTripLogsResponse {
+  log_id: String
+  date: Date
 }
 
 type BusinessTripLogResponse {
@@ -66,11 +58,6 @@ type BusinessTripLogResponse {
   latitude: String
   longitude: String
   user: String
-}
-
-type BusinessTripLogHistoryResponse {
-  log_id: String
-  date: Date
 }
 
 type TripLog {
