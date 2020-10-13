@@ -6,7 +6,6 @@ use App\User;
 use App\Driver;
 use App\TripLog;
 use Carbon\Carbon;
-use App\DeviceToken;
 use App\BusinessTrip;
 use App\DriverVehicle;
 use App\BusinessTripUser;
@@ -185,24 +184,31 @@ class BusinessTripLogResolver
     protected function getUsersTokens($trip_id = null, $station_id = null, $users = null)
     {
         if ($users) {
-            $tokens = DeviceToken::where('tokenable_type', 'App\User')
-                ->whereIn('tokenable_id', $users)
+            $tokens = User::whereIn('id', $users)
                 ->select('device_id')
                 ->pluck('device_id')
                 ->toArray();
+
+            // $tokens = DeviceToken::where('tokenable_type', 'App\User')
+            //     ->whereIn('tokenable_id', $users)
+            //     ->select('device_id')
+            //     ->pluck('device_id')
+            //     ->toArray();
         } else {
-            $tokens = DeviceToken::Join('business_trip_users', function ($join) {
-                $join->on('business_trip_users.user_id', '=', 'device_tokens.tokenable_id')
-                    ->where('device_tokens.tokenable_type', '=', 'App\User');
-                });
+            $tokens = User::Join('business_trip_users', 'business_trip_users.user_id', '=', 'users.id');
+
+            // $tokens = DeviceToken::Join('business_trip_users', function ($join) {
+            //     $join->on('business_trip_users.user_id', '=', 'device_tokens.tokenable_id')
+            //         ->where('device_tokens.tokenable_type', '=', 'App\User');
+            //     });
     
-                if ($trip_id) $tokens = $tokens->where('business_trip_users.trip_id', $trip_id);
-    
-                if ($station_id) $tokens = $tokens->where('business_trip_users.station_id', $station_id);
-    
-                $tokens = $tokens->select('device_tokens.device_id')
-                    ->pluck('device_tokens.device_id')
-                    ->toArray();
+            if ($trip_id) $tokens = $tokens->where('business_trip_users.trip_id', $trip_id);
+
+            if ($station_id) $tokens = $tokens->where('business_trip_users.station_id', $station_id);
+
+            $tokens = $tokens->select('device_id')
+                ->pluck('device_id')
+                ->toArray();
         }
 
         return $tokens;
@@ -210,11 +216,16 @@ class BusinessTripLogResolver
 
     protected function getDriverToken($driver_id)
     {
-        $token = DeviceToken::where('tokenable_id', $driver_id)
-            ->where('tokenable_type', 'App\Driver')
+        $tokens = Driver::where('id', $driver_id)
             ->select('device_id')
             ->pluck('device_id')
             ->toArray();
+
+        // $token = DeviceToken::where('tokenable_id', $driver_id)
+        //     ->where('tokenable_type', 'App\Driver')
+        //     ->select('device_id')
+        //     ->pluck('device_id')
+        //     ->toArray();
 
         return $token;
     }

@@ -20,6 +20,7 @@ input UpdateDriverInput {
   license_expires_on: Date
   avatar: Upload
   status: Boolean
+  device_id: String
 }
 
 input DriverVehicleInput {

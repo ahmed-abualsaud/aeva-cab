@@ -3,29 +3,21 @@
 namespace App\GraphQL\Mutations;
 
 use App\Driver;
-use App\DeviceToken;
 use App\DriverVehicle;
 use App\Traits\HandleUpload;
 use Illuminate\Support\Arr;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Hash;
-use GraphQL\Type\Definition\ResolveInfo;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DriverResolver 
 {
     use HandleUpload;
     /**
-     * Return a value for the field.
-     *
-     * @param  null  $rootValue Usually contains the result returned from the parent field. In this case, it is always `null`.
-     * @param  mixed[]  $args The arguments that were passed into the field.
-     * @param  \Nuwave\Lighthouse\Support\Contracts\GraphQLContext  $context Arbitrary data that is shared between all fields of a single query.
-     * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
-     * @return mixed
+     * @param  null  $_
+     * @param  array<string, mixed>  $args
      */
-    public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function create($_, array $args)
     {
         $input = collect($args)->except(['directive', 'avatar'])->toArray();
         $input['password'] = Hash::make($input['phone']);
@@ -40,7 +32,7 @@ class DriverResolver
         return $driver;
     }
 
-    public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function update($_, array $args)
     {
         $input = collect($args)->except(['id', 'directive', 'avatar'])->toArray();
 
@@ -61,7 +53,7 @@ class DriverResolver
         return $driver;
     }
 
-    public function login($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function login($_, array $args)
     {
         $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
         $credentials = [];
@@ -80,18 +72,25 @@ class DriverResolver
 
         $driver = auth('driver')->user();
 
-        if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
-            try {
-                DeviceToken::where('device_id', $args['device_id'])
-                    ->where('tokenable_type', 'App\Driver')
-                    ->firstOrFail();
-            } catch (ModelNotFoundException $e) {
-                $tokenInput = collect($args)->only(['platform', 'device_id'])->toArray();
-                $tokenInput['tokenable_id'] = $driver->id;
-                $tokenInput['tokenable_type'] = 'App\Driver';
-                DeviceToken::create($tokenInput);
-            }
+        if (array_key_exists('device_id', $args) 
+            && $args['device_id'] 
+            && $driver->device_id != $args['device_id']) 
+        {
+            $driver->update(['device_id' => $args['device_id']]);
         }
+
+        // if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
+        //     try {
+        //         DeviceToken::where('device_id', $args['device_id'])
+        //             ->where('tokenable_type', 'App\Driver')
+        //             ->firstOrFail();
+        //     } catch (ModelNotFoundException $e) {
+        //         $tokenInput = collect($args)->only(['platform', 'device_id'])->toArray();
+        //         $tokenInput['tokenable_id'] = $driver->id;
+        //         $tokenInput['tokenable_type'] = 'App\Driver';
+        //         DeviceToken::create($tokenInput);
+        //     }
+        // }
 
         return [
             'access_token' => $token,
@@ -100,7 +99,7 @@ class DriverResolver
 
     }
 
-    public function updatePassword($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function updatePassword($_, array $args)
     {
         try {
             $driver = Driver::findOrFail($args['id']);
@@ -135,7 +134,7 @@ class DriverResolver
 
     }
 
-    public function assignVehicle($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function assignVehicle($_, array $args)
     {
         $data = [];
         $arr = [];
@@ -158,7 +157,7 @@ class DriverResolver
         ];
     }
 
-    public function unassignVehicle($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function unassignVehicle($_, array $args)
     {
         try {
             DriverVehicle::where('driver_id', $args['driver_id'])
@@ -173,4 +172,10 @@ class DriverResolver
             "message" => "Selected vehicles have been unassigned successfully."
         ];
     }
+
+    public function destroy($_, array $args)
+    {
+        return Driver::whereIn('id', $args['id'])->forceDelete();
+    }
+
 }

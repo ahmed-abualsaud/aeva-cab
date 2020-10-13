@@ -38,7 +38,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # User
   updateUser(input: UpdateUserInput! @spread): UserPayload 
     @field(resolver: "UserResolver@update") @updateUserValidation
-  deleteUser(id: ID!): User @forceDelete
+  deleteUser(id: [ID!]!): Boolean
+    @field(resolver: "UserResolver@destroy")
   changeUserPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "UserResolver@updatePassword")
   createMultipleUsers(input: CreateMultipleUsersInput! @spread): Boolean 
@@ -54,7 +55,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Driver
   updateDriver(input: UpdateDriverInput! @spread): Driver 
     @field(resolver: "DriverResolver@update") @updateDriverValidation
-  deleteDriver(id: ID!): Driver @forceDelete
+  deleteDriver(id: [ID!]!): Boolean
+    @field(resolver: "DriverResolver@destroy")
   changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "DriverResolver@updatePassword")
 
@@ -156,7 +158,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "OndemandRequestResolver@create")
   updateOndemandRequest(input: UpdateOndemandRequestInput! @spread): OndemandRequest
     @field(resolver: "OndemandRequestResolver@update")
-  deleteOndemandRequest(id: ID!): OndemandRequest @forceDelete
+  deleteOndemandRequest(id: [ID!]!): Boolean
+    @field(resolver: "OndemandRequestResolver@destroy")
   restoreOndemandRequest(id: ID!): OndemandRequest @restore
 
   # Business Trip Station

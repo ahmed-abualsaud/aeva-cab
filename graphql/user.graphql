@@ -35,6 +35,7 @@ input UpdateUserInput {
   title: String
   avatar: Upload
   phone_verified_at: String
+  device_id: String
 }
 
 input UserPhoneVerificationInput {
@@ -71,7 +72,7 @@ type UserPhoneVerifyPayload {
 
 input ForgotPasswordInput {
   email: String! @rules(apply: ["required", "email"])
-  type: String! @rules(apply: ["required", "in:users,drivers,partners,roles"])
+  type: String! @rules(apply: ["required", "in:users,drivers,partners,admins"])
 }
 
 type DefaultResponse {
@@ -81,7 +82,7 @@ type DefaultResponse {
 
 input NewPasswordWithCodeInput {
   email: String! @rules(apply: ["required", "email"])
-  type: String! @rules(apply: ["required", "in:users,drivers,partners,roles"])
+  type: String! @rules(apply: ["required", "in:users,drivers,partners,admins"])
   token: String! @rules(apply: ["required", "string"])
   password: String! @rules(apply: ["required", "confirmed", "min:8"])
   password_confirmation: String!

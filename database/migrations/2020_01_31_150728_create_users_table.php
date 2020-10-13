@@ -33,7 +33,8 @@ class CreateUsersTable extends Migration
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
             $table->string('ref_code')->nullable();
-
+            $table->string('device_id')->nullable();
+            
             $table->timestamps();
             $table->softDeletes();
 

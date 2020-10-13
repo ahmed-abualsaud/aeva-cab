@@ -4,7 +4,6 @@ namespace App\GraphQL\Mutations;
 
 use JWTAuth;
 use App\User;
-use App\DeviceToken;
 use App\PartnerUser;
 use App\Jobs\SendOtp;
 use App\Traits\HandleUpload;
@@ -29,7 +28,7 @@ class UserResolver
     public function create($_, array $args)
     {
         $input = collect($args)
-            ->except(['directive', 'avatar', 'platform', 'device_id', 'ref_code'])
+            ->except(['directive', 'avatar', 'platform', 'ref_code'])
             ->toArray(); 
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -65,9 +64,9 @@ class UserResolver
             }
         }
 
-        if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
-            $this->createDeviceToken($_, $args, $user->id);
-        }
+        // if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
+        //     $this->createDeviceToken($_, $args, $user->id);
+        // }
 
         $token = null;
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
@@ -156,17 +155,33 @@ class UserResolver
 
         $user = auth('user')->user();
 
-        if (!$user->ref_code) $user->update(["ref_code" => Hashids::encode($user->id)]);
+        $updateData = [];
 
-        if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
-            try {
-                DeviceToken::where('device_id', $args['device_id'])
-                    ->where('tokenable_type', 'App\User')
-                    ->firstOrFail();
-            } catch (ModelNotFoundException $e) {
-                $this->createDeviceToken($_, $args, $user->id);
-            }
+        if (!$user->ref_code) {
+            $updateData['ref_code'] = Hashids::encode($user->id);
         }
+
+        if (array_key_exists('device_id', $args) 
+            && $args['device_id'] 
+            && $user->device_id != $args['device_id']) 
+        {
+            $updateData['device_id'] = $args['device_id'];
+        }
+
+        if ($updateData) $user->update($updateData);
+
+        // if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
+        //     if ($user->device_id != $args['device_id']) {
+        //         $user->update(['device_id' => $args['device_id']]);
+        //     }
+        //     try {
+        //         DeviceToken::where('device_id', $args['device_id'])
+        //             ->where('tokenable_type', 'App\User')
+        //             ->firstOrFail();
+        //     } catch (ModelNotFoundException $e) {
+        //         $this->createDeviceToken($_, $args, $user->id);
+        //     }
+        // }
 
         return [
             'access_token' => $token,
@@ -197,23 +212,37 @@ class UserResolver
             throw new CustomException('The provided token is invalid.');
         }
 
+        $updateData = [];
+
         try {
             $user = User::where('provider', Str::lower($args['provider']))
                 ->where('provider_id', $input['provider_id'])->firstOrFail();
         } catch (ModelNotFoundException $e) {
             $user = User::create($input);
-            $user->update(["ref_code" => Hashids::encode($user->id)]);
+            $updateData['ref_code'] = Hashids::encode($user->id);
         }
 
-        if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
-            try {
-                DeviceToken::where('device_id', $args['device_id'])
-                    ->where('tokenable_type', 'App\User')
-                    ->firstOrFail();
-            } catch (ModelNotFoundException $e) {
-                $this->createDeviceToken($_, $args, $user->id);
-            }
+        if (array_key_exists('device_id', $args) 
+            && $args['device_id'] 
+            && $user->device_id != $args['device_id']) 
+        {
+            $updateData['device_id'] = $args['device_id'];
         }
+
+        if ($updateData) $user->update($updateData);
+
+        // if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
+        //     if ($user->device_id != $args['device_id']) {
+        //         $user->update(['device_id' => $args['device_id']]);
+        //     }
+        //     try {
+        //         DeviceToken::where('device_id', $args['device_id'])
+        //             ->where('tokenable_type', 'App\User')
+        //             ->firstOrFail();
+        //     } catch (ModelNotFoundException $e) {
+        //         $this->createDeviceToken($_, $args, $user->id);
+        //     }
+        // }
 
         Auth::onceUsingId($user->id);
 
@@ -273,11 +302,16 @@ class UserResolver
 
     }
 
-    protected function createDeviceToken($_, $args, $user_id)
+    public function destroy($_, array $args)
     {
-        $tokenInput = collect($args)->only(['platform', 'device_id'])->toArray();
-        $tokenInput['tokenable_id'] = $user_id;
-        $tokenInput['tokenable_type'] = 'App\User';
-        DeviceToken::create($tokenInput);
+        return User::whereIn('id', $args['id'])->forceDelete();
     }
+
+    // protected function createDeviceToken($_, $args, $user_id)
+    // {
+    //     $tokenInput = collect($args)->only(['platform', 'device_id'])->toArray();
+    //     $tokenInput['tokenable_id'] = $user_id;
+    //     $tokenInput['tokenable_type'] = 'App\User';
+    //     DeviceToken::create($tokenInput);
+    // }
 }

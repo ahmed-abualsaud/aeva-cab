@@ -5,7 +5,6 @@ namespace App\GraphQL\Mutations;
 use App\User;
 use App\Driver;
 use App\Message;
-use App\DeviceToken;
 use App\Jobs\SendOtp;
 use App\Mail\DefaultMail;
 use App\Events\MessageSent;
@@ -28,20 +27,20 @@ class CommunicationResolver
     public function sendDirectMessage($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
         if ($args['recipientType'] == "USER") {
-            $recipient = User::select('users.phone', 'users.email', 'device_tokens.device_id')
-                ->whereIn('users.id', $args['recipientID'])
-                ->leftJoin('device_tokens', function ($join) {
-                    $join->on('users.id', '=', 'device_tokens.tokenable_id')
-                        ->where('device_tokens.tokenable_type', '=', 'App\User');
-                })
+            $recipient = User::select('phone', 'email', 'device_id')
+                ->whereIn('id', $args['recipientID'])
+                // ->leftJoin('device_tokens', function ($join) {
+                //     $join->on('users.id', '=', 'device_tokens.tokenable_id')
+                //         ->where('device_tokens.tokenable_type', '=', 'App\User');
+                // })
                 ->get();
         } else {
-            $recipient = Driver::select('drivers.phone', 'drivers.email', 'device_tokens.device_id')
-                ->whereIn('drivers.id', $args['recipientID'])
-                ->leftJoin('device_tokens', function ($join) {
-                    $join->on('drivers.id', '=', 'device_tokens.tokenable_id')
-                        ->where('device_tokens.tokenable_type', '=', 'App\Driver');
-                })
+            $recipient = Driver::select('phone', 'email', 'device_id')
+                ->whereIn('id', $args['recipientID'])
+                // ->leftJoin('device_tokens', function ($join) {
+                //     $join->on('drivers.id', '=', 'device_tokens.tokenable_id')
+                //         ->where('device_tokens.tokenable_type', '=', 'App\Driver');
+                // })
                 ->get();
         }
 

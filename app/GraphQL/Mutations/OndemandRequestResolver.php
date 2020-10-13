@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\DeviceToken;
+use App\User;
 use App\OndemandRequest;
 use App\Mail\DefaultMail;
 use App\OndemandRequestLine;
@@ -80,11 +80,16 @@ class OndemandRequestResolver
             }
 
             if ($args['status'] !== 'CANCELLED') {
-                $token = DeviceToken::where('tokenable_id', $request->user_id)
-                    ->where('tokenable_type', 'App\User')
+                $token = User::where('id', $request->user_id)
                     ->select('device_id')
                     ->pluck('device_id')
                     ->toArray();
+                
+                // $token = DeviceToken::where('tokenable_id', $request->user_id)
+                //     ->where('tokenable_type', 'App\User')
+                //     ->select('device_id')
+                //     ->pluck('device_id')
+                //     ->toArray();
     
                 $responseTitle = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']);
                 $responseMsg = $responseTitle;
@@ -107,6 +112,11 @@ class OndemandRequestResolver
         $request->update($input);
 
         return $request;
+    }
+
+    public function destroy($_, array $args)
+    {
+        return OndemandRequest::whereIn('id', $args['id'])->forceDelete();
     }
 
     protected function broadcastRequest($request)
