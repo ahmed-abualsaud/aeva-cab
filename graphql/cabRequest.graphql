@@ -1,4 +1,4 @@
-type RequestStatement {
+type RequestStatsResponse {
   count: Int
   overallEarning: Float
   driverEarning: Float
@@ -43,4 +43,22 @@ type CabRequest {
   driver: Driver @belongsTo
   car_type: CarType @belongsTo
   payment: CabRequestPayment @hasOne
+}
+
+type CabRequestPayment {
+  id: ID
+  payment_id: String
+  payment_mode: String
+  fixed: Float
+  distance: Float
+  commission: Float
+  discount: Float
+  tax: Float
+  wallet: Float
+  surge: Float
+  total: Float
+  payable: Float
+  driver_commission: Float
+  driver_pay: Float
+  created_at: DateTime
 }

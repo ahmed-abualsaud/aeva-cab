@@ -29,7 +29,7 @@ class BusinessTripLogResolver
 
             if ($trip->status) throw new CustomException('Trip has already been started.');
 
-            $log_id = uniqid() .'-'. $trip->subscription_code;
+            $log_id = $trip->subscription_code .'@'. uniqid();
 
             $trip->update(['status' => true, 'log_id' => $log_id]);
 
@@ -179,6 +179,11 @@ class BusinessTripLogResolver
         $this->broadcastTripStatus($trip, $input);
 
         return 'Trip has been ended.';
+    }
+
+    public function deleteBusinessTripLog($_, array $args)
+    {
+        return TripLog::whereIn('log_id', $args['log_id'])->delete();
     }
 
     protected function getUsersTokens($trip_id = null, $station_id = null, $users = null)
