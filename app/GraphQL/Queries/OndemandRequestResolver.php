@@ -40,7 +40,7 @@ class OndemandRequestResolver
         $requestCount = OndemandRequest::query();
 
         $requestGroup = OndemandRequest::selectRaw('
-            DATE_FORMAT(created_at, "%b %d %Y") as date,
+            DATE_FORMAT(created_at, "%a, %b %d, %Y") as date,
             count(*) as count
         ');
 
