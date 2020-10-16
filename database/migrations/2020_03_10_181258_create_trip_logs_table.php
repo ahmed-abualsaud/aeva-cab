@@ -27,6 +27,8 @@ class CreateTripLogsTable extends Migration
 
             $table->index('log_id');
             $table->index('trip_id');
+            $table->index('user_id');
+            $table->index('created_at');
 
             $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
