@@ -21,7 +21,7 @@ class TripLog extends Model
     public function index($_, array $args): Builder
     {
         $logHistory = DB::table('trip_logs')
-            ->select(DB::raw('log_id, DATE(created_at) as date'));
+            ->select(DB::raw('log_id, DATE_FORMAT(created_at, "%a, %b %d, %Y") as date'));
 
         if (array_key_exists('period', $args) && $args['period']) {
             $logHistory = $this->dateFilter($args['period'], $logHistory, 'created_at');
@@ -32,7 +32,7 @@ class TripLog extends Model
         }
 
         $logHistory = $logHistory->where('trip_id', $args['trip_id'])
-            ->groupBy(DB::raw('log_id, DATE(created_at)'))
+            ->groupBy(DB::raw('log_id, DATE_FORMAT(created_at, "%a, %b %d, %Y")'))
             ->orderBy('date', 'desc');
          
         return $logHistory;

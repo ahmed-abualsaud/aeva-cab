@@ -49,7 +49,7 @@ input ChangeTripUserStatusInput {
 
 type BusinessTripLogsResponse {
   log_id: String
-  date: Date
+  date: String
 }
 
 type BusinessTripLogResponse {
