@@ -283,7 +283,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Cab Request
   cabRequests(status: String period: String): [CabRequest]
-    @paginate(scopes: ["filter"]) @softDeletes
+    @paginate(scopes: ["filter"])
   cabRequest(id: ID! @eq): CabRequest @find
   cabRequestStatement(period: String): RequestStatsResponse
     @field(resolver: "CabResolver@requestStatement")
@@ -324,12 +324,12 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Business Trip
   businessTrips(partner_id: ID, driver_id: ID): [BusinessTrip] 
-    @paginate(scopes: ["filter"]) @softDeletes
+    @paginate(scopes: ["filter"])
   businessLiveTrips: [BusinessTrip] @all(scopes: ["live"])
   trip(id: ID @eq): BusinessTrip @find
 
   # Business Trip Station
-  businessTripStations(trip_id: ID! @eq): [BusinessTripStation] @all @softDeletes
+  businessTripStations(trip_id: ID! @eq): [BusinessTripStation] @all
 
   # Business Trip Station User
   businessTripStationAssignedUsers(station_id: ID!): [User] 
