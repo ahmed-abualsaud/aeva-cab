@@ -7,37 +7,19 @@ class FirebasePushNotification
     public static function push($token, $title, $message, $data = false)
     {
         $API_ACCESS_KEY = config('custom.firebase_access_key');
+
+        $fields = [
+            'registration_ids' => $token,
+            'notification' => [
+                'title' => $title,
+                'text' => $message,
+                'vibrate'   => 1,
+                'sound'     => "default"
+            ],
+            "priority" => "high"
+        ];
         
-        if ( $data == false ) {
-            $fields = [
-                'registration_ids' => $token,
-                'notification' => [
-                    'title' => $title,
-                    'body' => $message,
-                    'vibrate'   => 1,
-                    'sound'     => "default"
-                ],
-                "priority" => "high",
-                'alert' => $message,
-                'title' => $title,
-                'body' => $message
-            ];
-        } else {
-            $fields = [
-                'registration_ids' => $token,
-                'notification' => [
-                    'title' => $title,
-                    'body' => $message ,
-                    'vibrate'   => 1,
-                    'sound'     => "default"
-                ],
-                "priority" => "high",
-                'alert' => $message,
-                'title' => $title,
-                'body' => $message,
-                'data' => $data
-            ];
-        }
+        if ($data) $fields['data'] = $data;
 
         $headers = [
             'Authorization: key=' . $API_ACCESS_KEY,

@@ -15,6 +15,7 @@ class SendPushNotification implements ShouldQueue
 
     private $devices;
     private $message;
+    private $title;
     private $data;
 
     /**
@@ -22,10 +23,11 @@ class SendPushNotification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($devices, $message, $data = false)
+    public function __construct($devices, $message, $title = 'Qruz', $data = false)
     {
         $this->devices = $devices;
-        $this->message = $message;
+        $this->message = $message; 
+        $this->title = $title;
         $this->data = $data;
         $this->queue = 'high';
     }
@@ -37,6 +39,6 @@ class SendPushNotification implements ShouldQueue
      */
     public function handle()
     {
-        Firebase::push($this->devices, 'Qruz', $this->message, $this->data);
+        Firebase::push($this->devices, $this->title, $this->message, $this->data);
     }
 }

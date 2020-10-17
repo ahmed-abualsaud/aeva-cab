@@ -48,7 +48,7 @@ class BusinessTripLogResolver
 
         $tokens = $this->getUsersTokens($trip->id, null, null);
         $push_msg = $trip->name . ' has been started.';
-        SendPushNotification::dispatch($tokens, $push_msg);
+        SendPushNotification::dispatch($tokens, $push_msg, 'Trip Started!');
         
         $this->broadcastTripLog($input);
 
@@ -61,7 +61,7 @@ class BusinessTripLogResolver
     {
         $tokens = $this->getUsersTokens(null, $args['station_id'], null);
         $push_msg = 'Our driver is so close to you, please stand by.';
-        SendPushNotification::dispatch($tokens, $push_msg);
+        SendPushNotification::dispatch($tokens, $push_msg, 'Stand By!');
 
         return "Notification has been sent to selected station users.";
     }
@@ -92,16 +92,16 @@ class BusinessTripLogResolver
 
     public function pickUsers($_, array $args)
     {
-        $msg = 'Welcome! May you be happy and safe throughout this trip.';
-        $this->pickOrDropUsers($args, 'PICKED_UP', true, $msg);
+        $msg = 'May you be happy and safe throughout this trip.';
+        $this->pickOrDropUsers($args, 'PICKED_UP', true, $msg, 'Welcome!');
 
         return $msg;
     }
 
     public function dropUsers($_, array $args)
     {
-        $msg = 'Bye! We can\'t wait to see you next time.';
-        $this->pickOrDropUsers($args, 'DROPPED_OFF', false, $msg);
+        $msg = 'We can\'t wait to see you next time.';
+        $this->pickOrDropUsers($args, 'DROPPED_OFF', false, $msg, 'Bye!');
 
         return $msg;
     }
@@ -172,7 +172,7 @@ class BusinessTripLogResolver
 
         $push_msg = $trip->name . ' has been ended. Thanks for choosing Qruz.';
         $tokens = $this->getUsersTokens($trip->id, null, null);
-        SendPushNotification::dispatch($tokens, $push_msg);
+        SendPushNotification::dispatch($tokens, $push_msg, 'Trip Ended!');
 
         $this->broadcastTripLog($input);
 
@@ -292,7 +292,7 @@ class BusinessTripLogResolver
             ]);
     }
 
-    protected function pickOrDropUsers($args, $status, $is_picked, $msg)
+    protected function pickOrDropUsers($args, $status, $is_picked, $msg, $title)
     {
         $data = []; $arr = [];
         foreach($args['users'] as $user) {
@@ -309,7 +309,7 @@ class BusinessTripLogResolver
         $this->changeUserStatus($args['trip_id'], ['is_picked' => $is_picked], $args['users']);
 
         $tokens = $this->getUsersTokens(null, null, $args['users']);
-        SendPushNotification::dispatch($tokens, $msg);
+        SendPushNotification::dispatch($tokens, $msg, $title);
         
         $usernames = User::select('name')
             ->whereIn('id', $args['users'])
