@@ -14,17 +14,6 @@ class BusinessTripLogResolver
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function pickedUsers($_, array $args)
-    {
-        $users = TripLog::where('log_id', $args['log_id'])
-            ->where('status', 'PICKED_UP')
-            ->join('users', 'users.id', '=', 'trip_logs.user_id')
-            ->select('users.*')
-            ->get();
-
-        return $users;
-    }
-
     public function businessTripSubscribers($_, array $args)
     {
         $users = User::select('users.id', 'users.name', 'users.phone', 'users.avatar')
@@ -56,10 +45,7 @@ class BusinessTripLogResolver
 
     public function arrivedAndPickedUsers($_, array $args)
     {
-        $users = User::selectRaw('users.id, users.name, users.phone, users.avatar, 
-                (CASE WHEN is_picked = 1 THEN 1 ELSE 0 END) AS is_picked_up, 
-                (CASE WHEN is_arrived = 1 THEN 1 ELSE 0 END) AS is_arrived
-            ')
+        $users = User::selectRaw('users.id, users.name, users.phone, users.avatar, business_trip_users.is_picked as is_picked_up, business_trip_users.is_arrived as is_arrived')
             ->join('business_trip_users', 'users.id', '=', 'business_trip_users.user_id');
 
             if (array_key_exists('trip_id', $args) && $args['trip_id']) {

@@ -3,7 +3,6 @@
 namespace App; 
  
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
@@ -11,7 +10,6 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
 class Partner extends Authenticatable implements JWTSubject
 {
     use Notifiable;
-    use SoftDeletes;
     
     protected $guarded = [];
 

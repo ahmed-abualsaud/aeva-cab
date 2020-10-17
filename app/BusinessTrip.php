@@ -5,11 +5,9 @@ namespace App;
 use App\BusinessTripUser;
 use App\BusinessTripSchedule;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BusinessTrip extends Model
 {
-    use SoftDeletes;
     
     protected $guarded = [];
 

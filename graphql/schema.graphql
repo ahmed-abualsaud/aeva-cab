@@ -50,7 +50,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "FleetResolver@create")
   updateFleet(input: UpdateFleetInput! @spread): Fleet 
     @field(resolver: "FleetResolver@update") @updateFleetValidation
-  deleteFleet(id: ID!): Fleet @forceDelete
+  deleteFleet(id: ID!): Fleet @delete
 
   # Driver
   updateDriver(input: UpdateDriverInput! @spread): Driver 
@@ -67,7 +67,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "AdminResolver@update") @updateAdminValidation
   changeAdminPassword(input: ChangePasswordInput @spread): String 
     @field(resolver: "AdminResolver@updatePassword")
-  deleteAdmin(id: ID!): Admin @forceDelete
+  deleteAdmin(id: ID!): Admin @delete
 
   # Role Type
   createRole(input: CreateRoleInput! @spread): Role @create
@@ -79,31 +79,31 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "VehicleResolver@create")
   updateVehicle(input: UpdateVehicleInput! @spread): Vehicle 
     @field(resolver: "VehicleResolver@update") @updateVehicleValidation
-  deleteVehicle(id: ID!): Vehicle @forceDelete
+  deleteVehicle(id: ID!): Vehicle @delete
 
   # Car Make
   createCarMake(input: CreateCarMakeInput! @spread): CarMake @create
   updateCarMake(input: UpdateCarMakeInput! @spread): CarMake @update @updateCarMakeValidation
-  deleteCarMake(id: ID!): CarMake @forceDelete
+  deleteCarMake(id: ID!): CarMake @delete
 
   # Car Model
   createCarModel(input: CreateCarModelInput! @spread): CarModel 
     @field(resolver: "CarModelResolver@create")
   updateCarModel(input: UpdateCarModelInput! @spread): CarModel
     @field(resolver: "CarModelResolver@update")
-  deleteCarModel(id: ID!): CarModel @forceDelete
+  deleteCarModel(id: ID!): CarModel @delete
 
   # Car Type
   createCarType(input: CreateCarTypeInput! @spread): CarType
     @field(resolver: "CarTypeResolver@create")
   updateCarType(input: UpdateCarTypeInput! @spread): CarType 
     @field(resolver: "CarTypeResolver@update") @updateCarTypeValidation
-  deleteCarType(id: ID!): CarType @forceDelete
+  deleteCarType(id: ID!): CarType @delete
 
   # Promo Code
   createPromoCode(input: CreatePromoCodeInput! @spread): PromoCode @create
   updatePromoCode(input: UpdatePromoCodeInput! @spread): PromoCode @update @updatePromoCodeValidation
-  deletePromoCode(id: ID!): PromoCode @forceDelete
+  deletePromoCode(id: ID!): PromoCode @delete
 
   # Document
   uploadDocument(input: UploadDocumentInput @spread): Document
@@ -123,7 +123,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "PartnerResolver@create")
   updatePartner(input: UpdatePartnerInput! @spread): Partner 
     @field(resolver: "PartnerResolver@update") @updatePartnerValidation
-  deletePartner(id: ID!): Partner @forceDelete
+  deletePartner(id: ID!): Partner @delete
   changePartnerPassword(input: ChangePasswordInput @spread): String 
     @field(resolver: "PartnerResolver@updatePassword")
 
@@ -146,12 +146,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripResolver@update")
   updateBusinessTripStatus(input: UpdateBusinessTripInput! @spread): BusinessTrip 
     @field(resolver: "BusinessTripResolver@updateStatus")
-  deleteBusinessTrip(id: ID!): BusinessTrip @forceDelete
-  restoreBusinessTrip(id: ID!): BusinessTrip @restore
+  deleteBusinessTrip(id: ID!): BusinessTrip @delete
 
   # Cab Request
   deleteCabRequest(id: ID!): CabRequest @delete
-  restoreCabRequest(id: ID!): CabRequest @restore
 
   # Ondemand Request 
   createOndemandRequest(input: CreateOndemandRequestInput! @spread): OndemandRequest 
@@ -160,7 +158,6 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "OndemandRequestResolver@update")
   deleteOndemandRequest(id: [ID!]!): Boolean
     @field(resolver: "OndemandRequestResolver@destroy")
-  restoreOndemandRequest(id: ID!): OndemandRequest @restore
 
   # Business Trip Station
   createBusinessTripStation(input: CreateBusinessTripStationInput! @spread): BusinessTripStation @create
@@ -170,8 +167,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripStationResolver@update")
   updateStationsRoute(input: UpdateStationsRouteInput! @spread): Boolean 
     @field(resolver: "BusinessTripStationResolver@updateRoute")
-  deleteBusinessTripStation(id: ID!): BusinessTripStation @forceDelete
-  restoreBusinessTripStation(id: ID!): BusinessTripStation @restore
+  deleteBusinessTripStation(id: ID!): BusinessTripStation @delete
   acceptBusinessTripStation(input: AcceptBusinessTripStationInput! @spread): BusinessTripStation
     @field(resolver: "BusinessTripStationResolver@acceptStation") 
 
@@ -219,15 +215,6 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   sendChatMessage(input: SendChatMessageInput! @spread): Message
     @field(resolver: "CommunicationResolver@sendChatMessage")
 
-  # Payment
-  addCard(input: addCard! @spread): DefaultResponse
-    @field(resolver: "PaymentResolver@addCard")
-  resendCode(card_id: ID!): DefaultResponse 
-    @field(resolver: "PaymentResolver@resendCode")
-  validateOTP(input: validateOTP! @spread): DefaultResponse 
-    @field(resolver: "PaymentResolver@validateOTP")
-  makePayment(input: makePayment! @spread): DefaultResponse 
-    @field(resolver: "PaymentResolver@makePayment")
 } 
 
 # Queries that require Auth
@@ -357,8 +344,6 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Business Trip Log
   driverLocation(driver_id: ID!): LocationCoordinatesResponse
     @field(resolver: "BusinessTripLogResolver@driverLocation")
-  getPickedUsers(log_id: String!): [User]
-    @field(resolver: "BusinessTripLogResolver@pickedUsers")
   arrivedAndPickedUsers(trip_id: ID, station_id: ID): [User]
     @field(resolver: "BusinessTripLogResolver@arrivedAndPickedUsers")
   businessTripLogs(trip_id: ID!, user_id: ID, period: String): [BusinessTripLogsResponse]
@@ -375,10 +360,6 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Communication
   chatMessages(trip_id: String!, trip_type: String!): [Message] 
     @field(resolver: "CommunicationResolver@chatMessages")
-
-  # Payment
-  paymentCards(user_id: ID! @eq): [Card] @all
-  paymentCard(id: ID @eq): Card @find
 }
 
 #import fleet.graphql 
@@ -401,4 +382,3 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import cabRequest.graphql
 #import ondemandRequest.graphql
 #import notification.graphql
-#import payment.graphql
