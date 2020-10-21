@@ -313,8 +313,8 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   authPartner: Partner @auth
   partnerLiveTrips(partner_id: ID!): [PartnerLiveTripResponse]
     @field(resolver: "BusinessTripResolver@partnerLiveTrips")
-  partnerPredefinedStations(partner_id: ID! @eq trip_id: ID!): [BusinessTrip] 
-    @all(scopes: ["predefinedStations"])
+  partnerAvailableLines(partner_id: ID! @eq trip_id: ID!): [BusinessTrip] 
+    @all(scopes: ["availableLines"])
 
   # Partner Driver 
   partnerAssignedDrivers(partner_id: ID!): [Driver] 

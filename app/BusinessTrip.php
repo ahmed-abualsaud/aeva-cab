@@ -55,7 +55,7 @@ class BusinessTrip extends Model
         return $this->hasOne(BusinessTripSchedule::class, 'trip_id');
     }
 
-    public function scopePredefinedStations($query, $args) 
+    public function scopeAvailableLines($query, $args) 
     {
         return $query->where('id', '<>', $args['trip_id']);
     }
