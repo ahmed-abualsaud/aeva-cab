@@ -77,7 +77,6 @@ type BusinessTrip {
   status: Boolean
   flag: Boolean
   isReturn: Boolean
-  deleted_at: DateTime
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo

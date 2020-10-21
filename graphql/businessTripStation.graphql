@@ -9,7 +9,6 @@ input CreateBusinessTripStationInput {
   duration: Int
   created_by: ID
   accepted_at: DateTime
-  deleted_at: DateTime
 } 
 
 input CreateBusinessTripStationsInput {
@@ -56,7 +55,6 @@ type BusinessTripStation {
   created_by: User @belongsTo
   created_at: DateTime
   accepted_at: DateTime
-  deleted_at: DateTime
   state: String
   distance: Int
   duration: Int

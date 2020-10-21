@@ -26,6 +26,7 @@ class BusinessTripStationResolver
                 $arr['longitude'] = $station['longitude'];
                 $arr['state'] = $station['state'];
                 $arr['accepted_at'] = $station['accepted_at'];
+                $arr['created_at'] = $arr['updated_at'] = now();
                 array_push($data, $arr);
             } 
             BusinessTripStation::insert($data);
