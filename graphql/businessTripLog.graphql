@@ -60,6 +60,12 @@ type BusinessTripLogResponse {
   user: String
 }
 
+type BusinessTripLogFeedResponse {
+  trip_name: String
+  status: String
+  created_at: String
+}
+
 type TripLog {
   id: ID
   log_id: String

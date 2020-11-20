@@ -9,22 +9,22 @@ trait Filterable
     protected function dateFilter($period, $result, $field)
     {
         switch($period) {
-            case $period == 'today':
+            case 'today':
                 return $result->where($field, '>=', Carbon::today());
             
-            case $period == 'week':
+            case 'week':
                 return $result->where($field, '>=', Carbon::now()->subDays(7));
             
-            case $period == 'month':
+            case 'month':
                 return $result->where($field, '>=', Carbon::now()->subMonth());
             
-            case $period == 'quarter':
+            case 'quarter':
                 return $result->where($field, '>=', Carbon::now()->subMonth(3));
             
-            case $period == 'half':
+            case 'half':
                 return $result->where($field, '>=', Carbon::now()->subMonth(6));
             
-            case $period == 'year':
+            case 'year':
                 return $result->where($field, '>=', Carbon::now()->subMonth(12));  
         }
     }

@@ -37,4 +37,27 @@ class TripLog extends Model
          
         return $logHistory;
     }
+
+    public function feed($_, array $args): Builder
+    {
+        $feed = DB::table('trip_logs')
+            ->join('business_trips', 'business_trips.id', '=', 'trip_logs.trip_id')
+            ->selectRaw('
+                business_trips.name AS trip_name,
+                trip_logs.status, 
+                trip_logs.created_at
+            ')
+            ->where(function ($query) {
+                $query->where('trip_logs.status', 'STARTED')
+                    ->orWhere('trip_logs.status', 'ENDED');
+            });
+
+            if (array_key_exists('period', $args) && $args['period']) {
+                $feed = $this->dateFilter($args['period'], $feed, 'trip_logs.created_at');
+            }
+
+            $feed = $feed->latest('trip_logs.created_at');
+
+        return $feed;
+    }
 }

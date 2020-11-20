@@ -5,7 +5,6 @@ namespace App\GraphQL\Queries;
 use App\User;
 use App\Driver;
 use App\TripLog;
-use App\BusinessTripUser;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripLogResolver
