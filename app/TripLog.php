@@ -38,9 +38,9 @@ class TripLog extends Model
         return $logHistory;
     }
 
-    public function feed($_, array $args): Builder
+    public function events($_, array $args): Builder
     {
-        $feed = DB::table('trip_logs')
+        $events = DB::table('trip_logs')
             ->join('business_trips', 'business_trips.id', '=', 'trip_logs.trip_id')
             ->join('partners', 'partners.id', '=', 'business_trips.partner_id')
             ->selectRaw('
@@ -57,11 +57,11 @@ class TripLog extends Model
             });
 
             if (array_key_exists('period', $args) && $args['period']) {
-                $feed = $this->dateFilter($args['period'], $feed, 'trip_logs.created_at');
+                $events = $this->dateFilter($args['period'], $events, 'trip_logs.created_at');
             }
 
-            $feed = $feed->latest('trip_logs.created_at');
+            $events = $events->latest('trip_logs.created_at');
 
-        return $feed;
+        return $events;
     }
 }

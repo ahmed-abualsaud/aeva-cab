@@ -60,7 +60,7 @@ type BusinessTripLogResponse {
   user: String
 }
 
-type BusinessTripLogFeedResponse {
+type BusinessTripEventsResponse {
   trip_id: ID
   trip_name: String
   partner_id: ID

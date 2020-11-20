@@ -352,8 +352,8 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripLogResolver@show")
   businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
     @field(resolver: "BusinessTripLogResolver@businessTripSubscribers")
-  businessTripLogFeed(period: String): [BusinessTripLogFeedResponse]
-    @paginate(builder: "App\\TripLog@feed")
+  businessTripEvents(period: String): [BusinessTripEventsResponse]
+    @paginate(builder: "App\\TripLog@events")
  
   # Notifications
   unreadNotifications: [Notification]!
