@@ -42,8 +42,12 @@ class TripLog extends Model
     {
         $feed = DB::table('trip_logs')
             ->join('business_trips', 'business_trips.id', '=', 'trip_logs.trip_id')
+            ->join('partners', 'partners.id', '=', 'business_trips.partner_id')
             ->selectRaw('
+                business_trips.id AS trip_id,
                 business_trips.name AS trip_name,
+                partners.id AS partner_id,
+                partners.name AS partner_name,
                 trip_logs.status, 
                 trip_logs.created_at
             ')

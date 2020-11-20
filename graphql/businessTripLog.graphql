@@ -61,7 +61,10 @@ type BusinessTripLogResponse {
 }
 
 type BusinessTripLogFeedResponse {
+  trip_id: ID
   trip_name: String
+  partner_id: ID
+  partner_name: String
   status: String
   created_at: String
 }
