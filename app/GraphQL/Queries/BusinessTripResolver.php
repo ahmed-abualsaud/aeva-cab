@@ -203,16 +203,21 @@ class BusinessTripResolver
 
     public function driverLiveTrip($_, array $args)
     {
-        $liveTrip = DriverVehicle::select('trip_type', 'trip_id')
+        // $liveTrip = DriverVehicle::select('trip_type', 'trip_id')
+        //     ->where('driver_id', $args['driver_id'])
+        //     ->where('status', 'RIDING')
+        //     ->first();
+
+        $liveTrip = BusinessTrip::select('id')
             ->where('driver_id', $args['driver_id'])
-            ->where('status', 'RIDING')
+            ->where('status', true)
             ->first();
 
         if ($liveTrip) {
             return [
                 "status" => true,
-                "tripType" => $liveTrip->trip_type,
-                "tripID" => $liveTrip->trip_id
+                "tripType" => "App\BusinessTrip",
+                "tripID" => $liveTrip->id
             ];
         }
 
