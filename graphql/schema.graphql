@@ -246,6 +246,8 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   driver(id: ID @eq): Driver @find
   driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
     @field(resolver: "BusinessTripResolver@driverLiveTrip")
+  driverLiveTrips(driver_id: ID!): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@driverLiveTrips")
   driverTrips(driver_id: ID!, day: String): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverTrips")
 

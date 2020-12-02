@@ -227,6 +227,16 @@ class BusinessTripResolver
         ];
     }
 
+    public function driverLiveTrips($_, array $args)
+    {
+        $liveTrips = BusinessTrip::select('id', 'name')
+            ->where('driver_id', $args['driver_id'])
+            ->where('status', true)
+            ->get();
+
+        return $liveTrips;
+    }
+
     protected function scheduledTrips($trips, $day) 
     {
         $sortedTrips = array();
