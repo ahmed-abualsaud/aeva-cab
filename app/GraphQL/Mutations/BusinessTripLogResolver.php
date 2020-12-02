@@ -5,9 +5,8 @@ namespace App\GraphQL\Mutations;
 use App\User;
 use App\Driver;
 use App\TripLog;
-use Carbon\Carbon;
 use App\BusinessTrip;
-use App\DriverVehicle;
+// use App\DriverVehicle;
 use App\BusinessTripUser;
 use App\Mail\DefaultMail;
 use Illuminate\Support\Arr;
@@ -42,7 +41,7 @@ class BusinessTripLogResolver
             throw new CustomException('We could not find a trip with the provided ID.');
         }
 
-        $this->changeDriverStatus($trip, 'RIDING');
+        // $this->changeDriverStatus($trip, 'RIDING');
             
         $this->changeUserStatus($args['trip_id'], ['is_picked' => false, 'is_arrived' => false]);
 
@@ -166,7 +165,7 @@ class BusinessTripLogResolver
             throw new CustomException('We could not find a trip with the provided ID.');
         }
 
-        $this->changeDriverStatus($trip, 'ACTIVE');
+        // $this->changeDriverStatus($trip, 'ACTIVE');
         
         $this->changeUserStatus($args['trip_id'], ['is_picked' => false, 'is_arrived' => false]);
 
@@ -221,7 +220,7 @@ class BusinessTripLogResolver
 
     protected function getDriverToken($driver_id)
     {
-        $tokens = Driver::where('id', $driver_id)
+        $token = Driver::where('id', $driver_id)
             ->select('device_id')
             ->pluck('device_id')
             ->toArray();
@@ -281,16 +280,16 @@ class BusinessTripLogResolver
         $usersStatus->update($status);
     }
 
-    protected function changeDriverStatus($trip, $status)
-    {
-        DriverVehicle::where('driver_id', $trip->driver_id)
-            ->where('vehicle_id', $trip->vehicle_id)
-            ->update([
-                'status' => $status, 
-                'trip_type' => $status === 'RIDING' ? 'App\BusinessTrip' : null, 
-                'trip_id' => $status === 'RIDING' ? $trip->id : null
-            ]);
-    }
+    // protected function changeDriverStatus($trip, $status)
+    // {
+    //     DriverVehicle::where('driver_id', $trip->driver_id)
+    //         ->where('vehicle_id', $trip->vehicle_id)
+    //         ->update([
+    //             'status' => $status, 
+    //             'trip_type' => $status === 'RIDING' ? 'App\BusinessTrip' : null, 
+    //             'trip_id' => $status === 'RIDING' ? $trip->id : null
+    //         ]);
+    // }
 
     protected function pickOrDropUsers($args, $status, $is_picked, $msg, $title)
     {

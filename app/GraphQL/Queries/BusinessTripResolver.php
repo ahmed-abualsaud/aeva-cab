@@ -6,9 +6,8 @@ use App\User;
 use App\Partner;
 use Carbon\Carbon;
 use App\BusinessTrip;
-use App\DriverVehicle;
+// use App\DriverVehicle;
 use App\BusinessTripUser;
-use App\BusinessTripStation;
 
 class BusinessTripResolver
 {
