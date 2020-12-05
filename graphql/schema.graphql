@@ -15,8 +15,6 @@ type Mutation {
     @field(resolver: "UserResolver@login")
   userSocialLogin(input: SocialLoginInput! @spread): UserPayload! 
     @field(resolver: "UserResolver@socialLogin")
-  userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
-    @field(resolver: "UserResolver@phoneVerification")
   forgotPassword(input: ForgotPasswordInput! @spread): DefaultResponse 
     @field(resolver: "ForgotPasswordResolver")
   updateForgottenPassword(input: NewPasswordWithCodeInput @spread): DefaultResponse 
@@ -36,6 +34,8 @@ type Mutation {
 # Mutations that require Auth
 extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # User
+  userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
+    @field(resolver: "UserResolver@phoneVerification")
   updateUser(input: UpdateUserInput! @spread): UserPayload 
     @field(resolver: "UserResolver@update") @updateUserValidation
   deleteUser(id: [ID!]!): Boolean
@@ -250,6 +250,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripResolver@driverLiveTrips")
   driverTrips(driver_id: ID!, day: String): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverTrips")
+  driverBusinessTrips(driver_id: ID! @eq): [BusinessTrip] @all
 
   # Admin
   admins: [Admin] @all
@@ -325,8 +326,8 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @paginate(scopes: ["notAssigned", "search"])
 
   # Business Trip
-  businessTrips(partner_id: ID, driver_id: ID): [BusinessTrip] 
-    @paginate(scopes: ["filter"])
+  businessTrips(partner_id: ID, searchFor: String, searchQuery: String): [BusinessTrip] 
+    @paginate(scopes: ["partner", "search"])
   businessLiveTrips: [BusinessTrip] @all(scopes: ["live"])
   trip(id: ID @eq): BusinessTrip @find
 

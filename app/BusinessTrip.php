@@ -2,12 +2,13 @@
 
 namespace App;
 
-use App\BusinessTripUser;
+use App\Traits\Searchable;
 use App\BusinessTripSchedule;
 use Illuminate\Database\Eloquent\Model;
 
 class BusinessTrip extends Model
 {
+    use Searchable;
     
     protected $guarded = [];
 
@@ -65,17 +66,23 @@ class BusinessTrip extends Model
         return $query->where('status', true);
     }
 
-    public function scopeFilter($query, $args) 
+    public function scopePartner($query, $args) 
     {
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $query->where('partner_id', $args['partner_id']);
         }
-
-        if (array_key_exists('driver_id', $args) && $args['driver_id']) {
-            $query->where('driver_id', $args['driver_id']);
-        }
  
         return $query->orderBy('created_at', 'DESC');
+    }
+
+    public function scopeSearch($query, $args) 
+    {
+        
+        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+            $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
+        }
+
+        return $query;
     }
     
 }
