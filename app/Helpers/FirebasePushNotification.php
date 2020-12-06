@@ -12,8 +12,7 @@ class FirebasePushNotification
             'registration_ids' => $token,
             'notification' => [
                 'title' => $title,
-                'message' => $message,
-                'vibrate'   => 1,
+                'body' => $message,
                 'sound'     => "default"
             ],
             "priority" => "high"
