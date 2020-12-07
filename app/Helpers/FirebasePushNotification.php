@@ -12,7 +12,7 @@ class FirebasePushNotification
             'registration_ids' => $token,
             'notification' => [
                 'title' => $title,
-                'text' => $message,
+                'body' => $message,
                 'sound'     => "default"
             ],
             "priority" => "high"
