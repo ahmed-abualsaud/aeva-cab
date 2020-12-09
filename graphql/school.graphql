@@ -1,0 +1,114 @@
+input CreateSchoolZoneInput {
+  name: String! @rules(apply: ["required", "unique:school_zones,name"])
+  description: String
+}
+
+input UpdateSchoolZoneInput {
+  id: ID! @rules(apply: ["required"])
+  name: String
+  description: String
+}
+
+input CreateSchoolInput {
+  zone_id: ID! @rules(apply: ["required"])
+  name: String!
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+  address: String! @rules(apply: ["required"])
+}
+
+input UpdateSchoolInput {
+  id: ID! @rules(apply: ["required"])
+  zone_id: ID @rules(apply: ["required_with:name"])
+  name: String
+  latitude: String
+  longitude: String
+  address: String
+}
+
+input CreateSchoolGradeInput {
+  school_id: ID! @rules(apply: ["required"])
+  name: String!
+  enter_time: String! @rules(apply: ["required"])
+  exit_time: String! @rules(apply: ["required"])
+}
+
+input UpdateSchoolGradeInput {
+  id: ID! @rules(apply: ["required"])
+  school_id: ID @rules(apply: ["required_with:name"])
+  name: String
+  enter_time: String
+  exit_time: String
+}
+
+input CreateSchoolRequestInput {
+  user_id: ID! @rules(apply: ["required"])
+  school_id: ID! @rules(apply: ["required"])
+  grade_id: ID! @rules(apply: ["required"])
+  student_name: String! @rules(apply: ["required"])
+  contact_phone: String
+  pickup_lat: String! @rules(apply: ["required"])
+  pickup_lng: String! @rules(apply: ["required"])
+  pickup_address: String! @rules(apply: ["required"])
+  package: String! @rules(apply: ["required", "in:BASIC,PREMIUM"])
+  days: String! @rules(apply: ["required"])
+  comment: String
+}
+
+input UpdateSchoolRequestInput {
+  id: ID! @rules(apply: ["required"])
+  school_id: ID
+  grade_id: ID
+  student_name: String
+  contact_phone: String
+  pickup_lat: String
+  pickup_lng: String
+  pickup_address: String
+  package: String @rules(apply: ["in:BASIC,PREMIUM"])
+  days: String
+  status: String @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING"])
+  comment: String
+  response: String
+}
+
+type SchoolZone {
+  id: ID
+  name: String
+  description: String
+  schools: [School] @hasMany 
+}
+
+type School {
+  id: ID
+  name: String
+  latitude: String
+  longitude: String
+  address: String
+  zone: SchoolZone @belongsTo
+  grades: [SchoolGrade] @hasMany
+}
+
+type SchoolGrade {
+  id: ID
+  name: String
+  enter_time: String
+  exit_time: String
+}
+
+type SchoolRequest {
+  id: ID
+  user: User @belongsTo
+  school: School @belongsTo
+  grade: SchoolGrade @belongsTo
+  student_name: String
+  contact_phone: String
+  pickup_lat: String
+  pickup_lng: String
+  pickup_address: String
+  package: String
+  days: String
+  status: String
+  comment: String
+  response: String
+  created_at: String
+}

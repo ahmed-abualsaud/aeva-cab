@@ -215,6 +215,27 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   sendChatMessage(input: SendChatMessageInput! @spread): Message
     @field(resolver: "CommunicationResolver@sendChatMessage")
 
+  # Schools
+  createSchoolZone(input: CreateSchoolZoneInput! @spread): SchoolZone @create
+  updateSchoolZone(input: UpdateSchoolZoneInput! @spread): SchoolZone 
+    @update @updateSchoolZoneValidation
+  deleteSchoolZone(id: ID!): SchoolZone @delete
+
+  createSchool(input: CreateSchoolInput! @spread): School 
+    @create @createSchoolValidation
+  updateSchool(input: UpdateSchoolInput! @spread): School 
+    @update @updateSchoolValidation
+  deleteSchool(id: ID!): School @delete
+
+  createSchoolGrade(input: CreateSchoolGradeInput! @spread): SchoolGrade 
+    @create @createSchoolGradeValidation
+  updateSchoolGrade(input: UpdateSchoolGradeInput! @spread): SchoolGrade 
+    @update @updateSchoolGradeValidation
+  deleteSchoolGrade(id: ID!): SchoolGrade @delete
+  
+  createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest @create
+  updateSchoolRequest(input: UpdateSchoolRequestInput! @spread): SchoolRequest @update
+  deleteSchoolRequest(id: ID!): SchoolRequest @delete
 } 
 
 # Queries that require Auth
@@ -365,6 +386,18 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Communication
   chatMessages(trip_id: String!, trip_type: String!): [Message] 
     @field(resolver: "CommunicationResolver@chatMessages")
+
+  # Schools
+  schoolZones: [SchoolZone] @all
+  schoolZone(id: ID! @eq): SchoolZone @find
+  schools: [School] @all
+  schoolsByZone(zone_id: ID! @eq): [School] @all
+  school(id: ID! @eq): School @find
+  schoolGrades(school_id: ID! @eq): [SchoolGrade] @all
+  schoolGrade(id: ID! @eq): SchoolGrade @find
+  schoolRequests: [SchoolRequest] @all
+  schoolRequest(id: ID! @eq): SchoolRequest @find
+  schoolRequestsByUser(user_id: ID! @eq): [SchoolRequest] @all
 }
 
 #import fleet.graphql 
@@ -387,3 +420,4 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import cabRequest.graphql
 #import ondemandRequest.graphql
 #import notification.graphql
+#import school.graphql
