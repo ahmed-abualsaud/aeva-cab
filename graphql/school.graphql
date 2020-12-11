@@ -14,7 +14,7 @@ input CreateSchoolInput {
   name: String!
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
-  address: String! @rules(apply: ["required"])
+  address: String
 }
 
 input UpdateSchoolInput {

@@ -15,7 +15,7 @@ class UpdateSchoolGradeValidationDirective extends ValidationDirective
     return [
       'name' => [
         'sometimes', 
-        Rule::unique('school_gradess', 'name')
+        Rule::unique('school_grades', 'name')
           ->ignore($this->args['id'], 'id')
           ->where('school_id', $this->args['school_id'])
       ],

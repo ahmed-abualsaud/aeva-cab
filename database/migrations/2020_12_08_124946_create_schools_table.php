@@ -25,7 +25,7 @@ class CreateSchoolsTable extends Migration
             $table->string('name');
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8);
-            $table->string('address');
+            $table->string('address')->nullable();
             $table->unsignedBigInteger('zone_id');
             $table->timestamps();
 
