@@ -18,9 +18,6 @@
         }
     </style>
     <style>
-        body {
-            background-color: #fafafa !important;
-        }
         .card, .alert {
             border-radius: 1rem !important;
         }
@@ -33,11 +30,12 @@
             border: 2px solid transparent;
         }
         .form-control {
-            border: 0 !important;
-            background-color: transparent !important;
-            border-bottom: 1px solid #ddd !important;
-            border-radius: 0 !important;
-            padding-left: 1px !important;
+            border: 2px solid #f2f2f2 !important;
+            background-color: #f2f2f2 !important;
+            border-radius: 1.5rem !important;
+        }
+        #cardNumber, #cardCVC {
+            background-color: #f2f2f2 !important;
         }
         .form-control:focus, .btn:focus {
             outline: none !important;
@@ -52,30 +50,48 @@
             appearance: none !important;
         }
         .spinner {
-            border-radius: 50%;
-            border-width: 3px;
-            border-style: solid;
-            border-image: initial;
-            animation: circleSpinner 1s linear 0s infinite normal none running;
+            animation: outerSpinner 2s linear infinite;
         }
-        .loading {
-            animation: circleSpinner 1s linear 0s infinite normal none running;
+        .spinner circle {
+            stroke-dasharray: 1,150;
+            stroke-dashoffset: 0;
+            stroke-linecap: round;
+            animation: innerSpinner 1.5s ease-in-out infinite;
         }
-        .spinner-dark {
-            margin: 50px auto;
-            width: 30px;
-            height: 30px;
-            border-color: #000 #e1e4e5 #e1e4e5;
-        }
-        @keyframes circleSpinner {
+
+        @keyframes innerSpinner {
             0% {
-                transform: rotate(0deg);
-                -webkit-transform: rotate(0deg);
+                stroke-dasharray: 1,150;
+                stroke-dashoffset: 0;
+            }
+            50% {
+                stroke-dasharray: 90,150;
+                stroke-dashoffset: -35;
             }
             100% {
-                transform: rotate(359deg);
-                -webkit-transform: rotate(359deg);
+                stroke-dasharray: 90,150;
+                stroke-dashoffset: -124;
             }
+        }
+        @keyframes outerSpinner {
+            100% {
+                transform: rotate(1turn);
+            }
+        }
+        #payButton {
+            display: inline-block;
+            line-height: 40px;
+            height: 40px;
+            margin: 5px auto;
+            min-width: 200px;
+            cursor: pointer;
+            color: rgb(255, 255, 255);
+            font-weight: bold;
+            font-size: 1.2rem;
+            white-space: nowrap;
+            text-align: left;
+            padding-left: 20%;
+            background: url(https://app.vapulus.com/website/assets/images/btn.svg) center center no-repeat;
         }
     </style>
 </head>
@@ -83,14 +99,17 @@
 <body>
     <nav class="py-4 bg-nav text-white text-center">
         <h4 class="jumbotron-heading mb-0"><span class="font-weight-light">Qruz</span> <span class="font-weight-bold">Wallet</span></h4>
-        <!-- <p class="mb-0">Add money to wallet from credit card</p> -->
     </nav>
     <!-- CREATE THE HTML FOR THE PAYMENT PAGE -->
-    <div class="container mt-4">
+    <div class="container mt-2">
         <div class="row justify-content-center">
             <div class="col-md-4" id="card-content">
                 <div id="loader">
-                    <div class='spinner spinner-dark'></div>
+                    <div class="my-4 py-4 text-center">
+                        <svg class="spinner" width="45" height="45" viewBox="0 0 43 43">
+                            <circle cx="21.5" cy="21.5" r="20" fill="none" stroke="#422597" stroke-width="3"></circle>
+                        </svg>
+                    </div>
                     <p class="text-muted text-center" id="loaderStatus">Initializing..</p>
                 </div>
                 <div class="card border-0" id="cardForm">
@@ -99,43 +118,42 @@
                         <div class="form-row">
                             <input type="hidden" id="token" value="{{ app('request')->input('token') }}">
                             <div class="form-group col-12">
-                                <label for="cardNumber" class="mb-0 font-weight-bold">Card Number</label>
+                                <label for="cardNumber" class="font-weight-bold">Card Number</label>
                                 <input type="number" id="cardNumber" class="form-control" value="" readonly  />
                             </div>
                             <div class="form-group col-4">
-                                <label for="cardMonth" class="mb-0 font-weight-bold">Month</label>
+                                <label for="cardMonth" class="font-weight-bold">Month</label>
                                 <input type="number" id="cardMonth" class="form-control" placeholder="MM" value="" autocomplete="off" />
                             </div>
                             <div class="form-group col-4">
-                                <label for="cardYear" class="mb-0 font-weight-bold">Year</label>
+                                <label for="cardYear" class="font-weight-bold">Year</label>
                                 <input type="number" id="cardYear" class="form-control" placeholder="YYYY" value="" autocomplete="off" />
                             </div>
                             <div class="form-group col-4">
-                                <label for="cardCVC" class="mb-0 font-weight-bold">CVC</label>
+                                <label for="cardCVC" class="font-weight-bold">CVC</label>
                                 <input type="number" id="cardCVC" class="form-control" value="" readonly />
                             </div>
                             <div class="d-inline-flex font-weight-bold mb-4">
-                                <p class="mb-0 align-self-center">Add</p>
-                                <input type="number" placeholder="type amount" id="amount" class="form-control mx-2" autocomplete="off" style="width: 35%" />
+                                <p class=" mb-0 align-self-center">Add</p>
+                                <input type="number" id="amount" class="form-control mx-2" autocomplete="off" style="width: 35%" />
                                 <p class="mb-0 align-self-center">EGP to my wallet</p>
                             </div>
                             <!-- <div class="form-group col-12">
                                 <label for="amount" class="mb-0 font-weight-bold">Amount</label>
                                 <input type="number" placeholder="EGP" id="amount" class="form-control" value="" autocomplete="off" />
                             </div> -->
-                            <img src="{{ asset('assets/vapulus-checkout.png') }}"   
-                                class="img-fluid" id="payButton" onclick="pay();" 
-                                style="cursor: pointer;" 
-                            />
+                            <div id="payButton" onclick="pay();">Pay</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="mx-auto my-4 text-center">
-        <a href="https://www.vapulus.com" target="_blank">
-            <img src="{{ asset('assets/powered-by-vapulus.png') }}" />
+
+    <div class="mx-auto text-center">
+        <a href="https://www.vapulus.com" target="_blank" class="d-flex justify-content-center text-decoration-none">
+            <small class="text-muted mr-1">Powered by</small>
+            <img src="{{ asset('assets/vapulus-logo-sm.svg') }}" />
         </a>
     </div>
 
