@@ -17,7 +17,7 @@ class PaymentController extends Controller
             $user = auth('user')->user();
             $postData = [
                 'sessionId' => $request->session_id,
-                'mobileNumber' => $user->phone,
+                'mobileNumber' => preg_replace('/^(002|\+2)/', '', $user->phone),
                 'email' => $user->email,
                 'amount' => $request->amount
             ];

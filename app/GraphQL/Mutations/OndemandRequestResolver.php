@@ -96,8 +96,10 @@ class OndemandRequestResolver
                 if ($args['response']) $responseMsg .= '. '. $args['response'];
     
                 SendPushNotification::dispatch($token, $responseMsg);
-                Mail::to($request->user->email)
-                    ->send(new DefaultMail($responseMsg, $responseTitle));
+
+                // Mail::to($request->user->email)
+                //     ->send(new DefaultMail($responseMsg, $responseTitle));
+                
             } else {
                 $title = "On-Demand Request Cancelled";
                 $message = "On-Demand request ID ". $request->id ." has been cancelled by user";
