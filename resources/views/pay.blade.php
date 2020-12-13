@@ -30,12 +30,12 @@
             border: 2px solid transparent;
         }
         .form-control {
-            border: 2px solid #e8ebed !important;
-            background-color: #e8ebed !important;
+            border: 2px solid #f2f2f2 !important;
+            background-color: #f2f2f2 !important;
             border-radius: 1.5rem !important;
         }
         #cardNumber, #cardCVC {
-            background-color: #e8ebed !important;
+            background-color: #f2f2f2 !important;
         }
         .form-control:focus, .btn:focus {
             outline: none !important;
