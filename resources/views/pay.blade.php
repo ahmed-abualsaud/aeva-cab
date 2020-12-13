@@ -30,12 +30,12 @@
             border: 2px solid transparent;
         }
         .form-control {
-            border: 2px solid #f2f2f2 !important;
-            background-color: #f2f2f2 !important;
+            border: 2px solid #e8ebed !important;
+            background-color: #e8ebed !important;
             border-radius: 1.5rem !important;
         }
         #cardNumber, #cardCVC {
-            background-color: #f2f2f2 !important;
+            background-color: #e8ebed !important;
         }
         .form-control:focus, .btn:focus {
             outline: none !important;
@@ -121,15 +121,23 @@
                                 <label for="cardNumber" class="font-weight-bold">Card Number</label>
                                 <input type="number" id="cardNumber" class="form-control" value="" readonly  />
                             </div>
-                            <div class="form-group col-4">
-                                <label for="cardMonth" class="font-weight-bold">Month</label>
-                                <input type="number" id="cardMonth" class="form-control" placeholder="MM" value="" autocomplete="off" />
+                            <div class="form-group col-6">
+                                <select class="form-control" id="cardMonth">
+                                    <option value="">Exp. Month</option>
+                                    @for ($i = 01; $i <= 12; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+                                </select>
                             </div>
-                            <div class="form-group col-4">
-                                <label for="cardYear" class="font-weight-bold">Year</label>
-                                <input type="number" id="cardYear" class="form-control" placeholder="YYYY" value="" autocomplete="off" />
+                            <div class="form-group col-6">
+                                <select class="form-control" id="cardYear">
+                                    <option value="">Exp. Year</option>
+                                    @for ($i = now()->year; $i <= now()->year+5; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                    @endfor
+                                </select>
                             </div>
-                            <div class="form-group col-4">
+                            <div class="form-group col-12">
                                 <label for="cardCVC" class="font-weight-bold">CVC</label>
                                 <input type="number" id="cardCVC" class="form-control" value="" readonly />
                             </div>
@@ -150,7 +158,7 @@
         </div>
     </div>
 
-    <div class="mx-auto text-center">
+    <div class="mx-auto mb-4 text-center">
         <a href="https://www.vapulus.com" target="_blank" class="d-flex justify-content-center text-decoration-none">
             <small class="text-muted mr-1">Powered by</small>
             <img src="{{ asset('assets/vapulus-logo-sm.svg') }}" />
