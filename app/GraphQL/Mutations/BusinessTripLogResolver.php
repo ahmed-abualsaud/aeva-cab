@@ -8,12 +8,12 @@ use App\TripLog;
 use App\BusinessTrip;
 // use App\DriverVehicle;
 use App\BusinessTripUser;
-use App\Mail\DefaultMail;
+// use App\Mail\DefaultMail;
 use Illuminate\Support\Arr;
 use App\Events\TripLogPosted;
 use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
-use Illuminate\Support\Facades\Mail;
+// use Illuminate\Support\Facades\Mail;
 use App\Events\DriverLocationUpdated;
 use App\Events\BusinessTripStatusChanged;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -265,10 +265,10 @@ class BusinessTripLogResolver
         ];
         broadcast(new BusinessTripStatusChanged($data));
         
-        $msg = $trip->name . ' trip has been ' . strtolower($input['status']);
-        Mail::to(config('custom.mail_to_address'))
-            ->cc($trip->partner->email)
-            ->send(new DefaultMail($msg, $msg));
+        // $msg = $trip->name . ' trip has been ' . strtolower($input['status']);
+        // Mail::to(config('custom.mail_to_address'))
+        //     ->cc($trip->partner->email)
+        //     ->send(new DefaultMail($msg, $msg));
     }
 
     protected function changeUserStatus($trip_id, $status, $users = null)
