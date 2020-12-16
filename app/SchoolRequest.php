@@ -22,4 +22,15 @@ class SchoolRequest extends Model
     {
         return $this->belongsTo(SchoolGrade::class);
     }
+
+    public function scopeZone($query, $args) 
+    {
+        if (array_key_exists('zone_id', $args) && $args['zone_id']) {
+            return $query->whereHas('school', function($query) use ($args) {
+                $query->whereIn('zone_id', $args['zone_id']);
+            });
+        }
+ 
+        return $query->orderBy('created_at', 'DESC');
+    }
 }

@@ -1,10 +1,23 @@
+input CreateCityInput {
+  name: String! @rules(apply: ["required", "unique:cities,name"])
+  name_ar: String! @rules(apply: ["required", "unique:cities,name_ar"])
+}
+
+input UpdateCityInput {
+  id: ID! @rules(apply: ["required"])
+  name: String
+  name_ar: String
+}
+
 input CreateSchoolZoneInput {
-  name: String! @rules(apply: ["required", "unique:school_zones,name"])
+  city_id: ID! @rules(apply: ["required"])
+  name: String!
   description: String
 }
 
 input UpdateSchoolZoneInput {
   id: ID! @rules(apply: ["required"])
+  city_id: ID @rules(apply: ["required_with:name"])
   name: String
   description: String
 }
@@ -71,11 +84,19 @@ input UpdateSchoolRequestInput {
   response: String
 }
 
+type City {
+  id: ID
+  name: String
+  name_ar: String
+  schools: [School] @hasMany
+}
+
 type SchoolZone {
   id: ID
   name: String
   description: String
   schools: [School] @hasMany 
+  city: City @belongsTo
 }
 
 type School {

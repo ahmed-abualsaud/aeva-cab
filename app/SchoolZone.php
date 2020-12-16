@@ -12,4 +12,9 @@ class SchoolZone extends Model
     {
         return $this->hasMany(School::class, 'zone_id');
     }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
 }

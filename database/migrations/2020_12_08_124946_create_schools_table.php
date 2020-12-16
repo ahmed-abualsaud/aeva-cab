@@ -17,7 +17,12 @@ class CreateSchoolsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->string('description')->nullable();
+            $table->unsignedBigInteger('city_id');
             $table->timestamps();
+
+            $table->unique(['city_id', 'name'], 'city_zone_unique');
+
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
         });
 
         Schema::create('schools', function (Blueprint $table) {
