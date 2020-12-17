@@ -1,0 +1,45 @@
+input CreatePricePackageInput {
+  city_id: ID! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required"])
+  type: String! @rules(apply: ["required"])
+  price: PriceInput! @rules(apply: ["required"])
+  per: String! @rules(apply: ["required"])
+  description: String
+}
+
+input UpdatePricePackageInput {
+  id: ID! @rules(apply: ["required"])
+  city_id: ID
+  name: String
+  type: String
+  price: PriceInput
+  per: String
+  description: String
+}
+
+input PriceInput {
+  one_day: Float
+  two_days: Float
+  three_days: Float
+  four_days: Float
+  five_days: Float
+  six_days: Float
+}
+
+type PricePackage {
+  id: ID
+  name: String
+  type: String
+  description: String
+  price: Price
+  per: String
+}
+
+type Price {
+  one_day: Float
+  two_days: Float
+  three_days: Float
+  four_days: Float
+  five_days: Float
+  six_days: Float
+}

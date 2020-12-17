@@ -7,13 +7,11 @@ use App\User;
 use App\PartnerUser;
 use App\Jobs\SendOtp;
 use App\Traits\HandleUpload;
-use Illuminate\Support\Str; 
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Exceptions\CustomException;
 use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use GraphQL\Type\Definition\ResolveInfo;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
  

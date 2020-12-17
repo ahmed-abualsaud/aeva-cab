@@ -57,12 +57,12 @@ class CreateSchoolsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('school_id');
             $table->unsignedBigInteger('grade_id');
+            $table->unsignedBigInteger('price_package_id');
             $table->string('student_name');
             $table->string('contact_phone')->nullable();
             $table->double('pickup_lat', 15, 8);
             $table->double('pickup_lng', 15, 8);
             $table->string('pickup_address');
-            $table->enum('package', ['BASIC', 'PREMIUM']);
             $table->string('days');
             $table->enum('status', [
                 'ACCEPTED', 
@@ -75,12 +75,14 @@ class CreateSchoolsTable extends Migration
             $table->timestamps();
 
             $table->index('user_id');
+            $table->index('school_id');
+            $table->index('grade_id');
             $table->index('created_at');
-            $table->index(['school_id', 'grade_id']);
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->foreign('grade_id')->references('id')->on('school_grades')->onDelete('cascade');
+            $table->foreign('price_package_id')->references('id')->on('price_packages')->onDelete('cascade');
         });
     }
 

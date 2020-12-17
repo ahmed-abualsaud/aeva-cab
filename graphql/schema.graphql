@@ -215,7 +215,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   sendChatMessage(input: SendChatMessageInput! @spread): Message
     @field(resolver: "CommunicationResolver@sendChatMessage")
 
-  # Schools
+  # School
   createSchoolZone(input: CreateSchoolZoneInput! @spread): SchoolZone 
     @create @createSchoolZoneValidation
   updateSchoolZone(input: UpdateSchoolZoneInput! @spread): SchoolZone 
@@ -233,14 +233,21 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   updateSchoolGrade(input: UpdateSchoolGradeInput! @spread): SchoolGrade 
     @update @updateSchoolGradeValidation
   deleteSchoolGrade(id: ID!): SchoolGrade @delete
-  
+
   createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest @create
   updateSchoolRequest(input: UpdateSchoolRequestInput! @spread): SchoolRequest @update
   deleteSchoolRequest(id: ID!): SchoolRequest @delete
 
+  # Price Package
+  createPricePackage(input: CreatePricePackageInput! @spread): PricePackage @create
+  updatePricePackage(input: UpdatePricePackageInput! @spread): PricePackage @update
+  deletePricePackage(id: ID!): PricePackage @delete
+
+  # City
   createCity(input: CreateCityInput! @spread): City @create
   updateCity(input: UpdateCityInput! @spread): City @update @updateCityValidation
   deleteCity(id: ID!): City @delete
+
 } 
 
 # Queries that require Auth
@@ -384,7 +391,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   businessTripEvents(period: String): [BusinessTripEventsResponse]
     @paginate(builder: "App\\TripLog@events")
  
-  # Notifications
+  # Notification
   unreadNotifications: [Notification]!
     @field(resolver: "NotificationResolver@unreadNotifications")
 
@@ -392,7 +399,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   chatMessages(trip_id: String!, trip_type: String!): [Message] 
     @field(resolver: "CommunicationResolver@chatMessages")
 
-  # Schools
+  # School
   schoolZones: [SchoolZone] @all
   schoolZone(id: ID! @eq): SchoolZone @find
   schools(zone_id: ID, city_id: ID): [School] @all(scopes: ["filter"])
@@ -402,6 +409,11 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   schoolRequests(zone_id: [ID]): [SchoolRequest] @paginate(scopes: ["zone"])
   schoolRequest(id: ID! @eq): SchoolRequest @find
   schoolRequestsByUser(user_id: ID! @eq): [SchoolRequest] @all
+
+  # Price Package
+  pricePackages(city_id: ID): [PricePackage] @all(scopes: ["filter"])
+
+  # City
   cities: [City] @all
 }
 
@@ -426,3 +438,5 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import ondemandRequest.graphql
 #import notification.graphql
 #import school.graphql
+#import city.graphql
+#import pricePackage.graphql

@@ -1,0 +1,16 @@
+input CreateCityInput {
+  name: String! @rules(apply: ["required", "unique:cities,name"])
+  name_ar: String! @rules(apply: ["required", "unique:cities,name_ar"])
+}
+
+input UpdateCityInput {
+  id: ID! @rules(apply: ["required"])
+  name: String
+  name_ar: String
+}
+
+type City {
+  id: ID
+  name: String
+  name_ar: String
+}

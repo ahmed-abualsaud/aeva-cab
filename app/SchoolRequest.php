@@ -23,6 +23,11 @@ class SchoolRequest extends Model
         return $this->belongsTo(SchoolGrade::class);
     }
 
+    public function pricePackage()
+    {
+        return $this->belongsTo(PricePackage::class);
+    }
+
     public function scopeZone($query, $args) 
     {
         if (array_key_exists('zone_id', $args) && $args['zone_id']) {
