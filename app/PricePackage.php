@@ -12,6 +12,11 @@ class PricePackage extends Model
         'price' => 'array',
     ];
 
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
     public function scopeFilter($query, $args) 
     {
         if (array_key_exists('city_id', $args) && $args['city_id']) {

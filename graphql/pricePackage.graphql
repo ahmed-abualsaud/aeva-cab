@@ -33,6 +33,7 @@ type PricePackage {
   description: String
   price: Price
   per: String
+  city: City @belongsTo
 }
 
 type Price {
