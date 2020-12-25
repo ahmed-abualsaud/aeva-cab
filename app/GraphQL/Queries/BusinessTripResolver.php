@@ -185,6 +185,7 @@ class BusinessTripResolver
         $liveTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
             ->where('status', true)
+            ->select('business_trips.*')
             ->get();
 
         return $liveTrips;
