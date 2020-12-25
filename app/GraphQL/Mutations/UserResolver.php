@@ -6,8 +6,9 @@ use JWTAuth;
 use App\User;
 use App\PartnerUser;
 use App\Jobs\SendOtp;
-use App\Traits\HandleUpload;
 use Illuminate\Support\Str;
+use App\Traits\HandleUpload;
+use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Support\Facades\Auth;
@@ -68,10 +69,7 @@ class UserResolver
 
         $token = null;
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
-            PartnerUser::create([
-                "partner_id" => $args['partner_id'],
-                "user_id" => $user->id
-            ]);
+            $this->createPartnerUser($args['partner_id'], $user->id);
         } else {
             Auth::onceUsingId($user->id);
             $token = JWTAuth::fromUser($user);
@@ -85,27 +83,60 @@ class UserResolver
 
     public function createMultipleUsers($_, array $args)
     {
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            return $this->createUsersAndAssociatePartner($args);
+        } else {
+            return $this->createUsers($args);
+        }
+    }
+
+    protected function createUsersAndAssociatePartner(array $args)
+    {
+        DB::beginTransaction();
+        try {
+            $userInput = ['partner_id' => $args['partner_id']];
+            foreach($args['users'] as $user) {
+                $userInput['name'] = $user['name'];
+                $userInput['phone'] = $user['phone'];
+                $userInput['password'] = Hash::make($user['phone']);
+                $userInput['email'] = array_key_exists('email', $user) ? $user['email'] : null;
+                $userInput['title'] = array_key_exists('title', $user) ? $user['title'] : null;
+
+                $user = User::create($userInput);
+                $this->createPartnerUser($userInput['partner_id'], $user->id);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw new CustomException('Duplicate users');
+        }
+    }
+
+    protected function createUsers(array $args)
+    {
         try {
             $data = []; $arr = [];
             foreach($args['users'] as $user) {
-                $arr['partner_id'] = $args['partner_id'];
                 $arr['name'] = $user['name'];
-                $arr['email'] = $user['email'];
                 $arr['phone'] = $user['phone'];
-                $arr['title'] = $user['title'];
                 $arr['password'] = Hash::make($user['phone']);
                 $arr['created_at'] = $arr['updated_at'] = now();
+                $arr['email'] = array_key_exists('email', $user) ? $user['email'] : null;
+                $arr['title'] = array_key_exists('title', $user) ? $user['title'] : null;
                 array_push($data, $arr);
             }
-            User::insert($data);
+            User::insert($data); 
         } catch (\Exception $e) {
-            throw new CustomException(
-                'Some or all users already exist', 
-                'customValidation'
-            );
+            throw new CustomException('Duplicate users');
         }
+    }
 
-        return true;
+    protected function createPartnerUser($partner_id, $user_id)
+    {
+        PartnerUser::create([
+            "partner_id" => $partner_id,
+            "user_id" => $user_id
+        ]);
     }
 
     public function update($_, array $args)
@@ -302,7 +333,7 @@ class UserResolver
 
     public function destroy($_, array $args)
     {
-        return User::whereIn('id', $args['id'])->forceDelete();
+        return User::whereIn('id', $args['id'])->delete();
     }
 
     // protected function createDeviceToken($_, $args, $user_id)

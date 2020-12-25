@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use App\BusinessTrip;
 use App\BusinessTripUser;
 use App\BusinessTripStation;
-use App\Exceptions\CustomException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripStationResolver
@@ -192,7 +191,11 @@ class BusinessTripStationResolver
     {
         try {
             $station = BusinessTripStation::where('id', $args['station_id'])->firstOrFail();
-            $station->update(['state' => 'PICKABLE', 'accepted_at' => now()]);
+            $station->update([
+                'name' => $args['station_name'],
+                'state' => 'PICKABLE', 
+                'accepted_at' => now()
+            ]);
         } catch (ModelNotFoundException $e) {
             throw new \Exception('Station with the provided ID is not found.');
         }

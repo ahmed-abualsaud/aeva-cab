@@ -100,6 +100,7 @@ type SchoolGrade {
 
 type SchoolRequest {
   id: ID
+  user_id: ID
   user: User @belongsTo
   school: School @belongsTo
   grade: SchoolGrade @belongsTo

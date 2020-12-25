@@ -5,7 +5,6 @@ input CreateBusinessTripInput {
   vehicle_id: ID! @rules(apply: ["required"])
   start_date: Date! @rules(apply: ["required"])
   end_date: Date! @rules(apply: ["required"])
-  ride_car_share: Boolean
   return_time: String
   saturday: String
   sunday: String
@@ -14,6 +13,22 @@ input CreateBusinessTripInput {
   wednesday: String
   thursday: String
   friday: String
+  request_ids: [ID]
+  schools: [BusinessTripSchoolsInput] @rules(apply: ["required_with:request_ids"])
+  users: [BusinessTripUsersInput] @rules(apply: ["required_with:request_ids"])
+}
+
+input BusinessTripSchoolsInput {
+  name: String
+  lat: String
+  lng: String
+}
+
+input BusinessTripUsersInput {
+  id: ID
+  address: String
+  lat: String
+  lng: String
 }
 
 input UpdateBusinessTripInput {
@@ -24,7 +39,6 @@ input UpdateBusinessTripInput {
   driver_id: ID
   vehicle_id: ID
   subscription_code: String
-  ride_car_share: Boolean
   return_time: String
   start_date: Date
   end_date: Date
@@ -63,7 +77,6 @@ type BusinessTripSchedule {
 type BusinessTrip {
   id: ID
   name: String
-  ride_car_share: Boolean
   return_time: String
   start_date: Date
   end_date: Date
@@ -83,9 +96,4 @@ type BusinessTrip {
   schedule: BusinessTripSchedule @hasOne
   stations: [BusinessTripStation] @hasMany
   users: [User] @hasMany
-}
-
-type PartnerLiveTripResponse {
-  id: ID
-  name: String
 }

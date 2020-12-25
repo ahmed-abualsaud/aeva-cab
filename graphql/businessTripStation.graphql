@@ -45,6 +45,7 @@ input GetBusinessTripStationsInput {
 input AcceptBusinessTripStationInput {
   trip_id: ID! @rules(apply: ["required"])
   station_id: ID! @rules(apply: ["required"])
+  station_name: String! @rules(apply: ["required"])
 }
 
 type BusinessTripStation {

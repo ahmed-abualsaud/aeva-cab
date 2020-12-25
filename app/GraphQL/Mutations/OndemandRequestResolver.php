@@ -118,7 +118,7 @@ class OndemandRequestResolver
 
     public function destroy($_, array $args)
     {
-        return OndemandRequest::whereIn('id', $args['id'])->forceDelete();
+        return OndemandRequest::whereIn('id', $args['id'])->delete();
     }
 
     protected function broadcastRequest($request)

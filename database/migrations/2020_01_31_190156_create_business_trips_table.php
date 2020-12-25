@@ -19,7 +19,6 @@ class CreateBusinessTripsTable extends Migration
             $table->unsignedBigInteger('partner_id');
             $table->unsignedBigInteger('driver_id');
             $table->unsignedBigInteger('vehicle_id');
-            $table->boolean('ride_car_share')->default(true);
             $table->string('subscription_code')->nullable();
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();

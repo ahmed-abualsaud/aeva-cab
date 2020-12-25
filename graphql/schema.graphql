@@ -160,11 +160,12 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "OndemandRequestResolver@destroy")
 
   # Business Trip Station
-  createBusinessTripStation(input: CreateBusinessTripStationInput! @spread): BusinessTripStation @create
+  createBusinessTripStation(input: CreateBusinessTripStationInput! @spread): 
+    BusinessTripStation @create
   createBusinessTripStations(input: CreateBusinessTripStationsInput! @spread): [BusinessTripStation] 
     @field(resolver: "BusinessTripStationResolver@create")
-  updateBusinessTripStation(input: UpdateBusinessTripStationInput! @spread): BusinessTripStation 
-    @field(resolver: "BusinessTripStationResolver@update")
+  updateBusinessTripStation(input: UpdateBusinessTripStationInput! @spread): 
+    BusinessTripStation @update
   updateStationsRoute(input: UpdateStationsRouteInput! @spread): Boolean 
     @field(resolver: "BusinessTripStationResolver@updateRoute")
   deleteBusinessTripStation(id: ID!): BusinessTripStation @delete
@@ -236,7 +237,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
 
   createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest @create
   updateSchoolRequest(input: UpdateSchoolRequestInput! @spread): SchoolRequest @update
-  deleteSchoolRequest(id: ID!): SchoolRequest @delete
+  deleteSchoolRequest(id: [ID!]!): Boolean
+    @field(resolver: "SchoolRequestResolver@destroy")
 
   # Price Package
   createPricePackage(input: CreatePricePackageInput! @spread): PricePackage @create
@@ -253,8 +255,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
 # Queries that require Auth
 type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # User
-  userLiveTrip(user_id: ID!): UserLiveTripResponse!
-    @field(resolver: "BusinessTripResolver@userLiveTrip")
+  userLiveBusinessTrips(user_id: ID!): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@userLiveTrips")
   userSubscriptions(user_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userSubscriptions")
   userTrips(user_id: ID!, partner_id: ID, day: String): [BusinessTrip]
@@ -279,7 +281,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   driver(id: ID @eq): Driver @find
   driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
     @field(resolver: "BusinessTripResolver@driverLiveTrip")
-  driverLiveTrips(driver_id: ID!): [BusinessTrip]
+  driverLiveBusinessTrips(driver_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverLiveTrips")
   driverTrips(driver_id: ID!, day: String): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverTrips")
@@ -347,7 +349,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   partners: [Partner] @all
   partner(id: ID @eq): Partner @find
   authPartner: Partner @auth
-  partnerLiveTrips(partner_id: ID!): [PartnerLiveTripResponse]
+  partnerLiveTrips(partner_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@partnerLiveTrips")
   partnerAvailableLines(partner_id: ID! @eq trip_id: ID!): [BusinessTrip] 
     @all(scopes: ["availableLines"])
@@ -406,7 +408,8 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   school(id: ID! @eq): School @find
   schoolGrades(school_id: ID! @eq): [SchoolGrade] @all
   schoolGrade(id: ID! @eq): SchoolGrade @find
-  schoolRequests(zone_id: [ID]): [SchoolRequest] @paginate(scopes: ["zone"])
+  schoolRequests(zone_id: [ID], limit: ID!): [SchoolRequest] @all(scopes: ["zone"])
+  schoolRequestsArchive: [SchoolRequest] @paginate(scopes: ["archive"])
   schoolRequest(id: ID! @eq): SchoolRequest @find
   schoolRequestsByUser(user_id: ID! @eq): [SchoolRequest] @all
 

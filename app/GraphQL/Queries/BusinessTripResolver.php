@@ -180,24 +180,14 @@ class BusinessTripResolver
         return $this->scheduledTrips($driverTrips, $args['day']);
     }
 
-    public function userLiveTrip($_, array $args)
+    public function userLiveTrips($_, array $args)
     {
-        $liveTrip = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
+        $liveTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
             ->where('status', true)
-            ->first();
+            ->get();
 
-        if ($liveTrip) {
-            return [
-                "status" => true,
-                "trip" => $liveTrip
-            ];
-        }
-
-        return [
-            "status" => false,
-            "trip" => null
-        ];
+        return $liveTrips;
     }
 
     public function driverLiveTrip($_, array $args)
@@ -245,7 +235,7 @@ class BusinessTripResolver
         $today = $day == strtolower(date('l'));
 
         foreach($trips as $trip) {
-            $tripTimeMargin = $now - (($trip->duration + 7200) * 1000);
+            $tripTimeMargin = $now - (($trip->duration + 10800) * 1000);
             $dateTime = date('Y-m-d', strtotime($trip->time)) . ' ' . $trip->time;
             $tripDate = strtotime($dateTime) * 1000;
             $trip->dayName = $day;

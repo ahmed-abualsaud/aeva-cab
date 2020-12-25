@@ -7,12 +7,14 @@ use App\PartnerUser;
 use App\BusinessTrip;
 use App\Jobs\SendOtp;
 use App\DriverVehicle;
+use App\SchoolRequest;
 use App\BusinessTripUser;
 use App\Mail\DefaultMail;
 use Illuminate\Support\Arr;
-use App\BusinessTripSchedule; 
-use App\Exceptions\CustomException;
+use App\BusinessTripStation;
+use App\BusinessTripSchedule;
 use Vinkla\Hashids\Facades\Hashids;
+use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -25,16 +27,20 @@ class BusinessTripResolver
     public function create($_, array $args)
     {
         $tripInput = $this->tripInput($args);
-        $newTrip = BusinessTrip::create($tripInput);
+        $businessTrip = BusinessTrip::create($tripInput);
 
-        $newTrip->update(['subscription_code' => Hashids::encode($newTrip->id)]);
+        $businessTrip->update(['subscription_code' => Hashids::encode($businessTrip->id)]);
          
         $scheduleInput = $this->scheduleInput($args);
 
-        $scheduleInput['trip_id'] = $newTrip->id; 
+        $scheduleInput['trip_id'] = $businessTrip->id; 
         BusinessTripSchedule::create($scheduleInput);
 
-        return $newTrip;
+        if (array_key_exists('request_ids', $args) && $args['request_ids']) {
+            $this->autoSubscribeUser($args, $businessTrip->id);
+        }
+
+        return $businessTrip;
     }
 
     public function update($_, array $args)
@@ -182,11 +188,68 @@ class BusinessTripResolver
 
     protected function tripInput(array $args)
     {
-        return Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'ride_car_share', 'start_date', 'end_date', 'return_time']);
+        return Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'start_date', 'end_date', 'return_time']);
     }
 
     protected function scheduleInput(array $args)
     {
-        return Arr::only($args, ['saturday', 'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
+        return Arr::only($args, ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
+    }
+
+    protected function autoSubscribeUser($args, $trip_id)
+    {
+        $data = []; $arr = [];
+        foreach($args['schools'] as $val) {
+            $arr['trip_id'] = $trip_id;
+            $arr['name'] = $val['name'];
+            $arr['latitude'] = $val['lat'];
+            $arr['longitude'] = $val['lng'];
+            $arr['state'] = 'END';
+            $arr['created_at'] = $arr['updated_at'] = $arr['accepted_at'] = now();
+            array_push($data, $arr);
+        } 
+        
+        try {
+            BusinessTripStation::insert($data);
+        } catch (\Exception $e) {
+            throw new CustomException('We could not able to create stations from the provided schools');
+        }
+    
+        foreach($args['users'] as $val) {
+            $tripStationInput = [
+                'trip_id' => $trip_id,
+                'name' => $val['address'],
+                'latitude' => $val['lat'],
+                'longitude' => $val['lng'],
+                'state' => 'PICKABLE',
+                'accepted_at' => now()
+            ];
+
+            try {
+                $tripStation = BusinessTripStation::create($tripStationInput);
+            } catch(\Exception $e) {
+                throw new CustomException('We could not able to create stations from the provided users');
+            }
+
+            $tripUserInput = [
+                'trip_id' => $trip_id,
+                'user_id' => $val['id'],
+                'station_id' => $tripStation->id,
+                'subscription_verified_at' => now()
+            ];
+
+            try {
+                BusinessTripUser::create($tripUserInput);
+            } catch(\Exception $e) {
+                throw new CustomException('We could not able to subscribe the given users to thier stations');
+            }
+        }
+
+        try {
+            SchoolRequest::whereIn('id', $args['request_ids'])
+                ->update(['status' => 'ACCEPTED']);
+        } catch(\Exception $e) {
+            throw new CustomException('We could not able to mark provided requests as being accepted');
+        }
     }
 }

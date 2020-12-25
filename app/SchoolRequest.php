@@ -31,11 +31,19 @@ class SchoolRequest extends Model
     public function scopeZone($query, $args) 
     {
         if (array_key_exists('zone_id', $args) && $args['zone_id']) {
-            return $query->whereHas('school', function($query) use ($args) {
+            $query = $query->whereHas('school', function($query) use ($args) {
                 $query->whereIn('zone_id', $args['zone_id']);
             });
         }
- 
-        return $query->orderBy('created_at', 'DESC');
+
+        return $query->where('status', 'PENDING')
+            ->limit($args['limit'])
+            ->orderBy('created_at', 'DESC');
+    }
+
+    public function scopeArchive($query)
+    {
+        return $query->where('status', '<>', 'PENDING')
+            ->orderBy('created_at', 'DESC');
     }
 }

@@ -175,7 +175,7 @@ class DriverResolver
 
     public function destroy($_, array $args)
     {
-        return Driver::whereIn('id', $args['id'])->forceDelete();
+        return Driver::whereIn('id', $args['id'])->delete();
     }
 
 }
