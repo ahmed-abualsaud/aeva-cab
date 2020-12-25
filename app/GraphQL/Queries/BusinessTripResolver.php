@@ -220,8 +220,7 @@ class BusinessTripResolver
 
     public function driverLiveTrips($_, array $args)
     {
-        $liveTrips = BusinessTrip::select('id', 'name')
-            ->where('driver_id', $args['driver_id'])
+        $liveTrips = BusinessTrip::where('driver_id', $args['driver_id'])
             ->where('status', true)
             ->get();
 
