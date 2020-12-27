@@ -6,6 +6,7 @@ use JWTAuth;
 use App\User;
 use App\PartnerUser;
 use App\Jobs\SendOtp;
+use App\BusinessTripUser;
 use Illuminate\Support\Str;
 use App\Traits\HandleUpload;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +28,7 @@ class UserResolver
     public function create($_, array $args)
     {
         $input = collect($args)
-            ->except(['directive', 'avatar', 'platform', 'ref_code'])
+            ->except(['directive', 'avatar', 'platform', 'ref_code', 'trip_id'])
             ->toArray(); 
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -70,6 +71,9 @@ class UserResolver
         $token = null;
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $this->createPartnerUser($args['partner_id'], $user->id);
+            if (array_key_exists('trip_id', $args) && $args['trip_id']) {
+                $this->createTripUserSubscription($args['trip_id'], $user->id);
+            }
         } else {
             Auth::onceUsingId($user->id);
             $token = JWTAuth::fromUser($user);
@@ -94,17 +98,35 @@ class UserResolver
     {
         DB::beginTransaction();
         try {
+            $users = [];
             $userInput = ['partner_id' => $args['partner_id']];
             foreach($args['users'] as $user) {
                 $userInput['name'] = $user['name'];
                 $userInput['phone'] = $user['phone'];
                 $userInput['password'] = Hash::make($user['phone']);
-                $userInput['email'] = array_key_exists('email', $user) ? $user['email'] : null;
-                $userInput['title'] = array_key_exists('title', $user) ? $user['title'] : null;
-
                 $user = User::create($userInput);
-                $this->createPartnerUser($userInput['partner_id'], $user->id);
+                array_push($users, $user->id);
             }
+
+            $partnerUserData = []; $partnerUserArr = [];
+            foreach($users as $user) {
+                $partnerUserArr['user_id'] = $user;
+                $partnerUserArr['partner_id'] = $args['partner_id'];
+                array_push($partnerUserData, $partnerUserArr);
+            }
+            PartnerUser::insert($partnerUserData); 
+
+            if (array_key_exists('trip_id', $args) && $args['trip_id']) {
+                $tripUserData = []; $tripUserArr = [];
+                foreach($users as $user) {
+                    $tripUserArr['user_id'] = $user;
+                    $tripUserArr['trip_id'] = $args['trip_id'];
+                    $tripUserArr['subscription_verified_at'] = now();
+                    array_push($tripUserData, $tripUserArr);
+                }
+                BusinessTripUser::insert($tripUserData);
+            }
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -121,8 +143,6 @@ class UserResolver
                 $arr['phone'] = $user['phone'];
                 $arr['password'] = Hash::make($user['phone']);
                 $arr['created_at'] = $arr['updated_at'] = now();
-                $arr['email'] = array_key_exists('email', $user) ? $user['email'] : null;
-                $arr['title'] = array_key_exists('title', $user) ? $user['title'] : null;
                 array_push($data, $arr);
             }
             User::insert($data); 
@@ -334,6 +354,15 @@ class UserResolver
     public function destroy($_, array $args)
     {
         return User::whereIn('id', $args['id'])->delete();
+    }
+
+    protected function createTripUserSubscription($trip_id, $user_id)
+    {
+        BusinessTripUser::create([
+            'trip_id' => $trip_id,
+            'user_id' => $user_id,
+            'subscription_verified_at' => now()
+        ]);
     }
 
     // protected function createDeviceToken($_, $args, $user_id)

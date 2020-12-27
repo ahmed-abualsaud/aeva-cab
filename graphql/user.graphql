@@ -6,6 +6,7 @@ input CreateUserInput {
   provider: String
   provider_id: String
   partner_id: ID
+  trip_id: ID
   title: String
   avatar: Upload
   platform: String @rules(apply: ["in:android,ios"])
@@ -15,14 +16,13 @@ input CreateUserInput {
 
 input CreateMultipleUsersInput {
   partner_id: ID
-  users: [UserFromFileInput]
+  trip_id: ID
+  users: [UserFromFileInput]! @rules(apply: ["required"])
 }
 
 input UserFromFileInput {
-  name: String
-  email: String
-  phone: String
-  title: String
+  name: String! @rules(apply: ["required"])
+  phone: String! @rules(apply: ["required"])
 }
 
 input UpdateUserInput {
