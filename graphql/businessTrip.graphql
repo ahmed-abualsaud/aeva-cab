@@ -18,10 +18,19 @@ input CreateBusinessTripInput {
   users: [BusinessTripUsersInput] @rules(apply: ["required_with:request_ids"])
 }
 
+input AddSchoolRequestToBusinessTripInput {
+  trip_id: ID! @rules(apply: ["required"])
+  request_ids: [ID]! @rules(apply: ["required"])
+  schools: [BusinessTripSchoolsInput] @rules(apply: ["required"])
+  users: [BusinessTripUsersInput] @rules(apply: ["required"])
+  station_id: ID
+}
+
 input BusinessTripSchoolsInput {
   name: String
   lat: String
   lng: String
+  request_id: ID
 }
 
 input BusinessTripUsersInput {
@@ -29,6 +38,7 @@ input BusinessTripUsersInput {
   address: String
   lat: String
   lng: String
+  request_id: ID
 }
 
 input UpdateBusinessTripInput {

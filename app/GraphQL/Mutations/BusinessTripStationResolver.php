@@ -4,6 +4,7 @@ namespace App\GraphQL\Mutations;
 
 use Carbon\Carbon;
 use App\BusinessTrip;
+use App\SchoolRequest;
 use App\BusinessTripUser;
 use App\BusinessTripStation;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -202,16 +203,37 @@ class BusinessTripStationResolver
 
         try {
             $userCurrentStation = BusinessTripUser::where('trip_id', $args['trip_id'])
-                ->where('user_id', $station['created_by'])
+                ->where('user_id', $station['creator_id'])
                 ->firstOrFail();
             $userCurrentStation->update(['station_id' => $args['station_id']]);
         } catch (ModelNotFoundException $e) { 
             BusinessTripUser::create([
                 'trip_id' => $args['trip_id'],
                 'station_id' => $args['station_id'],
-                'user_id' => $station['created_by'],
+                'user_id' => $station['creator_id'],
                 'subscription_verified_at' => now()
             ]);
+        }
+
+        return $station;
+    }
+
+    public function destroy($_, array $args)
+    {
+        try {
+            $station = BusinessTripStation::findOrFail($args['id']);
+            $station->delete();
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception('Station with the provided ID is not found.');
+        }
+
+        if ($station->creator_type === 'App\\SchoolRequest') {
+            try {
+                SchoolRequest::findOrFail($station->creator_id)
+                    ->update(['status' => 'PENDING']);
+            } catch (ModelNotFoundException $e) {
+                //
+            }
         }
 
         return $station;

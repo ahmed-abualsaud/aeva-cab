@@ -46,4 +46,9 @@ class SchoolRequest extends Model
         return $query->where('status', '<>', 'PENDING')
             ->orderBy('created_at', 'DESC');
     }
+
+    public function scopeAccept($query, $ids)
+    {
+        return $query->whereIn('id', $ids)->update(['status' => 'ACCEPTED']);
+    }
 }

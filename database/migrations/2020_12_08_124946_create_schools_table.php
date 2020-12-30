@@ -64,6 +64,7 @@ class CreateSchoolsTable extends Migration
             $table->double('pickup_lng', 15, 8);
             $table->string('pickup_address');
             $table->string('days');
+            $table->tinyInteger('no_of_seats')->default(1);
             $table->enum('status', [
                 'ACCEPTED', 
                 'REJECTED',

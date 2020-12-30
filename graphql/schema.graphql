@@ -142,6 +142,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Business Trip
   createBusinessTrip(input: CreateBusinessTripInput! @spread): BusinessTrip 
     @field(resolver: "BusinessTripResolver@create")
+  addSchoolRequestToBusinessTrip(input: AddSchoolRequestToBusinessTripInput! @spread): Boolean 
+    @field(resolver: "BusinessTripResolver@addSchoolRequest")
   updateBusinessTrip(input: UpdateBusinessTripInput! @spread): BusinessTrip 
     @field(resolver: "BusinessTripResolver@update")
   updateBusinessTripStatus(input: UpdateBusinessTripInput! @spread): BusinessTrip 
@@ -168,7 +170,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     BusinessTripStation @update
   updateStationsRoute(input: UpdateStationsRouteInput! @spread): Boolean 
     @field(resolver: "BusinessTripStationResolver@updateRoute")
-  deleteBusinessTripStation(id: ID!): BusinessTripStation @delete
+  deleteBusinessTripStation(id: ID!): BusinessTripStation 
+    @field(resolver: "BusinessTripStationResolver@destroy") 
   acceptBusinessTripStation(input: AcceptBusinessTripStationInput! @spread): BusinessTripStation
     @field(resolver: "BusinessTripStationResolver@acceptStation") 
 
@@ -272,7 +275,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   user(id: ID @eq): User @find
 
   # Fleet
-  fleets: [Fleet] @paginate
+  fleets: [Fleet] @all
   fleet(id: ID @eq): Fleet @find
 
   # Driver
@@ -363,6 +366,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Business Trip
   businessTrips(partner_id: ID, searchFor: String, searchQuery: String): [BusinessTrip] 
     @paginate(scopes: ["partner", "search"])
+  partnerBusinessTrips(partner_id: ID! @eq): [BusinessTrip] @all
   businessLiveTrips: [BusinessTrip] @all(scopes: ["live"])
   trip(id: ID @eq): BusinessTrip @find
 

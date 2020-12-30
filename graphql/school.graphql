@@ -54,6 +54,7 @@ input CreateSchoolRequestInput {
   pickup_lng: String! @rules(apply: ["required"])
   pickup_address: String! @rules(apply: ["required"])
   days: String! @rules(apply: ["required"])
+  no_of_seats: Int
   comment: String
 }
 
@@ -68,6 +69,7 @@ input UpdateSchoolRequestInput {
   pickup_lng: String
   pickup_address: String
   days: String
+  no_of_seats: Int
   status: String @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING"])
   comment: String
   response: String
@@ -111,6 +113,7 @@ type SchoolRequest {
   pickup_lng: String
   pickup_address: String
   days: String
+  no_of_seats: Int
   status: String
   comment: String
   response: String

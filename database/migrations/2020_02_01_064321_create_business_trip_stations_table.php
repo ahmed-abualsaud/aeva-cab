@@ -22,14 +22,14 @@ class CreateBusinessTripStationsTable extends Migration
             $table->integer('duration')->nullable();
             $table->integer('distance')->nullable();
             $table->timestamp('accepted_at')->nullable();
-            $table->unsignedBigInteger('created_by')->nullable();
+            $table->string('creator_type')->nullable();
+            $table->unsignedBigInteger('creator_id')->nullable();
             $table->enum('state', ['START','END','PICKABLE','PENDING'])->default('PENDING');
             $table->timestamps();
             $table->softDeletes();
 
             $table->index('trip_id');
             
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
         });
     }

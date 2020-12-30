@@ -7,7 +7,8 @@ input CreateBusinessTripStationInput {
   state: String @rules(apply: ["in:START,END,PICKABLE,PENDING"])
   distance: Int
   duration: Int
-  created_by: ID
+  creator_type: String
+  creator_id: ID
   accepted_at: DateTime
 } 
 
@@ -53,7 +54,6 @@ type BusinessTripStation {
   name: String
   latitude: String
   longitude: String
-  created_by: User @belongsTo
   created_at: DateTime
   accepted_at: DateTime
   state: String
