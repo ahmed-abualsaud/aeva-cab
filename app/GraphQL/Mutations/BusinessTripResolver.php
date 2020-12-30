@@ -216,7 +216,7 @@ class BusinessTripResolver
                 $schoolArr['name'] = $val['name'];
                 $schoolArr['latitude'] = $val['lat'];
                 $schoolArr['longitude'] = $val['lng'];
-                $schoolArr['state'] = 'END';
+                $schoolArr['state'] = 'DESTINATION';
                 $schoolArr['created_at'] = $schoolArr['updated_at'] = $schoolArr['accepted_at'] = now();
                 array_push($schoolData, $schoolArr);
             } 

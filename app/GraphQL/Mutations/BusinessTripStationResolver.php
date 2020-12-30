@@ -7,6 +7,7 @@ use App\BusinessTrip;
 use App\SchoolRequest;
 use App\BusinessTripUser;
 use App\BusinessTripStation;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripStationResolver
@@ -81,7 +82,7 @@ class BusinessTripStationResolver
             $params = array_merge($distance, $duration);
             $params[] = Carbon::now();
 
-            \DB::update("UPDATE `business_trip_stations` SET 
+            DB::update("UPDATE `business_trip_stations` SET 
                 `distance` = CASE `id` {$cases} END, 
                 `duration` = CASE `id` {$cases} END, 
                 `updated_at` = ? 
