@@ -13,8 +13,9 @@ use App\Mail\DefaultMail;
 use Illuminate\Support\Arr;
 use App\BusinessTripStation;
 use App\BusinessTripSchedule;
-use Vinkla\Hashids\Facades\Hashids;
+use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
+use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -37,10 +38,19 @@ class BusinessTripResolver
         BusinessTripSchedule::create($scheduleInput);
 
         if (array_key_exists('request_ids', $args) && $args['request_ids']) {
-            $this->autoSubscribeUser($args, $businessTrip->id);
+            $this->createStationsAndAssignUsers($args, $businessTrip->id);
         }
 
         return $businessTrip;
+    }
+
+    public function addSchoolRequest($_, array $args)
+    {
+        if (array_key_exists('station_id', $args) && $args['station_id']) {
+            return $this->assignUsersToStation($args);
+        } 
+        
+        return $this->createStationsAndAssignUsers($args, $args['trip_id']);
     }
 
     public function update($_, array $args)
@@ -193,63 +203,84 @@ class BusinessTripResolver
 
     protected function scheduleInput(array $args)
     {
-        return Arr::only($args, ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
+        return Arr::only($args, ['saturday','sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
     }
 
-    protected function autoSubscribeUser($args, $trip_id)
+    protected function createStationsAndAssignUsers($args, $trip_id)
     {
-        $data = []; $arr = [];
-        foreach($args['schools'] as $val) {
-            $arr['trip_id'] = $trip_id;
-            $arr['name'] = $val['name'];
-            $arr['latitude'] = $val['lat'];
-            $arr['longitude'] = $val['lng'];
-            $arr['state'] = 'END';
-            $arr['created_at'] = $arr['updated_at'] = $arr['accepted_at'] = now();
-            array_push($data, $arr);
-        } 
-        
+        DB::beginTransaction();
         try {
-            BusinessTripStation::insert($data);
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to create stations from the provided schools');
-        }
-    
-        foreach($args['users'] as $val) {
-            $tripStationInput = [
-                'trip_id' => $trip_id,
-                'name' => $val['address'],
-                'latitude' => $val['lat'],
-                'longitude' => $val['lng'],
-                'state' => 'PICKABLE',
-                'accepted_at' => now()
-            ];
+            $schoolData = []; $schoolArr = [];
+            foreach($args['schools'] as $val) {
+                $schoolArr['trip_id'] = $trip_id;
+                $schoolArr['name'] = $val['name'];
+                $schoolArr['latitude'] = $val['lat'];
+                $schoolArr['longitude'] = $val['lng'];
+                $schoolArr['state'] = 'END';
+                $schoolArr['created_at'] = $schoolArr['updated_at'] = $schoolArr['accepted_at'] = now();
+                array_push($schoolData, $schoolArr);
+            } 
+            BusinessTripStation::insert($schoolData);
+            
+            $tripUserData = []; $tripUserArr = [];
 
-            try {
-                $tripStation = BusinessTripStation::create($tripStationInput);
-            } catch(\Exception $e) {
-                throw new CustomException('We could not able to create stations from the provided users');
+            foreach($args['users'] as $user) {
+                $tripStationData = [
+                    'creator_type' => 'App\\SchoolRequest',
+                    'creator_id' => $user['request_id'],
+                    'trip_id' => $trip_id,
+                    'name' => $user['address'],
+                    'latitude' => $user['lat'],
+                    'longitude' => $user['lng'],
+                    'state' => 'PICKABLE',
+                    'accepted_at' => now()
+                ];
+
+                $tripStation = BusinessTripStation::create($tripStationData);
+
+                $tripUserArr['trip_id'] = $trip_id;
+                $tripUserArr['user_id'] = $user['id'];
+                $tripUserArr['station_id'] = $tripStation->id;
+                $tripUserArr['subscription_verified_at'] 
+                    = $tripUserArr['created_at'] 
+                    = $tripUserArr['updated_at'] 
+                    = now();
+                array_push($tripUserData, $tripUserArr);
             }
 
-            $tripUserInput = [
-                'trip_id' => $trip_id,
-                'user_id' => $val['id'],
-                'station_id' => $tripStation->id,
-                'subscription_verified_at' => now()
-            ];
+            BusinessTripUser::insert($tripUserData);
+            SchoolRequest::accept($args['request_ids']);
 
-            try {
-                BusinessTripUser::create($tripUserInput);
-            } catch(\Exception $e) {
-                throw new CustomException('We could not able to subscribe the given users to thier stations');
-            }
-        }
-
-        try {
-            SchoolRequest::whereIn('id', $args['request_ids'])
-                ->update(['status' => 'ACCEPTED']);
+            DB::commit();
         } catch(\Exception $e) {
-            throw new CustomException('We could not able to mark provided requests as being accepted');
+            DB::rollback();
+            throw new CustomException('We could not able to create stations and assign users'.$e->getMessage());
+        }
+    }
+
+    protected function assignUsersToStation(array $args)
+    {
+        DB::beginTransaction();
+        try {
+            $tripUserData = []; $tripUserArr = [];
+            foreach($args['users'] as $user) {
+                $tripUserArr['trip_id'] = $args['trip_id'];
+                $tripUserArr['user_id'] = $user['id'];
+                $tripUserArr['station_id'] = $args['station_id'];
+                $tripUserArr['subscription_verified_at'] 
+                    = $tripUserArr['created_at'] 
+                    = $tripUserArr['updated_at'] 
+                    = now();
+                array_push($tripUserData, $tripUserArr);
+            }
+    
+            BusinessTripUser::insert($tripUserData);
+            SchoolRequest::accept($args['request_ids']);
+
+            DB::commit();
+        } catch(\Exception $e) {
+            DB::rollback();
+            throw new CustomException('We could not able to assign users to specified station');
         }
     }
 }
