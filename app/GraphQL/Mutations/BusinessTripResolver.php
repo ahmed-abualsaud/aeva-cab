@@ -9,14 +9,14 @@ use App\Jobs\SendOtp;
 use App\DriverVehicle;
 use App\SchoolRequest;
 use App\BusinessTripUser;
-use App\Mail\DefaultMail;
+// use App\Mail\DefaultMail;
 use Illuminate\Support\Arr;
 use App\BusinessTripStation;
 use App\BusinessTripSchedule;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Vinkla\Hashids\Facades\Hashids;
-use Illuminate\Support\Facades\Mail;
+// use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripResolver
@@ -113,9 +113,7 @@ class BusinessTripResolver
 
     public function inviteUser($_, array $args)
     {
-        $data = [];
-        $arr = [];
-
+        $data = []; $arr = [];
         foreach($args['user_id'] as $val) {
             $arr['trip_id'] = $args['trip_id'];
             $arr['user_id'] = $val;
@@ -129,15 +127,15 @@ class BusinessTripResolver
             throw new CustomException('Each user is allowed to subscribe for a trip once.');
         }
 
-        $users = User::select('phone', 'email')
+        $users = User::select('phone')
             ->whereIn('id', $args['user_id'])
             ->get();
         $phones = $users->pluck('phone')->toArray();
-        $emails = $users->pluck('email');
+        // $emails = $users->pluck('email')->toArray();
 
         $message = 'Dear valued user, kindly use this code to confirm your subscription: ' . $args['subscription_code'];
         
-        Mail::bcc($emails)->send(new DefaultMail($message, "Trip Subscription Code"));
+        // Mail::bcc($emails)->send(new DefaultMail($message, "Trip Subscription Code"));
         SendOtp::dispatch(implode(",", $phones), $message); 
 
         return [
