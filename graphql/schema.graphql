@@ -177,18 +177,16 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Business Trip Station User
   createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
-    @field(resolver: "BusinessTripStationResolver@assignUser") 
-  deleteBusinessTripStationUser(input: DeleteBusinessTripStationUserInput! @spread): DefaultResponse 
-    @field(resolver: "BusinessTripStationResolver@unassignUser")
+    @field(resolver: "BusinessTripStationResolver@assignUser")
   createBusinessTripStationUsers(input: CreateBusinessTripStationUsersInput! @spread): DefaultResponse 
-    @field(resolver: "BusinessTripStationResolver@assignUsers") 
+    @field(resolver: "BusinessTripStationResolver@assignUsers")
   deleteBusinessTripStationUsers(input: DeleteBusinessTripStationUsersInput! @spread): DefaultResponse 
     @field(resolver: "BusinessTripStationResolver@unassignUsers")
 
   # Business Trip User
   createBusinessTripUser(input: CreateBusinessTripUserInput! @spread): DefaultResponse 
     @field(resolver: "BusinessTripResolver@inviteUser")
-  confirmBusinessTripUser(input: ConfirmBusinessTripUserInput! @spread): BusinessTrip!
+  confirmBusinessTripUser(input: ConfirmBusinessTripUserInput! @spread): BusinessTrip
     @field(resolver: "BusinessTripResolver@subscribeUser")
   deleteBusinessTripUser(input: DeleteBusinessTripUserInput! @spread): DefaultResponse
     @field(resolver: "BusinessTripResolver@unsubscribeUser") 

@@ -51,4 +51,9 @@ class SchoolRequest extends Model
     {
         return $query->whereIn('id', $ids)->update(['status' => 'ACCEPTED']);
     }
+
+    public function scopeRestore($query, $ids)
+    {
+        return $query->whereIn('id', $ids)->update(['status' => 'PENDING']);
+    }
 }

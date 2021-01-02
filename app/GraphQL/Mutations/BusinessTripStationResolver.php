@@ -8,7 +8,9 @@ use App\SchoolRequest;
 use App\BusinessTripUser;
 use App\BusinessTripStation;
 use Illuminate\Support\Facades\DB;
+use App\Exceptions\CustomException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use phpDocumentor\Reflection\Types\Boolean;
 
 class BusinessTripStationResolver
 {
@@ -125,67 +127,51 @@ class BusinessTripStationResolver
     public function assignUsers($_, array $args)
     {
         try {
-            BusinessTripUser::where('trip_id', $args['trip_id'])
-                ->whereIn('user_id', $args['users'])
-                ->delete();
-
-            $data = []; $arr = [];
+            $arr = [
+                'trip_id' => $args['trip_id'],
+                'station_id' => $args['station_id'],
+                'subscription_verified_at' => now(),
+                'created_at' => now(), 'updated_at' => now()
+            ];
             foreach($args['users'] as $user) {
-                $arr['trip_id'] = $args['trip_id'];
                 $arr['user_id'] = $user;
-                $arr['station_id'] = $args['station_id'];
-                $arr['subscription_verified_at'] = $arr['created_at'] = $arr['updated_at'] = now();
-                array_push($data, $arr);
+                $data[] = $arr;
             } 
             BusinessTripUser::insert($data);
         } catch (\Exception $e) {
-            return [
-                "status" => false,
-                "message" => "We could not able to assign selected users to this station."
-            ];
+            throw new CustomException('We could not able to assign selected users to specified station.');
         }
  
         return [
             "status" => true,
-            "message" => "Selected users have been successfully assigned to this station."
-        ];
-    }
-
-    public function unassignUser($_, array $args)
-    {
-        try {
-            BusinessTripUser::where('station_id', $args['station_id'])
-                ->where('user_id', $args['user_id'])
-                ->delete();
-        } catch (\Exception $e) {
-            return [
-                "status" => false,
-                "message" => "We could not able to unassign you from this station."
-            ];
-        }
- 
-        return [
-            "status" => true,
-            "message" => "You've successfully unassigned from this station."
+            "message" => "Selected users have been successfully assigned to specified station."
         ];
     }
 
     public function unassignUsers($_, array $args)
     {
         try {
-            BusinessTripUser::where('station_id', $args['station_id'])
-                ->whereIn('user_id', $args['users'])
-                ->delete();
+            $users = BusinessTripUser::where('station_id', $args['station_id'])
+                ->whereIn('user_id', $args['users']);
+
+            if (collect($users)->isNotEmpty()) {
+                $schoolRequests = $users->get()
+                    ->where('creator_type', 'App\\SchoolRequest')
+                    ->pluck('creator_id')
+                    ->toArray();
+                    
+                if ($schoolRequests) SchoolRequest::restore($schoolRequests);
+
+                $users->delete();
+            }
+
         } catch (\Exception $e) {
-            return [
-                "status" => false,
-                "message" => "We could not able to unassign selected users from this station."
-            ];
+            throw new \Exception('We could not able to unassign selected users from specified station.');
         }
  
         return [
             "status" => true,
-            "message" => "Selected users have been successfully unassigned from this station."
+            "message" => "Selected users have been successfully unassigned from specified station."
         ];
     }
 
@@ -228,14 +214,8 @@ class BusinessTripStationResolver
             throw new \Exception('Station with the provided ID is not found.');
         }
 
-        if ($station->creator_type === 'App\\SchoolRequest') {
-            try {
-                SchoolRequest::findOrFail($station->creator_id)
-                    ->update(['status' => 'PENDING']);
-            } catch (ModelNotFoundException $e) {
-                //
-            }
-        }
+        if ($station->creator_type === 'App\SchoolRequest')
+            SchoolRequest::restore($station->creator_id);
 
         return $station;
     }
