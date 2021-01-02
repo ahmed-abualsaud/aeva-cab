@@ -10,7 +10,6 @@ use App\BusinessTripStation;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use phpDocumentor\Reflection\Types\Boolean;
 
 class BusinessTripStationResolver
 {
@@ -209,13 +208,14 @@ class BusinessTripStationResolver
     {
         try {
             $station = BusinessTripStation::findOrFail($args['id']);
-            $station->delete();
         } catch (ModelNotFoundException $e) {
             throw new \Exception('Station with the provided ID is not found.');
         }
 
         if ($station->creator_type === 'App\SchoolRequest')
             SchoolRequest::restore($station->creator_id);
+        
+        $station->delete();
 
         return $station;
     }
