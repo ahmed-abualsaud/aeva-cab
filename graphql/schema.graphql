@@ -194,16 +194,14 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Business Trip Log
   startTrip(input: StartTripInput! @spread): BusinessTrip 
     @field(resolver: "BusinessTripLogResolver@startTrip")
-  updateDriverLocation(input: UpdateDriverLocationInput! @spread): Boolean 
+  endTrip(input: EndTripInput! @spread): String
+    @field(resolver: "BusinessTripLogResolver@endTrip")
+  updateBusinessTripDriverLocation(input: UpdateBusinessTripDriverLocationInput! @spread): String 
     @field(resolver: "BusinessTripLogResolver@updateDriverLocation")
   nearYou(input: NearYouInput! @spread): String
     @field(resolver: "BusinessTripLogResolver@nearYou")
-  userArrived(input: UserArrivedInput! @spread): String
-    @field(resolver: "BusinessTripLogResolver@userArrived")
-  endTrip(input: EndTripInput! @spread): String
-    @field(resolver: "BusinessTripLogResolver@endTrip")
-  changeTripUserStatus(input: ChangeTripUserStatusInput! @spread): String
-    @field(resolver: "BusinessTripLogResolver@changeTripUserStatus")
+  changeBusinessTripUserStatus(input: ChangeBusinessTripUserStatusInput! @spread): String
+    @field(resolver: "BusinessTripLogResolver@changeUserStatus")
   pickUsers(input: SelectUsersInput! @spread): String
     @field(resolver: "BusinessTripLogResolver@pickUsers")
   dropUsers(input: SelectUsersInput! @spread): String
@@ -250,6 +248,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   createCity(input: CreateCityInput! @spread): City @create
   updateCity(input: UpdateCityInput! @spread): City @update @updateCityValidation
   deleteCity(id: ID!): City @delete
+
+  # Business Trip Attendance
+  createBusinessTripAttendance(input: CreateBusinessTripAttendanceInput! @spread): Boolean
+    @field(resolver: "BusinessTripAttendanceResolver@create")
 
 } 
 
@@ -445,3 +447,4 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import school.graphql
 #import city.graphql
 #import pricePackage.graphql
+#import businessTripAttendance.graphql

@@ -2,7 +2,6 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\User;
 use App\OndemandRequest;
 use App\Mail\DefaultMail;
 use App\OndemandRequestLine;
@@ -11,7 +10,6 @@ use App\Events\RequestSubmitted;
 use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class OndemandRequestResolver
@@ -35,7 +33,7 @@ class OndemandRequestResolver
                 $vehicles_arr['count'] = $vehicle['count'];
                 array_push($vehicles_data, $vehicles_arr);
             } 
-            $vehicles = OndemandRequestVehicle::insert($vehicles_data);
+            OndemandRequestVehicle::insert($vehicles_data);
 
             $lines_data = array(); 
             $lines_arr = array();
@@ -49,7 +47,7 @@ class OndemandRequestResolver
                 $lines_arr['to_address'] = $line['to_address'];
                 array_push($lines_data, $lines_arr);
             } 
-            $lines = OndemandRequestLine::insert($lines_data);
+            OndemandRequestLine::insert($lines_data);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to create this request.' . $e->getMessage());
         }
@@ -80,32 +78,20 @@ class OndemandRequestResolver
             }
 
             if ($args['status'] !== 'CANCELLED') {
-                $token = User::where('id', $request->user_id)
-                    ->select('device_id')
-                    ->pluck('device_id')
-                    ->toArray();
-                
-                // $token = DeviceToken::where('tokenable_id', $request->user_id)
-                //     ->where('tokenable_type', 'App\User')
-                //     ->select('device_id')
-                //     ->pluck('device_id')
-                //     ->toArray();
+                $token = auth('user')->user()->device_id;
     
                 $responseTitle = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']);
                 $responseMsg = $responseTitle;
-                if ($args['response']) $responseMsg .= '. '. $args['response'];
+                if (array_key_exists('response', $args) && $args['response']) 
+                    $responseMsg .= '. '. $args['response'];
     
                 SendPushNotification::dispatch($token, $responseMsg);
-
-                // Mail::to($request->user->email)
-                //     ->send(new DefaultMail($responseMsg, $responseTitle));
                 
             } else {
                 $title = "On-Demand Request Cancelled";
                 $message = "On-Demand request ID ". $request->id ." has been cancelled by user";
-                if (array_key_exists('comment', $args) && $args['comment']) { 
+                if (array_key_exists('comment', $args) && $args['comment'])
                     $message .= ". ".$args['comment'];
-                }
 
                 $this->mailRequest($message, $title, $request->id);
             }

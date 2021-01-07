@@ -100,6 +100,7 @@ type BusinessTrip {
   status: Boolean
   flag: Boolean
   isReturn: Boolean
+  is_absent: Boolean
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo

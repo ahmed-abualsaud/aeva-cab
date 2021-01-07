@@ -4,9 +4,16 @@ input StartTripInput {
   longitude: String! @rules(apply: ["required"])
 }
 
-input UpdateDriverLocationInput {
-  trip_id: String
-  driver_id: ID
+input EndTripInput {
+  trip_id: ID! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+}
+
+input UpdateBusinessTripDriverLocationInput {
+  trip_id: ID! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
 }
@@ -15,20 +22,10 @@ input NearYouInput {
   station_id: ID! @rules(apply: ["required"])
 }
 
-input EndTripInput {
+input ChangeBusinessTripUserStatusInput {
   trip_id: ID! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: String! @rules(apply: ["required"])
-  longitude: String! @rules(apply: ["required"])
-}
-
-input UserArrivedInput {
-  trip_id: ID! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: String! @rules(apply: ["required"])
-  longitude: String! @rules(apply: ["required"])
   driver_id: ID! @rules(apply: ["required"])
-  user_id: ID! @rules(apply: ["required"])
+  status: String! @rules(apply: ["in:ABSENT,ARRIVED"])
 }
 
 input SelectUsersInput {
@@ -37,14 +34,6 @@ input SelectUsersInput {
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
   users: [ID!]! @rules(apply: ["required"])
-}
-
-input ChangeTripUserStatusInput {
-  trip_id: ID! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: String! @rules(apply: ["required"])
-  longitude: String! @rules(apply: ["required"])
-  status: String! @rules(apply: ["in:PICKED_UP,NOT_PICKED_UP,DROPPED_OFF"])
 }
 
 type BusinessTripLogsResponse {

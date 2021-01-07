@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTripLogsTable extends Migration
+class CreateBusinessTripAttendanceTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,22 +13,15 @@ class CreateTripLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('trip_logs', function (Blueprint $table) {
+        Schema::create('business_trip_attendance', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('log_id');
+            $table->date('date');
             $table->unsignedBigInteger('trip_id');
-            $table->double('latitude', 15, 8);
-            $table->double('longitude', 15, 8);
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->enum('status', [
-                'STARTED','ENDED','PICKED_UP','DROPPED_OFF'
-            ])->nullable();
-            $table->timestamps();
+            $table->unsignedBigInteger('user_id');
+            $table->boolean('status')->default(true);
 
-            $table->index('log_id');
-            $table->index('trip_id');
+            $table->unique(['trip_id', 'date']);
             $table->index('user_id');
-            $table->index('created_at');
 
             $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
@@ -42,6 +35,6 @@ class CreateTripLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('trip_logs');
+        Schema::dropIfExists('business_trip_attendance');
     }
 }

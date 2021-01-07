@@ -9,14 +9,19 @@ class FirebasePushNotification
         $API_ACCESS_KEY = config('custom.firebase_access_key');
 
         $fields = [
-            'registration_ids' => $token,
             'notification' => [
                 'title' => $title,
                 'body' => $message,
-                'sound'     => "default"
+                'sound' => "default"
             ],
             "priority" => "high"
         ];
+
+        if (is_array($token)) {
+            $fields['registration_ids'] = $token;
+        } else {
+            $fields['to'] = $token;
+        }
         
         if ($data) $fields['data'] = $data;
 
