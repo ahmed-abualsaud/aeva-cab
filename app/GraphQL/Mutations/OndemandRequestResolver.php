@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Mutations;
 
+use App\User;
 use App\OndemandRequest;
 use App\Mail\DefaultMail;
 use App\OndemandRequestLine;
@@ -78,7 +79,10 @@ class OndemandRequestResolver
             }
 
             if ($args['status'] !== 'CANCELLED') {
-                $token = auth('user')->user()->device_id;
+                $token = User::where('id', $request->user_id)
+                    ->select('device_id')
+                    ->pluck('device_id')
+                    ->toArray();
     
                 $responseTitle = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']);
                 $responseMsg = $responseTitle;
