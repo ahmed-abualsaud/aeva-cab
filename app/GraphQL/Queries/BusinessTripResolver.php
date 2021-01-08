@@ -109,6 +109,7 @@ class BusinessTripResolver
 
     public function userTrips($_, array $args)
     {
+        $date = date('Y-m-d', strtotime($args['day']));
 
         $userTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id']);
@@ -128,10 +129,11 @@ class BusinessTripResolver
                 $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
                     ->whereNotNull($args['day']);
             })
-            ->leftJoin('business_trip_attendance', function ($join) use ($args) {
+            ->leftJoin('business_trip_attendance', function ($join) use ($args, $date) {
                 $join->on('business_trips.id', '=', 'business_trip_attendance.trip_id')
                     ->where('business_trip_attendance.user_id', $args['user_id'])
-                    ->where('business_trip_attendance.status', false);
+                    ->where('business_trip_attendance.status', false)
+                    ->where('business_trip_attendance.date', $date);
             })
             ->get();
 
