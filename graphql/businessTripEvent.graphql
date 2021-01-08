@@ -6,9 +6,9 @@ input StartTripInput {
 
 input EndTripInput {
   trip_id: ID! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: String! @rules(apply: ["required"])
-  longitude: String! @rules(apply: ["required"])
+  log_id: String
+  latitude: String
+  longitude: String
 }
 
 input UpdateBusinessTripDriverLocationInput {
@@ -36,35 +36,19 @@ input SelectUsersInput {
   users: [ID!]! @rules(apply: ["required"])
 }
 
-type BusinessTripLogsResponse {
+type BusinessTripEvent {
   log_id: String
-  date: String
-}
-
-type BusinessTripLogResponse {
-  time: String
-  status: String
-  latitude: String
-  longitude: String
-  user: String
-}
-
-type BusinessTripEventsResponse {
+  created_at: DateTime
+  updated_at: DateTime
   trip_id: ID
   trip_name: String
   partner_id: ID
   partner_name: String
-  status: String
-  created_at: String
+  map_url: String
+  content: Content
 }
 
-type TripLog {
-  id: ID
-  log_id: String
-  created_at: DateTime
-  updated_at: DateTime
-  latitude: String
-  longitude: String
-  user: User @belongsTo
-  status: String
+type Content {
+  started_at: DateTime
+  ended_at: DateTime
 }

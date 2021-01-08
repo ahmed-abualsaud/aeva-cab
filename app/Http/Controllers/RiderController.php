@@ -479,7 +479,7 @@ class RiderController extends Controller
 
             if (!empty($userRequests)) {
                 foreach ($userRequests as $key => $value) {
-                    $userRequests[$key]->static_map = StaticMapUrl::generate($value);
+                    $userRequests[$key]->static_map = StaticMapUrl::generatePolylines($value);
                 }
             }
 
@@ -601,7 +601,7 @@ class RiderController extends Controller
             $userRequests = CabRequest::UserTripDetails(auth('user')->user()->id, $request->request_id)->get();
             if (!empty($userRequests)) {
                 foreach ($userRequests as $key => $value) {
-                    $userRequests[$key]->static_map = StaticMapUrl::generate($value);
+                    $userRequests[$key]->static_map = StaticMapUrl::generatePolylines($value);
                 }
             }
             return $userRequests;
@@ -705,7 +705,7 @@ class RiderController extends Controller
             $userRequests = CabRequest::UserUpcomingTrips(auth('user')->user()->id)->get();
             if (!empty($userRequests)) {
                 foreach ($userRequests as $key => $value) {
-                    $userRequests[$key]->static_map = StaticMapUrl::generate($value);
+                    $userRequests[$key]->static_map = StaticMapUrl::generatePolylines($value);
                 }
             }
             return $userRequests;
@@ -730,7 +730,7 @@ class RiderController extends Controller
             $userRequests = CabRequest::UserUpcomingTripDetails(auth('user')->user()->id,$request->request_id)->get();
             if (!empty($userRequests)) {
                 foreach ($userRequests as $key => $value) {
-                    $userRequests[$key]->static_map = StaticMapUrl::generate($value);
+                    $userRequests[$key]->static_map = StaticMapUrl::generatePolylines($value);
                 }
             }
             return $userRequests;

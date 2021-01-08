@@ -6,17 +6,14 @@ use App\User;
 use App\PartnerUser;
 use App\BusinessTrip;
 use App\Jobs\SendOtp;
-use App\DriverVehicle;
 use App\SchoolRequest;
 use App\BusinessTripUser;
-// use App\Mail\DefaultMail;
 use Illuminate\Support\Arr;
 use App\BusinessTripStation;
 use App\BusinessTripSchedule;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Vinkla\Hashids\Facades\Hashids;
-// use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripResolver
@@ -75,46 +72,6 @@ class BusinessTripResolver
         return $trip;
     }
 
-    public function updateStatus($_, array $args)
-    {
-        try {
-            $trip = BusinessTrip::findOrFail($args['id']);
-            // $driverStatus = DriverVehicle::where('driver_id', $trip->driver_id)
-            //     ->where('vehicle_id', $trip->vehicle_id);
-            $usersStatus = BusinessTripUser::where('trip_id', $trip->id);
-        } catch (\Exception $e) {
-            throw new CustomException('We could not find a trip with the provided ID.');
-        }
-
-        $tripInput = ["status" => $args['status'], "log_id" => $args['log_id']];
-
-        // if ($args['status']) {
-        //     $driverStatusInput = [
-        //         "status" => "RIDING",
-        //         "trip_type" => "App\BusinessTrip",
-        //         "trip_id" => $args['id']
-        //     ];
-        // } else {
-        //     $driverStatusInput = [
-        //         "status" => "ACTIVE",
-        //         "trip_type" => null,
-        //         "trip_id" => null
-        //     ];
-        // }
-        // $driverStatus->update($driverStatusInput);
-
-        $usersStatusInput = [
-            "is_absent" => false, 
-            "is_arrived" => false, 
-            "is_picked" => false
-        ];
-
-        $trip->update($tripInput);
-        $usersStatus->update($usersStatusInput);
-
-        return $trip;
-    }
-
     public function inviteUser($_, array $args)
     {
         $arr = [
@@ -136,11 +93,9 @@ class BusinessTripResolver
             ->whereIn('id', $args['user_id'])
             ->get();
         $phones = $users->pluck('phone')->toArray();
-        // $emails = $users->pluck('email')->toArray();
 
         $message = 'Dear valued user, kindly use this code to confirm your subscription: ' . $args['subscription_code'];
         
-        // Mail::bcc($emails)->send(new DefaultMail($message, "Trip Subscription Code"));
         SendOtp::dispatch(implode(",", $phones), $message); 
 
         return [
@@ -189,7 +144,7 @@ class BusinessTripResolver
             $users = BusinessTripUser::where('trip_id', $args['trip_id'])
                 ->whereIn('user_id', $args['user_id']);
 
-            if (collect($users)->isNotEmpty()) {
+            if ($users->count()) {
                 $schoolRequests = $users->get()
                     ->where('creator_type', 'App\\SchoolRequest')
                     ->pluck('creator_id')

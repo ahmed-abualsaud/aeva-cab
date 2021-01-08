@@ -146,8 +146,6 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripResolver@addSchoolRequest")
   updateBusinessTrip(input: UpdateBusinessTripInput! @spread): BusinessTrip 
     @field(resolver: "BusinessTripResolver@update")
-  updateBusinessTripStatus(input: UpdateBusinessTripInput! @spread): BusinessTrip 
-    @field(resolver: "BusinessTripResolver@updateStatus")
   deleteBusinessTrip(id: ID!): BusinessTrip @delete
 
   # Cab Request
@@ -191,23 +189,23 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   deleteBusinessTripUser(input: DeleteBusinessTripUserInput! @spread): DefaultResponse
     @field(resolver: "BusinessTripResolver@unsubscribeUser") 
 
-  # Business Trip Log
+  # Business Trip Event
   startTrip(input: StartTripInput! @spread): BusinessTrip 
-    @field(resolver: "BusinessTripLogResolver@startTrip")
+    @field(resolver: "BusinessTripEventResolver@startTrip")
   endTrip(input: EndTripInput! @spread): String
-    @field(resolver: "BusinessTripLogResolver@endTrip")
+    @field(resolver: "BusinessTripEventResolver@endTrip")
   updateBusinessTripDriverLocation(input: UpdateBusinessTripDriverLocationInput! @spread): String 
-    @field(resolver: "BusinessTripLogResolver@updateDriverLocation")
+    @field(resolver: "BusinessTripEventResolver@updateDriverLocation")
   nearYou(input: NearYouInput! @spread): String
-    @field(resolver: "BusinessTripLogResolver@nearYou")
+    @field(resolver: "BusinessTripEventResolver@nearYou")
   changeBusinessTripUserStatus(input: ChangeBusinessTripUserStatusInput! @spread): String
-    @field(resolver: "BusinessTripLogResolver@changeUserStatus")
+    @field(resolver: "BusinessTripEventResolver@changeUserStatus")
   pickUsers(input: SelectUsersInput! @spread): String
-    @field(resolver: "BusinessTripLogResolver@pickUsers")
+    @field(resolver: "BusinessTripEventResolver@pickUsers")
   dropUsers(input: SelectUsersInput! @spread): String
-    @field(resolver: "BusinessTripLogResolver@dropUsers")
-  deleteBusinessTripLog(log_id: [String!]!): Boolean
-    @field(resolver: "BusinessTripLogResolver@deleteBusinessTripLog")
+    @field(resolver: "BusinessTripEventResolver@dropUsers")
+  deleteBusinessTripEvent(log_id: [String!]!): Boolean
+    @field(resolver: "BusinessTripEventResolver@destroy")
 
   # Communication
   sendDirectMessage(input: SendDirectMessageInput! @spread): String
@@ -383,19 +381,15 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   businessTripUsers(input: GetBusinessTripUsersInput! @spread): [BusinessTripUserWithStationResponse] 
     @field(resolver: "BusinessTripResolver@users")
  
-  # Business Trip Log
+  # Business Trip Event
   driverLocation(driver_id: ID!): LocationCoordinatesResponse
-    @field(resolver: "BusinessTripLogResolver@driverLocation")
+    @field(resolver: "BusinessTripEventResolver@driverLocation")
   arrivedAndPickedUsers(trip_id: ID, station_id: ID): [User]
-    @field(resolver: "BusinessTripLogResolver@arrivedAndPickedUsers")
-  businessTripLogs(trip_id: ID!, user_id: ID, period: String): [BusinessTripLogsResponse]
-    @paginate(builder: "App\\TripLog@index")
-  businessTripLog(log_id: String!, user_id: ID): [BusinessTripLogResponse]
-    @field(resolver: "BusinessTripLogResolver@show")
+    @field(resolver: "BusinessTripEventResolver@arrivedAndPickedUsers")
   businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
-    @field(resolver: "BusinessTripLogResolver@businessTripSubscribers")
-  businessTripEvents(period: String): [BusinessTripEventsResponse]
-    @paginate(builder: "App\\TripLog@events")
+    @field(resolver: "BusinessTripEventResolver@businessTripSubscribers")
+  businessTripEvents(trip_id: ID, period: String): [BusinessTripEvent]
+    @paginate(scopes: ["filter"])
  
   # Notification
   unreadNotifications: [Notification]!
@@ -438,7 +432,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import role.graphql
 #import admin.graphql
 #import communication.graphql
-#import businessTripLog.graphql
+#import businessTripEvent.graphql
 #import document.graphql
 #import promoCode.graphql
 #import cabRequest.graphql

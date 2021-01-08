@@ -4,10 +4,9 @@ namespace App\GraphQL\Queries;
 
 use App\User;
 use App\Driver;
-use App\TripLog;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class BusinessTripLogResolver
+class BusinessTripEventResolver
 {
     /**
      * @param  null  $_
@@ -57,27 +56,6 @@ class BusinessTripLogResolver
             }
 
         return $users->get();
-    }
-
-    public function show($_, array $args)
-    {
-        $log = TripLog::selectRaw('LOWER(REPLACE(trip_logs.status, "_", " ")) as status, trip_logs.latitude, trip_logs.longitude, DATE_FORMAT(trip_logs.created_at, "%l:%i %p") as time, users.name as user');
-
-            if (array_key_exists('user_id', $args) && $args['user_id']) {
-                $log = $log->join('users', function ($join) use ($args) {
-                    $join->on('users.id', '=', 'trip_logs.user_id')
-                        ->where('trip_logs.user_id', $args['user_id']);
-                });
-            } else {
-                $log = $log->leftJoin('users', 'users.id', '=', 'trip_logs.user_id');
-            }
-
-            
-            $log = $log->where('log_id', $args['log_id'])
-                ->orderBy('time')
-                ->get();
-
-        return $log; 
     }
 
     public function driverLocation($_, array $args)

@@ -272,7 +272,7 @@ class TripController extends Controller
 
             if(!empty($Jobs)) {
                 foreach ($Jobs as $key => $value) {
-                    $Jobs[$key]->static_map = StaticMapUrl::generate($value);
+                    $Jobs[$key]->static_map = StaticMapUrl::generatePolylines($value);
                 }
             }
 
@@ -293,7 +293,7 @@ class TripController extends Controller
 
         if(!empty($Jobs)){
             foreach ($Jobs as $key => $value) {
-                $Jobs[$key]->static_map = StaticMapUrl::generate($value);
+                $Jobs[$key]->static_map = StaticMapUrl::generatePolylines($value);
             }
         }
         return $Jobs;
@@ -589,7 +589,7 @@ class TripController extends Controller
             ->get();
         if(!empty($Jobs)) {
             foreach ($Jobs as $key => $value) {
-                $Jobs[$key]->static_map = StaticMapUrl::generate($value);
+                $Jobs[$key]->static_map = StaticMapUrl::generatePolylines($value);
             }
         }
         return $Jobs;
@@ -601,7 +601,7 @@ class TripController extends Controller
             $userRequest = CabRequest::ProviderUpcomingRequest(auth('driver')->user()->id)->get();
             if(!empty($userRequest)) {
                 foreach ($userRequest as $key => $value) {
-                    $userRequest[$key]->static_map = StaticMapUrl::generate($value);
+                    $userRequest[$key]->static_map = StaticMapUrl::generatePolylines($value);
                 }
             }
             return $userRequest;
@@ -624,7 +624,7 @@ class TripController extends Controller
             ->get();
         if(!empty($Jobs)) {
             foreach ($Jobs as $key => $value) {
-                $Jobs[$key]->static_map = StaticMapUrl::generate($value);
+                $Jobs[$key]->static_map = StaticMapUrl::generatePolylines($value);
             }
         }
         return $Jobs;
