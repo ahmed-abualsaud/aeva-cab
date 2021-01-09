@@ -20,9 +20,8 @@ class CreateBusinessTripAttendanceTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->boolean('status')->default(true);
 
-            $table->unique(['trip_id', 'date']);
+            $table->index(['trip_id', 'date']);
             $table->index('user_id');
-            $table->index('date');
 
             $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

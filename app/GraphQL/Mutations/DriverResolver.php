@@ -5,7 +5,6 @@ namespace App\GraphQL\Mutations;
 use App\Driver;
 use App\DriverVehicle;
 use App\Traits\HandleUpload;
-use Illuminate\Support\Arr;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -78,19 +77,6 @@ class DriverResolver
         {
             $driver->update(['device_id' => $args['device_id']]);
         }
-
-        // if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
-        //     try {
-        //         DeviceToken::where('device_id', $args['device_id'])
-        //             ->where('tokenable_type', 'App\Driver')
-        //             ->firstOrFail();
-        //     } catch (ModelNotFoundException $e) {
-        //         $tokenInput = collect($args)->only(['platform', 'device_id'])->toArray();
-        //         $tokenInput['tokenable_id'] = $driver->id;
-        //         $tokenInput['tokenable_type'] = 'App\Driver';
-        //         DeviceToken::create($tokenInput);
-        //     }
-        // }
 
         return [
             'access_token' => $token,

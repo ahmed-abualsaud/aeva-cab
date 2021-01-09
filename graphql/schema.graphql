@@ -2,7 +2,8 @@ scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
 
-# Mutations that do not require Auth
+# -- MUTATIONS --
+
 type Mutation {
   # Admin Auth
   adminLogin(input: LoginInput! @spread): AdminAuthPayload! 
@@ -31,19 +32,11 @@ type Mutation {
     @field(resolver: "PartnerResolver@login")
 }
 
-# Mutations that require Auth
-extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
-  # User
-  userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
-    @field(resolver: "UserResolver@phoneVerification")
-  updateUser(input: UpdateUserInput! @spread): UserPayload 
-    @field(resolver: "UserResolver@update") @updateUserValidation
-  deleteUser(id: [ID!]!): Boolean
-    @field(resolver: "UserResolver@destroy")
-  changeUserPassword(input: ChangePasswordInput @spread): DefaultResponse 
-    @field(resolver: "UserResolver@updatePassword")
-  createMultipleUsers(input: CreateMultipleUsersInput! @spread): Boolean 
-    @field(resolver: "UserResolver@createMultipleUsers")
+# Admin Guard
+extend type Mutation @guard(with: ["admin"]) {
+  # Driver
+  deleteDriver(id: [ID!]!): Boolean
+    @field(resolver: "DriverResolver@destroy")
 
   # Fleet
   createFleet(input: CreateFleetInput! @spread): Fleet
@@ -51,14 +44,6 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   updateFleet(input: UpdateFleetInput! @spread): Fleet 
     @field(resolver: "FleetResolver@update") @updateFleetValidation
   deleteFleet(id: ID!): Fleet @delete
-
-  # Driver
-  updateDriver(input: UpdateDriverInput! @spread): Driver 
-    @field(resolver: "DriverResolver@update") @updateDriverValidation
-  deleteDriver(id: [ID!]!): Boolean
-    @field(resolver: "DriverResolver@destroy")
-  changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
-    @field(resolver: "DriverResolver@updatePassword")
 
   # Admin
   createAdmin(input: CreateAdminInput! @spread): Admin
@@ -121,11 +106,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Partner
   createPartner(input: CreatePartnerInput! @spread): Partner
     @field(resolver: "PartnerResolver@create")
-  updatePartner(input: UpdatePartnerInput! @spread): Partner 
-    @field(resolver: "PartnerResolver@update") @updatePartnerValidation
   deletePartner(id: ID!): Partner @delete
-  changePartnerPassword(input: ChangePasswordInput @spread): String 
-    @field(resolver: "PartnerResolver@updatePassword")
 
   # Partner User
   createPartnerUser(input: PartnerUserInput! @spread): DefaultResponse
@@ -140,80 +121,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "PartnerResolver@unassignDriver")
 
   # Business Trip
-  createBusinessTrip(input: CreateBusinessTripInput! @spread): BusinessTrip 
-    @field(resolver: "BusinessTripResolver@create")
   addSchoolRequestToBusinessTrip(input: AddSchoolRequestToBusinessTripInput! @spread): Boolean 
     @field(resolver: "BusinessTripResolver@addSchoolRequest")
-  updateBusinessTrip(input: UpdateBusinessTripInput! @spread): BusinessTrip 
-    @field(resolver: "BusinessTripResolver@update")
-  deleteBusinessTrip(id: ID!): BusinessTrip @delete
 
-  # Cab Request
-  deleteCabRequest(id: ID!): CabRequest @delete
-
-  # Ondemand Request 
-  createOndemandRequest(input: CreateOndemandRequestInput! @spread): OndemandRequest 
-    @field(resolver: "OndemandRequestResolver@create")
-  updateOndemandRequest(input: UpdateOndemandRequestInput! @spread): OndemandRequest
-    @field(resolver: "OndemandRequestResolver@update")
-  deleteOndemandRequest(id: [ID!]!): Boolean
-    @field(resolver: "OndemandRequestResolver@destroy")
-
-  # Business Trip Station
-  createBusinessTripStation(input: CreateBusinessTripStationInput! @spread): 
-    BusinessTripStation @create
-  createBusinessTripStations(input: CreateBusinessTripStationsInput! @spread): [BusinessTripStation] 
-    @field(resolver: "BusinessTripStationResolver@create")
-  updateBusinessTripStation(input: UpdateBusinessTripStationInput! @spread): 
-    BusinessTripStation @update
-  updateStationsRoute(input: UpdateStationsRouteInput! @spread): Boolean 
-    @field(resolver: "BusinessTripStationResolver@updateRoute")
-  deleteBusinessTripStation(id: ID!): BusinessTripStation 
-    @field(resolver: "BusinessTripStationResolver@destroy") 
-  acceptBusinessTripStation(input: AcceptBusinessTripStationInput! @spread): BusinessTripStation
-    @field(resolver: "BusinessTripStationResolver@acceptStation") 
-
-  # Business Trip Station User
-  createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
-    @field(resolver: "BusinessTripStationResolver@assignUser")
-  createBusinessTripStationUsers(input: CreateBusinessTripStationUsersInput! @spread): DefaultResponse 
-    @field(resolver: "BusinessTripStationResolver@assignUsers")
-  deleteBusinessTripStationUsers(input: DeleteBusinessTripStationUsersInput! @spread): DefaultResponse 
-    @field(resolver: "BusinessTripStationResolver@unassignUsers")
-
-  # Business Trip User
-  createBusinessTripUser(input: CreateBusinessTripUserInput! @spread): DefaultResponse 
-    @field(resolver: "BusinessTripResolver@inviteUser")
-  confirmBusinessTripUser(input: ConfirmBusinessTripUserInput! @spread): BusinessTrip
-    @field(resolver: "BusinessTripResolver@subscribeUser")
-  deleteBusinessTripUser(input: DeleteBusinessTripUserInput! @spread): DefaultResponse
-    @field(resolver: "BusinessTripResolver@unsubscribeUser") 
-
-  # Business Trip Event
-  startTrip(input: StartTripInput! @spread): BusinessTrip 
-    @field(resolver: "BusinessTripEventResolver@startTrip")
-  endTrip(input: EndTripInput! @spread): String
-    @field(resolver: "BusinessTripEventResolver@endTrip")
-  updateBusinessTripDriverLocation(input: UpdateBusinessTripDriverLocationInput! @spread): String 
-    @field(resolver: "BusinessTripEventResolver@updateDriverLocation")
-  nearYou(input: NearYouInput! @spread): String
-    @field(resolver: "BusinessTripEventResolver@nearYou")
-  changeBusinessTripUserStatus(input: ChangeBusinessTripUserStatusInput! @spread): String
-    @field(resolver: "BusinessTripEventResolver@changeUserStatus")
-  pickUsers(input: SelectUsersInput! @spread): String
-    @field(resolver: "BusinessTripEventResolver@pickUsers")
-  dropUsers(input: SelectUsersInput! @spread): String
-    @field(resolver: "BusinessTripEventResolver@dropUsers")
-  deleteBusinessTripEvent(log_id: [String!]!): Boolean
-    @field(resolver: "BusinessTripEventResolver@destroy")
-
-  # Communication
-  sendDirectMessage(input: SendDirectMessageInput! @spread): String
-    @field(resolver: "CommunicationResolver@sendDirectMessage")
-  sendChatMessage(input: SendChatMessageInput! @spread): Message
-    @field(resolver: "CommunicationResolver@sendChatMessage")
-
-  # School
+  # School Request
   createSchoolZone(input: CreateSchoolZoneInput! @spread): SchoolZone 
     @create @createSchoolZoneValidation
   updateSchoolZone(input: UpdateSchoolZoneInput! @spread): SchoolZone 
@@ -232,11 +143,6 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @update @updateSchoolGradeValidation
   deleteSchoolGrade(id: ID!): SchoolGrade @delete
 
-  createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest @create
-  updateSchoolRequest(input: UpdateSchoolRequestInput! @spread): SchoolRequest @update
-  deleteSchoolRequest(id: [ID!]!): Boolean
-    @field(resolver: "SchoolRequestResolver@destroy")
-
   # Price Package
   createPricePackage(input: CreatePricePackageInput! @spread): PricePackage @create
   updatePricePackage(input: UpdatePricePackageInput! @spread): PricePackage @update
@@ -246,52 +152,164 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   createCity(input: CreateCityInput! @spread): City @create
   updateCity(input: UpdateCityInput! @spread): City @update @updateCityValidation
   deleteCity(id: ID!): City @delete
+} 
+
+# Admin|Partner Guard
+extend type Mutation @guard(with: ["admin", "partner"]) {
+  # User
+  createMultipleUsers(input: CreateMultipleUsersInput! @spread): Boolean 
+    @field(resolver: "UserResolver@createMultipleUsers")
+  deleteUser(id: [ID!]!): Boolean
+    @field(resolver: "UserResolver@destroy")
+
+  # Partner
+  changePartnerPassword(input: ChangePasswordInput @spread): String 
+    @field(resolver: "PartnerResolver@updatePassword")
+  updatePartner(input: UpdatePartnerInput! @spread): Partner 
+    @field(resolver: "PartnerResolver@update") @updatePartnerValidation
+
+  # Business Trip
+  createBusinessTrip(input: CreateBusinessTripInput! @spread): BusinessTrip 
+    @field(resolver: "BusinessTripResolver@create")
+  updateBusinessTrip(input: UpdateBusinessTripInput! @spread): BusinessTrip 
+    @field(resolver: "BusinessTripResolver@update")
+  deleteBusinessTrip(id: ID!): BusinessTrip @delete
+
+  # Business Trip Station
+  createBusinessTripStations(input: CreateBusinessTripStationsInput! @spread): [BusinessTripStation] 
+    @field(resolver: "BusinessTripStationResolver@create")
+  updateBusinessTripStation(input: UpdateBusinessTripStationInput! @spread): 
+    BusinessTripStation @update
+  updateStationsRoute(input: UpdateStationsRouteInput! @spread): Boolean 
+    @field(resolver: "BusinessTripStationResolver@updateRoute")
+  deleteBusinessTripStation(id: ID!): BusinessTripStation 
+    @field(resolver: "BusinessTripStationResolver@destroy") 
+  acceptBusinessTripStation(input: AcceptBusinessTripStationInput! @spread): BusinessTripStation
+    @field(resolver: "BusinessTripStationResolver@acceptStation") 
+
+  # Business Trip Station User
+  createBusinessTripStationUsers(input: CreateBusinessTripStationUsersInput! @spread): DefaultResponse 
+    @field(resolver: "BusinessTripStationResolver@assignUsers")
+  deleteBusinessTripStationUsers(input: DeleteBusinessTripStationUsersInput! @spread): DefaultResponse 
+    @field(resolver: "BusinessTripStationResolver@unassignUsers")
+
+  # Business Trip User
+  createBusinessTripUser(input: CreateBusinessTripUserInput! @spread): DefaultResponse 
+    @field(resolver: "BusinessTripResolver@inviteUser")
+
+  # Business Trip Event
+  deleteBusinessTripEvent(log_id: [String!]!): Boolean
+    @field(resolver: "BusinessTripEventResolver@destroy")
+
+  # Communication
+  sendDirectMessage(input: SendDirectMessageInput! @spread): String
+    @field(resolver: "CommunicationResolver@sendDirectMessage")
+}
+
+# Admin|User Guard
+extend type Mutation @guard(with: ["admin", "user"]) {
+  # User
+  userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
+    @field(resolver: "UserResolver@phoneVerification")
+  changeUserPassword(input: ChangePasswordInput @spread): DefaultResponse 
+    @field(resolver: "UserResolver@updatePassword")
+
+  # Ondemand Request 
+  createOndemandRequest(input: CreateOndemandRequestInput! @spread): OndemandRequest 
+    @field(resolver: "OndemandRequestResolver@create")
+  updateOndemandRequest(input: UpdateOndemandRequestInput! @spread): OndemandRequest
+    @field(resolver: "OndemandRequestResolver@update")
+  deleteOndemandRequest(id: [ID!]!): Boolean
+    @field(resolver: "OndemandRequestResolver@destroy")
+
+  # Business Trip Event
+  changeBusinessTripUserStatus(input: ChangeBusinessTripUserStatusInput! @spread): String
+    @field(resolver: "BusinessTripEventResolver@changeUserStatus")
+
+  # School
+  createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest @create
+  updateSchoolRequest(input: UpdateSchoolRequestInput! @spread): SchoolRequest @update
+  deleteSchoolRequest(id: [ID!]!): Boolean
+    @field(resolver: "SchoolRequestResolver@destroy")
 
   # Business Trip Attendance
   createBusinessTripAttendance(input: CreateBusinessTripAttendanceInput! @spread): Boolean
     @field(resolver: "BusinessTripAttendanceResolver@create")
+}
 
-} 
-
-# Queries that require Auth
-type Query @guard(with: ["admin", "partner", "user", "driver"]) {
-  # User
-  userLiveBusinessTrips(user_id: ID!): [BusinessTrip]
-    @field(resolver: "BusinessTripResolver@userLiveTrips")
-  userSubscriptions(user_id: ID!): [BusinessTrip]
-    @field(resolver: "BusinessTripResolver@userSubscriptions")
-  userTrips(user_id: ID!, partner_id: ID, day: String): [BusinessTrip]
-    @field(resolver: "BusinessTripResolver@userTrips")
-  userTripPartners(user_id: ID!): [Partner]
-    @field(resolver: "BusinessTripResolver@userTripPartners")
-  userTripsByPartner(user_id: ID!, partner_id: ID!, day: String): [BusinessTrip]
-    @field(resolver: "BusinessTripResolver@userTripsByPartner")
-  users(searchFor: String, searchQuery: String): [User] 
-    @paginate(scopes: ["sort", "search"])
-  partnerUsers(partner_id: ID!, searchFor: String, searchQuery: String, assigned: Boolean): [User] 
-    @paginate(scopes: ["assignedOrNotAssigned", "search"])
-  user(id: ID @eq): User @find
-
-  # Fleet
-  fleets: [Fleet] @all
-  fleet(id: ID @eq): Fleet @find
-
+# Admin|Driver Guard
+extend type Mutation @guard(with: ["admin", "driver"]) {
   # Driver
-  drivers(fleet_id: ID, searchFor: String, searchQuery: String): [Driver] 
-    @paginate(scopes: ["filterByFleet", "search"])
-  driver(id: ID @eq): Driver @find
-  driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
-    @field(resolver: "BusinessTripResolver@driverLiveTrip")
-  driverLiveBusinessTrips(driver_id: ID!): [BusinessTrip]
-    @field(resolver: "BusinessTripResolver@driverLiveTrips")
-  driverTrips(driver_id: ID!, day: String): [BusinessTrip]
-    @field(resolver: "BusinessTripResolver@driverTrips")
-  driverBusinessTrips(driver_id: ID! @eq): [BusinessTrip] @all
+  updateDriver(input: UpdateDriverInput! @spread): Driver 
+    @field(resolver: "DriverResolver@update") @updateDriverValidation
+  changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
+    @field(resolver: "DriverResolver@updatePassword")
+
+  # Business Trip Event
+  startTrip(input: StartTripInput! @spread): BusinessTrip 
+    @field(resolver: "BusinessTripEventResolver@startTrip")
+  endTrip(input: EndTripInput! @spread): String
+    @field(resolver: "BusinessTripEventResolver@endTrip")
+  updateBusinessTripDriverLocation(input: UpdateBusinessTripDriverLocationInput! @spread): String 
+    @field(resolver: "BusinessTripEventResolver@updateDriverLocation")
+  nearYou(input: NearYouInput! @spread): String
+    @field(resolver: "BusinessTripEventResolver@nearYou")
+  pickUsers(input: SelectUsersInput! @spread): String
+    @field(resolver: "BusinessTripEventResolver@pickUsers")
+  dropUsers(input: SelectUsersInput! @spread): String
+    @field(resolver: "BusinessTripEventResolver@dropUsers")
+}
+
+# Admin|Partner|User Guard
+extend type Mutation @guard(with: ["admin", "partner", "user"]) {
+  # User
+  updateUser(input: UpdateUserInput! @spread): UserPayload 
+    @field(resolver: "UserResolver@update") @updateUserValidation
+
+  # Business Trip Station
+  createBusinessTripStation(input: CreateBusinessTripStationInput! @spread): 
+    BusinessTripStation @create
+
+  # Business Trip User
+  confirmBusinessTripUser(input: ConfirmBusinessTripUserInput! @spread): BusinessTrip
+    @field(resolver: "BusinessTripResolver@subscribeUser")
+  deleteBusinessTripUser(input: DeleteBusinessTripUserInput! @spread): DefaultResponse
+    @field(resolver: "BusinessTripResolver@unsubscribeUser")
+
+  # Business Trip Station User
+  createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
+    @field(resolver: "BusinessTripStationResolver@assignUser")
+}
+
+# Admin|Partner|User|Driver Guard
+extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
+  # Communication
+  sendChatMessage(input: SendChatMessageInput! @spread): Message
+    @field(resolver: "CommunicationResolver@sendChatMessage")
+}
+
+# -- QUERIES --
+
+# Admin Guard
+type Query @guard(with: ["admin"]) {
+  # Authenticated Admin
+  authAdmin: Admin @auth
 
   # Admin
   admins: [Admin] @all
   admin(id: ID @eq): Admin @find 
-  authAdmin: Admin @auth
+
+  # User
+  users(searchFor: String, searchQuery: String): [User] 
+    @paginate(scopes: ["sort", "search"])
+
+  # Driver
+  drivers(fleet_id: ID, searchFor: String, searchQuery: String): [Driver] 
+    @paginate(scopes: ["filterByFleet", "search"])
+
+  # Fleet
+  fleets: [Fleet] @all
+  fleet(id: ID @eq): Fleet @find
 
   # Role
   roles: [Role] @all
@@ -300,8 +318,6 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Vehicles
   vehicles: [Vehicle] @paginate
   vehicle(id: ID @eq): Vehicle @find
-  vehicleModelsByType(type_id: ID!): [VehicleModelsByTypeResponse!]
-    @field(resolver: "VehicleResolver@vehicleModelsByType")
 
   # Car Make
   carMakes: [CarMake] @all
@@ -313,26 +329,15 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   carMakeModels(make_id: ID @eq): [CarModel] @all
 
   # Car Type
-  carTypes(ondemand: Boolean): [CarType] @all(scopes: ["filter"])
   carType(id: ID @eq): CarType @find
 
   # Promo Code
   promoCodes: [PromoCode] @all
   promoCode(id: ID @eq): PromoCode @find
 
-  # Cab Request
-  cabRequests(status: String period: String): [CabRequest]
-    @paginate(scopes: ["filter"])
-  cabRequest(id: ID! @eq): CabRequest @find
-  cabRequestStatement(period: String): RequestStatsResponse
-    @field(resolver: "CabResolver@requestStatement")
-
   # Ondemand Request
   ondemandRequests(status: String period: String): [OndemandRequest]
     @paginate(scopes: ["filter"])
-  ondemandRequestsByUser(user_id: ID! @eq): [OndemandRequest] @all
-  ondemandRequest(id: ID, nav: Boolean): OndemandRequest 
-    @field(resolver: "OndemandRequestResolver")
   ondemandRequestsStats(status: String period: String): RequestStatsResponse
     @field(resolver: "OndemandRequestResolver@stats")
 
@@ -341,15 +346,55 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "DocumentResolver")
 
   # Driver Vehicle
-  driverAssignedVehicles(driver_id: ID!): [Vehicle] 
-    @field(resolver: "VehicleResolver@driverAssignedVehicles")
   driverNotAssignedVehicles(driver_id: ID!): [Vehicle] 
     @paginate(scopes: ["notAssigned"])
 
   # Partner
   partners: [Partner] @all
-  partner(id: ID @eq): Partner @find
+
+  # Partner Driver
+  partnerNotAssignedDrivers(partner_id: ID!, searchFor: String, searchQuery: String): [Driver] 
+    @paginate(scopes: ["notAssigned", "search"])
+
+  # Business Trip
+  businessLiveTrips: [BusinessTrip] @all(scopes: ["live"])
+
+  # School
+  schoolZones: [SchoolZone] @all
+  schoolZone(id: ID! @eq): SchoolZone @find
+  school(id: ID! @eq): School @find
+  schoolGrades(school_id: ID! @eq): [SchoolGrade] @all
+  schoolGrade(id: ID! @eq): SchoolGrade @find
+  schoolRequests(zone_id: [ID], limit: ID!): [SchoolRequest] @all(scopes: ["zone"])
+  schoolRequestsArchive: [SchoolRequest] @paginate(scopes: ["archive"])
+}
+
+# Partner Guard
+extend type Query @guard(with: ["partner"]) {
+  # Authenticated Partner
   authPartner: Partner @auth
+}
+
+# User Guard
+extend type Query @guard(with: ["user"]) {
+  # Authenticated User
+  authUser: User @auth
+}
+
+# Driver Guard
+extend type Query @guard(with: ["driver"]) {
+  # Authenticated Driver
+  authDriver: Driver @auth
+}
+
+# Admin|Partner Guard
+extend type Query @guard(with: ["admin", "partner"]) {
+  # User
+  partnerUsers(partner_id: ID!, searchFor: String, searchQuery: String, assigned: Boolean): [User] 
+    @paginate(scopes: ["assignedOrNotAssigned", "search"])
+
+  # Partner
+  partner(id: ID @eq): Partner @find
   partnerLiveTrips(partner_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@partnerLiveTrips")
   partnerAvailableLines(partner_id: ID! @eq trip_id: ID!): [BusinessTrip] 
@@ -358,18 +403,15 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Partner Driver 
   partnerAssignedDrivers(partner_id: ID!): [Driver] 
     @field(resolver: "PartnerResolver@partnerAssignedDrivers")
-  partnerNotAssignedDrivers(partner_id: ID!, searchFor: String, searchQuery: String): [Driver] 
-    @paginate(scopes: ["notAssigned", "search"])
+
+  # Driver Vehicle
+  driverAssignedVehicles(driver_id: ID!): [Vehicle] 
+    @field(resolver: "VehicleResolver@driverAssignedVehicles")
 
   # Business Trip
   businessTrips(partner_id: ID, searchFor: String, searchQuery: String): [BusinessTrip] 
     @paginate(scopes: ["partner", "search"])
   partnerBusinessTrips(partner_id: ID! @eq): [BusinessTrip] @all
-  businessLiveTrips: [BusinessTrip] @all(scopes: ["live"])
-  trip(id: ID @eq): BusinessTrip @find
-
-  # Business Trip Station
-  businessTripStations(trip_id: ID! @eq): [BusinessTripStation] @all
 
   # Business Trip Station User
   businessTripStationAssignedUsers(station_id: ID!): [User] 
@@ -380,34 +422,28 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Business Trip User
   businessTripUsers(input: GetBusinessTripUsersInput! @spread): [BusinessTripUserWithStationResponse] 
     @field(resolver: "BusinessTripResolver@users")
- 
+
   # Business Trip Event
-  driverLocation(driver_id: ID!): LocationCoordinatesResponse
-    @field(resolver: "BusinessTripEventResolver@driverLocation")
-  arrivedAndPickedUsers(trip_id: ID, station_id: ID): [User]
-    @field(resolver: "BusinessTripEventResolver@arrivedAndPickedUsers")
-  businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
-    @field(resolver: "BusinessTripEventResolver@businessTripSubscribers")
   businessTripEvents(trip_id: ID, period: String): [BusinessTripEvent]
     @paginate(scopes: ["filter"])
- 
-  # Notification
-  unreadNotifications: [Notification]!
-    @field(resolver: "NotificationResolver@unreadNotifications")
+}
 
-  # Communication
-  chatMessages(trip_id: String!, trip_type: String!): [Message] 
-    @field(resolver: "CommunicationResolver@chatMessages")
+# Admin|User Guard
+extend type Query @guard(with: ["admin", "user"]) {
+  # Car Type
+  carTypes(ondemand: Boolean): [CarType] @all(scopes: ["filter"])
 
-  # School
-  schoolZones: [SchoolZone] @all
-  schoolZone(id: ID! @eq): SchoolZone @find
+  # Vehicle Model
+  vehicleModelsByType(type_id: ID!): [VehicleModelsByTypeResponse!]
+    @field(resolver: "VehicleResolver@vehicleModelsByType")
+
+  # Ondemand Request
+  ondemandRequestsByUser(user_id: ID! @eq): [OndemandRequest] @all
+  ondemandRequest(id: ID, nav: Boolean): OndemandRequest 
+    @field(resolver: "OndemandRequestResolver")
+
+  # School Request
   schools(zone_id: ID, city_id: ID): [School] @all(scopes: ["filter"])
-  school(id: ID! @eq): School @find
-  schoolGrades(school_id: ID! @eq): [SchoolGrade] @all
-  schoolGrade(id: ID! @eq): SchoolGrade @find
-  schoolRequests(zone_id: [ID], limit: ID!): [SchoolRequest] @all(scopes: ["zone"])
-  schoolRequestsArchive: [SchoolRequest] @paginate(scopes: ["archive"])
   schoolRequest(id: ID! @eq): SchoolRequest @find
   schoolRequestsByUser(user_id: ID! @eq): [SchoolRequest] @all
 
@@ -416,6 +452,56 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # City
   cities: [City] @all
+}
+
+# Admin|Partner|User Guard
+extend type Query @guard(with: ["admin", "partner", "user"]) {
+  # User
+  userLiveBusinessTrips(user_id: ID!): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@userLiveTrips")
+  userSubscriptions(user_id: ID!): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@userSubscriptions")
+  userTrips(user_id: ID!, partner_id: ID, day: String): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@userTrips")
+  userTripPartners(user_id: ID!): [Partner]
+    @field(resolver: "BusinessTripResolver@userTripPartners")
+  userTripsByPartner(user_id: ID!, partner_id: ID!, day: String): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@userTripsByPartner")
+  user(id: ID @eq): User @find
+}
+
+# Admin|Partner|Driver Guard
+extend type Query @guard(with: ["admin", "partner", "driver"]) {
+  # Driver
+  driver(id: ID @eq): Driver @find
+  driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
+    @field(resolver: "BusinessTripResolver@driverLiveTrip")
+  driverLiveBusinessTrips(driver_id: ID!): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@driverLiveTrips")
+  driverTrips(driver_id: ID!, day: String): [BusinessTrip]
+    @field(resolver: "BusinessTripResolver@driverTrips")
+  driverBusinessTrips(driver_id: ID! @eq): [BusinessTrip] @all
+}
+
+# Admin|Partner|User|Driver Guard
+extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
+  # Business Trip
+  trip(id: ID @eq): BusinessTrip @find
+
+  # Business Trip Station
+  businessTripStations(trip_id: ID! @eq): [BusinessTripStation] @all
+
+  # Business Trip Event
+  driverLocation(driver_id: ID!): LocationCoordinatesResponse
+    @field(resolver: "BusinessTripEventResolver@driverLocation")
+  arrivedAndPickedUsers(trip_id: ID, station_id: ID): [User]
+    @field(resolver: "BusinessTripEventResolver@arrivedAndPickedUsers")
+  businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
+    @field(resolver: "BusinessTripEventResolver@businessTripSubscribers")
+
+  # Communication
+  chatMessages(trip_id: String!, trip_type: String!): [Message] 
+    @field(resolver: "CommunicationResolver@chatMessages")
 }
 
 #import fleet.graphql 
@@ -435,9 +521,7 @@ type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import businessTripEvent.graphql
 #import document.graphql
 #import promoCode.graphql
-#import cabRequest.graphql
 #import ondemandRequest.graphql
-#import notification.graphql
 #import school.graphql
 #import city.graphql
 #import pricePackage.graphql

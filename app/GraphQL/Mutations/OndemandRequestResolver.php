@@ -79,17 +79,14 @@ class OndemandRequestResolver
             }
 
             if ($args['status'] !== 'CANCELLED') {
-                $token = User::where('id', $request->user_id)
-                    ->select('device_id')
-                    ->pluck('device_id')
-                    ->toArray();
-    
                 $responseTitle = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']);
                 $responseMsg = $responseTitle;
                 if (array_key_exists('response', $args) && $args['response']) 
                     $responseMsg .= '. '. $args['response'];
-    
-                SendPushNotification::dispatch($token, $responseMsg);
+                
+                $token = User::select('device_id')->find($request->user_id)->device_id;
+                if ($token)
+                    SendPushNotification::dispatch($token, $responseMsg);
                 
             } else {
                 $title = "On-Demand Request Cancelled";

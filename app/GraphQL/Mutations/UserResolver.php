@@ -64,10 +64,6 @@ class UserResolver
             }
         }
 
-        // if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
-        //     $this->createDeviceToken($_, $args, $user->id);
-        // }
-
         $token = null;
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $this->createPartnerUser($args['partner_id'], $user->id);
@@ -219,19 +215,6 @@ class UserResolver
 
         if ($updateData) $user->update($updateData);
 
-        // if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
-        //     if ($user->device_id != $args['device_id']) {
-        //         $user->update(['device_id' => $args['device_id']]);
-        //     }
-        //     try {
-        //         DeviceToken::where('device_id', $args['device_id'])
-        //             ->where('tokenable_type', 'App\User')
-        //             ->firstOrFail();
-        //     } catch (ModelNotFoundException $e) {
-        //         $this->createDeviceToken($_, $args, $user->id);
-        //     }
-        // }
-
         return [
             'access_token' => $token,
             'user' => $user
@@ -279,19 +262,6 @@ class UserResolver
         }
 
         if ($updateData) $user->update($updateData);
-
-        // if (array_key_exists('device_id', $args) && array_key_exists('platform', $args)) {
-        //     if ($user->device_id != $args['device_id']) {
-        //         $user->update(['device_id' => $args['device_id']]);
-        //     }
-        //     try {
-        //         DeviceToken::where('device_id', $args['device_id'])
-        //             ->where('tokenable_type', 'App\User')
-        //             ->firstOrFail();
-        //     } catch (ModelNotFoundException $e) {
-        //         $this->createDeviceToken($_, $args, $user->id);
-        //     }
-        // }
 
         Auth::onceUsingId($user->id);
 
@@ -364,12 +334,4 @@ class UserResolver
             'subscription_verified_at' => now()
         ]);
     }
-
-    // protected function createDeviceToken($_, $args, $user_id)
-    // {
-    //     $tokenInput = collect($args)->only(['platform', 'device_id'])->toArray();
-    //     $tokenInput['tokenable_id'] = $user_id;
-    //     $tokenInput['tokenable_type'] = 'App\User';
-    //     DeviceToken::create($tokenInput);
-    // }
 }

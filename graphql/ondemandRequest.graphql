@@ -79,3 +79,13 @@ type OndemandRequestLine {
   from_address: String
   to_address: String
 }
+
+type RequestStatsResponse {
+  count: Int
+  requests: [RequestGroup]
+}
+
+type RequestGroup {
+  date: String
+  count: Int
+}
