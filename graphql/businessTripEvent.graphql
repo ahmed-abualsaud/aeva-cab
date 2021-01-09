@@ -49,6 +49,12 @@ type BusinessTripEvent {
 }
 
 type Content {
-  started_at: DateTime
-  ended_at: DateTime
+  started: EventObj
+  ended: EventObj
+}
+
+type EventObj {
+  at: DateTime
+  lat: String
+  lng: String
 }

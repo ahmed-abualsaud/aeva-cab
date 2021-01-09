@@ -16,7 +16,7 @@ class CreateBusinessTripEventsTable extends Migration
         Schema::create('business_trip_events', function (Blueprint $table) {
             $table->string('log_id');
             $table->unsignedBigInteger('trip_id');
-            $table->text('content')->nullabel();
+            $table->text('content');
             $table->text('map_url')->nullabel();
             $table->timestamps();
 

@@ -29,7 +29,13 @@ class BusinessTripEventResolver
             $input = [
                 'trip_id' => $args['trip_id'],
                 'log_id' => $log_id,
-                'content' => [ 'started_at' => date("Y-m-d H:i:s") ]
+                'content' => [ 
+                    'started' => [
+                        'at' => date("Y-m-d H:i:s"),
+                        'lat' => $args['latitude'],
+                        'lng' => $args['longitude']
+                    ]
+                ]
             ];
             BusinessTripEvent::create($input);
 
@@ -39,8 +45,6 @@ class BusinessTripEventResolver
 
             auth('driver')->user()
                 ->update(['latitude' => $args['latitude'], 'longitude' => $args['longitude']]);
-
-            $trip->update(['status' => true, 'log_id' => $log_id]);
 
             SendPushNotification::dispatch(
                 $this->getUsersTokens($trip->id, null, null), 
@@ -52,6 +56,8 @@ class BusinessTripEventResolver
                 $trip, 
                 ['status' => 'STARTED', 'log_id' => $log_id]
             );
+
+            $trip->update(['status' => true, 'log_id' => $log_id]);
             
         } catch (\Exception $e) {
             throw new CustomException($e->getMessage());
@@ -150,31 +156,42 @@ class BusinessTripEventResolver
             if (!$trip->status) 
                 throw new \Exception('This trip has already been ended!');
 
-            $locations = BusinessTripEntry::where('log_id', $trip->log_id);
-            if ($locations->count()) {
-                foreach($locations->get() as $loc) $path[] = $loc->latitude.','.$loc->longitude;
-                $map_url = StaticMapUrl::generatePath(implode('|', $path));
-                $updatedData['map_url'] = $map_url;
-                $locations->delete();
-            }
+            $event = BusinessTripEvent::find($trip->log_id);
 
-            $log = BusinessTripEvent::where('log_id', $trip->log_id)->first();
-            if ($log) {
-                $updatedData['content'] = array_merge($log->content, ['ended_at' => date("Y-m-d H:i:s")]);
-                $log->update($updatedData);
+            if ($event) {
+                
+                $path[] = $event->content['started']['lat'].','.$event->content['started']['lng'];
+
+                $locations = BusinessTripEntry::where('log_id', $trip->log_id);
+                if ($locations->count()) {
+                    foreach($locations->get() as $loc) $path[] = $loc->latitude.','.$loc->longitude;
+                    $locations->delete();
+                }
+            
+                $ended = ['at' => date("Y-m-d H:i:s")];
+
+                if (array_key_exists('latitude', $args)) {
+                    $path[] = $args['latitude'].','.$args['longitude'];
+                    $ended['lat'] = $args['latitude'];
+                    $ended['lng'] = $args['longitude'];
+                    $this->broadcastTripStatus(
+                        $trip, 
+                        ['status' => 'ENDED', 'log_id' => $trip->log_id]
+                    );
+                }
+
+                $map_url = StaticMapUrl::generatePath(implode('|', $path));
+                $updatedData = [
+                    'map_url' => $map_url,
+                    'content' => array_merge($event->content, ['ended' => $ended])
+                ];
+                $event->update($updatedData);
             }
 
             $this->updateUserStatus(
                 $args['trip_id'],
                 ['is_picked' => false, 'is_arrived' => false, 'is_absent' => false]
             );
-
-            if (array_key_exists('log_id', $args)) { 
-                $this->broadcastTripStatus(
-                    $trip, 
-                    ['status' => 'ENDED', 'log_id' => $trip->log_id]
-                );
-            }
 
             $trip->update(['status' => false, 'log_id' => null]);
 
