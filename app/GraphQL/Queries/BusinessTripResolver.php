@@ -133,7 +133,7 @@ class BusinessTripResolver
                 $join->on('business_trips.id', '=', 'business_trip_attendance.trip_id')
                     ->where('business_trip_attendance.user_id', $args['user_id'])
                     ->where('business_trip_attendance.status', false)
-                    ->where('business_trip_attendance.date', $date);
+                    ->whereDate('business_trip_attendance.date', $date);
             })
             ->get();
 

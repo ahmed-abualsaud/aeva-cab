@@ -392,6 +392,8 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # User
   partnerUsers(partner_id: ID!, searchFor: String, searchQuery: String, assigned: Boolean): [User] 
     @paginate(scopes: ["assignedOrNotAssigned", "search"])
+  businessTripUserAttendance(trip_id: ID!, date: Date!): [BusinessTripUserAttendance]
+    @field(resolver: "BusinessTripAttendanceResolver")
 
   # Partner
   partner(id: ID @eq): Partner @find

@@ -4,3 +4,11 @@ input CreateBusinessTripAttendanceInput {
   user_id: ID! @rules(apply: ["required"])
   status: Boolean
 }
+
+type BusinessTripUserAttendance {
+  id: ID
+  name: String
+  phone: String
+  avatar: String
+  attendance: Boolean
+}
