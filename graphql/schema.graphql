@@ -284,8 +284,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
 # Admin|Partner|User|Driver Guard
 extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Communication
-  sendChatMessage(input: SendChatMessageInput! @spread): Message
+  sendChatMessage(input: SendChatMessageInput! @spread): BusinessTripChat
     @field(resolver: "CommunicationResolver@sendChatMessage")
+  sendBusinessTripChatMessage(input: SendBusinessTripChatMessageInput! @spread): BusinessTripChat
+    @field(resolver: "CommunicationResolver@sendBusinessTripChatMessage")
 }
 
 # -- QUERIES --
@@ -502,8 +504,10 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripEventResolver@businessTripSubscribers")
 
   # Communication
-  chatMessages(trip_id: String!, trip_type: String!): [Message] 
+  chatMessages(trip_id: String!, trip_type: String!): [BusinessTripChat] 
     @field(resolver: "CommunicationResolver@chatMessages")
+  buisnessTripChatMessages(log_id: String!): [BusinessTripChat] 
+    @field(resolver: "CommunicationResolver@buisnessTripChatMessages")
 }
 
 #import fleet.graphql 

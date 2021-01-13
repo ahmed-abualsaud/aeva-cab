@@ -15,7 +15,16 @@ input SendChatMessageInput {
   message: String!
 }
 
-type Message {
+input SendBusinessTripChatMessageInput {
+  sender_type: String! @rules(apply: ["required"])
+  sender_id: ID! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
+  message: String! @rules(apply: ["required"])
+  driver_id: ID
+}
+
+type BusinessTripChat {
   id: ID
   message: String
   created_at: String

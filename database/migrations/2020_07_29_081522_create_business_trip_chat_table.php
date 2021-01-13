@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMessagesTable extends Migration
+class CreateBusinessTripChatTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,14 @@ class CreateMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('business_trip_chat', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('log_id');
             $table->morphs('sender');
-            $table->string('trip_type');
-            $table->string('trip_id');
             $table->string('message');
             $table->timestamps();
 
-            $table->index(['trip_type', 'trip_id']);
+            $table->index('log_id');
         });
     }
 
@@ -32,6 +31,6 @@ class CreateMessagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('messages');
+        Schema::dropIfExists('business_trip_chat');
     }
 }

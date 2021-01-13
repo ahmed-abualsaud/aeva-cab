@@ -2,21 +2,21 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\User;
-use App\Driver;
-use App\BusinessTripEvent;
 use App\BusinessTrip;
 use App\BusinessTripUser;
 use App\BusinessTripEntry;
+use App\BusinessTripEvent;
 use Illuminate\Support\Str;
 use App\Helpers\StaticMapUrl;
 use App\BusinessTripAttendance;
 use App\Jobs\SendPushNotification;
+use App\Traits\HandleDeviceTokens;
 use App\Exceptions\CustomException;
 use App\Events\BusinessTripStatusChanged;
 
 class BusinessTripEventResolver
 {
+    use HandleDeviceTokens;
 
     public function startTrip($_, array $args)
     {
@@ -47,7 +47,7 @@ class BusinessTripEventResolver
                 ->update(['latitude' => $args['latitude'], 'longitude' => $args['longitude']]);
 
             SendPushNotification::dispatch(
-                $this->getUsersTokens($trip->id, null, null), 
+                $this->getUsersTokens($trip->id, null, null, null), 
                 $trip->name.' has been started.', 
                 'Trip Started!'
             );
@@ -70,7 +70,7 @@ class BusinessTripEventResolver
     {
         try {
             SendPushNotification::dispatch(
-                $this->getUsersTokens(null, $args['station_id'], null),
+                $this->getUsersTokens(null, $args['station_id'], null, null),
                 'Qruz captain is so close to you.',
                 'Stand By!'
             );
@@ -231,7 +231,7 @@ class BusinessTripEventResolver
                 $args['users']
             );
             SendPushNotification::dispatch(
-                $this->getUsersTokens(null, null, $args['users']),
+                $this->getUsersTokens(null, null, $args['users'], null),
                 $msg,
                 $title
             );
@@ -254,31 +254,5 @@ class BusinessTripEventResolver
             ]
         ];
         broadcast(new BusinessTripStatusChanged($data));
-    }
-
-    protected function getUsersTokens($trip_id = null, $station_id = null, $users = null)
-    {
-        if ($users) {
-            $tokens = User::select('device_id')
-                ->whereIn('id', $users)
-                ->pluck('device_id')
-                ->toArray();
-        } else {
-            $tokens = User::select('device_id')
-                ->Join('business_trip_users', 'business_trip_users.user_id', '=', 'users.id');
-            if ($trip_id) $tokens = $tokens->where('business_trip_users.trip_id', $trip_id);
-            if ($station_id) $tokens = $tokens->where('business_trip_users.station_id', $station_id);
-            $tokens = $tokens->where('business_trip_users.is_absent', false)
-                ->pluck('device_id')
-                ->toArray();
-        }
-
-        return $tokens;
-    }
-
-    protected function getDriverToken($driver_id)
-    {
-        return Driver::select('device_id')
-            ->find($driver_id)->device_id;
     }
 }

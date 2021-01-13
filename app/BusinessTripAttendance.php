@@ -10,7 +10,7 @@ class BusinessTripAttendance extends Model
 
     public $timestamps = false;
 
-    public $table = "business_trip_attendance";
+    public $table = 'business_trip_attendance';
 
     public function scopeAbsentUsers($query, $trip_id)
     {

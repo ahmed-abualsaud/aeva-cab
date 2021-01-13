@@ -39,8 +39,7 @@ class BusinessTrip extends Model
             ->selectRaw('business_trip_stations.*, business_trip_users.station_id AS is_my_station');
         }
 
-        $stations->whereNotNull('accepted_at')
-            ->orderBy('distance', 'ASC');
+        $stations->whereNotNull('accepted_at');
 
         return $stations;
     }
