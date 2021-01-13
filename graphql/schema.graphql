@@ -506,7 +506,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Communication
   chatMessages(trip_id: String!, trip_type: String!): [BusinessTripChat] 
     @field(resolver: "CommunicationResolver@chatMessages")
-  buisnessTripChatMessages(log_id: String!): [BusinessTripChat] 
+  businessTripChatMessages(log_id: String!): [BusinessTripChat] 
     @field(resolver: "CommunicationResolver@buisnessTripChatMessages")
 }
 
