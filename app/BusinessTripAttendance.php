@@ -8,11 +8,9 @@ class BusinessTripAttendance extends Model
 {
     protected $guarded = [];
 
-    public $timestamps = false;
-
     public $table = 'business_trip_attendance';
 
-    public function scopeAbsentUsers($query, $trip_id)
+    public function scopeWhereAbsent($query, $trip_id)
     {
         return $query->select('user_id')
             ->where('trip_id', $trip_id)

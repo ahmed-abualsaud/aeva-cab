@@ -11,12 +11,14 @@ use App\Helpers\StaticMapUrl;
 use App\BusinessTripAttendance;
 use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
+use App\Traits\HandleBusinessTripUserStatus;
 use App\Exceptions\CustomException;
 use App\Events\BusinessTripStatusChanged;
 
 class BusinessTripEventResolver
 {
     use HandleDeviceTokens;
+    use HandleBusinessTripUserStatus;
 
     public function startTrip($_, array $args)
     {
@@ -39,7 +41,7 @@ class BusinessTripEventResolver
             ];
             BusinessTripEvent::create($input);
 
-            $absent_users = BusinessTripAttendance::absentUsers($args['trip_id']);
+            $absent_users = BusinessTripAttendance::whereAbsent($args['trip_id']);
             if ($absent_users) 
                 $this->updateUserStatus($args['trip_id'], ['is_absent' => true], $absent_users);
 
@@ -200,21 +202,6 @@ class BusinessTripEventResolver
         }
 
         return 'Trip has been ended.';
-    }
-
-    protected function updateUserStatus($trip_id, $status, $users = null)
-    {
-        $usersStatus = BusinessTripUser::where('trip_id', $trip_id);
-
-        if ($users) {
-            if (is_array(($users))) {
-                $usersStatus->whereIn('user_id', $users);
-            } else {
-                $usersStatus->where('user_id', $users);
-            }
-        }
-
-        $usersStatus->update($status);
     }
 
     public function destroy($_, array $args)
