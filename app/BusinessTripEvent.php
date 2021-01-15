@@ -34,11 +34,16 @@ class BusinessTripEvent extends Model
         } else {
             $events = $query->selectRaw('
                 business_trips.id AS trip_id, business_trips.name AS trip_name,
-                partners.id AS partner_id, partners.name AS partner_name,
                 business_trip_events.log_id, business_trip_events.content, business_trip_events.map_url
             ')
-            ->join('business_trips', 'business_trips.id', '=', 'business_trip_events.trip_id')
-            ->join('partners', 'partners.id', '=', 'business_trips.partner_id');
+            ->join('business_trips', 'business_trips.id', '=', 'business_trip_events.trip_id');
+
+            if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+                $events = $events->where('business_trips.partner_id', '=', $args['partner_id']);
+            } else {
+                $events = $events->join('partners', 'partners.id', '=', 'business_trips.partner_id')
+                    ->addSelect('partners.id AS partner_id', 'partners.name AS partner_name');
+            }   
         }
 
         if (array_key_exists('period', $args) && $args['period']) {

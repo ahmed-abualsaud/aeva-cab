@@ -14,7 +14,7 @@ class BusinessTripAttendanceResolver
     {
         $users = User::select(
             'users.id', 'users.name', 'users.phone', 'users.avatar', 
-            'business_trip_attendance.status AS attendance'
+            'business_trip_attendance.status AS attendance', 'business_trip_attendance.comment'
             )
             ->join('business_trip_users', function ($join) use ($args) {
                 $join->on('business_trip_users.user_id', '=', 'users.id')

@@ -231,10 +231,6 @@ extend type Mutation @guard(with: ["admin", "user"]) {
   updateSchoolRequest(input: UpdateSchoolRequestInput! @spread): SchoolRequest @update
   deleteSchoolRequest(id: [ID!]!): Boolean
     @field(resolver: "SchoolRequestResolver@destroy")
-
-  # Business Trip Attendance
-  createBusinessTripAttendance(input: CreateBusinessTripAttendanceInput! @spread): Boolean
-    @field(resolver: "BusinessTripAttendanceResolver@create")
 }
 
 # Admin|Driver Guard
@@ -279,6 +275,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
   # Business Trip Station User
   createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
     @field(resolver: "BusinessTripStationResolver@assignUser")
+
+  # Business Trip Attendance
+  createBusinessTripAttendance(input: CreateBusinessTripAttendanceInput! @spread): Boolean
+    @field(resolver: "BusinessTripAttendanceResolver@create")
 }
 
 # Admin|Partner|User|Driver Guard
@@ -428,7 +428,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripResolver@users")
 
   # Business Trip Event
-  businessTripEvents(trip_id: ID, period: String): [BusinessTripEvent]
+  businessTripEvents(partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
     @paginate(scopes: ["filter"])
 }
 
