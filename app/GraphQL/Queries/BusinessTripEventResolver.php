@@ -2,8 +2,9 @@
 
 namespace App\GraphQL\Queries;
 
-use App\Exceptions\CustomException;
 use App\User;
+use App\BusinessTripUser;
+use App\Exceptions\CustomException;
 
 class BusinessTripEventResolver
 {
