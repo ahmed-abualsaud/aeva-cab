@@ -3,7 +3,6 @@
 namespace App\GraphQL\Mutations;
 
 use App\BusinessTrip;
-use App\BusinessTripUser;
 use App\BusinessTripEntry;
 use App\BusinessTripEvent;
 use Illuminate\Support\Str;
@@ -11,9 +10,9 @@ use App\Helpers\StaticMapUrl;
 use App\BusinessTripAttendance;
 use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
-use App\Traits\HandleBusinessTripUserStatus;
 use App\Exceptions\CustomException;
 use App\Events\BusinessTripStatusChanged;
+use App\Traits\HandleBusinessTripUserStatus;
 
 class BusinessTripEventResolver
 {
@@ -83,39 +82,18 @@ class BusinessTripEventResolver
         return "Selected station's users have been notified!";
     }
 
-    public function changeUserStatus($_, array $args)
+    public function changeUserStatus()
     {
-        try {
-            $user = auth('user')->user();
-            $input = collect($args)->except(['directive', 'driver_id'])->toArray();
-            $status = array();
-            $pushMsg = null;
-            switch ($args['status']) {
-                case 'ARRIVED':
-                    $input['status'] = 'ARRIVED';
-                    $status['is_arrived'] = true;
-                    $pushMsg = $user->name . ' has arrived at the station';
-                    break;
-                case 'ABSENT':
-                    $input['status'] = 'ABSENT';
-                    $status['is_absent'] = true;
-                    $pushMsg = $user->name . ' is absent today';
-                    break;
-            }
-            $this->updateUserStatus(
-                $args['trip_id'],
-                $status,
-                $user->id
-            );
-            SendPushNotification::dispatch(
-                $this->getDriverToken($args['driver_id']),
-                $pushMsg
-            );
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to notify the captain!');
-        }
-
         return "Qruz captain has been notified.";
+    }
+
+    public function changeBusinessTripPickupStatus($_, array $args)
+    {
+        $this->updateUserStatus(
+            $args['trip_id'], ['is_picked_up' => $args['is_picked_up']], $args['user_id']
+        );
+
+        return "Pick up status has been changed successfully";
     }
 
     public function pickUsers($_, array $args)
@@ -192,7 +170,7 @@ class BusinessTripEventResolver
 
             $this->updateUserStatus(
                 $args['trip_id'],
-                ['is_picked' => false, 'is_arrived' => false, 'is_absent' => false]
+                ['is_picked_up' => false, 'is_absent' => false]
             );
 
             $trip->update(['status' => false, 'log_id' => null]);
@@ -209,12 +187,12 @@ class BusinessTripEventResolver
         return BusinessTripEvent::whereIn('log_id', $args['log_id'])->delete();
     }
 
-    protected function pickOrDropUsers($args, $is_picked, $msg, $title)
+    protected function pickOrDropUsers($args, $is_picked_up, $msg, $title)
     {
         try {
             $this->updateUserStatus(
                 $args['trip_id'],
-                ['is_picked' => $is_picked],
+                ['is_picked_up' => $is_picked_up],
                 $args['users']
             );
             SendPushNotification::dispatch(

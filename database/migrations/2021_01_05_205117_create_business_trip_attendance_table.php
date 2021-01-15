@@ -18,7 +18,7 @@ class CreateBusinessTripAttendanceTable extends Migration
             $table->date('date');
             $table->unsignedBigInteger('trip_id');
             $table->unsignedBigInteger('user_id');
-            $table->boolean('status')->nullable();
+            $table->boolean('is_absent');
             $table->string('comment')->nullable();
             $table->timestamps();
 

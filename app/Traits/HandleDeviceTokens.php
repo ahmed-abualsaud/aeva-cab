@@ -24,6 +24,12 @@ trait HandleDeviceTokens
         return $tokens->pluck('device_id')->toArray();;
     }
 
+    protected function getUserToken($userId)
+    {
+        return User::select('device_id')
+            ->find($userId)->device_id;
+    }
+
     protected function getDriverToken($driverId)
     {
         return Driver::select('device_id')

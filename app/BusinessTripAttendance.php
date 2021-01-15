@@ -15,7 +15,7 @@ class BusinessTripAttendance extends Model
         return $query->select('user_id')
             ->where('trip_id', $trip_id)
             ->where('date', date("Y-m-d"))
-            ->where('status', false)
+            ->where('is_absent', true)
             ->pluck('user_id')
             ->toArray();
     }

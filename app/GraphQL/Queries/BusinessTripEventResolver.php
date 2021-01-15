@@ -2,9 +2,8 @@
 
 namespace App\GraphQL\Queries;
 
+use App\Exceptions\CustomException;
 use App\User;
-use App\Driver;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripEventResolver
 {
@@ -30,10 +29,10 @@ class BusinessTripEventResolver
 
         switch($args['status']) {
             case 'PICKED_UP':
-                $users = $users->where('business_trip_users.is_picked', true);
+                $users = $users->where('business_trip_users.is_picked_up', true);
             break;
             case 'NOT_PICKED_UP':
-                $users = $users->where('business_trip_users.is_picked', false);
+                $users = $users->where('business_trip_users.is_picked_up', false);
             break;
             default:
                 $users = $users;
@@ -42,9 +41,23 @@ class BusinessTripEventResolver
         return $users->get();
     }
 
-    public function arrivedAndPickedUsers($_, array $args)
+    public function businessTripUserStatus($_, array $args) 
     {
-        $users = User::selectRaw('users.id, users.name, users.phone, users.avatar, business_trip_users.is_picked as is_picked_up, business_trip_users.is_arrived as is_arrived')
+        try {
+            $status = BusinessTripUser::select('is_absent', 'is_picked_up')
+                ->where('trip_id', $args['trip_id'])
+                ->where('user_id', $args['user_id'])
+                ->firstOrFail();
+        } catch (\Exception $e) {
+            throw new CustomException('We could not able to get the user status at this trip!');
+        }
+
+        return $status;
+    }
+
+    public function businessTripUsersStatus($_, array $args)
+    {
+        $users = User::selectRaw('users.id, users.name, users.phone, users.avatar, business_trip_users.is_picked_up, business_trip_users.is_absent')
             ->join('business_trip_users', 'users.id', '=', 'business_trip_users.user_id');
 
             if (array_key_exists('trip_id', $args) && $args['trip_id']) {
@@ -56,21 +69,6 @@ class BusinessTripEventResolver
             }
 
         return $users->get();
-    }
-
-    public function driverLocation($_, array $args)
-    {
-        try {
-            $location = Driver::select(['latitude', 'longitude'])
-                ->findOrFail($args['driver_id']);
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception('No data for the provided driver ID');
-        }
-
-        return [
-            'latitude' => $location->latitude,
-            'longitude' => $location->longitude
-        ];
     }
 
 }

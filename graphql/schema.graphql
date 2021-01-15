@@ -225,6 +225,8 @@ extend type Mutation @guard(with: ["admin", "user"]) {
   # Business Trip Event
   changeBusinessTripUserStatus(input: ChangeBusinessTripUserStatusInput! @spread): String
     @field(resolver: "BusinessTripEventResolver@changeUserStatus")
+  changeBusinessTripPickupStatus(input: ChangeBusinessTripPickupStatusInput! @spread): String
+    @field(resolver: "BusinessTripEventResolver@changeBusinessTripPickupStatus")
 
   # School
   createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest @create
@@ -275,10 +277,6 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
   # Business Trip Station User
   createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
     @field(resolver: "BusinessTripStationResolver@assignUser")
-
-  # Business Trip Attendance
-  createBusinessTripAttendance(input: CreateBusinessTripAttendanceInput! @spread): Boolean
-    @field(resolver: "BusinessTripAttendanceResolver@create")
 }
 
 # Admin|Partner|User|Driver Guard
@@ -288,6 +286,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "CommunicationResolver@sendChatMessage")
   sendBusinessTripChatMessage(input: SendBusinessTripChatMessageInput! @spread): BusinessTripChat
     @field(resolver: "CommunicationResolver@sendBusinessTripChatMessage")
+
+  # Business Trip Attendance
+  createBusinessTripAttendance(input: CreateBusinessTripAttendanceInput! @spread): String
+    @field(resolver: "BusinessTripAttendanceResolver@create")
 }
 
 # -- QUERIES --
@@ -394,8 +396,6 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # User
   partnerUsers(partner_id: ID!, searchFor: String, searchQuery: String, assigned: Boolean): [User] 
     @paginate(scopes: ["assignedOrNotAssigned", "search"])
-  businessTripUserAttendance(trip_id: ID!, date: Date!): [BusinessTripUserAttendance]
-    @field(resolver: "BusinessTripAttendanceResolver")
 
   # Partner
   partner(id: ID @eq): Partner @find
@@ -476,6 +476,10 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
 
 # Admin|Partner|Driver Guard
 extend type Query @guard(with: ["admin", "partner", "driver"]) {
+  # Business Trip Attendance
+  businessTripAttendance(trip_id: ID!, date: Date): [BusinessTripAttendance]
+    @field(resolver: "BusinessTripAttendanceResolver")
+
   # Driver
   driver(id: ID @eq): Driver @find
   driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
@@ -496,10 +500,10 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   businessTripStations(trip_id: ID! @eq): [BusinessTripStation] @all
 
   # Business Trip Event
-  driverLocation(driver_id: ID!): LocationCoordinatesResponse
-    @field(resolver: "BusinessTripEventResolver@driverLocation")
-  arrivedAndPickedUsers(trip_id: ID, station_id: ID): [User]
-    @field(resolver: "BusinessTripEventResolver@arrivedAndPickedUsers")
+  businessTripUserStatus(trip_id: ID!, user_id: ID!): User 
+    @field(resolver: "BusinessTripEventResolver@businessTripUserStatus")
+  businessTripUsersStatus(trip_id: ID, station_id: ID): [User]
+    @field(resolver: "BusinessTripEventResolver@businessTripUsersStatus")
   businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
     @field(resolver: "BusinessTripEventResolver@businessTripSubscribers")
 

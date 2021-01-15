@@ -119,8 +119,8 @@ type User {
   longitude: String
   wallet_balance: Float
   rating: Float
+  is_absent: Boolean
   is_picked_up: Boolean
-  is_arrived: Boolean
   phone_verified_at: String
   ref_code: String
   created_at: String

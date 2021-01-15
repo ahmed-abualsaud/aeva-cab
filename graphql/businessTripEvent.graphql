@@ -28,6 +28,12 @@ input ChangeBusinessTripUserStatusInput {
   status: String! @rules(apply: ["in:ABSENT,ARRIVED"])
 }
 
+input ChangeBusinessTripPickupStatusInput {
+  trip_id: ID! @rules(apply: ["required"])
+  user_id: ID! @rules(apply: ["required"])
+  is_picked_up: Boolean! @rules(apply: ["required"])
+}
+
 input SelectUsersInput {
   trip_id: ID! @rules(apply: ["required"])
   log_id: String! @rules(apply: ["required"])
