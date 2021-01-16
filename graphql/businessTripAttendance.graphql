@@ -1,5 +1,5 @@
 input CreateBusinessTripAttendanceInput {
-  date: Date! @rules(apply: ["required"])
+  date: String! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
   trip_name: String
   user_id: ID! @rules(apply: ["required"])

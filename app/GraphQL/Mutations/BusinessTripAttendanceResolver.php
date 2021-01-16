@@ -24,14 +24,12 @@ class BusinessTripAttendanceResolver
             if (array_key_exists('status', $args))
                 $args['is_absent'] = !$args['status'];
 
-            $firstArgs = collect($args)->only(['date', 'trip_id', 'user_id'])->toArray();
-            $secondArgs = collect($args)->only(['is_absent', 'comment'])->toArray();
-
-            $this->updateUserStatus(
-                $args['trip_id'], 
-                ['is_absent' => $args['is_absent']], 
-                $args['user_id']
-            );
+            if ($args['date'] === date('Y-m-d'))
+                $this->updateUserStatus(
+                    $args['trip_id'], 
+                    ['is_absent' => $args['is_absent']], 
+                    $args['user_id']
+                );
 
             if (array_key_exists('trip_name', $args)) {
                 $status_text = $args['is_absent'] ? 'Absent' : 'Present';
@@ -42,6 +40,8 @@ class BusinessTripAttendanceResolver
                 SendPushNotification::dispatch($token, $msg, $title);
             }
             
+            $firstArgs = collect($args)->only(['date', 'trip_id', 'user_id'])->toArray();
+            $secondArgs = collect($args)->only(['is_absent', 'comment'])->toArray();
             BusinessTripAttendance::updateOrCreate($firstArgs, $secondArgs);
 
         } catch(\Exception $e) {
