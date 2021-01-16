@@ -288,7 +288,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "CommunicationResolver@sendBusinessTripChatMessage")
 
   # Business Trip Attendance
-  createBusinessTripAttendance(input: CreateBusinessTripAttendanceInput! @spread): String
+  createBusinessTripAttendance(input: CreateBusinessTripAttendanceInput! @spread): Boolean
     @field(resolver: "BusinessTripAttendanceResolver@create")
 }
 

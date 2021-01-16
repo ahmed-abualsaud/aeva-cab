@@ -42,12 +42,11 @@ class BusinessTripAttendanceResolver
             
             $firstArgs = collect($args)->only(['date', 'trip_id', 'user_id'])->toArray();
             $secondArgs = collect($args)->only(['is_absent', 'comment'])->toArray();
-            BusinessTripAttendance::updateOrCreate($firstArgs, $secondArgs);
+            
+           return BusinessTripAttendance::updateOrCreate($firstArgs, $secondArgs);
 
         } catch(\Exception $e) {
             throw new CustomException('We could not able to create or update an attendance record!');
         }
-
-        return "Business trip attendance has been saved successfully";
     }
 }
