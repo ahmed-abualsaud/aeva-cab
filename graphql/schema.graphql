@@ -465,7 +465,7 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "BusinessTripResolver@userLiveTrips")
   userSubscriptions(user_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userSubscriptions")
-  userTrips(user_id: ID!, partner_id: ID, day: String!): [BusinessTrip]
+  userTrips(user_id: ID!, partner_id: ID, day: String): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userTrips")
   userTripPartners(user_id: ID!): [Partner]
     @field(resolver: "BusinessTripResolver@userTripPartners")
@@ -484,7 +484,7 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
     @field(resolver: "BusinessTripResolver@driverLiveTrip")
   driverLiveBusinessTrips(driver_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverLiveTrips")
-  driverTrips(driver_id: ID!, day: String!): [BusinessTrip]
+  driverTrips(driver_id: ID!, day: String): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverTrips")
   driverBusinessTrips(driver_id: ID! @eq): [BusinessTrip] @all
 }
