@@ -5,14 +5,8 @@ input CreateBusinessTripInput {
   vehicle_id: ID! @rules(apply: ["required"])
   start_date: Date! @rules(apply: ["required"])
   end_date: Date! @rules(apply: ["required"])
+  schedule: ScheduleInput! @rules(apply: ["required"])
   return_time: String
-  saturday: String
-  sunday: String
-  monday: String
-  tuesday: String
-  wednesday: String
-  thursday: String
-  friday: String
   request_ids: [ID]
   schools: [BusinessTripSchoolsInput] @rules(apply: ["required_with:request_ids"])
   users: [BusinessTripUsersInput] @rules(apply: ["required_with:request_ids"])
@@ -52,13 +46,7 @@ input UpdateBusinessTripInput {
   return_time: String
   start_date: Date
   end_date: Date
-  saturday: String
-  sunday: String
-  monday: String
-  tuesday: String
-  wednesday: String
-  thursday: String
-  friday: String
+  schedule: ScheduleInput
 }
 
 type UserLiveTripResponse {
@@ -104,7 +92,27 @@ type BusinessTrip {
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
-  schedule: BusinessTripSchedule @hasOne
+  schedule: Schedule
   stations: [BusinessTripStation] @hasMany
   users: [User] @hasMany
+}
+
+input ScheduleInput {
+  saturday: String
+  sunday: String
+  monday: String
+  tuesday: String
+  wednesday: String
+  thursday: String
+  friday: String
+}
+
+type Schedule {
+  saturday: String
+  sunday: String
+  monday: String
+  tuesday: String
+  wednesday: String
+  thursday: String
+  friday: String
 }

@@ -10,7 +10,6 @@ use App\SchoolRequest;
 use App\BusinessTripUser;
 use Illuminate\Support\Arr;
 use App\BusinessTripStation;
-use App\BusinessTripSchedule;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Vinkla\Hashids\Facades\Hashids;
@@ -24,15 +23,10 @@ class BusinessTripResolver
      */
     public function create($_, array $args)
     {
-        $tripInput = $this->tripInput($args);
+
+        $tripInput = Arr::except($args, ['directive', 'request_ids', 'schools', 'users']);
         $businessTrip = BusinessTrip::create($tripInput);
-
         $businessTrip->update(['subscription_code' => Hashids::encode($businessTrip->id)]);
-         
-        $scheduleInput = $this->scheduleInput($args);
-
-        $scheduleInput['trip_id'] = $businessTrip->id; 
-        BusinessTripSchedule::create($scheduleInput);
 
         if (array_key_exists('request_ids', $args) && $args['request_ids']) {
             $this->createStationsAndAssignUsers($args, $businessTrip->id);
@@ -52,21 +46,12 @@ class BusinessTripResolver
 
     public function update($_, array $args)
     {
-        $tripInput = $this->tripInput($args);
+        $tripInput = Arr::except($args, ['directive']);
         try {
             $trip = BusinessTrip::findOrFail($args['id']);
             $trip->update($tripInput);
         } catch (ModelNotFoundException $e) {
             throw new CustomException('Trip with the provided ID is not found.');
-        }
-        
-        $scheduleInput = $this->scheduleInput($args);
-        try {
-            $tripSchedule = BusinessTripSchedule::findOrFail($trip->schedule->id);
-            $tripSchedule->update($scheduleInput);
-        } catch (ModelNotFoundException $e) {
-            $scheduleInput['trip_id'] = $trip->id;
-            BusinessTripSchedule::create($scheduleInput);
         }
     
         return $trip;
@@ -162,16 +147,6 @@ class BusinessTripResolver
             "status" => true,
             "message" => "Subscription cancellation has done successfully."
         ];
-    }
-
-    protected function tripInput(array $args)
-    {
-        return Arr::only($args, ['name', 'partner_id', 'driver_id', 'vehicle_id', 'start_date', 'end_date', 'return_time']);
-    }
-
-    protected function scheduleInput(array $args)
-    {
-        return Arr::only($args, ['saturday','sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday']);
     }
 
     protected function createStationsAndAssignUsers($args, $trip_id)

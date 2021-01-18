@@ -363,7 +363,7 @@ type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["notAssigned", "search"])
 
   # Business Trip
-  businessLiveTrips: [BusinessTrip] @all(scopes: ["live"])
+  businessLiveTrips(partner_id: ID): [BusinessTrip] @all(scopes: ["live"])
 
   # School
   schoolZones: [SchoolZone] @all
@@ -401,8 +401,6 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Partner
   partner(id: ID @eq): Partner @find
-  partnerLiveTrips(partner_id: ID!): [BusinessTrip]
-    @field(resolver: "BusinessTripResolver@partnerLiveTrips")
   partnerAvailableLines(partner_id: ID! @eq trip_id: ID!): [BusinessTrip] 
     @all(scopes: ["availableLines"])
 
@@ -467,12 +465,10 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "BusinessTripResolver@userLiveTrips")
   userSubscriptions(user_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userSubscriptions")
-  userTrips(user_id: ID!, partner_id: ID, day: String): [BusinessTrip]
+  userTrips(user_id: ID!, partner_id: ID, day: String!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userTrips")
   userTripPartners(user_id: ID!): [Partner]
     @field(resolver: "BusinessTripResolver@userTripPartners")
-  userTripsByPartner(user_id: ID!, partner_id: ID!, day: String): [BusinessTrip]
-    @field(resolver: "BusinessTripResolver@userTripsByPartner")
   user(id: ID @eq): User @find
 }
 
@@ -488,7 +484,7 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
     @field(resolver: "BusinessTripResolver@driverLiveTrip")
   driverLiveBusinessTrips(driver_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverLiveTrips")
-  driverTrips(driver_id: ID!, day: String): [BusinessTrip]
+  driverTrips(driver_id: ID!, day: String!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverTrips")
   driverBusinessTrips(driver_id: ID! @eq): [BusinessTrip] @all
 }

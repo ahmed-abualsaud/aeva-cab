@@ -12,6 +12,10 @@ class BusinessTrip extends Model
     
     protected $guarded = [];
 
+    protected $casts = [
+        'schedule' => 'array'
+    ];
+
     public function partner()
     {
         return $this->belongsTo(Partner::class);
@@ -60,8 +64,12 @@ class BusinessTrip extends Model
         return $query->where('id', '<>', $args['trip_id']);
     }
 
-    public function scopeLive($query) 
+    public function scopeLive($query, $args) 
     {
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            $query->where('partner_id', $args['partner_id']);
+        }
+
         return $query->where('status', true);
     }
 

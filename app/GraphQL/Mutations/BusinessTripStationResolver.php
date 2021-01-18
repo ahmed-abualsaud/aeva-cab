@@ -7,9 +7,9 @@ use App\BusinessTrip;
 use App\SchoolRequest;
 use App\BusinessTripUser;
 use App\BusinessTripStation;
+use App\Traits\QueryGenerator;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
-use App\Traits\QueryGenerator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripStationResolver

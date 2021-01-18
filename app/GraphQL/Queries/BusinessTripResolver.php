@@ -121,15 +121,11 @@ class BusinessTripResolver
 
         $userTrips = $userTrips->whereNotNull('business_trip_users.subscription_verified_at')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
+            ->whereRaw('JSON_EXTRACT(schedule, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
             ->selectRaw(
-                'business_trips.*, 
-                '. $args['day'] .' AS time, 
+                'business_trips.*,
                 business_trip_attendance.date AS absence_date'
             )
-            ->join('business_trip_schedules', function ($join) use ($args) {
-                $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
-                    ->whereNotNull($args['day']);
-            })
             ->leftJoin('business_trip_attendance', function ($join) use ($args, $date) {
                 $join->on('business_trips.id', '=', 'business_trip_attendance.trip_id')
                     ->where('business_trip_attendance.user_id', $args['user_id'])
@@ -143,46 +139,12 @@ class BusinessTripResolver
         return $this->scheduledTrips($userTrips, $args['day']);
     }
 
-    public function userTripsByPartner($_, array $args)
-    {
-        if (!array_key_exists('day', $args)) $args['day'] = strtolower(date("l"));
-
-        $userTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
-            ->where('business_trip_users.user_id', $args['user_id'])
-            ->where('business_trips.partner_id', $args['partner_id'])
-            ->whereNotNull('business_trip_users.subscription_verified_at')
-            ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->selectRaw('business_trips.*, '. $args['day'] .' AS time')
-            ->join('business_trip_schedules', function ($join) use ($args) {
-                $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
-                    ->whereNotNull($args['day']);
-            })
-            ->get();
-
-        if ($userTrips->isEmpty()) return [];
-        
-        return $this->scheduledTrips($userTrips, $args['day']);
-    }
-
-    public function partnerLiveTrips($_, array $args)
-    {
-        return BusinessTrip::select('id', 'name')
-            ->where('partner_id', $args['partner_id'])
-            ->where('status', true)
-            ->get();
-    }
-
     public function driverTrips($_, array $args)
     {
-        if (!array_key_exists('day', $args)) $args['day'] = strtolower(date("l"));
 
         $driverTrips = BusinessTrip::where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->selectRaw('business_trips.*, '. $args['day'] .' AS time')
-            ->join('business_trip_schedules', function ($join) use ($args) {
-                $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
-                    ->whereNotNull($args['day']);
-            })
+            ->whereRaw('JSON_EXTRACT(schedule, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
             ->get();
 
         if ($driverTrips->isEmpty()) return [];
@@ -240,10 +202,10 @@ class BusinessTripResolver
             $trip->dayName = $day;
             $trip->is_absent = $trip->absence_date === $dateTime;
             $tripInstance = new BusinessTrip();
-            $trip->date = strtotime($dateTime.' '.$trip->time) * 1000;
-            if ($for === 'driver') $trip->flag = $this->getFlag($trip->time);
+            $trip->date = strtotime($dateTime.' '.$trip->schedule[$day]) * 1000;
+            if ($for === 'driver') $trip->flag = $this->getFlag($trip->schedule[$day]);
             $trip->isReturn = false;
-            $trip->startsAt = Carbon::parse($dateTime.' '.$trip->time)->format('h:i a');
+            $trip->startsAt = Carbon::parse($dateTime.' '.$trip->schedule[$day])->format('h:i a');
             $tripInstance->fill($trip->toArray());
             $sortedTrips[] = $tripInstance;
             if ($trip->return_time) {
