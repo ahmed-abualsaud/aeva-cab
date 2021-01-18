@@ -9,10 +9,14 @@ use App\BusinessTripUser;
 use App\BusinessTripStation;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
+use App\Traits\QueryGenerator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripStationResolver
 {
+
+    use QueryGenerator;
+
     /**
      * @param  null  $_
      * @param  array<string, mixed>  $args
@@ -135,8 +139,9 @@ class BusinessTripStationResolver
             foreach($args['users'] as $user) {
                 $arr['user_id'] = $user;
                 $data[] = $arr;
-            } 
-            BusinessTripUser::insert($data);
+            }
+            $this->upsert('business_trip_users', $data, ['station_id', 'updated_at']);
+
         } catch (\Exception $e) {
             throw new CustomException('We could not able to assign selected users to specified station.');
         }

@@ -30,15 +30,6 @@ class BusinessTripAttendanceResolver
                     ['is_absent' => $args['is_absent']], 
                     $args['user_id']
                 );
-
-            if (array_key_exists('trip_name', $args)) {
-                $status_text = $args['is_absent'] ? 'Absent' : 'Present';
-                $token = $this->getUserToken($args['user_id']);
-                $title = $args['trip_name'] . ' Trip';
-                $msg = 'The trip captain has changed your attendance status to '.$status_text.', If this isn\'t the case, you could revert it back from inside the trip.';
-                
-                SendPushNotification::dispatch($token, $msg, $title);
-            }
             
             $firstArgs = collect($args)->only(['date', 'trip_id', 'user_id'])->toArray();
             $secondArgs = collect($args)->only(['is_absent', 'comment'])->toArray();

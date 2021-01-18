@@ -31,26 +31,26 @@ class BusinessTripResolver
 
                 break;
             case 'notSubscribed':
-                $businessTripUsers = BusinessTripUser::select('user_id')
-                    ->where('trip_id', $args['trip_id'])
-                    ->pluck('user_id');
-
-                $users = User::Join('partner_users', 'partner_users.user_id', '=', 'users.id')
+                $users = User::select('users.id', 'users.name', 'users.avatar', 'users.phone')
+                    ->join('partner_users', 'users.id', '=', 'partner_users.user_id')
                     ->where('partner_users.partner_id', $args['partner_id'])
-                    ->select('users.id', 'users.name', 'users.avatar', 'users.phone')
-                    ->whereNotIn('users.id', $businessTripUsers)
+                    ->whereNotIn('partner_users.user_id', function($query) use ($args) {
+                        $query->select('user_id')
+                            ->from('business_trip_users')
+                            ->where('trip_id', $args['trip_id']);
+                    })
                     ->get();
-
                 break;
             case 'notVerified':
-                $businessTripUsers = BusinessTripUser::select('user_id')
-                    ->where('trip_id', $args['trip_id'])
-                    ->whereNull('subscription_verified_at')
-                    ->pluck('user_id');
-
                 $users = User::select('id', 'name', 'avatar', 'phone')
-                    ->whereIn('id', $businessTripUsers)
+                    ->whereIn('id', function($query) use ($args) {
+                        $query->select('user_id')
+                            ->from('business_trip_users')
+                            ->where('trip_id', $args['trip_id'])
+                            ->whereNull('subscription_verified_at');
+                    })
                     ->get();
+                    
                 break;
         }
 
@@ -69,16 +69,17 @@ class BusinessTripResolver
 
     public function stationNotAssignedUsers($_, array $args)
     {
-        $stationAssignedUsers = BusinessTripUser::select('user_id')
-            ->where('station_id', $args['station_id'])
-            ->get()->pluck('user_id');
 
         $stationNotAssignedUsers = User::select('users.id', 'users.name', 'users.avatar', 'users.phone')
-            ->join('partner_users', function ($join) use ($args, $stationAssignedUsers) {
-                $join->on('users.id', '=', 'partner_users.user_id')
-                    ->where('partner_users.partner_id', $args['partner_id'])
-                    ->whereNotIn('partner_users.user_id', $stationAssignedUsers);
-            })->get();
+            ->join('partner_users', 'users.id', '=', 'partner_users.user_id')
+            ->where('partner_users.partner_id', $args['partner_id'])
+            ->whereNotIn('partner_users.user_id', function($query) use ($args) {
+                $query->select('user_id')
+                    ->from('business_trip_users')
+                    ->where('trip_id', $args['trip_id'])
+                    ->whereNotNull('station_id');
+            })
+            ->get();
 
         return $stationNotAssignedUsers;
     }

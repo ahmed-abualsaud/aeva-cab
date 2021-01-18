@@ -256,6 +256,8 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "BusinessTripEventResolver@pickUsers")
   dropUsers(input: SelectUsersInput! @spread): String
     @field(resolver: "BusinessTripEventResolver@dropUsers")
+  changeBusinessTripAttendanceStatus(input: ChangeBusinessTripAttendanceStatusInput! @spread): String
+    @field(resolver: "BusinessTripEventResolver@changeBusinessTripAttendanceStatus")
 }
 
 # Admin|Partner|User Guard
@@ -420,7 +422,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # Business Trip Station User
   businessTripStationAssignedUsers(station_id: ID!): [User] 
     @field(resolver: "BusinessTripResolver@stationAssignedUsers")
-  businessTripStationNotAssignedUsers(partner_id: ID!, station_id: ID!): [User] 
+  businessTripStationNotAssignedUsers(partner_id: ID!, trip_id: ID!): [User] 
     @field(resolver: "BusinessTripResolver@stationNotAssignedUsers")
 
   # Business Trip User
