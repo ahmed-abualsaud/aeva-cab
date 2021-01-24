@@ -2,12 +2,11 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\User;
-use App\Driver;
-use App\BusinessTripChat;
 use App\Jobs\SendOtp;
+use App\BusinessTripChat;
 use App\Mail\DefaultMail;
 use App\Events\MessageSent;
+use App\Exceptions\CustomException;
 use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
 use Illuminate\Support\Facades\Mail;
@@ -22,28 +21,26 @@ class CommunicationResolver
      */
     public function sendDirectMessage($_, array $args)
     {
-        if ($args['recipientType'] == "USER") {
-            $recipient = User::select('phone', 'email', 'device_id')
-                ->whereIn('id', $args['recipientID'])
+        try {
+            $recipient = $args['recipient_type']::select('phone', 'email', 'device_id')
+                ->whereIn('id', $args['recipient_id'])
                 ->get();
-        } else {
-            $recipient = Driver::select('phone', 'email', 'device_id')
-                ->whereIn('id', $args['recipientID'])
-                ->get();
+    
+            $phones = $recipient->pluck('phone')->filter()->toArray();
+            $emails = $recipient->pluck('email')->filter()->toArray();
+            $tokens = $recipient->pluck('device_id')->filter()->toArray();
+            
+            if ($args['email'] && $emails) 
+                Mail::bcc($emails)->send(new DefaultMail($args['message'], $args['title']));
+            if ($args['sms'] && $phones) 
+                SendOtp::dispatch(implode(",", $phones), $args['message']);
+            if ($args['push'] && $tokens) 
+                SendPushNotification::dispatch($tokens, $args['message'], $args['title']);
+    
+            return "Message has been sent";
+        } catch(\Exception $e) {
+            throw new CustomException('We could not able to send message to selected recipients!');
         }
-
-        $phones = $recipient->pluck('phone')->filter()->toArray();
-        $emails = $recipient->pluck('email')->filter()->toArray();
-        $tokens = $recipient->pluck('device_id')->filter()->toArray();
-        
-        if ($args['email'] && $emails) 
-            Mail::bcc($emails)->send(new DefaultMail($args['message']));
-        if ($args['sms'] && $phones) 
-            SendOtp::dispatch(implode(",", $phones), $args['message']);
-        if ($args['push'] && $tokens) 
-            SendPushNotification::dispatch($tokens, $args['message']);
-
-        return "Message has been sent";
     }
 
     public function sendBusinessTripChatMessage($_, array $args)
