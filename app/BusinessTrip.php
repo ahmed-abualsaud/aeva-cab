@@ -13,7 +13,7 @@ class BusinessTrip extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'schedule' => 'array'
+        'days' => 'array'
     ];
 
     public function partner()

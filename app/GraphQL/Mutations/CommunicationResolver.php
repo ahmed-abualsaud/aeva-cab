@@ -56,14 +56,14 @@ class CommunicationResolver
 
         switch ($args['sender_type']) {
             case "App\\User":
-                $tokens = $this->getUsersTokens($args['trip_id'], null, null, $sender->id);
+                $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, $sender->id);
                 array_push($tokens, $this->getDriverToken($args['driver_id']));
                 break;
             case "App\\Driver":
-                $tokens = $this->getUsersTokens($args['trip_id'], null, null, null);
+                $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, null);
                 break;
             default:
-                $tokens = $this->getUsersTokens($args['trip_id'], null, null, null);
+                $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, null);
                 array_push($tokens, $this->getDriverToken($args['driver_id']));
                 break;
         }

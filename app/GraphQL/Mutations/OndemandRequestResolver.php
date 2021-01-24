@@ -60,8 +60,8 @@ class OndemandRequestResolver
 
     public function update($_, array $args)
     {
+        
         $input = collect($args)->except(['id', 'directive'])->toArray();
-
         try {
             $request = OndemandRequest::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {

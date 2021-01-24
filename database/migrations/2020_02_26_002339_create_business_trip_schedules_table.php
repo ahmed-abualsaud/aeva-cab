@@ -14,20 +14,14 @@ class CreateBusinessTripSchedulesTable extends Migration
     public function up()
     {
         Schema::create('business_trip_schedules', function (Blueprint $table) {
-            $table->bigIncrements('id');
             $table->unsignedBigInteger('trip_id');
-            $table->time('saturday')->nullable();
-            $table->time('sunday')->nullable();
-            $table->time('monday')->nullable();
-            $table->time('tuesday')->nullable();
-            $table->time('wednesday')->nullable();
-            $table->time('thursday')->nullable();
-            $table->time('friday')->nullable();
-            $table->timestamps();
+            $table->unsignedBigInteger('user_id');
+            $table->json('days');
 
-            $table->index('trip_id');
+            $table->primary(['trip_id', 'user_id']);
 
             $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

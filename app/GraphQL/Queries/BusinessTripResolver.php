@@ -121,7 +121,11 @@ class BusinessTripResolver
 
         $userTrips = $userTrips->whereNotNull('business_trip_users.subscription_verified_at')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->whereRaw('JSON_EXTRACT(schedule, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
+            ->whereRaw('JSON_EXTRACT(business_trips.days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
+            ->where(function ($query) use ($args) {
+                $query->whereNull('business_trip_schedules.days')
+                    ->orWhere('business_trip_schedules.days->'.$args['day'], true);
+            })
             ->selectRaw(
                 'business_trips.*,
                 business_trip_attendance.date AS absence_date'
@@ -131,6 +135,10 @@ class BusinessTripResolver
                     ->where('business_trip_attendance.user_id', $args['user_id'])
                     ->where('business_trip_attendance.is_absent', true)
                     ->whereDate('business_trip_attendance.date', $date);
+            })
+            ->leftJoin('business_trip_schedules', function ($join) use ($args) {
+                $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
+                    ->where('business_trip_schedules.user_id', $args['user_id']);
             })
             ->get();
 
@@ -144,7 +152,7 @@ class BusinessTripResolver
 
         $driverTrips = BusinessTrip::where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->whereRaw('JSON_EXTRACT(schedule, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
+            ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
             ->get();
 
         if ($driverTrips->isEmpty()) return [];
@@ -202,10 +210,10 @@ class BusinessTripResolver
             $trip->dayName = $day;
             $trip->is_absent = $trip->absence_date === $dateTime;
             $tripInstance = new BusinessTrip();
-            $trip->date = strtotime($dateTime.' '.$trip->schedule[$day]) * 1000;
-            if ($for === 'driver') $trip->flag = $this->getFlag($trip->schedule[$day]);
+            $trip->date = strtotime($dateTime.' '.$trip->days[$day]) * 1000;
+            if ($for === 'driver') $trip->flag = $this->getFlag($trip->days[$day]);
             $trip->isReturn = false;
-            $trip->startsAt = Carbon::parse($dateTime.' '.$trip->schedule[$day])->format('h:i a');
+            $trip->startsAt = Carbon::parse($dateTime.' '.$trip->days[$day])->format('h:i a');
             $tripInstance->fill($trip->toArray());
             $sortedTrips[] = $tripInstance;
             if ($trip->return_time) {

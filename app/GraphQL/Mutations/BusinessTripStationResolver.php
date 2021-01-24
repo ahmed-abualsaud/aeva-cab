@@ -7,16 +7,12 @@ use App\BusinessTrip;
 use App\SchoolRequest;
 use App\BusinessTripUser;
 use App\BusinessTripStation;
-use App\Traits\QueryGenerator;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BusinessTripStationResolver
 {
-
-    use QueryGenerator;
-
     /**
      * @param  null  $_
      * @param  array<string, mixed>  $args
@@ -24,16 +20,18 @@ class BusinessTripStationResolver
     public function create($_, array $args)
     { 
         try {
-            $data = []; $arr = [];
+            $arr = [
+                'trip_id' => $args['trip_id'],
+                'created_at' => now(), 
+                'updated_at' => now()
+            ];
             foreach($args['stations'] as $station) {
-                $arr['trip_id'] = $args['trip_id'];
                 $arr['name'] = $station['name'];
                 $arr['latitude'] = $station['latitude'];
                 $arr['longitude'] = $station['longitude'];
                 $arr['state'] = $station['state'];
                 $arr['accepted_at'] = $station['accepted_at'];
-                $arr['created_at'] = $arr['updated_at'] = now();
-                array_push($data, $arr);
+                $data[] = $arr;
             } 
             BusinessTripStation::insert($data);
         } catch (\Exception $e) {
@@ -140,8 +138,7 @@ class BusinessTripStationResolver
                 $arr['user_id'] = $user;
                 $data[] = $arr;
             }
-            $this->upsert('business_trip_users', $data, ['station_id', 'updated_at']);
-
+            BusinessTripUser::upsert($data, ['station_id', 'updated_at']);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to assign selected users to specified station.');
         }
@@ -158,7 +155,7 @@ class BusinessTripStationResolver
             $users = BusinessTripUser::where('station_id', $args['station_id'])
                 ->whereIn('user_id', $args['users']);
 
-            if (collect($users)->isNotEmpty()) {
+            if ($users->count()) {
                 $schoolRequests = $users->get()
                     ->where('creator_type', 'App\\SchoolRequest')
                     ->pluck('creator_id')
@@ -168,7 +165,6 @@ class BusinessTripStationResolver
 
                 $users->delete();
             }
-
         } catch (\Exception $e) {
             throw new \Exception('We could not able to unassign selected users from specified station.');
         }

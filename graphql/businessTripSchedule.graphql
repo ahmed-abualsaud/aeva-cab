@@ -1,0 +1,29 @@
+input BusinessTripScheduleInput {
+  trip_id: ID! @rules(apply: ["required"])
+  user_id: ID! @rules(apply: ["required"])
+  days: UserDaysInput! @rules(apply: ["required"])
+}
+
+input UserDaysInput {
+  saturday: Boolean
+  sunday: Boolean
+  monday: Boolean
+  tuesday: Boolean
+  wednesday: Boolean
+  thursday: Boolean
+  friday: Boolean
+}
+
+type BusinessTripSchedule {
+  days: UserDays
+}
+
+type UserDays {
+  saturday: Boolean
+  sunday: Boolean
+  monday: Boolean
+  tuesday: Boolean
+  wednesday: Boolean
+  thursday: Boolean
+  friday: Boolean
+}

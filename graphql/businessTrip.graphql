@@ -5,7 +5,7 @@ input CreateBusinessTripInput {
   vehicle_id: ID! @rules(apply: ["required"])
   start_date: Date! @rules(apply: ["required"])
   end_date: Date! @rules(apply: ["required"])
-  schedule: ScheduleInput! @rules(apply: ["required"])
+  days: TripDaysInput! @rules(apply: ["required"])
   return_time: String
   request_ids: [ID]
   schools: [BusinessTripSchoolsInput] @rules(apply: ["required_with:request_ids"])
@@ -21,6 +21,7 @@ input AddSchoolRequestToBusinessTripInput {
 }
 
 input BusinessTripSchoolsInput {
+  id: ID
   name: String
   lat: String
   lng: String
@@ -33,6 +34,7 @@ input BusinessTripUsersInput {
   lat: String
   lng: String
   request_id: ID
+  days: UserDaysInput
 }
 
 input UpdateBusinessTripInput {
@@ -46,23 +48,10 @@ input UpdateBusinessTripInput {
   return_time: String
   start_date: Date
   end_date: Date
-  schedule: ScheduleInput
+  days: TripDaysInput
 }
 
-type UserLiveTripResponse {
-  status: Boolean
-  trip: BusinessTrip
-}
-
-type DriverLiveTripResponse {
-  status: Boolean
-  tripType: String
-  tripID: ID
-}
-
-type BusinessTripSchedule {
-  id: ID
-  trip_id: ID
+input TripDaysInput {
   saturday: String
   sunday: String
   monday: String
@@ -70,6 +59,12 @@ type BusinessTripSchedule {
   wednesday: String
   thursday: String
   friday: String
+}
+
+type DriverLiveTripResponse {
+  status: Boolean
+  tripType: String
+  tripID: ID
 }
 
 type BusinessTrip {
@@ -92,22 +87,12 @@ type BusinessTrip {
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
-  schedule: Schedule
+  days: TripDays
   stations: [BusinessTripStation] @hasMany
   users: [User] @hasMany
 }
 
-input ScheduleInput {
-  saturday: String
-  sunday: String
-  monday: String
-  tuesday: String
-  wednesday: String
-  thursday: String
-  friday: String
-}
-
-type Schedule {
+type TripDays {
   saturday: String
   sunday: String
   monday: String

@@ -75,6 +75,12 @@ input UpdateSchoolRequestInput {
   response: String
 }
 
+input RejectSchoolRequestInput {
+  requestIds: [ID!]! @rules(apply: ["required"])
+  userIds: [ID!]! @rules(apply: ["required"])
+  response: String! @rules(apply: ["required"])
+}
+
 type SchoolZone {
   id: ID
   name: String

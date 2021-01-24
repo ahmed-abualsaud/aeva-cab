@@ -47,19 +47,31 @@ class SchoolRequest extends Model
             ->orderBy('created_at', 'DESC');
     }
 
-    public function scopeAccept($query, $ids)
+    public static function accept($ids)
     {
-        return $query->whereIn('id', $ids)->update(['status' => 'ACCEPTED']);
+        return self::whereIn('id', $ids)
+            ->update(['status' => 'ACCEPTED']);
     }
 
-    public function scopeRestore($query, $id)
+    public static function restore($id)
     {
         if (is_array($id)) {
-            $query = $query->whereIn('id', $id);
+            $query = self::whereIn('id', $id);
         } else {
-            $query = $query->where('id', $id);
+            $query = self::where('id', $id);
         }
 
         return $query->update(['status' => 'PENDING']);
+    }
+
+    public static function reject($id, $response)
+    {
+        if (is_array($id)) {
+            $query = self::whereIn('id', $id);
+        } else {
+            $query = self::where('id', $id);
+        }
+
+        return $query->update(['status' => 'REJECTED', 'response' => $response]);
     }
 }

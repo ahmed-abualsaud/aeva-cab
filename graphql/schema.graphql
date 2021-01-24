@@ -233,6 +233,8 @@ extend type Mutation @guard(with: ["admin", "user"]) {
   updateSchoolRequest(input: UpdateSchoolRequestInput! @spread): SchoolRequest @update
   deleteSchoolRequest(id: [ID!]!): Boolean
     @field(resolver: "SchoolRequestResolver@destroy")
+  rejectSchoolRequest(input: RejectSchoolRequestInput! @spread): String
+    @field(resolver: "SchoolRequestResolver@reject")
 }
 
 # Admin|Driver Guard
@@ -279,6 +281,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
   # Business Trip Station User
   createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
     @field(resolver: "BusinessTripStationResolver@assignUser")
+
+  # Business Trip Schedule
+  upsertBusinessTripSchedule(input: BusinessTripScheduleInput! @spread): Boolean
+    @field(resolver: "BusinessTripScheduleResolver@updateOrInsert")
 }
 
 # Admin|Partner|User|Driver Guard
@@ -470,6 +476,10 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   userTripPartners(user_id: ID!): [Partner]
     @field(resolver: "BusinessTripResolver@userTripPartners")
   user(id: ID @eq): User @find
+
+  # Business Trip Schedule
+  businessTripSchedule(trip_id: ID!, user_id: ID!): BusinessTripSchedule
+    @field(resolver: "BusinessTripScheduleResolver")
 }
 
 # Admin|Partner|Driver Guard
@@ -520,6 +530,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import carModel.graphql
 #import partner.graphql
 #import user.graphql
+#import businessTripSchedule.graphql
 #import businessTrip.graphql
 #import businessTripStation.graphql
 #import businessTripUser.graphql

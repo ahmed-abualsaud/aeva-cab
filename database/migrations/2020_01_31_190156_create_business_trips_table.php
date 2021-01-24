@@ -20,14 +20,14 @@ class CreateBusinessTripsTable extends Migration
             $table->unsignedBigInteger('driver_id');
             $table->unsignedBigInteger('vehicle_id');
             $table->string('subscription_code')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
+            $table->date('start_date');
+            $table->json('days');
+            $table->date('end_date');
             $table->time('return_time')->nullable();
             $table->integer('duration')->nullable();
             $table->integer('distance')->nullable();
             $table->boolean('status')->default(false);
             $table->string('log_id')->nullable();
-            $table->json('schedule');
             $table->timestamps();
             $table->softDeletes();
 

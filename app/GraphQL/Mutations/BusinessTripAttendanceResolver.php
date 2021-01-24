@@ -3,7 +3,6 @@
 namespace App\GraphQL\Mutations;
 
 use App\BusinessTripAttendance;
-use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
 use App\Exceptions\CustomException;
 use App\Traits\HandleBusinessTripUserStatus;

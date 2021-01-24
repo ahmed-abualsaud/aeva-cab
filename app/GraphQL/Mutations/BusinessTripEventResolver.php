@@ -48,7 +48,7 @@ class BusinessTripEventResolver
                 ->update(['latitude' => $args['latitude'], 'longitude' => $args['longitude']]);
 
             SendPushNotification::dispatch(
-                $this->getUsersTokens($trip->id, null, null, null), 
+                $this->getBusinessTripUsersToken($trip->id, null, null), 
                 $trip->name.' has been started.', 
                 'Trip Started!'
             );
@@ -61,7 +61,7 @@ class BusinessTripEventResolver
             $trip->update(['status' => true, 'log_id' => $log_id]);
             
         } catch (\Exception $e) {
-            throw new CustomException($e->getMessage());
+            throw new CustomException('We could not able to start this trip!');
         }
 
         return $trip;
@@ -71,7 +71,7 @@ class BusinessTripEventResolver
     {
         try {
             SendPushNotification::dispatch(
-                $this->getUsersTokens(null, $args['station_id'], null, null),
+                $this->getBusinessTripUsersToken(null, $args['station_id'], null),
                 'Qruz captain is so close to you.',
                 'Stand By!'
             );
@@ -217,7 +217,7 @@ class BusinessTripEventResolver
                 $args['users']
             );
             SendPushNotification::dispatch(
-                $this->getUsersTokens(null, null, $args['users'], null),
+                $this->getUsersToken($args['users']),
                 $msg,
                 $title
             );
