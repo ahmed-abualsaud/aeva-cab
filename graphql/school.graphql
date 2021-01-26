@@ -124,4 +124,5 @@ type SchoolRequest {
   comment: String
   response: String
   created_at: String
+  updated_at: String
 }
