@@ -21,6 +21,7 @@ class CreatePricePackagesTable extends Migration
             $table->text('description')->nullable();
             $table->text('price');
             $table->string('per');
+            $table->string('photo')->nullable();
             $table->timestamps();
 
             $table->index('city_id');

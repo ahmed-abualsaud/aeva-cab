@@ -144,8 +144,10 @@ extend type Mutation @guard(with: ["admin"]) {
   deleteSchoolGrade(id: ID!): SchoolGrade @delete
 
   # Price Package
-  createPricePackage(input: CreatePricePackageInput! @spread): PricePackage @create
-  updatePricePackage(input: UpdatePricePackageInput! @spread): PricePackage @update
+  createPricePackage(input: CreatePricePackageInput! @spread): PricePackage 
+    @field(resolver: "PricePackageResolver@create")
+  updatePricePackage(input: UpdatePricePackageInput! @spread): PricePackage 
+    @field(resolver: "PricePackageResolver@update")
   deletePricePackage(id: ID!): PricePackage @delete
 
   # City
