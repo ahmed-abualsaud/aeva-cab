@@ -211,6 +211,25 @@ class BusinessTripEventResolver
     protected function pickOrDropUsers($args, $is_picked_up, $msg, $title)
     {
         try {
+
+            $arr = [
+                'status' => $is_picked_up ? 'PICKED' : 'DROPPED',
+                'at' => date("Y-m-d H:i:s"),
+                'lat' => $args['latitude'], 'lng' => $args['longitude']
+            ];
+
+            foreach($args['users'] as $user) {
+                $arr['id'] = $user;
+                $data[] = $arr;
+            }
+            $event = BusinessTripEvent::find($args['log_id']);
+
+            if (array_key_exists('users', $event->content))
+                $data = array_merge($event->content['payload'], $data);
+
+            $event->update(['content' => array_merge($event->content, ['payload' => $data])]);
+
+
             $this->updateUserStatus(
                 $args['trip_id'],
                 ['is_picked_up' => $is_picked_up],

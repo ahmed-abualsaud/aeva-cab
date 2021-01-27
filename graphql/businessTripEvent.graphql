@@ -73,9 +73,12 @@ type BusinessTripEvent {
 type Content {
   started: EventObj
   ended: EventObj
+  payload: [EventObj]
 }
 
 type EventObj {
+  id: ID
+  status: String
   at: DateTime
   lat: String
   lng: String

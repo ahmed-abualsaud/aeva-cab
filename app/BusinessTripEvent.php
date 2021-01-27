@@ -29,12 +29,12 @@ class BusinessTripEvent extends Model
     public function scopeFilter($query, $args)
     {
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
-            $events = $query->select('log_id', 'content', 'map_url')
+            $events = $query->select('log_id', 'content', 'map_url', 'updated_at')
                 ->where('trip_id', $args['trip_id']);
         } else {
             $events = $query->selectRaw('
                 business_trips.id AS trip_id, business_trips.name AS trip_name,
-                business_trip_events.log_id, business_trip_events.content, business_trip_events.map_url
+                business_trip_events.log_id, business_trip_events.content, business_trip_events.map_url, business_trip_events.updated_at
             ')
             ->join('business_trips', 'business_trips.id', '=', 'business_trip_events.trip_id');
 
