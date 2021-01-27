@@ -20,12 +20,12 @@ input UpdatePricePackageInput {
 }
 
 input PriceInput {
-  one_day: Float
-  two_days: Float
-  three_days: Float
-  four_days: Float
-  five_days: Float
-  six_days: Float
+  one_day: String
+  two_days: String
+  three_days: String
+  four_days: String
+  five_days: String
+  six_days: String
 }
 
 type PricePackage {
@@ -40,10 +40,10 @@ type PricePackage {
 }
 
 type Price {
-  one_day: Float
-  two_days: Float
-  three_days: Float
-  four_days: Float
-  five_days: Float
-  six_days: Float
+  one_day: String
+  two_days: String
+  three_days: String
+  four_days: String
+  five_days: String
+  six_days: String
 }
