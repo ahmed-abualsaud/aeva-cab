@@ -196,8 +196,8 @@ class BusinessTripEventResolver
             ];
 
             foreach($args['users'] as $user) {
-                $arr['userId'] = $user['id'];
-                $arr['username'] = $user['name'];
+                $arr['user_id'] = $user['id'];
+                $arr['user_name'] = $user['name'];
                 $data[] = $arr;
             }
             $event = BusinessTripEvent::find($args['log_id']);
