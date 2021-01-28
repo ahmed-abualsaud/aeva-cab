@@ -20,42 +20,50 @@ input UpdateBusinessTripDriverLocationInput {
 
 input NearYouInput {
   station_id: ID! @rules(apply: ["required"])
-  trip_id: ID
-  trip_name: String
-  log_id: String
-  latitude: String
-  longitude: String
-}
-
-input ChangeBusinessTripUserStatusInput {
+  station_name: String! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
-  driver_id: ID! @rules(apply: ["required"])
-  status: String! @rules(apply: ["in:ABSENT,ARRIVED"])
+  trip_name: String! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
 }
 
 input ChangeBusinessTripPickupStatusInput {
   trip_id: ID! @rules(apply: ["required"])
+  trip_name: String! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
+  user_name: String! @rules(apply: ["required"])
   is_picked_up: Boolean! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+  driver_id: ID! @rules(apply: ["required"])
 }
 
 input ChangeBusinessTripAttendanceStatusInput {
   trip_id: ID! @rules(apply: ["required"])
   trip_name: String! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
+  user_name: String! @rules(apply: ["required"])
   is_absent: Boolean! @rules(apply: ["required"])
   log_id: String! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
+  driver_id: ID
 }
 
 input SelectUsersInput {
   trip_id: ID! @rules(apply: ["required"])
-  trip_name: String
+  trip_name: String! @rules(apply: ["required"])
   log_id: String! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
-  users: [ID!]! @rules(apply: ["required"])
+  users: [UserObj] @rules(apply: ["required"])
+}
+
+input UserObj {
+  id: ID! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required"])
 }
 
 type BusinessTripEvent {
@@ -77,7 +85,10 @@ type Content {
 }
 
 type EventObj {
-  id: ID
+  user_id: ID
+  user_name: String
+  station_id: ID
+  station_name: String
   status: String
   at: DateTime
   lat: String

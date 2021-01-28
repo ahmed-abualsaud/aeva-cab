@@ -225,8 +225,6 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "OndemandRequestResolver@destroy")
 
   # Business Trip Event
-  changeBusinessTripUserStatus(input: ChangeBusinessTripUserStatusInput! @spread): String
-    @field(resolver: "BusinessTripEventResolver@changeUserStatus")
   changeBusinessTripPickupStatus(input: ChangeBusinessTripPickupStatusInput! @spread): String
     @field(resolver: "BusinessTripEventResolver@changeBusinessTripPickupStatus")
 
@@ -260,8 +258,6 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "BusinessTripEventResolver@pickUsers")
   dropUsers(input: SelectUsersInput! @spread): String
     @field(resolver: "BusinessTripEventResolver@dropUsers")
-  changeBusinessTripAttendanceStatus(input: ChangeBusinessTripAttendanceStatusInput! @spread): String
-    @field(resolver: "BusinessTripEventResolver@changeBusinessTripAttendanceStatus")
 }
 
 # Admin|Partner|User Guard
@@ -300,6 +296,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Business Trip Attendance
   createBusinessTripAttendance(input: CreateBusinessTripAttendanceInput! @spread): Boolean
     @field(resolver: "BusinessTripAttendanceResolver@create")
+
+  # Business Trip Event
+  changeBusinessTripAttendanceStatus(input: ChangeBusinessTripAttendanceStatusInput! @spread): String
+    @field(resolver: "BusinessTripEventResolver@changeBusinessTripAttendanceStatus")
 }
 
 # -- QUERIES --
