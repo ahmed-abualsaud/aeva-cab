@@ -42,8 +42,6 @@ class CreateSchoolsTable extends Migration
         Schema::create('school_grades', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->time('enter_time');
-            $table->time('exit_time');
             $table->unsignedBigInteger('school_id');
             $table->timestamps();
 
@@ -59,12 +57,13 @@ class CreateSchoolsTable extends Migration
             $table->unsignedBigInteger('grade_id');
             $table->unsignedBigInteger('price_package_id');
             $table->string('student_name');
-            $table->string('contact_phone')->nullable();
+            $table->string('contact_phone');
             $table->double('pickup_lat', 15, 8);
             $table->double('pickup_lng', 15, 8);
             $table->string('pickup_address');
             $table->string('days');
-            $table->tinyInteger('no_of_seats')->default(1);
+            $table->time('enter_time');
+            $table->time('exit_time');
             $table->enum('status', [
                 'ACCEPTED', 
                 'REJECTED',

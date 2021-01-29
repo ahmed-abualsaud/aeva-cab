@@ -49,7 +49,8 @@ input ChangeBusinessTripAttendanceStatusInput {
   log_id: String! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
-  driver_id: ID
+  driver_id: ID! @rules(apply: ["required"])
+  by: String! @rules(apply: ["required", "in:driver,user"])
 }
 
 input SelectUsersInput {
@@ -91,6 +92,7 @@ type EventObj {
   station_name: String
   status: String
   at: DateTime
+  by: String
   lat: String
   lng: String
 }

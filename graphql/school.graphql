@@ -1,6 +1,6 @@
 input CreateSchoolZoneInput {
   city_id: ID! @rules(apply: ["required"])
-  name: String!
+  name: String! @rules(apply: ["required"])
   description: String
 }
 
@@ -13,7 +13,7 @@ input UpdateSchoolZoneInput {
 
 input CreateSchoolInput {
   zone_id: ID! @rules(apply: ["required"])
-  name: String!
+  name: String! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])
   longitude: String! @rules(apply: ["required"])
   address: String
@@ -30,17 +30,13 @@ input UpdateSchoolInput {
 
 input CreateSchoolGradeInput {
   school_id: ID! @rules(apply: ["required"])
-  name: String!
-  enter_time: String! @rules(apply: ["required"])
-  exit_time: String! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required"])
 }
 
 input UpdateSchoolGradeInput {
   id: ID! @rules(apply: ["required"])
-  school_id: ID @rules(apply: ["required_with:name"])
+  school_id: ID @rules(apply: ["required"])
   name: String
-  enter_time: String
-  exit_time: String
 }
 
 input CreateSchoolRequestInput {
@@ -49,12 +45,13 @@ input CreateSchoolRequestInput {
   grade_id: ID! @rules(apply: ["required"])
   price_package_id: ID! @rules(apply: ["required"])
   student_name: String! @rules(apply: ["required"])
-  contact_phone: String
+  contact_phone: String! @rules(apply: ["required"])
   pickup_lat: String! @rules(apply: ["required"])
   pickup_lng: String! @rules(apply: ["required"])
   pickup_address: String! @rules(apply: ["required"])
   days: String! @rules(apply: ["required"])
-  no_of_seats: Int
+  enter_time: String! @rules(apply: ["required"])
+  exit_time: String! @rules(apply: ["required"])
   comment: String
 }
 
@@ -69,7 +66,8 @@ input UpdateSchoolRequestInput {
   pickup_lng: String
   pickup_address: String
   days: String
-  no_of_seats: Int
+  enter_time: String
+  exit_time: String
   status: String @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING"])
   comment: String
   response: String
@@ -102,8 +100,6 @@ type School {
 type SchoolGrade {
   id: ID
   name: String
-  enter_time: String
-  exit_time: String
 }
 
 type SchoolRequest {
@@ -119,7 +115,8 @@ type SchoolRequest {
   pickup_lng: String
   pickup_address: String
   days: String
-  no_of_seats: Int
+  enter_time: String
+  exit_time: String
   status: String
   comment: String
   response: String
