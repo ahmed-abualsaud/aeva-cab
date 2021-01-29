@@ -35,8 +35,8 @@ input CreateSchoolGradeInput {
 
 input UpdateSchoolGradeInput {
   id: ID! @rules(apply: ["required"])
-  school_id: ID @rules(apply: ["required"])
-  name: String
+  school_id: ID! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required"])
 }
 
 input CreateSchoolRequestInput {
