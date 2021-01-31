@@ -26,8 +26,8 @@ input UpdateRoleInput {
 }
 
 type Role {
-  id: ID!
-  name: String!
+  id: ID
+  name: String
   stats: Boolean
   roles: Boolean
   users: Boolean

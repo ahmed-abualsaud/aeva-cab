@@ -59,7 +59,12 @@ extend type Mutation @guard(with: ["admin"]) {
   updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
   deleteRole(id: ID!): Role @delete
 
-  # Vehicles
+  # Statement
+  createStatement(input: CreateStatementInput! @spread): Statement @create
+  updateStatement(input: UpdateStatementInput! @spread): Statement @update @updateStatementValidation
+  deleteStatement(id: ID!): Statement @delete
+
+  # Vehicle
   createVehicle(input: CreateVehicleInput! @spread): Vehicle 
     @field(resolver: "VehicleResolver@create")
   updateVehicle(input: UpdateVehicleInput! @spread): Vehicle 
@@ -331,7 +336,10 @@ type Query @guard(with: ["admin"]) {
   roles: [Role] @all
   role(id: ID @eq): Role @find
 
-  # Vehicles
+  # Statement
+  statements: [Statement] @all
+
+  # Vehicle
   vehicles: [Vehicle] @paginate
   vehicle(id: ID @eq): Vehicle @find
 
@@ -466,6 +474,9 @@ extend type Query @guard(with: ["admin", "user"]) {
 
   # City
   cities: [City] @all
+
+  # Statement
+  statement(type: String! @eq): Statement @find
 }
 
 # Admin|Partner|User Guard
@@ -547,3 +558,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import city.graphql
 #import pricePackage.graphql
 #import businessTripAttendance.graphql
+#import statement.graphql

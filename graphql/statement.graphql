@@ -1,0 +1,32 @@
+input CreateStatementInput {
+  type: String! 
+    @rules(apply: [
+      "required", 
+      "unique:statements,type", 
+      "in:SCHOOL_REQUEST,ONDEMAND_REQUEST,TRIP_SUBSCRIPTION,NEW_USER,NEW_DRIVER,NEW_PARTNER,NEW_ADMIN"  
+    ])
+  title: String! @rules(apply: ["required"])
+  title_ar: String! @rules(apply: ["required"])
+  body: String! @rules(apply: ["required"])
+  body_ar: String! @rules(apply: ["required"])
+}
+
+input UpdateStatementInput {
+  id: ID! @rules(apply: ["required"])
+  type: String
+  title: String
+  title_ar: String
+  body: String
+  body_ar: String
+}
+
+type Statement {
+  id: ID
+  type: String
+  title: String
+  title_ar: String
+  body: String
+  body_ar: String
+  created_at: String
+  updated_at: String
+}
