@@ -96,7 +96,9 @@ class User extends Authenticatable implements JWTSubject
     public static function updateSecondaryNumber(string $no)
     {
         try {
-            auth('user')->userOrFail()->update(['secondary_no' => $no]);
+            auth('user')
+                ->userOrFail()
+                ->update(['secondary_no' => $no]);
         } catch (UserNotDefinedException $e) {
             //
         }

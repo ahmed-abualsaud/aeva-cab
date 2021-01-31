@@ -6,6 +6,7 @@ use App\PartnerDriver;
 use App\Traits\Searchable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 
@@ -132,5 +133,16 @@ class Driver extends Authenticatable implements JWTSubject
         }
 
         return $query;
+    }
+
+    public static function updateLocation(string $lat, string $lng)
+    {
+        try {
+            auth('driver')
+                ->userOrFail()
+                ->update(['latitude' => $lat, 'longitude' => $lng]);
+        } catch (UserNotDefinedException $e) {
+            //
+        }
     }
 } 

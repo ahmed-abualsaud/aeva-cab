@@ -2,9 +2,11 @@
 
 namespace App\GraphQL\Mutations;
 
+use App\Driver;
 use App\BusinessTrip;
 use App\BusinessTripEntry;
 use App\BusinessTripEvent;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use App\Helpers\StaticMapUrl;
 use App\BusinessTripAttendance;
@@ -13,7 +15,6 @@ use App\Traits\HandleDeviceTokens;
 use App\Exceptions\CustomException;
 use App\Events\BusinessTripStatusChanged;
 use App\Traits\HandleBusinessTripUserStatus;
-use Illuminate\Support\Arr;
 
 class BusinessTripEventResolver
 {
@@ -22,45 +23,31 @@ class BusinessTripEventResolver
 
     public function startTrip($_, array $args)
     {
-        try {
-            $trip = BusinessTrip::findOrFail($args['trip_id']);
-            if ($trip->status) throw new CustomException('This Trip has already been started!');
-            $log_id = $trip->subscription_code.'-'.Str::random(4).'-'.uniqid();
+        $trip = $this->getTripById($args['trip_id']);
 
-            $input = [
-                'trip_id' => $args['trip_id'],
-                'log_id' => $log_id,
-                'content' => [ 
-                    'started' => [
-                        'at' => date("Y-m-d H:i:s"),
-                        'lat' => $args['latitude'],
-                        'lng' => $args['longitude']
-                    ]
-                ]
-            ];
-            BusinessTripEvent::create($input);
+        if ($trip->status) 
+            throw new CustomException('This Trip has already been started!');
 
-            $this->whomDidAbsent($args['trip_id']);
+        $log_id = $trip->subscription_code.'-'.Str::random(4).'-'.uniqid();
 
-            auth('driver')->user()
-                ->update(['latitude' => $args['latitude'], 'longitude' => $args['longitude']]);
+        $this->initTripEvent($args, $log_id);
 
-            SendPushNotification::dispatch(
-                $this->getBusinessTripUsersToken($trip->id, null, null), 
-                'has been started', 
-                $trip->name
-            );
+        $this->checkAbsence($args['trip_id']);
 
-            $this->broadcastTripStatus(
-                $trip, 
-                ['status' => 'STARTED', 'log_id' => $log_id]
-            );
+        Driver::updateLocation($args['latitude'], $args['longitude']);
 
-            $trip->update(['status' => true, 'log_id' => $log_id]);
-            
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to start this trip!');
-        }
+        SendPushNotification::dispatch(
+            $this->getBusinessTripUsersToken($trip->id, null, null), 
+            'has been started', 
+            $trip->name
+        );
+
+        $this->broadcastTripStatus(
+            $trip, 
+            ['status' => 'STARTED', 'log_id' => $log_id]
+        );
+
+        $trip->update(['status' => true, 'log_id' => $log_id]);
 
         return $trip;
     }
@@ -158,13 +145,13 @@ class BusinessTripEventResolver
     public function updateDriverLocation($_, array $args)
     {
         try {
-            $location = [
+            $input = [
+                'log_id' => $args['log_id'],
                 'latitude' => $args['latitude'],
                 'longitude' => $args['longitude']
             ];
-            auth('driver')->user()->update($location);
-            $location['log_id'] = $args['log_id'];
-            BusinessTripEntry::create($location);
+            Driver::updateLocation($args['latitude'], $args['longitude']);
+            BusinessTripEntry::create($input);
         } catch (\Exception $e) {
             //
         }
@@ -174,18 +161,19 @@ class BusinessTripEventResolver
 
     public function endTrip($_, array $args)
     {
-        try {
-            $trip = BusinessTrip::findOrFail($args['trip_id']);
-            $log_id = $trip->log_id;
-            if (!$trip->status) throw new CustomException('This trip has already been ended!');
-            $trip->update(['status' => false, 'log_id' => null]);
-            $this->updateUserStatus(
-                $args['trip_id'],
-                ['is_picked_up' => false, 'is_absent' => false]
-            );
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to find this trip!');
-        }
+        $trip = $this->getTripById($args['trip_id']);
+
+        if (!$trip->status) 
+            throw new CustomException('This trip has already been ended!');
+
+        $log_id = $trip->log_id;
+
+        $trip->update(['status' => false, 'log_id' => null]);
+
+        $this->updateUserStatus(
+            $args['trip_id'],
+            ['is_picked_up' => false, 'is_absent' => false]
+        );
 
         $this->closeTripEvent($args, $log_id, $trip);
 
@@ -195,6 +183,16 @@ class BusinessTripEventResolver
     public function destroy($_, array $args)
     {
         return BusinessTripEvent::whereIn('log_id', $args['log_id'])->delete();
+    }
+
+    protected function getTripById($id)
+    {
+        try {
+            return BusinessTrip::with('partner:id,name')
+                ->findOrFail($id);
+        } catch (\Exception $e) {
+            throw new CustomException('We could not able to find this trip!');
+        }
     }
 
     protected function pickOrDropUsers($args, $is_picked_up, $msg)
@@ -291,7 +289,7 @@ class BusinessTripEventResolver
         }
     }
 
-    protected function whomDidAbsent($trip_id)
+    protected function checkAbsence($trip_id)
     {
         try {
             $absent_users = BusinessTripAttendance::whereAbsent($trip_id);
@@ -302,13 +300,37 @@ class BusinessTripEventResolver
         }
     }
 
+    protected function initTripEvent($args, $log_id)
+    {
+        try {
+            $input = [
+                'trip_id' => $args['trip_id'],
+                'log_id' => $log_id,
+                'content' => [ 
+                    'started' => [
+                        'at' => date("Y-m-d H:i:s"),
+                        'lat' => $args['latitude'],
+                        'lng' => $args['longitude']
+                    ]
+                ]
+            ];
+            BusinessTripEvent::create($input);
+        } catch (\Exception $e) {
+            //
+        }
+    }
+
     protected function broadcastTripStatus($trip, $input)
     {
         $data = [
             "id" => $trip->id,
             "log_id" => $input['log_id'],
             "name" => $trip->name,
-            "status" => $input['status']
+            "status" => $input['status'],
+            "partner" => [
+                "id" => $trip->partner->id,
+                "name" => $trip->partner->name
+            ]
         ];
         broadcast(new BusinessTripStatusChanged($data));
     }
