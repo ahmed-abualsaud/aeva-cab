@@ -229,9 +229,11 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "BusinessTripEventResolver@changeBusinessTripPickupStatus")
 
   # School
-  createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest @create
-  updateSchoolRequest(input: UpdateSchoolRequestInput! @spread): SchoolRequest @update
-  deleteSchoolRequest(id: [ID!]!): Boolean
+  createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest 
+    @field(resolver: "SchoolRequestResolver@create")
+  updateSchoolRequest(input: UpdateSchoolRequestInput! @spread): SchoolRequest 
+    @field(resolver: "SchoolRequestResolver@update")
+  deleteSchoolRequest(id: [ID!]!): String
     @field(resolver: "SchoolRequestResolver@destroy")
   rejectSchoolRequest(input: RejectSchoolRequestInput! @spread): String
     @field(resolver: "SchoolRequestResolver@reject")
@@ -475,8 +477,6 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "BusinessTripResolver@userSubscriptions")
   userTrips(user_id: ID!, partner_id: ID, day: String): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userTrips")
-  userTripPartners(user_id: ID!): [Partner]
-    @field(resolver: "BusinessTripResolver@userTripPartners")
   user(id: ID @eq): User @find
 
   # Business Trip Schedule

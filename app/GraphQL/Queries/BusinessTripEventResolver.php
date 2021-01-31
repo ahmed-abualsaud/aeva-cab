@@ -14,7 +14,7 @@ class BusinessTripEventResolver
      */
     public function businessTripSubscribers($_, array $args)
     {
-        $users = User::select('users.id', 'users.name', 'users.phone', 'users.avatar')
+        $users = User::select('users.id', 'users.name', 'users.phone', 'users.secondary_no', 'users.avatar')
             ->join('business_trip_users', 'users.id', '=', 'business_trip_users.user_id');
 
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
@@ -58,7 +58,7 @@ class BusinessTripEventResolver
 
     public function businessTripUsersStatus($_, array $args)
     {
-        $users = User::selectRaw('users.id, users.name, users.phone, users.avatar, business_trip_users.is_picked_up, business_trip_users.is_absent')
+        $users = User::selectRaw('users.id, users.name, users.phone, users.secondary_no, users.avatar, business_trip_users.is_picked_up, business_trip_users.is_absent')
             ->join('business_trip_users', 'users.id', '=', 'business_trip_users.user_id');
 
             if (array_key_exists('trip_id', $args) && $args['trip_id']) {

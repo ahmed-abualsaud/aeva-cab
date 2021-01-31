@@ -6,6 +6,7 @@ use App\PartnerUser;
 use App\Traits\Searchable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 
@@ -90,6 +91,15 @@ class User extends Authenticatable implements JWTSubject
         }
 
         return $query->orderBy('created_at', 'DESC');
+    }
+
+    public static function updateSecondaryNumber(string $no)
+    {
+        try {
+            auth('user')->userOrFail()->update(['secondary_no' => $no]);
+        } catch (UserNotDefinedException $e) {
+            //
+        }
     }
 }
  

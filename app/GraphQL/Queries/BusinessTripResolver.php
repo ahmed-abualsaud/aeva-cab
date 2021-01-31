@@ -95,19 +95,6 @@ class BusinessTripResolver
         return $userSubscriptions;
     }
 
-    public function userTripPartners($_, array $args)
-    {
-        $partners = Partner::Join('business_trips', 'business_trips.partner_id', '=', 'partners.id')
-            ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
-            ->where('business_trip_users.user_id', $args['user_id'])
-            ->whereNotNull('business_trip_users.subscription_verified_at')
-            ->selectRaw('partners.*')
-            ->distinct()
-            ->get();
-
-        return $partners;
-    }
-
     public function userTrips($_, array $args)
     {
         $date = date('Y-m-d', strtotime($args['day']));
@@ -173,24 +160,15 @@ class BusinessTripResolver
 
     public function driverLiveTrip($_, array $args)
     {
-        $liveTrip = BusinessTrip::select('id')
-            ->where('driver_id', $args['driver_id'])
-            ->where('status', true)
-            ->first();
-
-        if ($liveTrip) {
-            return [
-                "status" => true,
-                "tripType" => "App\BusinessTrip",
-                "tripID" => $liveTrip->id
-            ];
+        try {
+            $liveTrip = BusinessTrip::select('id')
+                ->where('driver_id', $args['driver_id'])
+                ->where('status', true)
+                ->firstOrFail();
+            return ["status" => true, "tripType" => "App\BusinessTrip", "tripID" => $liveTrip->id];
+        } catch (\Exception $e) {
+            return ["status" => false, "tripType" => null, "tripID" => null];
         }
-
-        return [
-            "status" => false,
-            "tripType" => null,
-            "tripID" => null
-        ];
     }
 
     public function driverLiveTrips($_, array $args)

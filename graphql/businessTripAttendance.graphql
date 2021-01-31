@@ -11,6 +11,7 @@ type BusinessTripAttendance {
   id: ID
   name: String
   phone: String
+  secondary_no: String
   avatar: String
   is_absent: Boolean
   comment: String

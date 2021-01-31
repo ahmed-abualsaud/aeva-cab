@@ -32,6 +32,7 @@ input UpdateUserInput {
   partner_id: ID
   phone: String
   emergency_no: String
+  secondary_no: String
   title: String
   avatar: Upload
   phone_verified_at: String
@@ -54,11 +55,6 @@ input SocialLoginInput {
   token: String! @rules(apply: ["required"])
   platform: String @rules(apply: ["in:android,ios"])
   device_id: String
-}
-
-type LocationCoordinatesResponse {
-  latitude: String!
-  longitude: String!
 }
 
 type UserPayload {
@@ -95,22 +91,13 @@ input ChangePasswordInput {
   new_password_confirmation: String!
 }
 
-input OrderByClause {
-  field: String!
-  order: SortOrder!
-}
-
-enum SortOrder {
-  ASC
-  DESC
-}
-
 type User {
   id: ID
   name: String
   email: String
   phone: String
   emergency_no: String
+  secondary_no: String
   avatar: String
   title: String
   partner_id: ID
@@ -126,10 +113,4 @@ type User {
   created_at: String
   updated_at: String
   partner: Partner @belongsTo
-  deviceTokens: [DeviceToken] @morphMany
-}
-
-type DeviceToken {
-  platform: String
-  device_id: String
 }

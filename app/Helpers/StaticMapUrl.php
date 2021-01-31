@@ -15,7 +15,7 @@ class StaticMapUrl
 
   public static function generatePath($path)
   {
-    $url = self::$map."&size=640x500&path=color:blue|weight:4|".$path."&key=".config('custom.google_static_map_key');
+    $url = self::$map."&size=640x450&path=color:blue|weight:4|".$path."&key=".config('custom.google_static_map_key');
     
     return urldecode($url);
   }

@@ -57,5 +57,4 @@ type Driver {
   fleet: Fleet @belongsTo
   trips: [BusinessTrip] @hasMany
   vehicles: [Vehicle] @hasMany
-  deviceTokens: [DeviceToken] @morphMany
 }

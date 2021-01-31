@@ -12,7 +12,7 @@ class BusinessTripAttendanceResolver
      */
     public function __invoke($_, array $args)
     {
-        $users = User::select('users.id', 'users.name', 'users.phone', 'users.avatar')
+        $users = User::select('users.id', 'users.name', 'users.phone', 'users.secondary_no', 'users.avatar')
             ->join('business_trip_users', function ($join) use ($args) {
                 $join->on('business_trip_users.user_id', '=', 'users.id')
                     ->where('business_trip_users.trip_id', $args['trip_id']);
