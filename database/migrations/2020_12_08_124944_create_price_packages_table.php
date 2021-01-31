@@ -19,6 +19,7 @@ class CreatePricePackagesTable extends Migration
             $table->string('type');
             $table->unsignedBigInteger('city_id');
             $table->text('description')->nullable();
+            $table->text('description_ar')->nullable();
             $table->text('price');
             $table->string('per');
             $table->string('photo')->nullable();
