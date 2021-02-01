@@ -2,7 +2,7 @@ input CreatePricePackageInput {
   city_id: ID! @rules(apply: ["required"])
   name: String! @rules(apply: ["required"])
   type: String! @rules(apply: ["required"])
-  price: String! @rules(apply: ["required"])
+  price: PriceInput! @rules(apply: ["required"])
   per: String! @rules(apply: ["required"])
   description: String
   description_ar: String
@@ -14,11 +14,20 @@ input UpdatePricePackageInput {
   city_id: ID
   name: String
   type: String
-  price: String
+  price: PriceInput
   per: String
   description: String
   description_ar: String
   photo: Upload
+}
+
+input PriceInput {
+  one_day: String
+  two_days: String
+  three_days: String
+  four_days: String
+  five_days: String
+  six_days: String
 }
 
 type PricePackage {
@@ -27,8 +36,17 @@ type PricePackage {
   type: String
   description: String
   description_ar: String
-  price: String
+  price: Price
   per: String
   photo: String
   city: City @belongsTo
+}
+
+type Price {
+  one_day: String
+  two_days: String
+  three_days: String
+  four_days: String
+  five_days: String
+  six_days: String
 }
