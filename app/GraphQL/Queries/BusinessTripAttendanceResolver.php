@@ -26,7 +26,8 @@ class BusinessTripAttendanceResolver
                 })
                 ->addSelect('business_trip_attendance.is_absent', 'business_trip_attendance.comment');
         } else {
-            $users = $users->addSelect('business_trip_users.is_absent');
+            $users = $users->where('business_trip_users.is_picked_up', false)
+                ->addSelect('business_trip_users.is_absent');
         }
 
         return $users->get();
