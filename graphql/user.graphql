@@ -112,5 +112,6 @@ type User {
   ref_code: String
   created_at: String
   updated_at: String
+  device_id: String
   partner: Partner @belongsTo
 }
