@@ -295,8 +295,6 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
 # Admin|Partner|User|Driver Guard
 extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Communication
-  sendChatMessage(input: SendChatMessageInput! @spread): BusinessTripChat
-    @field(resolver: "CommunicationResolver@sendChatMessage")
   sendBusinessTripChatMessage(input: SendBusinessTripChatMessageInput! @spread): BusinessTripChat
     @field(resolver: "CommunicationResolver@sendBusinessTripChatMessage")
 
@@ -529,9 +527,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripEventResolver@businessTripSubscribers")
 
   # Communication
-  chatMessages(trip_id: String!, trip_type: String!): [BusinessTripChat] 
-    @field(resolver: "CommunicationResolver@chatMessages")
-  businessTripChatMessages(log_id: String!): [BusinessTripChat] 
+  businessTripChatMessages(log_id: String!, user_id: ID, is_direct: Boolean): [BusinessTripChat] 
     @field(resolver: "CommunicationResolver@buisnessTripChatMessages")
 }
 

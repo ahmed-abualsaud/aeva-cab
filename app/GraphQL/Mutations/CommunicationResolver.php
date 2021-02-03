@@ -6,9 +6,10 @@ use App\Jobs\SendOtp;
 use App\BusinessTripChat;
 use App\Mail\DefaultMail;
 use App\Events\MessageSent;
-use App\Exceptions\CustomException;
+use Illuminate\Support\Arr;
 use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
+use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Mail;
 
 class CommunicationResolver
@@ -45,77 +46,103 @@ class CommunicationResolver
 
     public function sendBusinessTripChatMessage($_, array $args)
     {
-        $input = collect($args)->except(['directive', 'driver_id', 'trip_id'])->toArray();
-        $msg = BusinessTripChat::create($input);
+        $message = $this->createMessage($args);
+        $sender = $this->getSender($args['sender_type']);
 
-        $guard = strtolower(str_replace('App\\', '', $args['sender_type']));
-        $sender = auth($guard)->user();
-
-        switch ($args['sender_type']) {
-            case "App\\User":
-                $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, $sender->id);
-                array_push($tokens, $this->getDriverToken($args['driver_id']));
-                break;
-            case "App\\Driver":
-                $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, null);
-                break;
-            default:
-                $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, null);
-                array_push($tokens, $this->getDriverToken($args['driver_id']));
-                break;
+        if(array_key_exists('recipient_id', $args) && $args['recipient_id']) {
+            $this->notifyRecipient($args, $message['message'], $sender);
+        } else {
+            $this->notifyGroup($args, $message['message'], $sender);
+            $this->broadcastMessage($message, $sender, $args['log_id']);
         }
 
-        $res = [ 
-            "id" => $msg['id'],
-            "message" => $msg['message'],
-            "created_at" => date("Y-m-d H:i:s"),
-            "time" => date("h:i a"),
-            "sender" => [
-                "id" => $sender->id,
-                "name" => $sender->name,
-                "__typename" => "Sender"
-            ],
-            "sender_type" => $msg['sender_type'],
-            "__typename" => "Message"
-        ];
-
-        broadcast(new MessageSent('App.BusinessTrip.'.$args['log_id'], $res))->toOthers();
-        SendPushNotification::dispatch($tokens, $msg['message'], $sender->name);
-
-        $msg->time = date("h:i a");
-        
-        return $msg;
+        return $message;
     }
 
-    public function sendChatMessage($_, array $args)
+    protected function createMessage($args)
     {
-        $input = collect($args)->except(['directive', 'trip_type', 'trip_id'])->toArray();
-        $input['log_id'] = $args['trip_id'];
-        $msg = BusinessTripChat::create($input);
+        try {
+            $input = Arr::except($args, ['directive', 'driver_id', 'trip_id']);
+            if(array_key_exists('recipient_id', $args) && $args['recipient_id']) 
+                $input['is_direct'] = true;
+            $msg = BusinessTripChat::create($input);
+            $msg->time = date("h:i a");
+            return $msg;
+        } catch (\Exception $e) {
+            throw new CustomException('We could not able to save this message!');
+        }
+    }
 
-        $guard = strtolower(str_replace('App\\', '', $args['sender_type']));
-        $sender = auth($guard)->user();
+    protected function getSender($sender_type)
+    {
+        try {
+            $guard = strtolower(str_replace('App\\', '', $sender_type));
+            return auth($guard)->user();
+        } catch (\Exception $e) {
+            //
+        }
+    }
 
-        $res = [ 
-            "id" => $msg['id'],
-            "message" => $msg['message'],
-            "created_at" => date("Y-m-d H:i:s"),
-            "time" => date("h:i a"),
-            "sender" => [
-                "id" => $sender->id,
-                "name" => $sender->name,
-                "__typename" => "Sender"
-            ],
-            "sender_type" => $msg['sender_type'],
-            "__typename" => "Message"
-        ];
+    protected function notifyRecipient(array $args, $msg, $sender)
+    {
+        try {
+            switch($args['sender_type']) {
+                case 'App\\User':
+                    $token = $this->getDriverToken($args['recipient_id']);
+                break;
+                default:
+                    $token = $this->getUserToken($args['recipient_id']);
+            }
 
-        $channel = str_replace("\\", ".", $args['trip_type']) .'.'. $args['trip_id'];
+            SendPushNotification::dispatch($token, $msg, $sender->name);
+        } catch(\Exception $e) {
+            //
+        }
+    }
 
-        broadcast(new MessageSent($channel, $res))->toOthers();
+    protected function notifyGroup(array $args, $msg, $sender)
+    {
+        try {
+            switch ($args['sender_type']) {
+                case "App\\User":
+                    $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, $sender->id);
+                    array_push($tokens, $this->getDriverToken($args['driver_id']));
+                    break;
+                case "App\\Driver":
+                    $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, null);
+                    break;
+                default:
+                    $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, null);
+                    array_push($tokens, $this->getDriverToken($args['driver_id']));
+                    break;
+            }
+    
+            SendPushNotification::dispatch($tokens, $msg, $sender->name);
+        } catch (\Exception $e) {
+            //
+        }
+    }
 
-        $msg->time = date("h:i a");
-        
-        return $msg;
+    protected function broadcastMessage($msg, $sender, $log_id)
+    {
+        try {
+            $res = [ 
+                "id" => $msg['id'],
+                "message" => $msg['message'],
+                "created_at" => date("Y-m-d H:i:s"),
+                "time" => date("h:i a"),
+                "sender" => [
+                    "id" => $sender->id,
+                    "name" => $sender->name,
+                    "__typename" => "Sender"
+                ],
+                "sender_type" => $msg['sender_type'],
+                "__typename" => "Message"
+            ];
+    
+            broadcast(new MessageSent('App.BusinessTrip.'.$log_id, $res))->toOthers();
+        } catch (\Exception $e) {
+            //
+        }
     }
 }

@@ -8,14 +8,6 @@ input SendDirectMessageInput {
   message: String! @rules(apply: ["required"])
 }
 
-input SendChatMessageInput {
-  sender_type: String!
-  sender_id: ID!
-  trip_type: String!
-  trip_id: String!
-  message: String!
-}
-
 input SendBusinessTripChatMessageInput {
   sender_type: String! @rules(apply: ["required"])
   sender_id: ID! @rules(apply: ["required"])
@@ -23,6 +15,7 @@ input SendBusinessTripChatMessageInput {
   log_id: String! @rules(apply: ["required"])
   message: String! @rules(apply: ["required"])
   driver_id: ID
+  recipient_id: ID
 }
 
 type BusinessTripChat {

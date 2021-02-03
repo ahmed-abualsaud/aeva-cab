@@ -17,10 +17,13 @@ class CreateBusinessTripChatTable extends Migration
             $table->bigIncrements('id');
             $table->string('log_id');
             $table->morphs('sender');
+            $table->unsignedBigInteger('recipient_id')->nullable();
             $table->string('message');
+            $table->boolean('is_direct')->default(false);
             $table->timestamps();
 
             $table->index('log_id');
+            $table->index(['sender_id', 'recipient_id']);
         });
     }
 
