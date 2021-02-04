@@ -7,6 +7,7 @@ input CreateBusinessTripInput {
   end_date: Date! @rules(apply: ["required"])
   days: TripDaysInput! @rules(apply: ["required"])
   return_time: String
+  group_chat: Boolean
   request_ids: [ID]
   schools: [BusinessTripSchoolsInput] @rules(apply: ["required_with:request_ids"])
   users: [BusinessTripUsersInput] @rules(apply: ["required_with:request_ids"])
@@ -49,6 +50,7 @@ input UpdateBusinessTripInput {
   start_date: Date
   end_date: Date
   days: TripDaysInput
+  group_chat: Boolean
 }
 
 input TripDaysInput {
