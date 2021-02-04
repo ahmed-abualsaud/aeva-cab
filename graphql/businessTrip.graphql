@@ -84,6 +84,7 @@ type BusinessTrip {
   flag: Boolean
   isReturn: Boolean
   is_absent: Boolean
+  group_chat: Boolean
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo

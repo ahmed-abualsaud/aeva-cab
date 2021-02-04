@@ -28,6 +28,7 @@ class CreateBusinessTripsTable extends Migration
             $table->integer('distance')->nullable();
             $table->boolean('status')->default(false);
             $table->string('log_id')->nullable();
+            $table->boolean('group_chat')->default(true);
             $table->timestamps();
             $table->softDeletes();
 
