@@ -3,7 +3,6 @@
 namespace App\GraphQL\Queries;
 
 use App\User;
-use App\Partner;
 use Carbon\Carbon;
 use App\BusinessTrip;
 use App\BusinessTripUser;
@@ -101,10 +100,6 @@ class BusinessTripResolver
 
         $userTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id']);
-        
-        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
-            $userTrips->where('business_trips.partner_id', $args['partner_id']);
-        }
 
         $userTrips = $userTrips->whereNotNull('business_trip_users.subscription_verified_at')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
@@ -149,10 +144,21 @@ class BusinessTripResolver
 
     public function userLiveTrips($_, array $args)
     {
+        $today = strtolower(date('l'));
+
         $liveTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
             ->where('status', true)
+            ->whereRaw('JSON_EXTRACT(business_trips.days, "$.'.$today.'") <> CAST("null" AS JSON)')
+            ->where(function ($query) use ($today) {
+                $query->whereNull('business_trip_schedules.days')
+                    ->orWhere('business_trip_schedules.days->'.$today, true);
+            })
             ->select('business_trips.*')
+            ->leftJoin('business_trip_schedules', function ($join) use ($args) {
+                $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
+                    ->where('business_trip_schedules.user_id', $args['user_id']);
+            })
             ->get();
 
         return $liveTrips;
