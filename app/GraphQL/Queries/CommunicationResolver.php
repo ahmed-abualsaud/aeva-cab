@@ -11,7 +11,7 @@ class CommunicationResolver
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function buisnessTripChatMessages($_, array $args)
+    public function businessTripChatMessages($_, array $args)
     {
         try {
             $messages = BusinessTripChat::with('sender:id,name')
