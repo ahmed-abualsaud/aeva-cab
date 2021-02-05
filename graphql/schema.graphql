@@ -528,7 +528,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Communication
   businessTripChatMessages(log_id: String!, user_id: ID, is_direct: Boolean): [BusinessTripChat] 
-    @field(resolver: "CommunicationResolver@buisnessTripChatMessages")
+    @field(resolver: "CommunicationResolver@businessTripChatMessages")
 }
 
 #import fleet.graphql 
