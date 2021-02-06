@@ -19,12 +19,9 @@ class BusinessTripResolver
 
         switch($status) {
             case 'subscribed':
-                $users = User::selectRaw('users.id, users.name, users.avatar, users.phone, business_trip_stations.name AS station_name')
+                $users = User::selectRaw('users.id, users.name, users.avatar, users.phone, business_trip_stations.name AS station_name, business_trip_users.subscription_verified_at')
                     ->where('business_trip_users.trip_id', $args['trip_id'])
-                    ->join('business_trip_users', function ($join) {
-                        $join->on('users.id', '=', 'business_trip_users.user_id')
-                            ->whereNotNull('subscription_verified_at');
-                    })
+                    ->join('business_trip_users', 'business_trip_users.user_id', '=', 'users.id')
                     ->leftJoin('business_trip_stations', 'business_trip_stations.id', '=', 'business_trip_users.station_id')
                     ->get();
 

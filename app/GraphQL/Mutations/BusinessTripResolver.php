@@ -83,9 +83,13 @@ class BusinessTripResolver
     public function inviteUser($_, array $args)
     {
         try {
+            $invite = array_key_exists('trip_name', $args) 
+                && array_key_exists('subscription_code', $args);
             $arr = [
                 'trip_id' => $args['trip_id'],
-                'created_at' => now(), 'updated_at' => now()
+                'created_at' => now(), 
+                'updated_at' => now(),
+                'subscription_verified_at' => $invite ? null : now()
             ];
             foreach($args['user_id'] as $val) {
                 $arr['user_id'] = $val;
@@ -97,19 +101,9 @@ class BusinessTripResolver
             throw new CustomException('Each user is allowed to subscribe for a trip once.');
         }
 
-        $users = User::select('phone')
-            ->whereIn('id', $args['user_id'])
-            ->get();
-        $phones = $users->pluck('phone')->toArray();
+        if ($invite) $this->notifyUserViaSms($args);
 
-        $message = 'Dear valued user, kindly use this code to confirm your subscription: ' . $args['subscription_code'];
-        
-        SendOtp::dispatch(implode(",", $phones), $message); 
-
-        return [
-            "status" => true,
-            "message" => "Subscription code has been sent."
-        ];
+        return 'Selected users have been subscribed but still not verified';
     }
 
     public function subscribeUser($_, array $args) 
@@ -170,6 +164,19 @@ class BusinessTripResolver
             "status" => true,
             "message" => "Subscription cancellation has done successfully."
         ];
+    }
+
+    public function verifyUserSubscription($_, array $args)
+    {
+        try {
+            BusinessTripUser::where('trip_id', $args['trip_id'])
+                ->where('user_id', $args['user_id'])
+                ->update(['subscription_verified_at' => $args['subscription_verified_at']]);
+        } catch (\Exception $e) {
+            throw new CustomException('We could not able to toggle this subscription!');
+        }
+
+        return "Subscription toggled successfully";
     }
 
     protected function assignUsersToStation(array $args)
@@ -265,5 +272,23 @@ class BusinessTripResolver
         }
 
         BusinessTripSchedule::upsert($tripScheduleData, ['days']);
+    }
+
+    protected function notifyUserViaSms(array $args)
+    {
+        try {
+            $phones = User::select('phone')
+            ->whereIn('id', $args['user_id'])
+            ->pluck('phone')
+            ->toArray();
+
+            $message = 'Dear valued user, kindly use this code to confirm your subscription for '
+            . $args['trip_name'] .' trip: ' 
+            . $args['subscription_code'];
+            
+            SendOtp::dispatch(implode(",", $phones), $message); 
+        } catch (\Exception $e) {
+            //
+        }
     }
 }

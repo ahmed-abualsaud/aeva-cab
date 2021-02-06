@@ -1,7 +1,8 @@
 input CreateBusinessTripUserInput {
   trip_id: ID! @rules(apply: ["required"])
   user_id: [ID!]! @rules(apply: ["required"])
-  subscription_code: String! @rules(apply: ["required"])
+  trip_name: String
+  subscription_code: String
 }
 
 input DeleteBusinessTripUserInput {
@@ -12,6 +13,12 @@ input DeleteBusinessTripUserInput {
 input ConfirmBusinessTripUserInput {
   user_id: ID! @rules(apply: ["required"])
   subscription_code: String! @rules(apply: ["required"])
+} 
+
+input VerifyBusinessTripUserInput {
+  user_id: ID! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+  subscription_verified_at: DateTime
 } 
 
 input GetBusinessTripUsersInput {
@@ -42,10 +49,11 @@ input DeleteBusinessTripStationUsersInput {
   users: [ID!]! @rules(apply: ["required"])
 }
 
-type BusinessTripUserWithStationResponse {
+type BusinessTripUsers {
   id: ID!
   name: String!
   avatar: String
   phone: String
   station_name: String
+  subscription_verified_at: DateTime
 }

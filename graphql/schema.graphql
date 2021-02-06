@@ -201,7 +201,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripStationResolver@unassignUsers")
 
   # Business Trip User
-  createBusinessTripUser(input: CreateBusinessTripUserInput! @spread): DefaultResponse 
+  createBusinessTripUser(input: CreateBusinessTripUserInput! @spread): String 
     @field(resolver: "BusinessTripResolver@inviteUser")
 
   # Business Trip Event
@@ -282,6 +282,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "BusinessTripResolver@subscribeUser")
   deleteBusinessTripUser(input: DeleteBusinessTripUserInput! @spread): DefaultResponse
     @field(resolver: "BusinessTripResolver@unsubscribeUser")
+  verifyBusinessTripUser(input: VerifyBusinessTripUserInput! @spread): String
+    @field(resolver: "BusinessTripResolver@verifyUserSubscription")
 
   # Business Trip Station User
   createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
@@ -437,7 +439,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripResolver@stationNotAssignedUsers")
 
   # Business Trip User
-  businessTripUsers(input: GetBusinessTripUsersInput! @spread): [BusinessTripUserWithStationResponse] 
+  businessTripUsers(input: GetBusinessTripUsersInput! @spread): [BusinessTripUsers] 
     @field(resolver: "BusinessTripResolver@users")
 
   # Business Trip Event
