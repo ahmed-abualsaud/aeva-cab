@@ -32,7 +32,6 @@ class PricePackageResolver
 
     public function update($_, array $args)
     {
-        
         try {
             $input = collect($args)->except(['id', 'directive', 'photo'])->toArray();
             $pricePackage = PricePackage::findOrFail($args['id']);
@@ -49,5 +48,10 @@ class PricePackageResolver
         }
 
         return $pricePackage;
+    }
+
+    public function updateOrder($_, array $args)
+    {
+        return PricePackage::reorder($args['orders']);
     }
 }

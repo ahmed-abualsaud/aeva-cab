@@ -153,6 +153,8 @@ extend type Mutation @guard(with: ["admin"]) {
     @field(resolver: "PricePackageResolver@create")
   updatePricePackage(input: UpdatePricePackageInput! @spread): PricePackage 
     @field(resolver: "PricePackageResolver@update")
+  updatePricePackageOrder(input: UpdateOrderInput! @spread): Boolean 
+    @field(resolver: "PricePackageResolver@updateOrder")
   deletePricePackage(id: ID!): PricePackage @delete
 
   # City
@@ -470,7 +472,7 @@ extend type Query @guard(with: ["admin", "user"]) {
   schoolRequestsByUser(user_id: ID! @eq): [SchoolRequest] @all
 
   # Price Package
-  pricePackages(city_id: ID): [PricePackage] @all(scopes: ["filter"])
+  pricePackages(city_id: ID): [PricePackage] @all(scopes: ["whereCity"])
 
   # City
   cities: [City] @all

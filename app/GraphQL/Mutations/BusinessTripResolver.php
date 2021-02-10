@@ -278,9 +278,9 @@ class BusinessTripResolver
     {
         try {
             $phones = User::select('phone')
-            ->whereIn('id', $args['user_id'])
-            ->pluck('phone')
-            ->toArray();
+                ->whereIn('id', $args['user_id'])
+                ->pluck('phone')
+                ->toArray();
 
             $message = 'Dear valued user, kindly use this code to confirm your subscription for '
             . $args['trip_name'] .' trip: ' 

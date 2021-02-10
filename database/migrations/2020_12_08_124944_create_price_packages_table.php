@@ -23,6 +23,7 @@ class CreatePricePackagesTable extends Migration
             $table->json('price');
             $table->string('per');
             $table->string('photo')->nullable();
+            $table->smallInteger('order');
             $table->timestamps();
 
             $table->index('city_id');
