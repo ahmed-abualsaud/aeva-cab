@@ -2,10 +2,13 @@
 
 namespace App;
 
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 
 class SchoolRequest extends Model
 {
+    use Filterable;
+
     protected $guarded = [];
 
     public function user()
@@ -28,7 +31,7 @@ class SchoolRequest extends Model
         return $this->belongsTo(PricePackage::class);
     }
 
-    public function scopeZone($query, $args) 
+    public function scopeWhereZone($query, $args) 
     {
         if (array_key_exists('zone_id', $args) && $args['zone_id']) {
             $query = $query->whereHas('school', function($query) use ($args) {
@@ -38,13 +41,17 @@ class SchoolRequest extends Model
 
         return $query->where('status', 'PENDING')
             ->limit($args['limit'])
-            ->orderBy('created_at', 'DESC');
+            ->latest('created_at');
     }
 
-    public function scopeArchive($query)
+    public function scopeWhereArchived($query, array $args)
     {
+        if (array_key_exists('period', $args) && $args['period']) {
+            $query = $this->dateFilter($args['period'], $query, 'created_at');
+        }
+
         return $query->where('status', '<>', 'PENDING')
-            ->orderBy('created_at', 'DESC');
+            ->latest('created_at');
     }
 
     public static function accept($ids)

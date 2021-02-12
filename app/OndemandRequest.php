@@ -37,6 +37,6 @@ class OndemandRequest extends Model
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
 
-        return $query->orderBy('created_at', 'DESC');
+        return $query->latest('created_at');
     }
 }

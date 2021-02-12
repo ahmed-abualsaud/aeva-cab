@@ -10,22 +10,25 @@ trait Filterable
     {
         switch($period) {
             case 'today':
-                return $result->where($field, '>=', Carbon::today());
-            
+                return $result->whereDate($field, '=', Carbon::today());
+
+            case 'yesterday':
+                return $result->whereDate($field, '=', Carbon::yesterday());
+                
             case 'week':
-                return $result->where($field, '>=', Carbon::now()->subDays(7));
+                return $result->whereDate($field, '>=', Carbon::now()->subDays(7));
             
             case 'month':
-                return $result->where($field, '>=', Carbon::now()->subMonth());
+                return $result->whereDate($field, '>=', Carbon::now()->subMonth());
             
             case 'quarter':
-                return $result->where($field, '>=', Carbon::now()->subMonth(3));
+                return $result->whereDate($field, '>=', Carbon::now()->subMonth(3));
             
             case 'half':
-                return $result->where($field, '>=', Carbon::now()->subMonth(6));
+                return $result->whereDate($field, '>=', Carbon::now()->subMonth(6));
             
             case 'year':
-                return $result->where($field, '>=', Carbon::now()->subMonth(12));  
+                return $result->whereDate($field, '>=', Carbon::now()->subMonth(12));  
         }
     }
 }
