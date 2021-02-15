@@ -32,8 +32,9 @@ class BusinessTripStatusChanged implements ShouldBroadcast
     public function broadcastOn()
     {
         return [
+            new PrivateChannel('App.Admin'),
             new PrivateChannel('App.Partner.' . $this->notification['partner']['id']),
-            new PrivateChannel('App.Admin')
+            new PrivateChannel('App.BusinessTrip.' . $this->notification['log_id'])
         ];
     }
 

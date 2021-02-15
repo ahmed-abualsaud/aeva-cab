@@ -3,7 +3,6 @@
 namespace App;
 
 use App\Traits\Searchable;
-use App\BusinessTripSchedule;
 use Illuminate\Database\Eloquent\Model;
 
 class BusinessTrip extends Model
@@ -32,31 +31,31 @@ class BusinessTrip extends Model
     }
 
     public function stations() 
-    {
-        $stations = $this->hasMany(BusinessTripStation::class, 'trip_id');
+    {        
+        return $this->hasMany(BusinessTripStation::class, 'trip_id')
+            ->whereNotNull('accepted_at');
+    }
 
-        if (auth('user')->user()) {
-            $stations->leftJoin('business_trip_users', function ($join) {
-                $join->on('business_trip_users.station_id', '=', 'business_trip_stations.id')
-                    ->where('business_trip_users.user_id', auth('user')->user()->id);
-            })
-            ->selectRaw('business_trip_stations.*, business_trip_users.station_id AS is_my_station');
-        }
+    public function userStation() 
+    {        
+        return $this->hasOne(BusinessTripStation::class, 'trip_id')
+            ->join('business_trip_users', 'business_trip_users.station_id', '=', 'business_trip_stations.id')
+            ->where('business_trip_users.user_id', auth('user')->user()->id)
+            ->selectRaw('business_trip_stations.*');
+    }
 
-        $stations->whereNotNull('accepted_at');
-
-        return $stations;
+    public function userDestination() 
+    {        
+        return $this->hasOne(BusinessTripStation::class, 'trip_id')
+            ->join('business_trip_users', 'business_trip_users.destination_id', '=', 'business_trip_stations.id')
+            ->where('business_trip_users.user_id', auth('user')->user()->id)
+            ->selectRaw('business_trip_stations.*');
     }
 
     public function users()
     {
         return $this->belongsToMany(User::class, 'business_trip_users', 'trip_id', 'user_id')
             ->whereNotNull('business_trip_users.subscription_verified_at');
-    } 
-
-    public function schedule()
-    {
-        return $this->hasOne(BusinessTripSchedule::class, 'trip_id');
     }
 
     public function scopeAvailableLines($query, $args) 

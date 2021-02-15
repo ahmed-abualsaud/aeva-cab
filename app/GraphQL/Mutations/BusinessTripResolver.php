@@ -40,7 +40,7 @@ class BusinessTripResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException('We could not able to create a business trip!');
+            throw new CustomException($e->getMessage());
         }
 
         return $businessTrip;
@@ -204,59 +204,58 @@ class BusinessTripResolver
 
     protected function assignUsersToStations($users, $trip_id)
     {
-        $tripUserArr = [
+        $arr = [
             'creator_type' => 'App\\SchoolRequest',
             'trip_id' => $trip_id,
             'subscription_verified_at' => now(),
             'created_at' => now(), 'updated_at' => now()
         ];
 
-        $stations = BusinessTripStation::select('id', 'creator_id')
+        $stations = BusinessTripStation::select('id', 'creator_id', 'name')
             ->where('trip_id', $trip_id)
             ->get();
 
         foreach($users as $user) {
-            $tripUserArr['user_id'] = $user['id'];
-            $tripUserArr['station_id'] = $stations->firstWhere('creator_id', $user['request_id'])->id;
-            $tripUserArr['creator_id'] = $user['request_id'];
-            $tripUserData[] = $tripUserArr;
+            $arr['user_id'] = $user['id'];
+            $arr['station_id'] = $stations->firstWhere('creator_id', $user['request_id'])->id;
+            $arr['destination_id'] = $stations->firstWhere('name', $user['school'])->id;
+            $arr['creator_id'] = $user['request_id'];
+            $data[] = $arr;
         }
-        BusinessTripUser::upsert($tripUserData, ['station_id', 'creator_type', 'creator_id']);
+        BusinessTripUser::upsert($data, ['station_id', 'creator_type', 'creator_id']);
     }
 
     protected function createStations($users, $schools, $trip_id)
     {
-        $tripUserStationArr = [
+        $pickable = [
+            'state' => 'PICKABLE',
             'creator_type' => 'App\\SchoolRequest',
             'trip_id' => $trip_id,
-            'state' => 'PICKABLE',
             'created_at' => now(), 'updated_at' => now(), 'accepted_at' => now(),
         ];
-
-        $tripSchoolStationArr = [
-            'creator_type' => null,
-            'creator_id' => null,
-            'trip_id' => $trip_id,
-            'state' => 'DESTINATION',
-            'created_at' => now(), 'updated_at' => now(), 'accepted_at' => now(),
-        ];
-
         foreach($users as $user) {
-            $tripUserStationArr['creator_id'] = $user['request_id'];
-            $tripUserStationArr['name'] = $user['address'];
-            $tripUserStationArr['latitude'] = $user['lat'];
-            $tripUserStationArr['longitude'] = $user['lng'];
-            $tripStationData[] = $tripUserStationArr;
+            $pickable['creator_id'] = $user['request_id'];
+            $pickable['name'] = $user['address'];
+            $pickable['latitude'] = $user['lat'];
+            $pickable['longitude'] = $user['lng'];
+            $data[] = $pickable;
         }
 
+        $destination = [
+            'creator_type' => null,
+            'creator_id' => null,
+            'state' => 'DESTINATION',
+            'trip_id' => $trip_id,
+            'created_at' => now(), 'updated_at' => now(), 'accepted_at' => now(),
+        ];
         foreach($schools as $school) {
-            $tripSchoolStationArr['name'] = $school['name'];
-            $tripSchoolStationArr['latitude'] = $school['lat'];
-            $tripSchoolStationArr['longitude'] = $school['lng'];
-            $tripStationData[] = $tripSchoolStationArr;
+            $destination['name'] = $school['name'];
+            $destination['latitude'] = $school['lat'];
+            $destination['longitude'] = $school['lng'];
+            $data[] = $destination;
         } 
 
-        BusinessTripStation::insert($tripStationData);
+        BusinessTripStation::insert($data);
     }
 
     protected function createScheduleForEachUser($users, $trip_id)

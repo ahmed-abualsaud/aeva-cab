@@ -125,6 +125,23 @@ class BusinessTripStationResolver
         ];
     }
 
+    public function changeOrAssign($_, array $args)
+    {
+        try {
+            $data = [
+                'trip_id' => $args['trip_id'],
+                'user_id' => $args['user_id'],
+                'station_id' => $args['station_id'],
+                'destination_id' => $args['destination_id'],
+                'subscription_verified_at' => now(),
+                'created_at' => now(), 'updated_at' => now()
+            ];
+            return BusinessTripUser::upsert($data, ['station_id', 'destination_id', 'updated_at']);
+        } catch (\Exception $e) {
+            throw new CustomException('Something went wrong! please try again');
+        }
+    }
+
     public function assignUsers($_, array $args)
     {
         try {

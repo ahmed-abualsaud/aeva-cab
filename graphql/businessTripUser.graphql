@@ -24,7 +24,7 @@ input VerifyBusinessTripUserInput {
 input GetBusinessTripUsersInput {
   partner_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
-  status: String! @rules(apply: ["required", "in:subscribed,notSubscribed,notVerified"])
+  status: String! @rules(apply: ["required", "in:subscribed,notSubscribed"])
 }
 
 input CreateBusinessTripStationUserInput {
@@ -32,10 +32,12 @@ input CreateBusinessTripStationUserInput {
   station_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
 }
- 
-input DeleteBusinessTripStationUserInput {
-  station_id: ID! @rules(apply: ["required"])
+
+input ChangeOrAssignBusinessTripUserStationInput {
+  trip_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
+  station_id: ID! @rules(apply: ["required"])
+  destination_id: ID! @rules(apply: ["required"])
 }
 
 input CreateBusinessTripStationUsersInput {

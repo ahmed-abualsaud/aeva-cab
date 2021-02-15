@@ -287,9 +287,11 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
   verifyBusinessTripUser(input: VerifyBusinessTripUserInput! @spread): String
     @field(resolver: "BusinessTripResolver@verifyUserSubscription")
 
-  # Business Trip Station User
+  # Business Trip User Station
   createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
     @field(resolver: "BusinessTripStationResolver@assignUser")
+  changeOrAssignBusinessTripUserStation(input: ChangeOrAssignBusinessTripUserStationInput! @spread): 
+    Boolean @field(resolver: "BusinessTripStationResolver@changeOrAssign")
 
   # Business Trip Schedule
   upsertBusinessTripSchedule(input: BusinessTripScheduleInput! @spread): Boolean

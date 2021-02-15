@@ -26,7 +26,6 @@ input BusinessTripSchoolsInput {
   name: String
   lat: String
   lng: String
-  request_id: ID
 }
 
 input BusinessTripUsersInput {
@@ -36,6 +35,7 @@ input BusinessTripUsersInput {
   lng: String
   request_id: ID
   days: UserDaysInput
+  school: String
 }
 
 input UpdateBusinessTripInput {
@@ -92,6 +92,8 @@ type BusinessTrip {
   vehicle: Vehicle @belongsTo
   days: TripDays
   stations: [BusinessTripStation] @hasMany
+  userStation: BusinessTripStation @hasOne
+  userDestination: BusinessTripStation @hasOne
   users: [User] @hasMany
 }
 
