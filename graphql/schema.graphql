@@ -244,6 +244,8 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "SchoolRequestResolver@destroy")
   rejectSchoolRequest(input: RejectSchoolRequestInput! @spread): String
     @field(resolver: "SchoolRequestResolver@reject")
+  restoreSchoolRequest(id: [ID!]!): String
+    @field(resolver: "SchoolRequestResolver@restore")
 }
 
 # Admin|Driver Guard

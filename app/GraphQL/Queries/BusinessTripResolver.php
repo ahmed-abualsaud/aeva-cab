@@ -19,10 +19,22 @@ class BusinessTripResolver
 
         switch($status) {
             case 'subscribed':
-                $users = User::selectRaw('users.id, users.name, users.avatar, users.phone, business_trip_stations.name AS station_name, business_trip_users.subscription_verified_at')
-                    ->where('business_trip_users.trip_id', $args['trip_id'])
-                    ->join('business_trip_users', 'business_trip_users.user_id', '=', 'users.id')
-                    ->leftJoin('business_trip_stations', 'business_trip_stations.id', '=', 'business_trip_users.station_id')
+                $users = User::selectRaw(
+                    'users.id, users.name, users.avatar, users.phone, station.name AS station, destination.name AS destination, subscription.subscription_verified_at'
+                    )
+                    ->join(
+                        'business_trip_users as subscription', 
+                        'subscription.user_id', '=', 'users.id'
+                    )
+                    ->leftJoin(
+                        'business_trip_stations as station', 
+                        'station.id', '=', 'subscription.station_id'
+                    )
+                    ->leftJoin(
+                        'business_trip_stations as destination', 
+                        'destination.id', '=', 'subscription.destination_id'
+                    )
+                    ->where('subscription.trip_id', $args['trip_id'])
                     ->get();
 
                 break;
@@ -36,17 +48,6 @@ class BusinessTripResolver
                             ->where('trip_id', $args['trip_id']);
                     })
                     ->get();
-                break;
-            case 'notVerified':
-                $users = User::select('id', 'name', 'avatar', 'phone')
-                    ->whereIn('id', function($query) use ($args) {
-                        $query->select('user_id')
-                            ->from('business_trip_users')
-                            ->where('trip_id', $args['trip_id'])
-                            ->whereNull('subscription_verified_at');
-                    })
-                    ->get();
-                    
                 break;
         }
 

@@ -52,10 +52,11 @@ input DeleteBusinessTripStationUsersInput {
 }
 
 type BusinessTripUsers {
-  id: ID!
-  name: String!
+  id: ID
+  name: String
   avatar: String
   phone: String
-  station_name: String
+  station: String
+  destination: String
   subscription_verified_at: DateTime
 }

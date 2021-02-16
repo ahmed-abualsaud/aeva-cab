@@ -54,17 +54,30 @@ class SchoolRequestResolver
         try {
             SchoolRequest::reject($args['requestIds'], $args['response']);
             
-            SendPushNotification::dispatch(
-                $this->getUsersToken($args['userIds']),
-                'Your request has been rejected! '. $args['response'],
-                'Qruz to School'
-            );
+            if ($args['notify']) {
+                SendPushNotification::dispatch(
+                    $this->getUsersToken($args['userIds']),
+                    'Your request has been rejected! '. $args['response'],
+                    'Qruz to School'
+                );
+            }
 
         } catch (\Exception $e) {
             throw new CustomException('We could not able to reject selected requests!');
         }
 
         return "Selected requests have been rejected";
+    }
+
+    public function restore($_, array $args)
+    {
+        try {
+            SchoolRequest::restore($args['id']);
+        } catch (\Exception $e) {
+            throw new CustomException('We could not able to restore selected requests!');
+        }
+
+        return "Selected requests have been restored";
     }
     
     public function destroy($_, array $args)

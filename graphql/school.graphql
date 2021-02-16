@@ -77,6 +77,7 @@ input RejectSchoolRequestInput {
   requestIds: [ID!]! @rules(apply: ["required"])
   userIds: [ID!]! @rules(apply: ["required"])
   response: String! @rules(apply: ["required"])
+  notify: Boolean! @rules(apply: ["required"])
 }
 
 type SchoolZone {
