@@ -54,31 +54,22 @@ class BusinessTripResolver
         return $users;
     }
 
-    public function stationAssignedUsers($_, array $args)
+    public function stationUsers($_, array $args)
     {
-        $stationUsers = BusinessTripUser::where('station_id', $args['station_id'])
-            ->join('users', 'users.id', '=', 'business_trip_users.user_id')
-            ->select('users.id', 'users.name', 'users.avatar', 'users.phone')
-            ->get();
+        $users = User::select('users.id', 'users.name', 'users.avatar', 'users.phone')
+            ->join('business_trip_users', 'business_trip_users.user_id', '=', 'users.id');
 
-        return $stationUsers;
-    }
+            if ($args['status'] == 'assigned') {
+                $users = $users->where('station_id', $args['station_id']);
+            } else {
+                $users = $users->where('trip_id', $args['trip_id'])
+                    ->where(function ($query) use ($args) {
+                        $query->whereNull('station_id')
+                            ->orWhere('station_id', '<>', $args['station_id']);
+                });
+            }
 
-    public function stationNotAssignedUsers($_, array $args)
-    {
-
-        $stationNotAssignedUsers = User::select('users.id', 'users.name', 'users.avatar', 'users.phone')
-            ->join('partner_users', 'users.id', '=', 'partner_users.user_id')
-            ->where('partner_users.partner_id', $args['partner_id'])
-            ->whereNotIn('partner_users.user_id', function($query) use ($args) {
-                $query->select('user_id')
-                    ->from('business_trip_users')
-                    ->where('trip_id', $args['trip_id'])
-                    ->whereNotNull('station_id');
-            })
-            ->get();
-
-        return $stationNotAssignedUsers;
+        return $users->get();
     }
 
     public function userSubscriptions($_, array $args)

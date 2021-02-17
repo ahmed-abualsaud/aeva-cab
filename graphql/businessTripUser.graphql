@@ -1,4 +1,4 @@
-input CreateBusinessTripUserInput {
+input InviteBusinessTripUserInput {
   trip_id: ID! @rules(apply: ["required"])
   user_id: [ID!]! @rules(apply: ["required"])
   trip_name: String
@@ -33,20 +33,20 @@ input CreateBusinessTripStationUserInput {
   user_id: ID! @rules(apply: ["required"])
 }
 
-input ChangeOrAssignBusinessTripUserStationInput {
+input AssignBusinessTripStationUserInput {
   trip_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
   station_id: ID! @rules(apply: ["required"])
   destination_id: ID! @rules(apply: ["required"])
 }
 
-input CreateBusinessTripStationUsersInput {
+input AssignBusinessTripStationUsersInput {
   trip_id: ID! @rules(apply: ["required"])
   station_id: ID! @rules(apply: ["required"])
   users: [ID!]! @rules(apply: ["required"])
 }
  
-input DeleteBusinessTripStationUsersInput {
+input UnassignBusinessTripStationUsersInput {
   station_id: ID! @rules(apply: ["required"])
   users: [ID!]! @rules(apply: ["required"])
 }

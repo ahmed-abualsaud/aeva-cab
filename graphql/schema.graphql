@@ -197,13 +197,13 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripStationResolver@acceptStation") 
 
   # Business Trip Station User
-  createBusinessTripStationUsers(input: CreateBusinessTripStationUsersInput! @spread): DefaultResponse 
+  assignBusinessTripStationUsers(input: AssignBusinessTripStationUsersInput! @spread): Boolean 
     @field(resolver: "BusinessTripStationResolver@assignUsers")
-  deleteBusinessTripStationUsers(input: DeleteBusinessTripStationUsersInput! @spread): DefaultResponse 
+  unassignBusinessTripStationUsers(input: UnassignBusinessTripStationUsersInput! @spread): Boolean
     @field(resolver: "BusinessTripStationResolver@unassignUsers")
 
   # Business Trip User
-  createBusinessTripUser(input: CreateBusinessTripUserInput! @spread): String 
+  inviteBusinessTripUser(input: InviteBusinessTripUserInput! @spread): String 
     @field(resolver: "BusinessTripResolver@inviteUser")
 
   # Business Trip Event
@@ -292,8 +292,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
   # Business Trip User Station
   createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
     @field(resolver: "BusinessTripStationResolver@assignUser")
-  changeOrAssignBusinessTripUserStation(input: ChangeOrAssignBusinessTripUserStationInput! @spread): 
-    Boolean @field(resolver: "BusinessTripStationResolver@changeOrAssign")
+  assignBusinessTripStationUser(input: AssignBusinessTripStationUserInput! @spread): 
+    Boolean @field(resolver: "BusinessTripStationResolver@assignUserGracefully")
 
   # Business Trip Schedule
   upsertBusinessTripSchedule(input: BusinessTripScheduleInput! @spread): Boolean
@@ -439,10 +439,8 @@ extend type Query @guard(with: ["admin", "partner"]) {
   partnerBusinessTrips(partner_id: ID! @eq): [BusinessTrip] @all
 
   # Business Trip Station User
-  businessTripStationAssignedUsers(station_id: ID!): [User] 
-    @field(resolver: "BusinessTripResolver@stationAssignedUsers")
-  businessTripStationNotAssignedUsers(partner_id: ID!, trip_id: ID!): [User] 
-    @field(resolver: "BusinessTripResolver@stationNotAssignedUsers")
+  businessTripStationUsers(trip_id: ID!, station_id: ID!, status: String!): [BusinessTripUsers] 
+    @field(resolver: "BusinessTripResolver@stationUsers")
 
   # Business Trip User
   businessTripUsers(input: GetBusinessTripUsersInput! @spread): [BusinessTripUsers] 

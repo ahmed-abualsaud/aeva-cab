@@ -35,7 +35,7 @@ class BusinessTripStationResolver
             } 
             BusinessTripStation::insert($data);
         } catch (\Exception $e) {
-            throw new \Exception('We could not able to insert these stations.' . $e->getMessage());
+            throw new CustomException('We could not able to insert these stations.' . $e->getMessage());
         }
 
         return BusinessTripStation::where('trip_id', $args['trip_id'])
@@ -49,7 +49,7 @@ class BusinessTripStationResolver
         try {
             $station = BusinessTripStation::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided station ID is not found.');
+            throw new CustomException('The provided station ID is not found.');
         }
 
         if (array_key_exists('state', $args) && $args['state'] && $args['state'] != $station->state) {
@@ -99,7 +99,7 @@ class BusinessTripStationResolver
             return true;
             
         } catch (\Exception $e) {
-            throw new \Exception('Could not able to update.');
+            throw new CustomException('Could not able to update.');
         }
     }
 
@@ -125,7 +125,7 @@ class BusinessTripStationResolver
         ];
     }
 
-    public function changeOrAssign($_, array $args)
+    public function assignUserGracefully($_, array $args)
     {
         try {
             $data = [
@@ -155,15 +155,10 @@ class BusinessTripStationResolver
                 $arr['user_id'] = $user;
                 $data[] = $arr;
             }
-            BusinessTripUser::upsert($data, ['station_id', 'updated_at']);
+            return BusinessTripUser::upsert($data, ['station_id', 'updated_at']);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to assign selected users to specified station.');
         }
- 
-        return [
-            "status" => true,
-            "message" => "Selected users have been successfully assigned to specified station."
-        ];
     }
 
     public function unassignUsers($_, array $args)
@@ -172,24 +167,19 @@ class BusinessTripStationResolver
             $users = BusinessTripUser::where('station_id', $args['station_id'])
                 ->whereIn('user_id', $args['users']);
 
-            if ($users->count()) {
-                $schoolRequests = $users->get()
-                    ->where('creator_type', 'App\\SchoolRequest')
-                    ->pluck('creator_id')
-                    ->toArray();
-                    
-                if ($schoolRequests) SchoolRequest::restore($schoolRequests);
+            $schoolRequests = $users->get()
+                ->where('creator_type', 'App\\SchoolRequest')
+                ->pluck('creator_id')
+                ->toArray();
+                
+            if ($schoolRequests) 
+                SchoolRequest::restore($schoolRequests);
 
-                $users->delete();
-            }
+            return $users->update(['station_id' => null]);
+
         } catch (\Exception $e) {
-            throw new \Exception('We could not able to unassign selected users from specified station.');
+            throw new CustomException('We could not able to unassign selected users from specified station.');
         }
- 
-        return [
-            "status" => true,
-            "message" => "Selected users have been successfully unassigned from specified station."
-        ];
     }
 
     public function acceptStation($_, array $args)
@@ -202,7 +192,7 @@ class BusinessTripStationResolver
                 'accepted_at' => now()
             ]);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('Station with the provided ID is not found.');
+            throw new CustomException('Station with the provided ID is not found.');
         }
 
         try {
@@ -227,7 +217,7 @@ class BusinessTripStationResolver
         try {
             $station = BusinessTripStation::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('Station with the provided ID is not found.');
+            throw new CustomException('Station with the provided ID is not found.');
         }
 
         if ($station->creator_type === 'App\SchoolRequest')

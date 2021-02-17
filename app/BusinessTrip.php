@@ -32,8 +32,25 @@ class BusinessTrip extends Model
 
     public function stations() 
     {        
-        return $this->hasMany(BusinessTripStation::class, 'trip_id')
-            ->whereNotNull('accepted_at');
+        $stations = $this->hasMany(BusinessTripStation::class, 'trip_id');
+
+        if (auth('user')->user()) {
+            $stations->selectRaw('
+                business_trip_stations.*, 
+                station.station_id AS is_my_station, 
+                destination.destination_id AS is_my_destination
+            ')
+            ->leftJoin('business_trip_users as station', function ($join) {
+                $join->on('station.station_id', '=', 'business_trip_stations.id')
+                    ->where('station.user_id', auth('user')->user()->id);
+            })
+            ->leftJoin('business_trip_users as destination', function ($join) {
+                $join->on('destination.destination_id', '=', 'business_trip_stations.id')
+                    ->where('destination.user_id', auth('user')->user()->id);
+            });
+        }
+
+        return $stations->whereNotNull('accepted_at');
     }
 
     public function userStation() 
@@ -42,6 +59,7 @@ class BusinessTrip extends Model
             ->join('business_trip_users', 'business_trip_users.station_id', '=', 'business_trip_stations.id')
             ->where('business_trip_users.user_id', auth('user')->user()->id)
             ->selectRaw('business_trip_stations.*');
+
     }
 
     public function userDestination() 
