@@ -88,10 +88,10 @@ class CommunicationResolver
         try {
             switch($args['sender_type']) {
                 case 'App\\User':
-                    $token = $this->getDriverToken($args['recipient_id']);
+                    $token = $this->driverToken($args['recipient_id']);
                 break;
                 default:
-                    $token = $this->getUserToken($args['recipient_id']);
+                    $token = $this->userToken($args['recipient_id']);
             }
 
             SendPushNotification::dispatch($token, $msg, $sender->name);
@@ -105,15 +105,15 @@ class CommunicationResolver
         try {
             switch ($args['sender_type']) {
                 case "App\\User":
-                    $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, $sender->id);
-                    array_push($tokens, $this->getDriverToken($args['driver_id']));
+                    $tokens = $this->tripUsersTokenWithout($args['trip_id'], $sender->id);
+                    array_push($tokens, $this->driverToken($args['driver_id']));
                     break;
                 case "App\\Driver":
-                    $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, null);
+                    $tokens = $this->tripUsersToken($args['trip_id']);
                     break;
                 default:
-                    $tokens = $this->getBusinessTripUsersToken($args['trip_id'], null, null);
-                    array_push($tokens, $this->getDriverToken($args['driver_id']));
+                    $tokens = $this->tripUsersToken($args['trip_id']);
+                    array_push($tokens, $this->driverToken($args['driver_id']));
                     break;
             }
     

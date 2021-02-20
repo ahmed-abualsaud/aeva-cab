@@ -10,6 +10,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use App\Helpers\StaticMapUrl;
 use App\BusinessTripAttendance;
+use App\BusinessTripSchedule;
 use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
 use App\Exceptions\CustomException;
@@ -25,8 +26,7 @@ class BusinessTripEventResolver
     {
         $trip = $this->getTripById($args['trip_id']);
 
-        if ($trip->status) 
-            throw new CustomException('This Trip has already been started!');
+        if ($trip->status) throw new CustomException('This Trip has already been started!');
 
         $log_id = $trip->subscription_code.'-'.Str::random(4).'-'.uniqid();
 
@@ -34,17 +34,16 @@ class BusinessTripEventResolver
 
         $this->checkAbsence($args['trip_id']);
 
+        $this->checkSchedule($args['trip_id']);
+
         Driver::updateLocation($args['latitude'], $args['longitude']);
 
         SendPushNotification::dispatch(
-            $this->getBusinessTripUsersToken($trip->id, null, null), 
-            'has been started', 
-            $trip->name
+            $this->tripUsersToken($trip->id), 'has been started', $trip->name
         );
 
         $this->broadcastTripStatus(
-            $trip, 
-            ['status' => 'STARTED', 'log_id' => $log_id]
+            $trip, ['status' => 'STARTED', 'log_id' => $log_id]
         );
 
         $trip->update(['status' => true, 'log_id' => $log_id]);
@@ -54,9 +53,9 @@ class BusinessTripEventResolver
 
     public function nearYou($_, array $args)
     {
-        try {
+        try { 
             SendPushNotification::dispatch(
-                $this->getBusinessTripUsersToken(null, $args['station_id'], null),
+                $this->stationUsersToken($args['station_id']), 
                 'Qruz captain is so close to you',
                 $args['trip_name']
             );
@@ -163,8 +162,7 @@ class BusinessTripEventResolver
     {
         $trip = $this->getTripById($args['trip_id']);
 
-        if (!$trip->status) 
-            throw new CustomException('This trip has already been ended!');
+        if (!$trip->status) throw new CustomException('This trip has already been ended!');
 
         $log_id = $trip->log_id;
 
@@ -172,7 +170,7 @@ class BusinessTripEventResolver
 
         $this->updateUserStatus(
             $args['trip_id'],
-            ['is_picked_up' => false, 'is_absent' => false]
+            ['is_picked_up' => false, 'is_absent' => false, 'is_scheduled' => true]
         );
 
         $this->closeTripEvent($args, $log_id, $trip);
@@ -199,15 +197,13 @@ class BusinessTripEventResolver
     {
         try {
             $user_ids = Arr::pluck($args['users'], 'id');
+
             $this->updateUserStatus(
-                $args['trip_id'],
-                ['is_picked_up' => $is_picked_up],
-                $user_ids
+                $args['trip_id'], ['is_picked_up' => $is_picked_up], $user_ids
             );
+
             SendPushNotification::dispatch(
-                $this->getUsersToken($user_ids),
-                $msg,
-                $args['trip_name']
+                $this->usersToken($user_ids), $msg, $args['trip_name']
             );
 
             $payload = [
@@ -217,11 +213,13 @@ class BusinessTripEventResolver
                 'lng' => $args['longitude'],
                 'by' => 'driver'
             ];
+
             foreach($args['users'] as $user) {
                 $payload['user_id'] = $user['id'];
                 $payload['user_name'] = $user['name'];
                 $data[] = $payload;
             }
+
             $this->updateEventPayload($args['log_id'], $data);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to change selected users status!');
@@ -246,22 +244,28 @@ class BusinessTripEventResolver
     {
         try {
             $event = BusinessTripEvent::findOrFail($log_id);
+
             $locations = BusinessTripEntry::where('log_id', $log_id);
+
             if ($locations->count()) {
                 foreach($locations->get() as $loc) $path[] = $loc->latitude.','.$loc->longitude;
                 $updatedData['map_url'] = StaticMapUrl::generatePath(implode('|', $path));
                 $locations->delete();
             }
+
             $ended = ['at' => date("Y-m-d H:i:s")];
+
             if (array_key_exists('latitude', $args) && array_key_exists('longitude', $args)) {
                 $ended['lat'] = $args['latitude'];
                 $ended['lng'] = $args['longitude'];
+
                 $this->broadcastTripStatus(
-                    $trip, 
-                    ['status' => 'ENDED', 'log_id' => $log_id]
+                    $trip, ['status' => 'ENDED', 'log_id' => $log_id]
                 );
             }
+
             $updatedData['content'] = array_merge($event->content, ['ended' => $ended]);
+
             $event->update($updatedData);
         } catch (\Exception $e) {
             //
@@ -275,11 +279,11 @@ class BusinessTripEventResolver
 
             switch($args['by']) {
                 case 'user':
-                    $token = $this->getDriverToken($args['driver_id']);
+                    $token = $this->driverToken($args['driver_id']);
                     $msg = $args['user_name'] . ' has changed his attendance status to '.$status_text;
                     break;
                 default:
-                    $token = $this->getUserToken($args['user_id']);
+                    $token = $this->userToken($args['user_id']);
                     $msg = 'The trip captain has changed your attendance status to '.$status_text.', If this isn\'t the case, you could revert it back from inside the trip.';
             }
 
@@ -293,8 +297,21 @@ class BusinessTripEventResolver
     {
         try {
             $absent_users = BusinessTripAttendance::whereAbsent($trip_id);
+
             if ($absent_users) 
                 $this->updateUserStatus($trip_id, ['is_absent' => true], $absent_users);
+        } catch(\Exception $e) {
+            //
+        }
+    }
+
+    protected function checkSchedule($trip_id)
+    {
+        try {
+            $not_scheduled_users = BusinessTripSchedule::whereNotScheduled($trip_id);
+
+            if ($not_scheduled_users) 
+                $this->updateUserStatus($trip_id, ['is_scheduled' => false], $not_scheduled_users);
         } catch(\Exception $e) {
             //
         }

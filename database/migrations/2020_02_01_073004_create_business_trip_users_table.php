@@ -19,11 +19,12 @@ class CreateBusinessTripUsersTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('station_id')->nullable();
             $table->unsignedBigInteger('destination_id')->nullable();
-            $table->timestamp('subscription_verified_at')->nullable();
+            $table->boolean('is_scheduled')->default(true);
             $table->boolean('is_absent')->default(false);
             $table->boolean('is_picked_up')->default(false);
             $table->string('creator_type')->nullable();
             $table->unsignedBigInteger('creator_id')->nullable();
+            $table->timestamp('subscription_verified_at')->nullable();
             $table->timestamps();
 
             $table->unique(['trip_id', 'user_id']);

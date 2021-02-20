@@ -56,7 +56,7 @@ class SchoolRequestResolver
             
             if ($args['notify']) {
                 SendPushNotification::dispatch(
-                    $this->getUsersToken($args['userIds']),
+                    $this->usersToken($args['userIds']),
                     'Your request has been rejected! '. $args['response'],
                     'Qruz to School'
                 );

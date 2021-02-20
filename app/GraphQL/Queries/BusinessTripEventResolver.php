@@ -25,7 +25,8 @@ class BusinessTripEventResolver
             $users = $users->where('business_trip_users.station_id', $args['station_id']);
         }
         
-        $users = $users->where('business_trip_users.is_absent', false)
+        $users = $users->where('business_trip_users.is_scheduled', true)
+            ->where('business_trip_users.is_absent', false)
             ->whereNotNull('business_trip_users.subscription_verified_at');
 
         switch($args['status']) {

@@ -297,7 +297,9 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
 
   # Business Trip Schedule
   upsertBusinessTripSchedule(input: BusinessTripScheduleInput! @spread): Boolean
-    @field(resolver: "BusinessTripScheduleResolver@updateOrInsert")
+    @field(resolver: "BusinessTripScheduleResolver@reschedule")
+  rescheduleUserBusinessTrip(input: BusinessTripScheduleInput! @spread): Boolean
+    @field(resolver: "BusinessTripScheduleResolver@reschedule")
 }
 
 # Admin|Partner|User|Driver Guard

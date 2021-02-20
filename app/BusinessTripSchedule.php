@@ -21,6 +21,15 @@ class BusinessTripSchedule extends Model
         'days' => 'array'
     ];
 
+    public function scopeWhereNotScheduled($query, $trip_id)
+    {
+        return $query->select('user_id')
+            ->where('trip_id', $trip_id)
+            ->where('days->'.strtolower(date('l')), false)
+            ->pluck('user_id')
+            ->toArray();
+    }
+
     public static function upsert(array $rows, array $update)
     {
         return self::updateOrInsert(

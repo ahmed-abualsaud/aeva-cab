@@ -12,7 +12,7 @@ class BusinessTripScheduleResolver
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function updateOrInsert($_, array $args)
+    public function reschedule($_, array $args)
     {
         try {
             $input = Arr::except($args, ['directive']);
@@ -20,7 +20,7 @@ class BusinessTripScheduleResolver
             
             return BusinessTripSchedule::upsert($input, ['days']);
         } catch(\Exception $e) {
-            throw new CustomException('We could not able to update or even insert this schedule!');
+            throw new CustomException('We could not able to update or even create this schedule!');
         }
     }
 

@@ -105,7 +105,7 @@ class OndemandRequestResolver
             $responseMsg .= '. '. $args['response'];
         
         SendPushNotification::dispatch(
-            $this->getUserToken($request->user_id), 
+            $this->userToken($request->user_id), 
             $responseMsg,
             'Qruz On Demand'
         ); 

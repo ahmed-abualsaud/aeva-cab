@@ -5,7 +5,6 @@ namespace App\GraphQL\Queries;
 use App\User;
 use Carbon\Carbon;
 use App\BusinessTrip;
-use App\BusinessTripUser;
 
 class BusinessTripResolver
 {
