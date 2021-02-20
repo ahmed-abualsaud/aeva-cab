@@ -31,7 +31,7 @@ class SchoolRequest extends Model
         return $this->belongsTo(PricePackage::class);
     }
 
-    public function scopeWhereZone($query, $args) 
+    public function scopeWherePending($query, $args) 
     {
         if (array_key_exists('zone_id', $args) && $args['zone_id']) {
             $query = $query->whereHas('school', function($query) use ($args) {
@@ -39,12 +39,15 @@ class SchoolRequest extends Model
             });
         }
 
+        if (array_key_exists('period', $args) && $args['period']) {
+            $query = $this->dateFilter($args['period'], $query, 'created_at');
+        }
+
         return $query->where('status', 'PENDING')
-            ->limit($args['limit'])
             ->latest('created_at');
     }
 
-    public function scopeWhereArchived($query, array $args)
+    public function scopeWhereNotPending($query, array $args)
     {
         if (array_key_exists('period', $args) && $args['period']) {
             $query = $this->dateFilter($args['period'], $query, 'created_at');

@@ -394,8 +394,8 @@ type Query @guard(with: ["admin"]) {
   school(id: ID! @eq): School @find
   schoolGrades(school_id: ID! @eq): [SchoolGrade] @all
   schoolGrade(id: ID! @eq): SchoolGrade @find
-  schoolRequests(zone_id: [ID], limit: ID!): [SchoolRequest] @all(scopes: ["whereZone"])
-  schoolRequestsArchive(period: String): [SchoolRequest] @paginate(scopes: ["whereArchived"])
+  schoolRequests(zone_id: [ID], period: String): [SchoolRequest] @paginate(scopes: ["wherePending"])
+  schoolRequestsArchive(period: String): [SchoolRequest] @paginate(scopes: ["whereNotPending"])
 }
 
 # Partner Guard
