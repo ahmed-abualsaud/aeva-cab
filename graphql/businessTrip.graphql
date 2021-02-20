@@ -19,6 +19,7 @@ input AddSchoolRequestToBusinessTripInput {
   schools: [BusinessTripSchoolsInput] @rules(apply: ["required"])
   users: [BusinessTripUsersInput] @rules(apply: ["required"])
   station_id: ID
+  destination_id: ID
 }
 
 input BusinessTripSchoolsInput {

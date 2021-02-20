@@ -50,7 +50,7 @@ class BusinessTripResolver
     {
         DB::beginTransaction();
         try {
-            if (array_key_exists('station_id', $args) && $args['station_id']) {
+            if (array_key_exists('station_id', $args) && array_key_exists('destination_id', $args)) {
                 $this->assignUsersToStation($args);
             } else {
                 $this->createStations($args['users'], $args['schools'], $args['trip_id']);
@@ -186,6 +186,7 @@ class BusinessTripResolver
                 'creator_type' => 'App\\SchoolRequest',
                 'trip_id' => $args['trip_id'],
                 'station_id' => $args['station_id'],
+                'destination_id' => $args['destination_id'],
                 'subscription_verified_at' => now(),
                 'created_at' => now(), 'updated_at' => now()
             ];
@@ -195,7 +196,9 @@ class BusinessTripResolver
                 $data[] = $arr;
             } 
 
-            BusinessTripUser::upsert($data, ['station_id', 'creator_type', 'creator_id']);
+            BusinessTripUser::upsert(
+                $data, ['station_id', 'destination_id', 'creator_type', 'creator_id']
+            );
 
         } catch(\Exception $e) {
             throw new CustomException('We could not able to assign users to specified station');
