@@ -207,6 +207,8 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   # Business Trip User
   inviteBusinessTripUser(input: InviteBusinessTripUserInput! @spread): String 
     @field(resolver: "BusinessTripResolver@inviteUser")
+  subscribeBusinessTripUser(input: SubscribeBusinessTripUserInput! @spread): String 
+    @field(resolver: "BusinessTripResolver@subscribeUser")
 
   # Business Trip Event
   deleteBusinessTripEvent(log_id: [String!]!): Boolean
@@ -285,7 +287,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
 
   # Business Trip User
   confirmBusinessTripUser(input: ConfirmBusinessTripUserInput! @spread): BusinessTrip
-    @field(resolver: "BusinessTripResolver@subscribeUser")
+    @field(resolver: "BusinessTripResolver@confirmUserSubscription")
   deleteBusinessTripUser(input: DeleteBusinessTripUserInput! @spread): DefaultResponse
     @field(resolver: "BusinessTripResolver@unsubscribeUser")
   verifyBusinessTripUser(input: VerifyBusinessTripUserInput! @spread): String

@@ -100,14 +100,12 @@ class BusinessTripResolver
     public function inviteUser($_, array $args)
     {
         try {
-            $invite = array_key_exists('trip_name', $args) 
-                && array_key_exists('subscription_code', $args);
             $arr = [
                 'trip_id' => $args['trip_id'],
                 'created_at' => now(), 
-                'updated_at' => now(),
-                'subscription_verified_at' => $invite ? null : now()
+                'updated_at' => now()
             ];
+
             foreach($args['user_id'] as $val) {
                 $arr['user_id'] = $val;
                 $data[] = $arr;
@@ -115,15 +113,40 @@ class BusinessTripResolver
 
             BusinessTripUser::insert($data);
         } catch (\Exception $e) {
-            throw new CustomException('Each user is allowed to subscribe for a trip once.');
+            throw new CustomException('We could not able to invite selected users!');
         }
 
-        if ($invite) $this->notifyUserViaSms($args);
+        $this->notifyUserViaSms($args);
 
-        return 'Selected users have been subscribed but still not verified';
+        return 'Selected users have been invited but still not verified';
     }
 
-    public function subscribeUser($_, array $args) 
+    public function subscribeUser($_, array $args)
+    {
+        try {
+            $arr = [
+                'trip_id' => $args['trip_id'],
+                'station_id' => $args['station_id'],
+                'destination_id' => $args['destination_id'],
+                'created_at' => now(), 
+                'updated_at' => now(),
+                'subscription_verified_at' => now()
+            ];
+
+            foreach($args['user_id'] as $val) {
+                $arr['user_id'] = $val;
+                $data[] = $arr;
+            } 
+
+            BusinessTripUser::upsert($data, ['station_id', 'destination_id', 'updated_at']);
+        } catch (\Exception $e) {
+            throw new CustomException('We could not able to subscribe selected users!');
+        }
+
+        return 'Selected users have been subscribed';
+    }
+
+    public function confirmUserSubscription($_, array $args) 
     {
         try {
             $trip_id = Hashids::decode($args['subscription_code']);

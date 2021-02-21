@@ -19,7 +19,10 @@ class BusinessTripResolver
         switch($status) {
             case 'subscribed':
                 $users = User::selectRaw(
-                    'users.id, users.name, users.avatar, users.phone, station.name AS station, destination.name AS destination, subscription.subscription_verified_at'
+                    'users.id, users.name, users.avatar, users.phone, 
+                    station.id AS station_id, station.name AS station_name, 
+                    destination.id AS destination_id, destination.name AS destination_name, 
+                    subscription.subscription_verified_at'
                     )
                     ->join(
                         'business_trip_users as subscription', 
