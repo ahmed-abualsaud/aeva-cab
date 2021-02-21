@@ -26,9 +26,8 @@ class BusinessTripResolver
     {
         DB::beginTransaction();
         try {
-            $tripInput = Arr::except($args, ['directive', 'request_ids', 'schools', 'users']);
-            $businessTrip = BusinessTrip::create($tripInput);
-            $businessTrip->update(['subscription_code' => Hashids::encode($businessTrip->id)]);
+            $input = Arr::except($args, ['directive', 'request_ids', 'schools', 'users']);
+            $businessTrip = $this->createBusinessTrip($input);
 
             if (array_key_exists('request_ids', $args) && $args['request_ids']) {
                 $this->createStations($args['users'], $args['schools'], $businessTrip->id);
@@ -40,7 +39,25 @@ class BusinessTripResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException($e->getMessage());
+            throw new CustomException('We could not able to create this trip!');
+        }
+
+        return $businessTrip;
+    }
+
+    public function copy($_, array $args)
+    {
+        DB::beginTransaction();
+        try {
+            $businessTrip = $this->createTripCopy($args);
+
+            if ($args['include_stations'])
+                $this->createStationsCopy($args['id'], $businessTrip->id);
+
+            DB::commit();
+        } catch(\Exception $e) {
+            DB::rollback();
+            throw new CustomException('We could not able to copy this trip!');
         }
 
         return $businessTrip;
@@ -292,5 +309,45 @@ class BusinessTripResolver
         } catch (\Exception $e) {
             //
         }
+    }
+
+    protected function createBusinessTrip($input)
+    {
+        $businessTrip = BusinessTrip::create($input);
+        $businessTrip->update(['subscription_code' => Hashids::encode($businessTrip->id)]);
+
+        return $businessTrip;
+    }
+
+    protected function createTripCopy(array $args)
+    {
+        $originalTrip = BusinessTrip::select(
+            'partner_id', 'driver_id', 'vehicle_id', 'start_date', 'end_date', 
+            'return_time', 'days', 'duration', 'distance', 'group_chat'
+            )
+            ->findOrFail($args['id'])
+            ->toArray();
+
+        $originalTrip['name'] = $args['name'];
+        
+        return $this->createBusinessTrip($originalTrip);
+    }
+
+    protected function createStationsCopy($oldTripId, $newTripId)
+    {
+        $originalStations = BusinessTripStation::select(
+            'name', 'latitude', 'longitude', 'duration', 'distance',
+            'creator_type', 'creator_id', 'state', 'accepted_at'
+            )
+            ->where('trip_id', $oldTripId)
+            ->get();
+
+        foreach($originalStations as $station) {
+            $station->trip_id = $newTripId;
+            $station->created_at = now();
+            $station->updated_at = now();
+        }
+
+        return BusinessTripStation::insert($originalStations->toArray());
     }
 }

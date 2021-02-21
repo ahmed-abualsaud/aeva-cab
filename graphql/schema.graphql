@@ -180,6 +180,8 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   # Business Trip
   createBusinessTrip(input: CreateBusinessTripInput! @spread): BusinessTrip 
     @field(resolver: "BusinessTripResolver@create")
+  copyBusinessTrip(input: CopyBusinessTripInput! @spread): BusinessTrip 
+    @field(resolver: "BusinessTripResolver@copy")
   updateBusinessTrip(input: UpdateBusinessTripInput! @spread): BusinessTrip 
     @field(resolver: "BusinessTripResolver@update")
   deleteBusinessTrip(id: ID!): BusinessTrip @delete

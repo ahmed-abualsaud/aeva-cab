@@ -13,6 +13,12 @@ input CreateBusinessTripInput {
   users: [BusinessTripUsersInput] @rules(apply: ["required_with:request_ids"])
 }
 
+input CopyBusinessTripInput {
+  id: ID! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required"])
+  include_stations: Boolean! @rules(apply: ["required"])
+}
+
 input AddSchoolRequestToBusinessTripInput {
   trip_id: ID! @rules(apply: ["required"])
   request_ids: [ID]! @rules(apply: ["required"])
