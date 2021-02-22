@@ -62,7 +62,15 @@ class BusinessTripResolver
             ->join('business_trip_users', 'business_trip_users.user_id', '=', 'users.id');
 
             if ($args['status'] == 'assigned') {
-                $users = $users->where('station_id', $args['station_id']);
+                $users = $users->where('station_id', $args['station_id'])
+                    ->orWhere('destination_id', $args['station_id'])
+                    ->addSelect(\DB::raw('
+                        (CASE 
+                            WHEN station_id = '.$args['station_id'].' 
+                            THEN "station" ELSE "destination" 
+                            END
+                        ) AS station_type
+                    '));
             } else {
                 $users = $users->where('trip_id', $args['trip_id'])
                     ->where(function ($query) use ($args) {

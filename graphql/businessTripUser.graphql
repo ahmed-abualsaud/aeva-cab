@@ -67,5 +67,6 @@ type BusinessTripUsers {
   station_name: String
   destination_id: ID
   destination_name: String
+  station_type: String
   subscription_verified_at: DateTime
 }
