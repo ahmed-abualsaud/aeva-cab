@@ -248,8 +248,8 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "SchoolRequestResolver@destroy")
   rejectSchoolRequest(input: RejectSchoolRequestInput! @spread): String
     @field(resolver: "SchoolRequestResolver@reject")
-  restoreSchoolRequest(id: [ID!]!): String
-    @field(resolver: "SchoolRequestResolver@restore")
+  changeSchoolRequestStatus(id: [ID!]!, status: String!): Boolean
+    @field(resolver: "SchoolRequestResolver@changeStatus")
 }
 
 # Admin|Driver Guard
@@ -398,8 +398,9 @@ type Query @guard(with: ["admin"]) {
   school(id: ID! @eq): School @find
   schoolGrades(school_id: ID! @eq): [SchoolGrade] @all
   schoolGrade(id: ID! @eq): SchoolGrade @find
-  schoolRequests(zone_id: [ID], period: String): [SchoolRequest] @paginate(scopes: ["wherePending"])
-  schoolRequestsArchive(period: String): [SchoolRequest] @paginate(scopes: ["whereNotPending"])
+  schoolRequests(zone_id: [ID], period: String, status: String!): [SchoolRequest] 
+    @paginate(scopes: ["whereStatus"])
+  schoolRequestsArchive(period: String): [SchoolRequest] @paginate(scopes: ["whereArchived"])
 }
 
 # Partner Guard

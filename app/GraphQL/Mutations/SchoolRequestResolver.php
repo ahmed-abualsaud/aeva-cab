@@ -69,15 +69,19 @@ class SchoolRequestResolver
         return "Selected requests have been rejected";
     }
 
-    public function restore($_, array $args)
+    public function changeStatus($_, array $args)
     {
         try {
-            SchoolRequest::restore($args['id']);
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to restore selected requests!');
-        }
+            switch($args['status']) {
+                case 'PENDING':
+                    return SchoolRequest::restore($args['id']);
 
-        return "Selected requests have been restored";
+                case 'WAITING':
+                    return SchoolRequest::wait($args['id']);
+            }
+        } catch (\Exception $e) {
+            throw new CustomException('We could not able to change selected requests status!');
+        }
     }
     
     public function destroy($_, array $args)

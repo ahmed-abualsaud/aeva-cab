@@ -31,7 +31,7 @@ class SchoolRequest extends Model
         return $this->belongsTo(PricePackage::class);
     }
 
-    public function scopeWherePending($query, $args) 
+    public function scopeWhereStatus($query, $args) 
     {
         if (array_key_exists('zone_id', $args) && $args['zone_id']) {
             $query = $query->whereHas('school', function($query) use ($args) {
@@ -43,17 +43,18 @@ class SchoolRequest extends Model
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
 
-        return $query->where('status', 'PENDING')
+        return $query->where('status', $args['status'])
             ->latest('created_at');
     }
 
-    public function scopeWhereNotPending($query, array $args)
+    public function scopeWhereArchived($query, array $args)
     {
         if (array_key_exists('period', $args) && $args['period']) {
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
 
         return $query->where('status', '<>', 'PENDING')
+            ->orWhere('status', '<>', 'WAITING')
             ->latest('created_at');
     }
 
@@ -61,6 +62,12 @@ class SchoolRequest extends Model
     {
         return self::whereIn('id', $ids)
             ->update(['status' => 'ACCEPTED']);
+    }
+
+    public static function wait($ids)
+    {
+        return self::whereIn('id', $ids)
+            ->update(['status' => 'WAITING']);
     }
 
     public static function restore($id)

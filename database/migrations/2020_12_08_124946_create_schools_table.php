@@ -68,7 +68,8 @@ class CreateSchoolsTable extends Migration
                 'ACCEPTED', 
                 'REJECTED',
                 'CANCELLED',
-                'PENDING'
+                'PENDING',
+                'WAITING'
             ])->default('PENDING');
             $table->string('comment')->nullable();
             $table->string('response')->nullable();
