@@ -54,7 +54,7 @@ class SchoolRequest extends Model
         }
 
         return $query->where('status', '<>', 'PENDING')
-            ->orWhere('status', '<>', 'WAITING')
+            ->where('status', '<>', 'WAITING')
             ->latest('created_at');
     }
 
