@@ -72,7 +72,7 @@ class SchoolRequest extends Model
             $query = self::where('id', $id);
         }
 
-        return $query->update(['status' => 'PENDING']);
+        return $query->update(['status' => 'PENDING', 'response' => null]);
     }
 
     public static function exclude(array $requestIds, array $updateInput)
