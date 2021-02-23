@@ -53,6 +53,7 @@ class CreateSchoolsTable extends Migration
         Schema::create('school_requests', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('city_id');
             $table->unsignedBigInteger('school_id');
             $table->unsignedBigInteger('grade_id');
             $table->unsignedBigInteger('price_package_id');
@@ -81,6 +82,7 @@ class CreateSchoolsTable extends Migration
             $table->index('created_at');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->foreign('grade_id')->references('id')->on('school_grades')->onDelete('cascade');
             $table->foreign('price_package_id')->references('id')->on('price_packages')->onDelete('cascade');

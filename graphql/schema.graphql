@@ -474,7 +474,7 @@ extend type Query @guard(with: ["admin", "user"]) {
     @field(resolver: "OndemandRequestResolver")
 
   # School Request
-  schools(zone_id: ID, city_id: ID): [School] @all(scopes: ["filter"])
+  schools(zone_id: ID, city_id: ID): [School] @all(scopes: ["whereZoneOrCity"])
   schoolRequest(id: ID! @eq): SchoolRequest @find
   schoolRequestsByUser(user_id: ID! @eq): [SchoolRequest] @all
 

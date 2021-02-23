@@ -41,6 +41,7 @@ input UpdateSchoolGradeInput {
 
 input CreateSchoolRequestInput {
   user_id: ID! @rules(apply: ["required"])
+  city_id: ID
   school_id: ID! @rules(apply: ["required"])
   grade_id: ID! @rules(apply: ["required"])
   price_package_id: ID! @rules(apply: ["required"])
@@ -106,6 +107,7 @@ type SchoolGrade {
 
 type SchoolRequest {
   id: ID
+  city_id: ID
   user_id: ID
   user: User @belongsTo
   school: School @belongsTo

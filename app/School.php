@@ -18,7 +18,7 @@ class School extends Model
         return $this->hasMany(SchoolGrade::class);
     }
 
-    public function scopeFilter($query, $args) 
+    public function scopeWhereZoneOrCity($query, $args) 
     {
         if (array_key_exists('zone_id', $args) && $args['zone_id']) {
             return $query->where('zone_id', $args['zone_id']);
