@@ -49,38 +49,46 @@ class SchoolRequestResolver
         return $schoolRequest;
     }
 
-    public function reject($_, array $args)
-    {
-        try {
-            SchoolRequest::reject($args['requestIds'], $args['response']);
-            
-            if ($args['notify']) {
-                SendPushNotification::dispatch(
-                    $this->usersToken($args['userIds']),
-                    'Your request has been rejected! '. $args['response'],
-                    'Qruz to School'
-                );
-            }
-
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to reject selected requests!');
-        }
-
-        return "Selected requests have been rejected";
-    }
-
     public function changeStatus($_, array $args)
     {
         try {
+            $updateInput = collect($args)->only(['status', 'response'])->toArray();
+
             switch($args['status']) {
                 case 'PENDING':
-                    return SchoolRequest::restore($args['id']);
+                    SchoolRequest::restore($args['requestIds']);
+                    break;
 
                 case 'WAITING':
-                    return SchoolRequest::wait($args['id']);
+                case 'REJECTED':
+                    SchoolRequest::exclude($args['requestIds'], $updateInput);
+                    $this->notifyUsers($args);
+                    break;
             }
+            
         } catch (\Exception $e) {
             throw new CustomException('We could not able to change selected requests status!');
+        }
+
+        return "selected requests status has been changed";
+    }
+
+    protected function notifyUsers(array $args)
+    {
+        try {
+            if (array_key_exists('notify', $args)
+                && $args['notify'] 
+                && array_key_exists('userIds', $args) 
+                && array_key_exists('response', $args)
+            ) {
+
+                SendPushNotification::dispatch(
+                    $this->usersToken($args['userIds']), $args['response'], 'Qruz to School'
+                );
+
+            }
+        } catch (\Exception $e) {
+            //
         }
     }
     

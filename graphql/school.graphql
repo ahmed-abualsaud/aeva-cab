@@ -73,11 +73,12 @@ input UpdateSchoolRequestInput {
   response: String
 }
 
-input RejectSchoolRequestInput {
+input ChangeSchoolRequestStatusInput {
   requestIds: [ID!]! @rules(apply: ["required"])
-  userIds: [ID!]! @rules(apply: ["required"])
-  response: String! @rules(apply: ["required"])
-  notify: Boolean! @rules(apply: ["required"])
+  status: String! @rules(apply: ["in:PENDING,REJECTED,WAITING"])
+  notify: Boolean
+  userIds: [ID!]
+  response: String
 }
 
 type SchoolZone {

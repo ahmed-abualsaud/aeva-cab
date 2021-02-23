@@ -64,12 +64,6 @@ class SchoolRequest extends Model
             ->update(['status' => 'ACCEPTED']);
     }
 
-    public static function wait($ids)
-    {
-        return self::whereIn('id', $ids)
-            ->update(['status' => 'WAITING']);
-    }
-
     public static function restore($id)
     {
         if (is_array($id)) {
@@ -81,14 +75,8 @@ class SchoolRequest extends Model
         return $query->update(['status' => 'PENDING']);
     }
 
-    public static function reject($id, $response)
+    public static function exclude(array $requestIds, array $updateInput)
     {
-        if (is_array($id)) {
-            $query = self::whereIn('id', $id);
-        } else {
-            $query = self::where('id', $id);
-        }
-
-        return $query->update(['status' => 'REJECTED', 'response' => $response]);
+        return self::whereIn('id', $requestIds)->update($updateInput);
     }
 }

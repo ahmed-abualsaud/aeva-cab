@@ -246,9 +246,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "SchoolRequestResolver@update")
   deleteSchoolRequest(id: [ID!]!): String
     @field(resolver: "SchoolRequestResolver@destroy")
-  rejectSchoolRequest(input: RejectSchoolRequestInput! @spread): String
-    @field(resolver: "SchoolRequestResolver@reject")
-  changeSchoolRequestStatus(id: [ID!]!, status: String!): Boolean
+  changeSchoolRequestStatus(input: ChangeSchoolRequestStatusInput! @spread): String
     @field(resolver: "SchoolRequestResolver@changeStatus")
 }
 
