@@ -54,6 +54,9 @@ class BusinessTripResolver
             if ($args['include_stations'])
                 $this->createStationsCopy($args['id'], $businessTrip->id);
 
+            if ($args['include_subscriptions'])
+                $this->createSubscriptionsCopy($args['id'], $businessTrip->id);
+
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
@@ -359,8 +362,7 @@ class BusinessTripResolver
     protected function createStationsCopy($oldTripId, $newTripId)
     {
         $originalStations = BusinessTripStation::select(
-            'name', 'latitude', 'longitude', 'duration', 'distance',
-            'creator_type', 'creator_id', 'state', 'accepted_at'
+            'name', 'latitude', 'longitude', 'duration', 'distance', 'state'
             )
             ->where('trip_id', $oldTripId)
             ->get();
@@ -369,8 +371,25 @@ class BusinessTripResolver
             $station->trip_id = $newTripId;
             $station->created_at = now();
             $station->updated_at = now();
+            $station->accepted_at = now();
         }
 
         return BusinessTripStation::insert($originalStations->toArray());
+    }
+
+    protected function createSubscriptionsCopy($oldTripId, $newTripId)
+    {
+        $originalSubscriptions = BusinessTripUser::select('user_id')
+            ->where('trip_id', $oldTripId)
+            ->get();
+
+        foreach($originalSubscriptions as $ubscription) {
+            $ubscription->trip_id = $newTripId;
+            $ubscription->created_at = now();
+            $ubscription->updated_at = now();
+            $ubscription->subscription_verified_at = now();
+        }
+
+        return BusinessTripUser::insert($originalSubscriptions->toArray());
     }
 }

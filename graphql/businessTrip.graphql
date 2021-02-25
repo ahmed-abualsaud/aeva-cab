@@ -17,6 +17,7 @@ input CopyBusinessTripInput {
   id: ID! @rules(apply: ["required"])
   name: String! @rules(apply: ["required"])
   include_stations: Boolean! @rules(apply: ["required"])
+  include_subscriptions: Boolean! @rules(apply: ["required"])
 }
 
 input AddSchoolRequestToBusinessTripInput {
