@@ -59,8 +59,7 @@ class SchoolRequestResolver
                     SchoolRequest::restore($args['requestIds']);
                     break;
 
-                case 'WAITING':
-                case 'REJECTED':
+                default:
                     SchoolRequest::exclude($args['requestIds'], $updateInput);
                     $this->notifyUsers($args);
                     break;

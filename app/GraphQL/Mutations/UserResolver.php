@@ -67,9 +67,8 @@ class UserResolver
         $token = null;
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $this->createPartnerUser($args['partner_id'], $user->id);
-            if (array_key_exists('trip_id', $args) && $args['trip_id']) {
-                $this->createTripUserSubscription($args['trip_id'], $user->id);
-            }
+            if (array_key_exists('trip_id', $args) && $args['trip_id'])
+                $this->subscribeUser($args['trip_id'], $user->id);
         } else {
             Auth::onceUsingId($user->id);
             $token = JWTAuth::fromUser($user);
@@ -94,34 +93,11 @@ class UserResolver
     {
         DB::beginTransaction();
         try {
-            $users = [];
-            $userInput = ['partner_id' => $args['partner_id']];
-            foreach($args['users'] as $user) {
-                $userInput['name'] = $user['name'];
-                $userInput['phone'] = $user['phone'];
-                $userInput['password'] = Hash::make($user['phone']);
-                $user = User::create($userInput);
-                array_push($users, $user->id);
-            }
-
-            $partnerUserData = []; $partnerUserArr = [];
-            foreach($users as $user) {
-                $partnerUserArr['user_id'] = $user;
-                $partnerUserArr['partner_id'] = $args['partner_id'];
-                array_push($partnerUserData, $partnerUserArr);
-            }
-            PartnerUser::insert($partnerUserData); 
-
-            if (array_key_exists('trip_id', $args) && $args['trip_id']) {
-                $tripUserData = []; $tripUserArr = [];
-                foreach($users as $user) {
-                    $tripUserArr['user_id'] = $user;
-                    $tripUserArr['trip_id'] = $args['trip_id'];
-                    $tripUserArr['subscription_verified_at'] = now();
-                    array_push($tripUserData, $tripUserArr);
-                }
-                BusinessTripUser::insert($tripUserData);
-            }
+            $this->createUsers($args);
+            $users = $this->getPartnerUsers($args['partner_id']);
+            $this->createPartnerUsers($users, $args['partner_id']);
+            if (array_key_exists('trip_id', $args) && $args['trip_id'])
+                $this->subscribeUsers($users, $args['trip_id']);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -133,26 +109,21 @@ class UserResolver
     protected function createUsers(array $args)
     {
         try {
-            $data = []; $arr = [];
+            $arr = ['created_at' => now(), 'updated_at' => now()];
+
+            if (array_key_exists('partner_id', $args))
+                $arr['partner_id'] = $args['partner_id'];
+
             foreach($args['users'] as $user) {
                 $arr['name'] = $user['name'];
                 $arr['phone'] = $user['phone'];
                 $arr['password'] = Hash::make($user['phone']);
-                $arr['created_at'] = $arr['updated_at'] = now();
-                array_push($data, $arr);
+                $data[] = $arr;
             }
             User::insert($data); 
         } catch (\Exception $e) {
             throw new CustomException('Duplicate users');
         }
-    }
-
-    protected function createPartnerUser($partner_id, $user_id)
-    {
-        PartnerUser::create([
-            "partner_id" => $partner_id,
-            "user_id" => $user_id
-        ]);
     }
 
     public function update($_, array $args)
@@ -326,12 +297,53 @@ class UserResolver
         return User::whereIn('id', $args['id'])->delete();
     }
 
-    protected function createTripUserSubscription($trip_id, $user_id)
+    protected function createPartnerUser($partner_id, $user_id)
+    {
+        PartnerUser::create([
+            "partner_id" => $partner_id,
+            "user_id" => $user_id
+        ]);
+    }
+
+    protected function createPartnerUsers(array $users, int $partner_id)
+    {
+        $partnerUserArr = ['partner_id' => $partner_id];
+        foreach($users as $user) {
+            $partnerUserArr['user_id'] = $user;
+            $partnerUserData[] = $partnerUserArr;
+        }
+        PartnerUser::insert($partnerUserData); 
+    }
+
+    protected function subscribeUser($trip_id, $user_id)
     {
         BusinessTripUser::create([
             'trip_id' => $trip_id,
             'user_id' => $user_id,
             'subscription_verified_at' => now()
         ]);
+    }
+
+    protected function subscribeUsers(array $users, int $trip_id)
+    {
+        $tripUserArr = ['trip_id' => $trip_id, 'subscription_verified_at' => now()];
+        foreach($users as $user) {
+            $tripUserArr['user_id'] = $user;
+            $tripUserData[] = $tripUserArr;
+        }
+        BusinessTripUser::insert($tripUserData);
+    }
+
+    protected function getPartnerUsers(int $partner_id)
+    {
+        return User::select('id')
+            ->where('partner_id', $partner_id)
+            ->whereNotIn('id', function($query) use ($partner_id) {
+                $query->select('user_id')
+                    ->from('partner_users')
+                    ->where('partner_id', $partner_id);
+            })
+            ->pluck('id')
+            ->toArray();
     }
 }
