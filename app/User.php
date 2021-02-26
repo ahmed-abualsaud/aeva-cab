@@ -80,9 +80,10 @@ class User extends Authenticatable implements JWTSubject
         return $query;
     }
 
-    public function scopeAssignedOrNotAssigned($query, $args) 
+    public function scopeWhereAssignedOrNot($query, $args) 
     {
-        $partnerUsers = PartnerUser::where('partner_id', $args['partner_id'])->get()->pluck('user_id');
+        $partnerUsers = PartnerUser::select('user_id')
+            ->where('partner_id', $args['partner_id']);
 
         if ($args['assigned']) {
             $query->whereIn('id', $partnerUsers);
@@ -91,6 +92,24 @@ class User extends Authenticatable implements JWTSubject
         }
 
         return $query->orderBy('created_at', 'DESC');
+    }
+
+    public function scopeWhereUnsubscribed($query, $args) 
+    {
+        $businessTripUsers = BusinessTripUser::select('user_id')
+            ->where('trip_id', $args['trip_id']);
+
+        $query->select('id', 'name', 'avatar', 'phone');
+
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            $query->join('partner_users', 'users.id', '=', 'partner_users.user_id')
+                ->where('partner_users.partner_id', $args['partner_id'])
+                ->whereNotIn('partner_users.user_id', $businessTripUsers);
+        } else {
+            $query->whereNotIn('id', $businessTripUsers);
+        }
+
+        return $query;
     }
 
     public static function updateSecondaryNumber(string $no)

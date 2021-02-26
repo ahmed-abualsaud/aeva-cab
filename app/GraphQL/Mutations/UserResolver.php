@@ -102,7 +102,7 @@ class UserResolver
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            throw new CustomException('Duplicate users');
+            throw new CustomException('We could not able to create users!');
         }
     }
 
@@ -120,9 +120,9 @@ class UserResolver
                 $arr['password'] = Hash::make($user['phone']);
                 $data[] = $arr;
             }
-            User::insert($data); 
+            User::insertOrIgnore($data); 
         } catch (\Exception $e) {
-            throw new CustomException('Duplicate users');
+            throw new CustomException('We could not able to create users!');
         }
     }
 
@@ -312,7 +312,7 @@ class UserResolver
             $partnerUserArr['user_id'] = $user;
             $partnerUserData[] = $partnerUserArr;
         }
-        PartnerUser::insert($partnerUserData); 
+        PartnerUser::insertOrIgnore($partnerUserData); 
     }
 
     protected function subscribeUser($trip_id, $user_id)
@@ -331,7 +331,7 @@ class UserResolver
             $tripUserArr['user_id'] = $user;
             $tripUserData[] = $tripUserArr;
         }
-        BusinessTripUser::insert($tripUserData);
+        BusinessTripUser::insertOrIgnore($tripUserData);
     }
 
     protected function getPartnerUsers(int $partner_id)

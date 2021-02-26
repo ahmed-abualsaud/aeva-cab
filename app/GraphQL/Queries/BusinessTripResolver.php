@@ -12,46 +12,28 @@ class BusinessTripResolver
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function users($_, array $args)
+    public function subscribedUsers($_, array $args)
     {
-        $status = $args['status'];
-
-        switch($status) {
-            case 'subscribed':
-                $users = User::selectRaw(
-                    'users.id, users.name, users.avatar, users.phone, 
-                    station.id AS station_id, station.name AS station_name, 
-                    destination.id AS destination_id, destination.name AS destination_name, 
-                    subscription.subscription_verified_at'
-                    )
-                    ->join(
-                        'business_trip_users as subscription', 
-                        'subscription.user_id', '=', 'users.id'
-                    )
-                    ->leftJoin(
-                        'business_trip_stations as station', 
-                        'station.id', '=', 'subscription.station_id'
-                    )
-                    ->leftJoin(
-                        'business_trip_stations as destination', 
-                        'destination.id', '=', 'subscription.destination_id'
-                    )
-                    ->where('subscription.trip_id', $args['trip_id'])
-                    ->get();
-
-                break;
-            case 'notSubscribed':
-                $users = User::select('users.id', 'users.name', 'users.avatar', 'users.phone')
-                    ->join('partner_users', 'users.id', '=', 'partner_users.user_id')
-                    ->where('partner_users.partner_id', $args['partner_id'])
-                    ->whereNotIn('partner_users.user_id', function($query) use ($args) {
-                        $query->select('user_id')
-                            ->from('business_trip_users')
-                            ->where('trip_id', $args['trip_id']);
-                    })
-                    ->get();
-                break;
-        }
+        $users = User::selectRaw(
+                'users.id, users.name, users.avatar, users.phone, 
+                station.id AS station_id, station.name AS station_name, 
+                destination.id AS destination_id, destination.name AS destination_name, 
+                subscription.subscription_verified_at'
+            )
+            ->join(
+                'business_trip_users as subscription', 
+                'subscription.user_id', '=', 'users.id'
+            )
+            ->leftJoin(
+                'business_trip_stations as station', 
+                'station.id', '=', 'subscription.station_id'
+            )
+            ->leftJoin(
+                'business_trip_stations as destination', 
+                'destination.id', '=', 'subscription.destination_id'
+            )
+            ->where('subscription.trip_id', $args['trip_id'])
+            ->get();
 
         return $users;
     }

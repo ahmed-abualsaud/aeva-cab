@@ -423,7 +423,7 @@ extend type Query @guard(with: ["driver"]) {
 extend type Query @guard(with: ["admin", "partner"]) {
   # User
   partnerUsers(partner_id: ID!, searchFor: String, searchQuery: String, assigned: Boolean): [User] 
-    @paginate(scopes: ["assignedOrNotAssigned", "search"])
+    @paginate(scopes: ["whereAssignedOrNot", "search"])
 
   # Partner
   partner(id: ID @eq): Partner @find
@@ -448,8 +448,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripResolver@stationUsers")
 
   # Business Trip User
-  businessTripUsers(input: GetBusinessTripUsersInput! @spread): [BusinessTripUsers] 
-    @field(resolver: "BusinessTripResolver@users")
+  businessTripSubscribedUsers(trip_id: ID!): [BusinessTripUsers] 
+    @field(resolver: "BusinessTripResolver@subscribedUsers")
+  businessTripUnsubscribedUsers(trip_id: ID!, partner_id: ID, searchFor: String, searchQuery: String): 
+    [User] @paginate(scopes: ["whereUnsubscribed", "search"])
 
   # Business Trip Event
   businessTripEvents(partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
