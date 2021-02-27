@@ -53,8 +53,7 @@ class SchoolRequest extends Model
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
 
-        return $query->where('status', '<>', 'PENDING')
-            ->where('status', '<>', 'WAITING')
+        return $query->whereIn('status', ['ACCEPTED','REJECTED', 'CANCELLED'])
             ->latest('created_at');
     }
 

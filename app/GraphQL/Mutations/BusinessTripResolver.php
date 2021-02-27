@@ -119,7 +119,7 @@ class BusinessTripResolver
             throw new CustomException('We could not able to invite selected users!');
         }
 
-        // $this->notifyUserViaSms($args);
+        $this->notifyUserViaSms($args);
 
         return 'Selected users have been invited but still not verified';
     }
