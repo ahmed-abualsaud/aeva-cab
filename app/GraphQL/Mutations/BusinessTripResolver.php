@@ -268,7 +268,7 @@ class BusinessTripResolver
             $arr['creator_id'] = $user['request_id'];
             $data[] = $arr;
         }
-        BusinessTripUser::upsert($data, ['station_id', 'creator_type', 'creator_id']);
+        BusinessTripUser::insert($data);
     }
 
     protected function createStations($users, $schools, $trip_id)

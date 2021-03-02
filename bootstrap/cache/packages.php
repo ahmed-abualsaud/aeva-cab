@@ -71,6 +71,13 @@
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
     ),
   ),
+  'laravel/vapor-core' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Laravel\\Vapor\\VaporServiceProvider',
+    ),
+  ),
   'matthewbdaly/laravel-azure-storage' => 
   array (
     'providers' => 
