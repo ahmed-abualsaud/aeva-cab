@@ -391,6 +391,8 @@ type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["notAssigned", "search"])
 
   # School
+  allSchools(searchFor: String, searchQuery: String): [School] 
+    @paginate(scopes: ["search"])
   schoolZones: [SchoolZone] @all
   schoolZone(id: ID! @eq): SchoolZone @find
   school(id: ID! @eq): School @find
@@ -455,7 +457,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Business Trip Event
   businessTripEvents(partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
-    @paginate(scopes: ["filter"])
+    @paginate(scopes: ["whereTrip"])
 
   # Business Trip
   businessLiveTrips(partner_id: ID): [BusinessTrip] @all(scopes: ["live"])

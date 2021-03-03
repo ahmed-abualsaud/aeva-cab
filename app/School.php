@@ -2,10 +2,13 @@
 
 namespace App;
 
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
 class School extends Model
 {
+    use Searchable;
+
     protected $guarded = [];
 
     public function zone()
@@ -30,6 +33,16 @@ class School extends Model
             });
         }
  
+        return $query;
+    }
+
+    public function scopeSearch($query, $args) 
+    {
+        
+        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+            $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
+        }
+
         return $query;
     }
 }

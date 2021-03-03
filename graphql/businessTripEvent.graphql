@@ -75,6 +75,8 @@ type BusinessTripEvent {
   trip_name: String
   partner_id: ID
   partner_name: String
+  driver_id: ID
+  driver_name: String
   map_url: String
   content: Content
 }

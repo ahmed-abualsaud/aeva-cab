@@ -12,8 +12,11 @@ environments:
     staging:
         memory: 1024
         cli-memory: 512
+        database: qruz-dev
         runtime: 'php-7.4:al2'
         build:
             - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install'
             - 'php artisan event:cache'
             - 'npm ci && npm run dev && rm -rf node_modules'
+        deploy:
+            - 'php artisan migrate --force'

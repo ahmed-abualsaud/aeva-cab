@@ -187,6 +187,7 @@ class BusinessTripEventResolver
     {
         try {
             return BusinessTrip::with('partner:id,name')
+                ->with('driver:id,name')
                 ->findOrFail($id);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to find this trip!');
@@ -347,6 +348,10 @@ class BusinessTripEventResolver
             "partner" => [
                 "id" => $trip->partner->id,
                 "name" => $trip->partner->name
+            ],
+            "driver" => [
+                "id" => $trip->driver->id,
+                "name" => $trip->driver->name
             ]
         ];
         broadcast(new BusinessTripStatusChanged($data));
