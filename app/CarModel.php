@@ -4,10 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Rennokki\QueryCache\Traits\QueryCacheable;
+use App\Traits\Reorderable;
 
 class CarModel extends Model
 {
     use QueryCacheable;
+    use Reorderable;
     
     protected $guarded = [];
 
@@ -29,5 +31,15 @@ class CarModel extends Model
     public function make()
     {
         return $this->belongsTo(CarMake::class);
+    }
+
+    public static function reorder(array $orders)
+    {
+        self::flushQueryCache();
+
+        return self::handleReorder(
+            (new self())->getTable(),
+            $orders,
+        );
     }
 }

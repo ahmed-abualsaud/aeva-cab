@@ -24,6 +24,7 @@ type VehicleModelsByTypeResponse {
   photo: String
   name: String
   seats: Int
+  order: Int
 }
 
 type Vehicle {

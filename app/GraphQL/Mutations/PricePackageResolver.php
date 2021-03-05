@@ -49,9 +49,4 @@ class PricePackageResolver
 
         return $pricePackage;
     }
-
-    public function updateOrder($_, array $args)
-    {
-        return PricePackage::reorder($args['orders']);
-    }
 }

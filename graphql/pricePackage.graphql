@@ -22,15 +22,6 @@ input UpdatePricePackageInput {
   photo: Upload
 }
 
-input UpdateOrderInput {
-  orders: [OrderInput!]! @rules(apply: ["required"])
-}
-
-input OrderInput {
-  id: ID! @rules(apply: ["required"])
-  order: Int! @rules(apply: ["required"])
-}
-
 input PriceInput {
   one_day: String
   two_days: String

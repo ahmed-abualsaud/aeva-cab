@@ -28,8 +28,10 @@ class VehicleResolver
                 car_models.id AS id, 
                 CONCAT(car_makes.name, ' ', car_models.name) AS name,
                 car_models.seats,
-                car_models.photo
+                car_models.photo,
+                car_models.order
             ")
+            ->orderBy('order')
             ->get();
 
         return $models;

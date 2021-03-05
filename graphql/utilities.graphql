@@ -1,0 +1,9 @@
+input UpdateOrderInput {
+  model: String! @rules(apply: ["required"])
+  orders: [OrderInput!]! @rules(apply: ["required"])
+}
+
+input OrderInput {
+  id: ID! @rules(apply: ["required"])
+  order: Int! @rules(apply: ["required"])
+}

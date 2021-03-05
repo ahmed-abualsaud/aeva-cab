@@ -24,6 +24,7 @@ class CreateCarTypesTable extends Migration
             $table->unsignedSmallInteger('distance');
             $table->enum('calculator', ['MIN', 'HOUR', 'DISTANCE', 'DISTANCEMIN', 'DISTANCEHOUR']);
             $table->boolean('ondemand')->default(1);
+            $table->smallInteger('order');
             $table->timestamps();
             $table->softDeletes();
         });

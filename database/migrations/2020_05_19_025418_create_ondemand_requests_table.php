@@ -27,11 +27,10 @@ class CreateOndemandRequestsTable extends Migration
             $table->unsignedInteger('no_of_users')->nullable();
             $table->dateTime('start_date');
             $table->dateTime('end_date'); 
+            $table->string('custom_vehicle')->nullable();
             $table->enum('status', [
                 'ACCEPTED', 
                 'REJECTED',
-                'STARTED',
-                'COMPLETED',
                 'CANCELLED',
                 'PENDING'
             ])->default('PENDING');

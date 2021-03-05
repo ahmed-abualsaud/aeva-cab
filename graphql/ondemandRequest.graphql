@@ -12,15 +12,17 @@ input CreateOndemandRequestInput {
   classification: String @rules(apply: ["in:EDUCATIONAL,CORPORATE,INDIVIDUAL,GROUP"])
   comment: String
   no_of_users: Int
-  vehicles: [RequestVehicles!]! @rules(apply: ["required"])
   lines: [RequestLines!]! @rules(apply: ["required"])
+  vehicles: [RequestVehicles]
+  custom_vehicle: String
 }
 
 input UpdateOndemandRequestInput {
   id: ID! @rules(apply: ["required"])
-  status: String @rules(apply: ["in:ACCEPTED,REJECTED,STARTED,COMPLETED,CANCELLED,PENDING"])
+  status: String @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING"])
   comment: String
   response: String
+  notify: Boolean
 }
 
 input RequestVehicles {
@@ -48,6 +50,7 @@ type OndemandRequest {
   contact_phone: String
   start_date: String
   end_date: String
+  custom_vehicle: String
   frequency: String
   way: String
   classification: String

@@ -27,8 +27,9 @@ class OndemandRequestResolver
         try {
             $input = collect($args)->except(['directive', 'vehicles', 'lines'])->toArray();
             $request = OndemandRequest::create($input);
-            $this->createVehicles($args['vehicles'], $request->id);
             $this->createLines($args['lines'], $request->id);
+            if (array_key_exists('vehicles', $args) && $args['vehicles'])
+                $this->createVehicles($args['vehicles'], $request->id);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -77,7 +78,7 @@ class OndemandRequestResolver
     public function update($_, array $args)
     {
         try {
-            $input = collect($args)->except(['id', 'directive'])->toArray();
+            $input = collect($args)->except(['id', 'directive', 'notify'])->toArray();
             $request = OndemandRequest::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
             throw new CustomException('The provided request ID is not found.');
@@ -99,16 +100,21 @@ class OndemandRequestResolver
         if ($args['status'] === 'CANCELLED' && $request->status !== 'PENDING') 
             throw new CustomException('This request can not be cancelled.');
 
-        $responseMsg = 'Your Ondemand request ID ' . $request->id . ' has been ' . strtolower($args['status']);
+        if (array_key_exists('notify', $args) && $args['notify']) {
+            $responseMsg = 'Your Ondemand request ID ' 
+                . $request->id . ' has been ' 
+                . strtolower($args['status']);
+    
+            if (array_key_exists('response', $args) && $args['response']) 
+                $responseMsg .= '. '. $args['response'];
+            
+            SendPushNotification::dispatch(
+                $this->userToken($request->user_id), 
+                $responseMsg,
+                'Qruz On Demand'
+            ); 
+        }
 
-        if (array_key_exists('response', $args) && $args['response']) 
-            $responseMsg .= '. '. $args['response'];
-        
-        SendPushNotification::dispatch(
-            $this->userToken($request->user_id), 
-            $responseMsg,
-            'Qruz On Demand'
-        ); 
         
     }
 

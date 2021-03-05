@@ -8,6 +8,7 @@ input CreateCarTypeInput {
   calculator: String! @rules(apply: ["required", "in:MIN,HOUR,DISTANCE,DISTANCEMIN,DISTANCEHOUR"])
   photo: Upload
   ondemand: Boolean
+  order: Int! @rules(apply: ["required"])
 }
 
 input UpdateCarTypeInput {
@@ -34,4 +35,5 @@ type CarType {
   calculator: String
   photo: String
   ondemand: Boolean
+  order: Int
 }

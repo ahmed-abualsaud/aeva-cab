@@ -4,10 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Rennokki\QueryCache\Traits\QueryCacheable;
+use App\Traits\Reorderable;
 
 class CarType extends Model
 {
     use QueryCacheable;
+    use Reorderable;
     
     protected $guarded = [];
 
@@ -21,12 +23,23 @@ class CarType extends Model
      */
     protected static $flushCacheOnUpdate = true;
 
-    public function scopeFilter($query, $args) 
+    public function scopeWhereOndemand($query, $args) 
     {
         if (array_key_exists('ondemand', $args) && !$args['ondemand']) {
             return $query;
         }
 
-        return $query->where('ondemand', true);;
+        return $query->where('ondemand', true)
+            ->orderBy('order');
+    }
+
+    public static function reorder(array $orders)
+    {
+        self::flushQueryCache();
+        
+        return self::handleReorder(
+            (new self())->getTable(),
+            $orders,
+        );
     }
 }

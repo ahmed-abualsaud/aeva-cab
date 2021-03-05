@@ -153,14 +153,16 @@ extend type Mutation @guard(with: ["admin"]) {
     @field(resolver: "PricePackageResolver@create")
   updatePricePackage(input: UpdatePricePackageInput! @spread): PricePackage 
     @field(resolver: "PricePackageResolver@update")
-  updatePricePackageOrder(input: UpdateOrderInput! @spread): Boolean 
-    @field(resolver: "PricePackageResolver@updateOrder")
   deletePricePackage(id: ID!): PricePackage @delete
 
   # City
   createCity(input: CreateCityInput! @spread): City @create
   updateCity(input: UpdateCityInput! @spread): City @update @updateCityValidation
   deleteCity(id: ID!): City @delete
+
+  # Reorder
+  reorder(input: UpdateOrderInput! @spread): Boolean 
+    @field(resolver: "ReorderResolver")
 } 
 
 # Admin|Partner Guard
@@ -466,7 +468,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
 # Admin|User Guard
 extend type Query @guard(with: ["admin", "user"]) {
   # Car Type
-  carTypes(ondemand: Boolean): [CarType] @all(scopes: ["filter"])
+  carTypes(ondemand: Boolean): [CarType] @all(scopes: ["whereOndemand"])
 
   # Vehicle Model
   vehicleModelsByType(type_id: ID!): [VehicleModelsByTypeResponse!]
@@ -570,3 +572,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import pricePackage.graphql
 #import businessTripAttendance.graphql
 #import statement.graphql
+#import utilities.graphql
