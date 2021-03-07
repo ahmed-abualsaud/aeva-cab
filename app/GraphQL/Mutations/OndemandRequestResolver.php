@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Mutations;
 
+use App\Jobs\SendOtp;
 use App\OndemandRequest;
 use App\Mail\DefaultMail;
 use App\OndemandRequestLine;
@@ -39,11 +40,9 @@ class OndemandRequestResolver
 
         $this->broadcastRequest($request);
 
-        $this->mailRequest(
-            "New On-Demand request has been submitted", 
-            "Qruz On Demand", 
-            $request->id
-        );
+        $this->smsRequest($request->id);
+
+        // $this->mailRequest($request->id);
 
         return $request;
     }
@@ -137,12 +136,24 @@ class OndemandRequestResolver
         broadcast(new RequestSubmitted('App.Admin', 'ondemand.request', $req));
     }
 
-    protected function mailRequest($message, $title, $request_id)
+    protected function mailRequest($request_id)
     {
+        $title = 'Qruz On Demand';
+        $msg = 'New On-Demand request has been submitted';
         $view = 'emails.requests.default';
         $url = config('custom.app_url')."/ondemand/".$request_id;
         
         Mail::to(config('custom.mail_to_address'))
-            ->send(new DefaultMail($message, $title, $url, $view));
+            ->send(new DefaultMail($msg, $title, $url, $view));
     }
+
+    protected function smsRequest($request_id)
+    {
+        $phones = '01110782632,01555003324';
+        $msg = 'New On-Demand request # '.$request_id.' has been submitted';
+
+        SendOtp::dispatch($phones, $msg);
+
+    }
+
 }

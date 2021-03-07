@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Driver;
+use App\User;
 use App\Traits\HandleUpload;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class DriverController extends Controller
+class UserController extends Controller
 {
     use HandleUpload;
 
@@ -19,17 +19,17 @@ class DriverController extends Controller
         ]);
 
         try {
-            $driver = Driver::findOrFail($request->id);
+            $user = User::findOrFail($request->id);
         } catch (ModelNotFoundException $e) {
-            return response()->json('The provided driver ID is not found.', 404);
+            return response()->json('The provided user ID is not found.', 500);
         }
 
-        if ($driver->avatar) $this->deleteOneFile($driver->avatar, 'avatars');
+        if ($user->avatar) $this->deleteOneFile($user->avatar, 'avatars');
         $url = $this->uploadOneFile($request->avatar, 'avatars');
 
-        $driver->update(['avatar' => $url]);
+        $user->update(['avatar' => $url]);
 
-        return response()->json($driver);
+        return response()->json($user);
     }
 
 }

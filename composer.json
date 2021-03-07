@@ -20,7 +20,6 @@
         "laravel/vapor-cli": "^1.12",
         "laravel/vapor-core": "^2.10",
         "matthewbdaly/laravel-azure-storage": "^1.3",
-        "mjaschen/phpgeo": "^3.0",
         "mll-lab/laravel-graphql-playground": "^2.0",
         "nuwave/lighthouse": "^4.8",
         "predis/predis": "^1.1",
