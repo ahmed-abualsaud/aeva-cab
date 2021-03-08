@@ -149,7 +149,7 @@ class OndemandRequestResolver
 
     protected function smsRequest($request_id)
     {
-        $phones = '01110782632,01555003324';
+        $phones = '01110782632,01099637684';
         $msg = 'New On-Demand request # '.$request_id.' has been submitted';
 
         SendOtp::dispatch($phones, $msg);
