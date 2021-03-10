@@ -12,7 +12,6 @@ environments:
         memory: 1024
         cli-memory: 512
         database: qruz-dev
-        cache: qruz-cache
         runtime: 'php-7.4:al2'
         build:
             - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install'

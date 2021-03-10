@@ -7,6 +7,16 @@ trait Searchable
     protected function search($searchFor, $searchQuery, $result)
     {
         $q = '%' . $searchQuery . '%';
-        return $result->where($searchFor, 'like', $q); 
+
+        if (str_contains($searchFor, '.')) {
+            list($model, $field) = preg_split('~\.(?=[^.]*$)~', $searchFor);
+            $result->whereHas($model, function($query) use ($field, $q) {
+                $query->where($field, 'like', $q);
+            });
+        } else {
+            $result->where($searchFor, 'like', $q);
+        }
+
+        return $result;
     }
 }
