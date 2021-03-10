@@ -2,12 +2,13 @@
 
 namespace App;
 
+use App\Traits\Searchable;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 
 class SchoolRequest extends Model
 {
-    use Filterable;
+    use Searchable, Filterable;
 
     protected $guarded = [];
 
@@ -31,6 +32,26 @@ class SchoolRequest extends Model
         return $this->belongsTo(PricePackage::class);
     }
 
+    public function scopeWhereSearchFor($query, $args) 
+    {
+        
+        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+            $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
+        }
+
+        return $query;
+    }
+
+    public function scopeWherePeriod($query, $args) 
+    {
+        
+        if (array_key_exists('period', $args) && $args['period']) {
+            $query = $this->dateFilter($args['period'], $query, 'created_at');
+        }
+
+        return $query;
+    }
+
     public function scopeWhereStatus($query, $args) 
     {
         if (array_key_exists('zone_id', $args) && $args['zone_id']) {
@@ -39,20 +60,12 @@ class SchoolRequest extends Model
             });
         }
 
-        if (array_key_exists('period', $args) && $args['period']) {
-            $query = $this->dateFilter($args['period'], $query, 'created_at');
-        }
-
         return $query->where('status', $args['status'])
             ->latest('created_at');
     }
 
-    public function scopeWhereArchived($query, array $args)
+    public function scopeWhereArchived($query)
     {
-        if (array_key_exists('period', $args) && $args['period']) {
-            $query = $this->dateFilter($args['period'], $query, 'created_at');
-        }
-
         return $query->whereIn('status', ['ACCEPTED','REJECTED', 'CANCELLED'])
             ->latest('created_at');
     }
