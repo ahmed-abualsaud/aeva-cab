@@ -32,7 +32,7 @@ class SchoolRequest extends Model
         return $this->belongsTo(PricePackage::class);
     }
 
-    public function scopeWhereSearchFor($query, $args) 
+    public function scopeSearch($query, $args) 
     {
         
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {

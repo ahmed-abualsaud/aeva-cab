@@ -2,12 +2,13 @@
 
 namespace App;
 
+use App\Traits\Searchable;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 
 class BusinessTripEvent extends Model
 {
-    use Filterable;
+    use Searchable, Filterable;
     
     protected $guarded = [];
 
@@ -21,9 +22,19 @@ class BusinessTripEvent extends Model
         'content' => 'json',
     ];
 
-    public function user()
+    public function trip()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(BusinessTrip::class);
+    }
+
+    public function scopeSearch($query, $args) 
+    {
+        
+        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+            $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
+        }
+
+        return $query;
     }
 
     public function scopeWhereTrip($query, $args)

@@ -401,9 +401,9 @@ type Query @guard(with: ["admin"]) {
   schoolGrades(school_id: ID! @eq): [SchoolGrade] @all
   schoolGrade(id: ID! @eq): SchoolGrade @find
   schoolRequests(searchFor: String, searchQuery: String, zone_id: [ID], period: String, status: String!): [SchoolRequest] 
-    @paginate(scopes: ["whereStatus", "whereSearchFor", "wherePeriod"])
+    @paginate(scopes: ["whereStatus", "wherePeriod", "search"])
   schoolRequestsArchive(searchFor: String, searchQuery: String, period: String): [SchoolRequest] 
-    @paginate(scopes: ["whereArchived", "whereSearchFor", "wherePeriod"])
+    @paginate(scopes: ["whereArchived", "wherePeriod", "search"])
 }
 
 # Partner Guard
@@ -459,8 +459,8 @@ extend type Query @guard(with: ["admin", "partner"]) {
     [User] @paginate(scopes: ["whereUnsubscribed", "search"])
 
   # Business Trip Event
-  businessTripEvents(partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
-    @paginate(scopes: ["whereTrip"])
+  businessTripEvents(searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
+    @paginate(scopes: ["whereTrip", "search"])
 
   # Business Trip
   businessLiveTrips(partner_id: ID): [BusinessTrip] @all(scopes: ["live"])
