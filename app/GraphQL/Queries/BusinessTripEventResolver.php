@@ -22,7 +22,8 @@ class BusinessTripEventResolver
         }
         
         if (array_key_exists('station_id', $args) && $args['station_id']) {
-            $users = $users->where('business_trip_users.station_id', $args['station_id']);
+            $users = $users->where('business_trip_users.station_id', $args['station_id'])
+                ->orWhere('business_trip_users.destination_id', $args['station_id']);
         }
         
         $users = $users->where('business_trip_users.is_scheduled', true)
