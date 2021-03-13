@@ -28,7 +28,11 @@ trait Filterable
                 return $result->whereDate($field, '>=', Carbon::now()->subMonth(6));
             
             case 'year':
-                return $result->whereDate($field, '>=', Carbon::now()->subMonth(12));  
+                return $result->whereDate($field, '>=', Carbon::now()->subMonth(12)); 
+                
+            default:
+                list($from, $to) = explode(',', $period);
+                return $result->whereBetween($field, [$from, $to]);
         }
     }
 }

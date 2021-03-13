@@ -14,6 +14,10 @@ class FirebasePushNotification
                 'body' => $message,
                 'sound' => "default"
             ],
+            'data' => [
+                'title' => $title,
+                'body' => $message
+            ],
             "priority" => "high"
         ];
 
