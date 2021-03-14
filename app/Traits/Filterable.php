@@ -31,8 +31,12 @@ trait Filterable
                 return $result->whereDate($field, '>=', Carbon::now()->subMonth(12)); 
                 
             default:
-                list($from, $to) = explode(',', $period);
-                return $result->whereBetween($field, [$from, $to]);
+                if (str_contains($period, ',')) {
+                    list($from, $to) = explode(',', $period);
+                    return $result->whereBetween($field, [$from, $to]);
+                } else {
+                    return $result->whereDate($field, '=', $period);
+                }
         }
     }
 }
