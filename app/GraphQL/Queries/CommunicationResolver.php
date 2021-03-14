@@ -20,8 +20,10 @@ class CommunicationResolver
     
             if (array_key_exists('is_direct', $args) && $args['is_direct']) {
                 $messages = $messages->where('is_direct', true)
-                    ->where('sender_id', $args['user_id'])
-                    ->orWhere('recipient_id', $args['user_id']);
+                    ->where(function ($query) use ($args) {
+                        $query->where('sender_id', $args['user_id'])
+                            ->orWhere('recipient_id', $args['user_id']);
+                    });
             } else {
                 $messages = $messages->where('is_direct', false);
             }
