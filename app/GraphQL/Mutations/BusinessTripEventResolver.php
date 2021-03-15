@@ -39,7 +39,10 @@ class BusinessTripEventResolver
         Driver::updateLocation($args['latitude'], $args['longitude']);
 
         SendPushNotification::dispatch(
-            $this->tripUsersToken($trip->id), 'has been started', $trip->name
+            $this->tripUsersToken($trip->id), 
+            'has been started', 
+            $trip->name,
+            ['view' => 'BusinessTrip', 'id' => $args['trip_id']]
         );
 
         $this->broadcastTripStatus(
@@ -57,7 +60,8 @@ class BusinessTripEventResolver
             SendPushNotification::dispatch(
                 $this->stationUsersToken($args['station_id']), 
                 'Qruz captain is so close to you',
-                $args['trip_name']
+                $args['trip_name'],
+                ['view' => 'BusinessTrip', 'id' => $args['trip_id']]
             );
 
             $payload = array([
@@ -204,7 +208,10 @@ class BusinessTripEventResolver
             );
 
             SendPushNotification::dispatch(
-                $this->usersToken($user_ids), $msg, $args['trip_name']
+                $this->usersToken($user_ids), 
+                $msg, 
+                $args['trip_name'],
+                ['view' => 'BusinessTripUserStatus', 'id' => $args['trip_id']]
             );
 
             $payload = [
@@ -288,7 +295,12 @@ class BusinessTripEventResolver
                     $msg = 'The trip captain has changed your attendance status to '.$status_text.', If this isn\'t the case, you could revert it back from inside the trip.';
             }
 
-            SendPushNotification::dispatch($token, $msg, $args['trip_name']);
+            SendPushNotification::dispatch(
+                $token, 
+                $msg, 
+                $args['trip_name'],
+                ['view' => 'BusinessTripUserStatus', 'id' => $args['trip_id']]
+            );
         } catch(\Exception $e) {
             //
         }

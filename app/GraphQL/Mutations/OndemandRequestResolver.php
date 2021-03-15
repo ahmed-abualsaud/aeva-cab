@@ -100,7 +100,7 @@ class OndemandRequestResolver
             throw new CustomException('This request can not be cancelled.');
 
         if (array_key_exists('notify', $args) && $args['notify']) {
-            $responseMsg = 'Your Ondemand request ID ' 
+            $responseMsg = 'Your ondemand request # ' 
                 . $request->id . ' has been ' 
                 . strtolower($args['status']);
     
@@ -110,7 +110,8 @@ class OndemandRequestResolver
             SendPushNotification::dispatch(
                 $this->userToken($request->user_id), 
                 $responseMsg,
-                'Qruz On Demand'
+                'Qruz On Demand',
+                ['view' => 'OnDemandRequest', 'id' => $request->id]
             ); 
         }
 

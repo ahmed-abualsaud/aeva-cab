@@ -4,20 +4,15 @@ namespace App\Helpers;
 
 class FirebasePushNotification
 {
-    public static function push($token, $title, $message, $data = false)
+    public static function push($token, $title, $message, $data = null)
     {
         $API_ACCESS_KEY = config('custom.firebase_access_key');
 
+        $payload = ['title' => $title, 'body' => $message];
+
         $fields = [
-            'notification' => [
-                'title' => $title,
-                'body' => $message,
-                'sound' => "default"
-            ],
-            'data' => [
-                'title' => $title,
-                'body' => $message
-            ],
+            'notification' => $payload,
+            'data' => $payload,
             "priority" => "high"
         ];
 
@@ -27,7 +22,8 @@ class FirebasePushNotification
             $fields['to'] = $token;
         }
         
-        if ($data) $fields['data'] = $data;
+        if ($data)
+            $fields['data'] = array_merge($fields['data'], $data);
 
         $headers = [
             'Authorization: key=' . $API_ACCESS_KEY,

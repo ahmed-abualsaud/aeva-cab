@@ -61,7 +61,8 @@ class SchoolRequestResolver
 
                 default:
                     SchoolRequest::exclude($args['requestIds'], $updateInput);
-                    $this->notifyUsers($args);
+                    if (array_key_exists('notify', $args) && $args['notify'])
+                        $this->notifyUsers($args);
                     break;
             }
             
@@ -75,16 +76,22 @@ class SchoolRequestResolver
     protected function notifyUsers(array $args)
     {
         try {
-            if (array_key_exists('notify', $args)
-                && $args['notify'] 
-                && array_key_exists('userIds', $args) 
-                && array_key_exists('response', $args)
-            ) {
+               
+            foreach($args['users'] as $user) {
+
+                $responseMsg = 'Your school request # ' 
+                    . $user['requestId'] . ' has been ' 
+                    . strtolower($args['status']);
+    
+                if (array_key_exists('response', $args) && $args['response']) 
+                    $responseMsg .= '. '. $args['response'];
 
                 SendPushNotification::dispatch(
-                    $this->usersToken($args['userIds']), $args['response'], 'Qruz to School'
+                    $this->userToken($user['userId']), 
+                    $responseMsg, 
+                    'Qruz to School',
+                    ['view' => 'SchoolRequest', 'id' => $user['requestId']]
                 );
-
             }
         } catch (\Exception $e) {
             //

@@ -23,7 +23,7 @@ class SendPushNotification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($devices, $message, $title = 'Qruz', $data = false)
+    public function __construct($devices, $message, $title = 'Qruz', $data = null)
     {
         $this->devices = $devices;
         $this->message = $message; 

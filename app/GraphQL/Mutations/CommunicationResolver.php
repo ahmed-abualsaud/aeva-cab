@@ -94,7 +94,12 @@ class CommunicationResolver
                     $token = $this->userToken($args['recipient_id']);
             }
 
-            SendPushNotification::dispatch($token, $msg, $sender->name);
+            SendPushNotification::dispatch(
+                $token, 
+                $msg, 
+                $sender->name,
+                ['view' => 'BusinessTripDirectMessage', 'id' => $args['trip_id']]
+            );
         } catch(\Exception $e) {
             //
         }
@@ -117,7 +122,12 @@ class CommunicationResolver
                     break;
             }
     
-            SendPushNotification::dispatch($tokens, $msg, $sender->name);
+            SendPushNotification::dispatch(
+                $tokens, 
+                $msg, 
+                $sender->name,
+                ['view' => 'BusinessTripGroupChat', 'id' => $args['trip_id']]
+            );
         } catch (\Exception $e) {
             //
         }
