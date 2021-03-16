@@ -2,7 +2,6 @@
 
 namespace App\GraphQL\Queries;
 
-use App\User;
 use Carbon\Carbon;
 use App\BusinessTrip;
 
@@ -12,58 +11,6 @@ class BusinessTripResolver
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function subscribedUsers($_, array $args)
-    {
-        $users = User::selectRaw(
-                'users.id, users.name, users.avatar, users.phone, 
-                station.id AS station_id, station.name AS station_name, 
-                destination.id AS destination_id, destination.name AS destination_name, 
-                subscription.subscription_verified_at'
-            )
-            ->join(
-                'business_trip_users as subscription', 
-                'subscription.user_id', '=', 'users.id'
-            )
-            ->leftJoin(
-                'business_trip_stations as station', 
-                'station.id', '=', 'subscription.station_id'
-            )
-            ->leftJoin(
-                'business_trip_stations as destination', 
-                'destination.id', '=', 'subscription.destination_id'
-            )
-            ->where('subscription.trip_id', $args['trip_id'])
-            ->get();
-
-        return $users;
-    }
-
-    public function stationUsers($_, array $args)
-    {
-        $users = User::select('users.id', 'users.name', 'users.avatar', 'users.phone')
-            ->join('business_trip_users', 'business_trip_users.user_id', '=', 'users.id');
-
-            if ($args['status'] == 'assigned') {
-                $users = $users->where('station_id', $args['station_id'])
-                    ->orWhere('destination_id', $args['station_id'])
-                    ->addSelect(\DB::raw('
-                        (CASE 
-                            WHEN station_id = '.$args['station_id'].' 
-                            THEN "station" ELSE "destination" 
-                            END
-                        ) AS station_type
-                    '));
-            } else {
-                $users = $users->where('trip_id', $args['trip_id'])
-                    ->where(function ($query) use ($args) {
-                        $query->whereNull('station_id')
-                            ->orWhere('station_id', '<>', $args['station_id']);
-                });
-            }
-
-        return $users->get();
-    }
-
     public function userSubscriptions($_, array $args)
     {
         $userSubscriptions = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
@@ -112,7 +59,6 @@ class BusinessTripResolver
 
     public function driverTrips($_, array $args)
     {
-
         $driverTrips = BusinessTrip::where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')

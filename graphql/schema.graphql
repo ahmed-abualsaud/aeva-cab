@@ -125,9 +125,11 @@ extend type Mutation @guard(with: ["admin"]) {
   deletePartnerDriver(input: PartnerDriverInput! @spread): DefaultResponse
     @field(resolver: "PartnerResolver@unassignDriver")
 
-  # Business Trip
+  # School Business Trip
+  createSchoolBusinessTrip(input: CreateSchoolBusinessTripInput! @spread): Boolean 
+    @field(resolver: "SchoolBusinessTripResolver@create")
   addSchoolRequestToBusinessTrip(input: AddSchoolRequestToBusinessTripInput! @spread): Boolean 
-    @field(resolver: "BusinessTripResolver@addSchoolRequest")
+    @field(resolver: "SchoolBusinessTripResolver@addSchoolRequest")
 
   # School Request
   createSchoolZone(input: CreateSchoolZoneInput! @spread): SchoolZone 
@@ -294,14 +296,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "BusinessTripResolver@verifyUserSubscription")
 
   # Business Trip User Station
-  createBusinessTripStationUser(input: CreateBusinessTripStationUserInput! @spread): DefaultResponse 
-    @field(resolver: "BusinessTripStationResolver@assignUser")
   assignBusinessTripStationUser(input: AssignBusinessTripStationUserInput! @spread): 
-    Boolean @field(resolver: "BusinessTripStationResolver@assignUserGracefully")
+    Boolean @field(resolver: "BusinessTripStationResolver@assignUser")
 
   # Business Trip Schedule
-  upsertBusinessTripSchedule(input: BusinessTripScheduleInput! @spread): Boolean
-    @field(resolver: "BusinessTripScheduleResolver@reschedule")
   rescheduleUserBusinessTrip(input: BusinessTripScheduleInput! @spread): Boolean
     @field(resolver: "BusinessTripScheduleResolver@reschedule")
 }
@@ -449,12 +447,12 @@ extend type Query @guard(with: ["admin", "partner"]) {
   partnerBusinessTrips(partner_id: ID! @eq): [BusinessTrip] @all
 
   # Business Trip Station User
-  businessTripStationUsers(trip_id: ID!, station_id: ID!, status: String!): [BusinessTripUsers] 
-    @field(resolver: "BusinessTripResolver@stationUsers")
+  businessTripStationUsers(trip_id: ID!, station_id: ID!, status: String!): [User] 
+    @field(resolver: "UserBusinessTripResolver@businessTripStationUsers")
 
   # Business Trip User
-  businessTripSubscribedUsers(trip_id: ID!): [BusinessTripUsers] 
-    @field(resolver: "BusinessTripResolver@subscribedUsers")
+  businessTripSubscribedUsers(trip_id: ID!): [User] 
+    @field(resolver: "UserBusinessTripResolver@businessTripSubscribedUsers")
   businessTripUnsubscribedUsers(trip_id: ID!, partner_id: ID, searchFor: String, searchQuery: String): 
     [User] @paginate(scopes: ["whereUnsubscribed", "search"])
 
@@ -508,14 +506,14 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
 
   # Business Trip Schedule
   businessTripSchedule(trip_id: ID!, user_id: ID!): BusinessTripSchedule
-    @field(resolver: "BusinessTripScheduleResolver")
+    @field(resolver: "UserBusinessTripResolver@businessTripSchedule")
 }
 
 # Admin|Partner|Driver Guard
 extend type Query @guard(with: ["admin", "partner", "driver"]) {
   # Business Trip Attendance
   businessTripAttendance(trip_id: ID!, date: Date): [BusinessTripAttendance]
-    @field(resolver: "BusinessTripAttendanceResolver")
+    @field(resolver: "UserBusinessTripResolver@businessTripAttendance")
 
   # Driver
   driver(id: ID @eq): Driver @find
@@ -538,11 +536,11 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Business Trip Event
   businessTripUserStatus(trip_id: ID!, user_id: ID!): User 
-    @field(resolver: "BusinessTripEventResolver@businessTripUserStatus")
+    @field(resolver: "UserBusinessTripResolver@businessTripUserStatus")
   businessTripUsersStatus(trip_id: ID, station_id: ID): [User]
-    @field(resolver: "BusinessTripEventResolver@businessTripUsersStatus")
+    @field(resolver: "UserBusinessTripResolver@businessTripUsersStatus")
   businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
-    @field(resolver: "BusinessTripEventResolver@businessTripSubscribers")
+    @field(resolver: "UserBusinessTripResolver@businessTripSubscribers")
 
   # Communication
   businessTripChatMessages(log_id: String!, user_id: ID, is_direct: Boolean): [BusinessTripChat] 
@@ -559,6 +557,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import user.graphql
 #import businessTripSchedule.graphql
 #import businessTrip.graphql
+#import schoolBusinessTrip.graphql
 #import businessTripStation.graphql
 #import businessTripUser.graphql
 #import role.graphql

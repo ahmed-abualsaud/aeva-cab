@@ -106,28 +106,6 @@ class BusinessTripStationResolver
     public function assignUser($_, array $args)
     {
         try {
-            $userStation = BusinessTripUser::where('trip_id', $args['trip_id'])
-                ->where('user_id', $args['user_id'])
-                ->firstOrFail();
-            $userStation->update(['station_id' => $args['station_id']]);
-        } catch (ModelNotFoundException $e) {
-            BusinessTripUser::create([
-                'trip_id' => $args['trip_id'],
-                'user_id' => $args['user_id'],
-                'station_id' => $args['station_id'],
-                'subscription_verified_at' => now()
-            ]);
-        }
- 
-        return [
-            "status" => true,
-            "message" => "You've successfully assigned to this station."
-        ];
-    }
-
-    public function assignUserGracefully($_, array $args)
-    {
-        try {
             $data = [
                 'trip_id' => $args['trip_id'],
                 'user_id' => $args['user_id'],
@@ -184,6 +162,7 @@ class BusinessTripStationResolver
 
     public function acceptStation($_, array $args)
     {
+        DB::beginTransaction();
         try {
             $station = BusinessTripStation::where('id', $args['station_id'])->firstOrFail();
             $station->update([
@@ -191,22 +170,21 @@ class BusinessTripStationResolver
                 'state' => 'PICKABLE', 
                 'accepted_at' => now()
             ]);
-        } catch (ModelNotFoundException $e) {
-            throw new CustomException('Station with the provided ID is not found.');
-        }
-
-        try {
-            $userCurrentStation = BusinessTripUser::where('trip_id', $args['trip_id'])
-                ->where('user_id', $station['creator_id'])
-                ->firstOrFail();
-            $userCurrentStation->update(['station_id' => $args['station_id']]);
-        } catch (ModelNotFoundException $e) { 
-            BusinessTripUser::create([
+            
+            $data =[
                 'trip_id' => $args['trip_id'],
                 'station_id' => $args['station_id'],
                 'user_id' => $station['creator_id'],
-                'subscription_verified_at' => now()
-            ]);
+                'subscription_verified_at' => now(),
+                'created_at' => now(), 
+                'updated_at' => now()
+            ];
+            BusinessTripUser::upsert($data, ['station_id', 'updated_at']);
+
+            DB::commit();
+        } catch(\Exception $e) {
+            DB::rollback();
+            throw new CustomException('We could not able to accept this station!');
         }
 
         return $station;

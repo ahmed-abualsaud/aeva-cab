@@ -28,12 +28,6 @@ input VerifyBusinessTripUserInput {
   subscription_verified_at: DateTime
 }
 
-input CreateBusinessTripStationUserInput {
-  trip_id: ID! @rules(apply: ["required"])
-  station_id: ID! @rules(apply: ["required"])
-  user_id: ID! @rules(apply: ["required"])
-}
-
 input AssignBusinessTripStationUserInput {
   trip_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
@@ -50,17 +44,4 @@ input AssignBusinessTripStationUsersInput {
 input UnassignBusinessTripStationUsersInput {
   station_id: ID! @rules(apply: ["required"])
   users: [ID!]! @rules(apply: ["required"])
-}
-
-type BusinessTripUsers {
-  id: ID
-  name: String
-  avatar: String
-  phone: String
-  station_id: ID
-  station_name: String
-  destination_id: ID
-  destination_name: String
-  station_type: String
-  subscription_verified_at: DateTime
 }

@@ -8,9 +8,6 @@ input CreateBusinessTripInput {
   days: TripDaysInput! @rules(apply: ["required"])
   return_time: String
   group_chat: Boolean
-  request_ids: [ID]
-  schools: [BusinessTripSchoolsInput] @rules(apply: ["required_with:request_ids"])
-  users: [BusinessTripUsersInput] @rules(apply: ["required_with:request_ids"])
 }
 
 input CopyBusinessTripInput {
@@ -18,32 +15,6 @@ input CopyBusinessTripInput {
   name: String! @rules(apply: ["required"])
   include_stations: Boolean! @rules(apply: ["required"])
   include_subscriptions: Boolean! @rules(apply: ["required"])
-}
-
-input AddSchoolRequestToBusinessTripInput {
-  trip_id: ID! @rules(apply: ["required"])
-  request_ids: [ID]! @rules(apply: ["required"])
-  schools: [BusinessTripSchoolsInput] @rules(apply: ["required"])
-  users: [BusinessTripUsersInput] @rules(apply: ["required"])
-  station_id: ID
-  destination_id: ID
-}
-
-input BusinessTripSchoolsInput {
-  id: ID
-  name: String
-  lat: String
-  lng: String
-}
-
-input BusinessTripUsersInput {
-  id: ID
-  address: String
-  lat: String
-  lng: String
-  request_id: ID
-  days: UserDaysInput
-  school: String
 }
 
 input UpdateBusinessTripInput {

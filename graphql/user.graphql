@@ -43,20 +43,6 @@ input UserPhoneVerificationInput {
   phone: String! @rules(apply: ["required"])
 }
 
-input LoginInput {
-  emailOrPhone: String! @rules(apply: ["required"])
-  password: String! @rules(apply: ["required"])
-  platform: String @rules(apply: ["in:android,ios"])
-  device_id: String
-}
-
-input SocialLoginInput {
-  provider: String! @rules(apply: ["required", "in:facebook,google,apple"])
-  token: String! @rules(apply: ["required"])
-  platform: String @rules(apply: ["in:android,ios"])
-  device_id: String
-}
-
 type UserPayload {
   access_token: String
   user: User
@@ -64,31 +50,6 @@ type UserPayload {
 
 type UserPhoneVerifyPayload {
   verificationCode: String
-}
-
-input ForgotPasswordInput {
-  email: String! @rules(apply: ["required", "email"])
-  type: String! @rules(apply: ["required", "in:users,drivers,partners,admins"])
-}
-
-type DefaultResponse {
-  status: Boolean!
-  message: String 
-}
-
-input NewPasswordWithCodeInput {
-  email: String! @rules(apply: ["required", "email"])
-  type: String! @rules(apply: ["required", "in:users,drivers,partners,admins"])
-  token: String! @rules(apply: ["required", "string"])
-  password: String! @rules(apply: ["required", "confirmed", "min:8"])
-  password_confirmation: String!
-}
-
-input ChangePasswordInput {
-  id: ID! @rules(apply: ["required"])
-  current_password: String! @rules(apply: ["required"])
-  new_password: String! @rules(apply: ["required", "confirmed"])
-  new_password_confirmation: String!
 }
 
 type User {
@@ -106,12 +67,18 @@ type User {
   longitude: String
   wallet_balance: Float
   rating: Float
-  is_absent: Boolean
-  is_picked_up: Boolean
-  phone_verified_at: String
   ref_code: String
   created_at: String
   updated_at: String
   device_id: String
   partner: Partner @belongsTo
+  phone_verified_at: String
+  is_absent: Boolean
+  is_picked_up: Boolean
+  station_id: ID
+  station_name: String
+  destination_id: ID
+  destination_name: String
+  station_type: String
+  subscription_verified_at: DateTime
 }
