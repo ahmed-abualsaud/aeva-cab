@@ -28,5 +28,11 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('viewWebSocketsDashboard', function ($user = null) {
             return true;
         });
+
+        // Gate::before(function ($user = null, $ability) {
+        //     if (collect(auth('admin')->user()->permissions)->contains($ability)) {
+        //         return true;
+        //     }
+        // });
     }
 }

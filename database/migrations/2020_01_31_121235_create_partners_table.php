@@ -23,9 +23,9 @@ class CreatePartnersTable extends Migration
             $table->string('type')->nullable();
             $table->enum('size', ['SMALL','MEDIUM','LARGE','ENTERPRISE'])->nullable();
             $table->date('license_expires_on')->nullable();
-            $table->date('insurance_expires_on')->nullable();
             $table->unsignedInteger('max_no_of_trips')->nullable();
             $table->string('logo')->nullable();
+            $table->enum('belongs_to', ['BUSINESS','SEATS']);
             $table->timestamps();
             $table->softDeletes();
         });

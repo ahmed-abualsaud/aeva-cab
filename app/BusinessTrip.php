@@ -81,12 +81,8 @@ class BusinessTrip extends Model
         return $query->where('id', '<>', $args['trip_id']);
     }
 
-    public function scopeLive($query, $args) 
+    public function scopeLive($query) 
     {
-        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
-            $query->where('partner_id', $args['partner_id']);
-        }
-
         return $query->where('status', true);
     }
 
@@ -94,9 +90,11 @@ class BusinessTrip extends Model
     {
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $query->where('partner_id', $args['partner_id']);
+        } else if (array_key_exists('belongs_to', $args) && $args['belongs_to']) {
+            $query->where('belongs_to', $args['belongs_to']);
         }
  
-        return $query->orderBy('created_at', 'DESC');
+        return $query->latest();
     }
 
     public function scopeSearch($query, $args) 

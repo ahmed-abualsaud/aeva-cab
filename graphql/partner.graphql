@@ -5,9 +5,9 @@ input CreatePartnerInput {
   phone2: String
   type: String
   logo: Upload
-  size: String
+  size: String @rules(apply: ["in:SMALL,MEDIUM,LARGE,ENTERPRISE"])
+  belongs_to: String! @rules(apply: ["in:BUSINESS,TOSCHOOL,SEATS"])
   license_expires_on: Date
-  insurance_expires_on: Date
   max_no_of_trips: Int
 }
 
@@ -21,7 +21,6 @@ input UpdatePartnerInput {
   logo: Upload
   size: String @rules(apply: ["in:SMALL,MEDIUM,LARGE,ENTERPRISE"])
   license_expires_on: Date
-  insurance_expires_on: Date
   max_no_of_trips: Int
 }
 
@@ -50,10 +49,10 @@ type Partner {
   logo: String
   size: String 
   license_expires_on: Date
-  insurance_expires_on: Date
   created_at: DateTime
   updated_at: DateTime
   max_no_of_trips: Int
+  belongs_to: String
   users: [User] @hasMany
   drivers: [Driver] @belongsToMany
   trips: [BusinessTrip] @hasMany

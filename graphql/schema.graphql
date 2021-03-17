@@ -384,7 +384,7 @@ type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["notAssigned"])
 
   # Partner
-  partners: [Partner] @all
+  partners(belongs_to: String! @eq): [Partner] @all
 
   # Partner Driver
   partnerNotAssignedDrivers(partner_id: ID!, searchFor: String, searchQuery: String): [Driver] 
@@ -442,7 +442,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "VehicleResolver@driverAssignedVehicles")
 
   # Business Trip
-  businessTrips(partner_id: ID, searchFor: String, searchQuery: String): [BusinessTrip] 
+  businessTrips(belongs_to: String, partner_id: ID, searchFor: String, searchQuery: String): [BusinessTrip] 
     @paginate(scopes: ["partner", "search"])
   partnerBusinessTrips(partner_id: ID! @eq): [BusinessTrip] @all
 
@@ -457,11 +457,12 @@ extend type Query @guard(with: ["admin", "partner"]) {
     [User] @paginate(scopes: ["whereUnsubscribed", "search"])
 
   # Business Trip Event
-  businessTripEvents(searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
-    @paginate(scopes: ["whereTrip", "search"])
+  businessTripEvents(belongs_to: String, searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
+    @paginate(scopes: ["trip", "search", "filter"])
 
   # Business Trip
-  businessLiveTrips(partner_id: ID): [BusinessTrip] @all(scopes: ["live"])
+  businessLiveTrips(belongs_to: String, partner_id: ID): [BusinessTrip] 
+    @all(scopes: ["live", "partner"])
 }
 
 # Admin|User Guard

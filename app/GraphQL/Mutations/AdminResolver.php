@@ -5,25 +5,16 @@ namespace App\GraphQL\Mutations;
 use App\Admin;
 use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
-use GraphQL\Type\Definition\ResolveInfo;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 
 class AdminResolver
 {
     use HandleUpload;
-    /**
-     * @param $rootValue
-     * @param array                                                    $args
-     * @param \Nuwave\Lighthouse\Support\Contracts\GraphQLContext|null $context
-     * @param \GraphQL\Type\Definition\ResolveInfo                     $resolveInfo
-     *
-     * @throws \Exception
-     *
-     * @return array
+     /**
+     * @param  null  $_
+     * @param  array<string, mixed>  $args
      */
-    public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function create($_, array $args)
     {
         $input = collect($args)->except(['directive'])->toArray();
         $input['password'] = Hash::make($input['phone']);
@@ -38,7 +29,7 @@ class AdminResolver
         return $admin;
     }
 
-    public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function update($_, array $args)
     {
         $input = collect($args)->except(['id', 'directive', 'avatar'])->toArray();
 
@@ -59,7 +50,7 @@ class AdminResolver
         return $admin;
     }
 
-    public function login($rootValue, array $args, GraphQLContext $context = null, ResolveInfo $resolveInfo)
+    public function login($_, array $args)
     {
         $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
         $credentials = [];
@@ -87,7 +78,7 @@ class AdminResolver
         ];
     }
 
-    public function updatePassword($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function updatePassword($_, array $args)
     {
         try {
             $admin = Admin::findOrFail($args['id']);

@@ -29,7 +29,6 @@ class BusinessTripEvent extends Model
 
     public function scopeSearch($query, $args) 
     {
-        
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
@@ -37,7 +36,7 @@ class BusinessTripEvent extends Model
         return $query;
     }
 
-    public function scopeWhereTrip($query, $args)
+    public function scopeTrip($query, $args)
     {
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
             $events = $query->select('log_id', 'content', 'map_url', 'updated_at')
@@ -56,13 +55,22 @@ class BusinessTripEvent extends Model
             } else {
                 $events = $events->join('partners', 'partners.id', '=', 'business_trips.partner_id')
                     ->addSelect('partners.id AS partner_id', 'partners.name AS partner_name');
-            }   
-        }
+            } 
 
-        if (array_key_exists('period', $args) && $args['period']) {
-            $events = $this->dateFilter($args['period'], $events, 'business_trip_events.updated_at');
+            if (array_key_exists('belongs_to', $args) && $args['belongs_to']) {
+                $events = $events->where('business_trips.belongs_to', $args['belongs_to']);
+            }
         }
 
         return $events->latest('business_trip_events.updated_at');
+    }
+
+    public function scopeFilter($query, $args)
+    {
+        if (array_key_exists('period', $args) && $args['period']) {
+            $query = $this->dateFilter($args['period'], $query, 'business_trip_events.updated_at');
+        }
+
+        return $query;
     }
 }
