@@ -74,6 +74,7 @@ type BusinessTrip {
   vehicle: Vehicle @belongsTo
   days: TripDays
   price: Float
+  belongs_to: String
   stations: [BusinessTripStation] @hasMany
   userStation: BusinessTripStation @hasOne
   userDestination: BusinessTripStation @hasOne
