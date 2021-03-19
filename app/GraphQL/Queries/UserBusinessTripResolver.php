@@ -83,8 +83,10 @@ class UserBusinessTripResolver
                     END
                 ) AS station_type
                 '))
-                ->where('business_trip_users.station_id', $args['station_id'])
-                ->orWhere('business_trip_users.destination_id', $args['station_id']);
+                ->where(function ($query) use ($args) {
+                    $query->where('business_trip_users.station_id', $args['station_id'])
+                        ->orWhere('business_trip_users.destination_id', $args['station_id']);
+                });
         }
         
         $users = $users->where('business_trip_users.is_scheduled', true)
