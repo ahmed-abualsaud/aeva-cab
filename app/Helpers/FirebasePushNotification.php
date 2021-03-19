@@ -13,8 +13,10 @@ class FirebasePushNotification
         $fields = [
             'notification' => $payload,
             'data' => $payload,
-            "priority" => "high"
+            'priority' => "high"
         ];
+
+        $fields['notification']['sound'] = 'default';
 
         if (is_array($token)) {
             $fields['registration_ids'] = $token;
