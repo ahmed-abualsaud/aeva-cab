@@ -83,7 +83,7 @@ type OndemandRequestLine {
   to_address: String
 }
 
-type RequestStatsResponse {
+type OndemandRequestStats {
   count: Int
   requests: [RequestGroup]
 }

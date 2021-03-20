@@ -221,6 +221,12 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   # Communication
   sendDirectMessage(input: SendDirectMessageInput! @spread): String
     @field(resolver: "CommunicationResolver@sendDirectMessage")
+
+  # Seats Trip Transaction
+  createSeatsTripTransaction(input: CreateSeatsTripTransactionInput! @spread): Boolean
+    @field(resolver: "SeatsTripTransactionResolver@create")
+  deleteSeatsTripTransaction(id: [ID!]!): Boolean
+    @field(resolver: "SeatsTripTransactionResolver@destroy")
 }
 
 # Admin|User Guard
@@ -372,7 +378,7 @@ type Query @guard(with: ["admin"]) {
   # Ondemand Request
   ondemandRequests(status: String period: String): [OndemandRequest]
     @paginate(scopes: ["filter"])
-  ondemandRequestsStats(status: String period: String): RequestStatsResponse
+  ondemandRequestsStats(status: String period: String): OndemandRequestStats
     @field(resolver: "OndemandRequestResolver@stats")
 
   # Document
@@ -463,6 +469,12 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # Business Trip
   businessLiveTrips(belongs_to: String, partner_id: ID): [BusinessTrip] 
     @all(scopes: ["live", "partner"])
+
+  # Seats Trip Transactions
+  seatsTripTransactions(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [SeatsTripTransaction]
+    @paginate(scopes: ["wherePartnerOrTrip", "search", "filter"])
+  seatsTripTransactionsStats(period: String): SeatsTripTransactionStats
+    @field(resolver: "SeatsTripTransactionResolver@stats")
 }
 
 # Admin|User Guard
@@ -574,3 +586,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import businessTripAttendance.graphql
 #import statement.graphql
 #import utilities.graphql
+#import seatsTripTransaction.graphql

@@ -6,7 +6,6 @@ use App\Partner;
 use App\PartnerUser;
 use App\PartnerDriver;
 use App\Traits\HandleUpload;
-use Illuminate\Support\Arr;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
