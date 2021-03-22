@@ -35,12 +35,12 @@ class OndemandRequestResolver
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            throw new CustomException($e->getMessage());
+            throw new CustomException('We could not able to create this request!');
         }
 
-        // $this->broadcastRequest($request);
+        $this->broadcastRequest($request);
 
-        // $this->smsRequest($request->id);
+        $this->smsRequest($request->id);
 
         // $this->mailRequest($request->id);
 
