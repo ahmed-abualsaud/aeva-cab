@@ -23,7 +23,8 @@ class CreateAdminsTable extends Migration
             $table->string('employee_id')->nullable();
             $table->string('status')->nullable();
             $table->unsignedBigInteger('role_id');
-            $table->boolean('is_super_admin')->default(0);
+            $table->boolean('is_super_admin')->default(false);
+            $table->json('can');
             $table->timestamps();
             $table->softDeletes();
             

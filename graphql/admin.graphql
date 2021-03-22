@@ -4,6 +4,7 @@ input CreateAdminInput {
   phone: String! @rules(apply: ["required", "unique:admins,phone"])
   avatar: Upload
   role_id: ID! @rules(apply: ["required"])
+  can: PermissionsInput! @rules(apply: ["required"])
 }
 
 input UpdateAdminInput {
@@ -14,6 +15,55 @@ input UpdateAdminInput {
   avatar: Upload
   status: String
   role_id: ID
+  can: PermissionsInput
+}
+
+input PermissionsInput {
+  member_create: Boolean
+  member_read: Boolean
+  member_update: Boolean
+  member_delete: Boolean
+  partner_create: Boolean
+  partner_read: Boolean
+  partner_update: Boolean
+  partner_delete: Boolean
+  user_create: Boolean
+  user_read: Boolean
+  user_update: Boolean
+  user_delete: Boolean
+  driver_create: Boolean
+  driver_read: Boolean
+  driver_update: Boolean
+  driver_delete: Boolean
+  vehicle_create: Boolean
+  vehicle_read: Boolean
+  vehicle_update: Boolean
+  vehicle_delete: Boolean
+  business_create: Boolean
+  business_read: Boolean
+  business_update: Boolean
+  business_delete: Boolean
+  ondemand_create: Boolean
+  ondemand_read: Boolean
+  ondemand_update: Boolean
+  ondemand_delete: Boolean
+  seats_create: Boolean
+  seats_read: Boolean
+  seats_update: Boolean
+  seats_delete: Boolean
+  toschool_create: Boolean
+  toschool_read: Boolean
+  toschool_update: Boolean
+  toschool_delete: Boolean
+  promocode_create: Boolean
+  promocode_read: Boolean
+  promocode_update: Boolean
+  promocode_delete: Boolean
+  settings_create: Boolean
+  settings_read: Boolean
+  settings_update: Boolean
+  settings_delete: Boolean
+  statistics_read: Boolean
 }
 
 type AdminAuthPayload {
@@ -31,4 +81,53 @@ type Admin {
   status: String
   role: Role @belongsTo
   is_super_admin: Boolean
+  can: Permissions
+}
+
+type Permissions {
+  member_create: Boolean
+  member_read: Boolean
+  member_update: Boolean
+  member_delete: Boolean
+  partner_create: Boolean
+  partner_read: Boolean
+  partner_update: Boolean
+  partner_delete: Boolean
+  user_create: Boolean
+  user_read: Boolean
+  user_update: Boolean
+  user_delete: Boolean
+  driver_create: Boolean
+  driver_read: Boolean
+  driver_update: Boolean
+  driver_delete: Boolean
+  vehicle_create: Boolean
+  vehicle_read: Boolean
+  vehicle_update: Boolean
+  vehicle_delete: Boolean
+  business_create: Boolean
+  business_read: Boolean
+  business_update: Boolean
+  business_delete: Boolean
+  ondemand_create: Boolean
+  ondemand_read: Boolean
+  ondemand_update: Boolean
+  ondemand_delete: Boolean
+  seats_create: Boolean
+  seats_read: Boolean
+  seats_update: Boolean
+  seats_delete: Boolean
+  toschool_create: Boolean
+  toschool_read: Boolean
+  toschool_update: Boolean
+  toschool_delete: Boolean
+  promocode_create: Boolean
+  promocode_read: Boolean
+  promocode_update: Boolean
+  promocode_delete: Boolean
+  settings_create: Boolean
+  settings_read: Boolean
+  settings_update: Boolean
+  settings_delete: Boolean
+  statistics_read: Boolean
 }

@@ -29,10 +29,10 @@ class AuthServiceProvider extends ServiceProvider
             return true;
         });
 
-        // Gate::before(function ($user = null, $ability) {
-        //     if (collect(auth('admin')->user()->permissions)->contains($ability)) {
-        //         return true;
-        //     }
-        // });
+        Gate::before(function ($user = null, $ability) {
+            if (auth('admin')->user()->can[$ability]) {
+                return true;
+            }
+        });
     }
 }
