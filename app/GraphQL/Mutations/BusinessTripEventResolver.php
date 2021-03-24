@@ -357,6 +357,7 @@ class BusinessTripEventResolver
             "log_id" => $input['log_id'],
             "name" => $trip->name,
             "status" => $input['status'],
+            "belongs_to" => $trip->belongs_to,
             "partner" => [
                 "id" => $trip->partner->id,
                 "name" => $trip->partner->name
