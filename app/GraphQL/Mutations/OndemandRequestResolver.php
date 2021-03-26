@@ -35,7 +35,7 @@ class OndemandRequestResolver
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            throw new CustomException('We could not able to create this request!');
+            throw new CustomException($e->getMessage());
         }
 
         $this->broadcastRequest($request);

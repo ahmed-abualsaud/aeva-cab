@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Mutations;
 
+use JWTAuth;
 use App\Admin;
 use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;
@@ -45,6 +46,9 @@ class AdminResolver
             $input['avatar'] = $url;
         }
 
+        if ($admin->token) 
+            JWTAuth::setToken($admin->token)->invalidate();
+
         $admin->update($input);
 
         return $admin;
@@ -71,6 +75,8 @@ class AdminResolver
         }
 
         $admin = auth('admin')->user();
+
+        $admin->update(['token' => $token]);
 
         return [
             'access_token' => $token,
