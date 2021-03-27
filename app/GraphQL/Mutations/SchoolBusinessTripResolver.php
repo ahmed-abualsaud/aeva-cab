@@ -55,6 +55,7 @@ class SchoolBusinessTripResolver
                 $this->assignUsersToStationsAndDestinations($args['users'], $args['trip_id']);
             }
 
+            $this->updateTripSchedule($args);
             $this->createScheduleForEachUser($args['users'], $args['trip_id']);
             SchoolRequest::accept($args['request_ids']);
 
@@ -284,5 +285,14 @@ class SchoolBusinessTripResolver
         return BusinessTripStation::select('id', 'creator_id', 'name')
             ->where('trip_id', $trip_id)
             ->get();
+    }
+
+    protected function updateTripSchedule(array $args)
+    {
+        $schedule = BusinessTrip::select('days')
+            ->findOrFail($args['trip_id']);
+
+        BusinessTrip::where('id', $args['trip_id'])
+            ->update(['days' => array_merge($schedule->days, $args['days'])]);
     }
 }
