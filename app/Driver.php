@@ -98,8 +98,7 @@ class Driver extends Authenticatable implements JWTSubject
     }
 
     public function scopeSearch($query, $args) 
-    {
-        
+    {   
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }

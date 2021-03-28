@@ -356,7 +356,8 @@ type Query @guard(with: ["admin"]) {
   statements: [Statement] @all
 
   # Vehicle
-  vehicles: [Vehicle] @paginate
+  vehicles(searchFor: String, searchQuery: String): [Vehicle] 
+    @paginate(scopes: ["search"])
   vehicle(id: ID @eq): Vehicle @find
 
   # Car Make
