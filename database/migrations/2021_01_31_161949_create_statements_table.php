@@ -17,12 +17,8 @@ class CreateStatementsTable extends Migration
             $table->bigIncrements('id');
             $table->enum('type', [
                 'SCHOOL_REQUEST',
-                'ONDEMAND_REQUEST',
-                'TRIP_SUBSCRIPTION',
-                'NEW_USER',
-                'NEW_DRIVER',
-                'NEW_PARTNER',
-                'NEW_ADMIN'
+                'COMPANY_REQUEST',
+                'ONDEMAND_REQUEST'
             ]);
             $table->string('title');
             $table->string('title_ar');

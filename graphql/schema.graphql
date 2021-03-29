@@ -131,19 +131,34 @@ extend type Mutation @guard(with: ["admin"]) {
   addSchoolRequestToBusinessTrip(input: AddSchoolRequestToBusinessTripInput! @spread): Boolean 
     @field(resolver: "SchoolBusinessTripResolver@addSchoolRequest")
 
-  # School Request
-  createSchoolZone(input: CreateSchoolZoneInput! @spread): SchoolZone 
-    @create @createSchoolZoneValidation
-  updateSchoolZone(input: UpdateSchoolZoneInput! @spread): SchoolZone 
-    @update @updateSchoolZoneValidation
-  deleteSchoolZone(id: ID!): SchoolZone @delete
+  # Company Business Trip
+  createCompanyBusinessTrip(input: CreateCompanyBusinessTripInput! @spread): Boolean 
+    @field(resolver: "CompanyBusinessTripResolver@create")
+  addCompanyRequestToBusinessTrip(input: AddCompanyRequestToBusinessTripInput! @spread): Boolean 
+    @field(resolver: "CompanyBusinessTripResolver@addCompanyRequest")
 
+  # Zone
+  createZone(input: CreateZoneInput! @spread): Zone 
+    @create @createZoneValidation
+  updateZone(input: UpdateZoneInput! @spread): Zone 
+    @update @updateZoneValidation
+  deleteZone(id: ID!): Zone @delete
+
+  # School
   createSchool(input: CreateSchoolInput! @spread): School 
     @create @createSchoolValidation
   updateSchool(input: UpdateSchoolInput! @spread): School 
     @update @updateSchoolValidation
   deleteSchool(id: ID!): School @delete
 
+  # Company
+  createCompany(input: CreateCompanyInput! @spread): Company 
+    @create @createCompanyValidation
+  updateCompany(input: UpdateCompanyInput! @spread): Company 
+    @update @updateCompanyValidation
+  deleteCompany(id: ID!): Company @delete
+
+  # School Grade
   createSchoolGrade(input: CreateSchoolGradeInput! @spread): SchoolGrade 
     @create @createSchoolGradeValidation
   updateSchoolGrade(input: UpdateSchoolGradeInput! @spread): SchoolGrade 
@@ -391,23 +406,34 @@ type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["notAssigned"])
 
   # Partner
-  partners(belongs_to: String! @eq): [Partner] @all
+  partners(type: String! @eq): [Partner] @all
 
   # Partner Driver
   partnerNotAssignedDrivers(partner_id: ID!, searchFor: String, searchQuery: String): [Driver] 
     @paginate(scopes: ["notAssigned", "search"])
 
-  # School
+  # Zone
+  zones(type: String! @eq): [Zone] @all
+  zone(id: ID! @eq): Zone @find
+
+  # To School
   allSchools(searchFor: String, searchQuery: String): [School] 
     @paginate(scopes: ["search"])
-  schoolZones: [SchoolZone] @all
-  schoolZone(id: ID! @eq): SchoolZone @find
   school(id: ID! @eq): School @find
   schoolGrades(school_id: ID! @eq): [SchoolGrade] @all
   schoolGrade(id: ID! @eq): SchoolGrade @find
   schoolRequests(searchFor: String, searchQuery: String, zone_id: [ID], period: String, status: String!): [SchoolRequest] 
     @paginate(scopes: ["whereStatus", "wherePeriod", "search"])
   schoolRequestsArchive(searchFor: String, searchQuery: String, period: String): [SchoolRequest] 
+    @paginate(scopes: ["whereArchived", "wherePeriod", "search"])
+
+  # To Company
+  allCompanies(searchFor: String, searchQuery: String): [Company] 
+    @paginate(scopes: ["search"])
+  company(id: ID! @eq): Company @find
+  companyRequests(searchFor: String, searchQuery: String, zone_id: [ID], period: String, status: String!): [CompanyRequest] 
+    @paginate(scopes: ["whereStatus", "wherePeriod", "search"])
+  companyRequestsArchive(searchFor: String, searchQuery: String, period: String): [CompanyRequest] 
     @paginate(scopes: ["whereArchived", "wherePeriod", "search"])
 }
 
@@ -449,7 +475,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "VehicleResolver@driverAssignedVehicles")
 
   # Business Trip
-  businessTrips(belongs_to: String, partner_id: ID, searchFor: String, searchQuery: String): [BusinessTrip] 
+  businessTrips(type: String, partner_id: ID, searchFor: String, searchQuery: String): [BusinessTrip] 
     @paginate(scopes: ["partner", "search"])
   partnerBusinessTrips(partner_id: ID! @eq): [BusinessTrip] @all
 
@@ -464,11 +490,11 @@ extend type Query @guard(with: ["admin", "partner"]) {
     [User] @paginate(scopes: ["whereUnsubscribed", "search"])
 
   # Business Trip Event
-  businessTripEvents(belongs_to: String, searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
+  businessTripEvents(type: String, searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
     @paginate(scopes: ["trip", "search", "filter"])
 
   # Business Trip
-  businessLiveTrips(belongs_to: String, partner_id: ID): [BusinessTrip] 
+  businessLiveTrips(type: String, partner_id: ID): [BusinessTrip] 
     @all(scopes: ["live", "partner"])
 
   # Seats Trip Transactions
@@ -496,6 +522,11 @@ extend type Query @guard(with: ["admin", "user"]) {
   schools(zone_id: ID, city_id: ID): [School] @all(scopes: ["whereZoneOrCity"])
   schoolRequest(id: ID! @eq): SchoolRequest @find
   schoolRequestsByUser(user_id: ID! @eq): [SchoolRequest] @all
+
+  # Company Request
+  companies(zone_id: ID, city_id: ID): [Company] @all(scopes: ["whereZoneOrCity"])
+  companyRequest(id: ID! @eq): CompanyRequest @find
+  companyRequestsByUser(user_id: ID! @eq): [CompanyRequest] @all
 
   # Price Package
   pricePackages(city_id: ID): [PricePackage] @all(scopes: ["whereCity"])
@@ -588,3 +619,6 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import statement.graphql
 #import utilities.graphql
 #import seatsTripTransaction.graphql
+#import zone.graphql
+#import company.graphql
+#import companyBusinessTrip.graphql

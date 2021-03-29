@@ -223,7 +223,7 @@ class BusinessTripResolver
     {
         $originalTrip = BusinessTrip::select(
             'partner_id', 'driver_id', 'vehicle_id', 'start_date', 'end_date', 
-            'return_time', 'days', 'duration', 'distance', 'group_chat', 'belongs_to'
+            'return_time', 'days', 'duration', 'distance', 'group_chat', 'type'
             )
             ->findOrFail($args['id'])
             ->toArray();

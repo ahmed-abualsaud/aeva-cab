@@ -3,7 +3,7 @@ input CreateStatementInput {
     @rules(apply: [
       "required", 
       "unique:statements,type", 
-      "in:SCHOOL_REQUEST,ONDEMAND_REQUEST,TRIP_SUBSCRIPTION,NEW_USER,NEW_DRIVER,NEW_PARTNER,NEW_ADMIN"  
+      "in:SCHOOL_REQUEST,ONDEMAND_REQUEST,COMPANY_REQUEST"  
     ])
   title: String! @rules(apply: ["required"])
   title_ar: String! @rules(apply: ["required"])

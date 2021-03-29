@@ -90,8 +90,8 @@ class BusinessTrip extends Model
     {
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $query->where('partner_id', $args['partner_id']);
-        } else if (array_key_exists('belongs_to', $args) && $args['belongs_to']) {
-            $query->where('belongs_to', $args['belongs_to']);
+        } else if (array_key_exists('type', $args) && $args['type']) {
+            $query->where('type', $args['type']);
         }
  
         return $query->latest();

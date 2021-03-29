@@ -1,0 +1,23 @@
+input CreateZoneInput {
+  city_id: ID! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required"])
+  type: String! @rules(apply: ["required", "in:toschool,tocompany"])
+  description: String
+}
+
+input UpdateZoneInput {
+  id: ID! @rules(apply: ["required"])
+  type: String! @rules(apply: ["required", "in:toschool,tocompany"])
+  city_id: ID @rules(apply: ["required_with:name"])
+  name: String
+  description: String
+}
+
+type Zone {
+  id: ID
+  name: String
+  description: String
+  schools: [School] @hasMany 
+  companies: [Company] @hasMany 
+  city: City @belongsTo
+}

@@ -3,10 +3,10 @@ input CreatePartnerInput {
   email: String @rules(apply: ["email", "unique:partners,email"])
   phone1: String! @rules(apply: ["required", "unique:partners,phone1"])
   phone2: String
-  type: String
+  classification: String
   logo: Upload
   size: String @rules(apply: ["in:SMALL,MEDIUM,LARGE,ENTERPRISE"])
-  belongs_to: String! @rules(apply: ["in:BUSINESS,TOSCHOOL,SEATS"])
+  type: String! @rules(apply: ["in:business,toschool,tocompany,seats"])
   license_expires_on: Date
   max_no_of_trips: Int
 }
@@ -15,7 +15,7 @@ input UpdatePartnerInput {
   id: ID! @rules(apply: ["required"])
   name: String
   email: String
-  type: String
+  classification: String
   phone1: String
   phone2: String
   logo: Upload
@@ -43,7 +43,7 @@ type Partner {
   id: ID
   name: String
   email: String
-  type: String
+  classification: String
   phone1: String
   phone2: String
   logo: String
@@ -52,7 +52,7 @@ type Partner {
   created_at: DateTime
   updated_at: DateTime
   max_no_of_trips: Int
-  belongs_to: String
+  type: String
   users: [User] @hasMany
   drivers: [Driver] @belongsToMany
   trips: [BusinessTrip] @hasMany

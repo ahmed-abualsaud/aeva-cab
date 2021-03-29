@@ -5,7 +5,7 @@ namespace App\GraphQL\Directives;
 use Illuminate\Validation\Rule;
 use Nuwave\Lighthouse\Schema\Directives\ValidationDirective;
 
-class CreateSchoolZoneValidationDirective extends ValidationDirective
+class UpdateZoneValidationDirective extends ValidationDirective
 {
   /**
    * @return mixed[]
@@ -14,9 +14,11 @@ class CreateSchoolZoneValidationDirective extends ValidationDirective
   {
     return [
       'name' => [
-        'required', 
-        Rule::unique('school_zones', 'name')
+        'sometimes', 
+        Rule::unique('zones', 'name')
+          ->ignore($this->args['id'], 'id')
           ->where('city_id', $this->args['city_id'])
+          ->where('type', $this->args['type'])
       ],
     ];
   }

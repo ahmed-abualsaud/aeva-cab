@@ -5,7 +5,7 @@ namespace App;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
-class School extends Model
+class Company extends Model
 {
     use Searchable;
 
@@ -14,11 +14,6 @@ class School extends Model
     public function zone()
     {
         return $this->belongsTo(Zone::class);
-    }
-
-    public function grades()
-    {
-        return $this->hasMany(SchoolGrade::class);
     }
 
     public function scopeWhereZoneOrCity($query, $args) 
@@ -38,7 +33,6 @@ class School extends Model
 
     public function scopeSearch($query, $args) 
     {
-        
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }

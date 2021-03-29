@@ -57,8 +57,8 @@ class BusinessTripEvent extends Model
                     ->addSelect('partners.id AS partner_id', 'partners.name AS partner_name');
             } 
 
-            if (array_key_exists('belongs_to', $args) && $args['belongs_to']) {
-                $events = $events->where('business_trips.belongs_to', $args['belongs_to']);
+            if (array_key_exists('type', $args) && $args['type']) {
+                $events = $events->where('business_trips.type', $args['type']);
             }
         }
 

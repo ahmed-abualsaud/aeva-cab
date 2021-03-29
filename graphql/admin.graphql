@@ -55,6 +55,10 @@ input PermissionsInput {
   toschool_read: Boolean
   toschool_update: Boolean
   toschool_delete: Boolean
+  tocompany_create: Boolean
+  tocompany_read: Boolean
+  tocompany_update: Boolean
+  tocompany_delete: Boolean
   promocode_create: Boolean
   promocode_read: Boolean
   promocode_update: Boolean
@@ -105,6 +109,10 @@ type Permissions {
   vehicle_read: Boolean
   vehicle_update: Boolean
   vehicle_delete: Boolean
+  promocode_create: Boolean
+  promocode_read: Boolean
+  promocode_update: Boolean
+  promocode_delete: Boolean
   business_create: Boolean
   business_read: Boolean
   business_update: Boolean
@@ -121,10 +129,10 @@ type Permissions {
   toschool_read: Boolean
   toschool_update: Boolean
   toschool_delete: Boolean
-  promocode_create: Boolean
-  promocode_read: Boolean
-  promocode_update: Boolean
-  promocode_delete: Boolean
+  tocompany_create: Boolean
+  tocompany_read: Boolean
+  tocompany_update: Boolean
+  tocompany_delete: Boolean
   settings_create: Boolean
   settings_read: Boolean
   settings_update: Boolean

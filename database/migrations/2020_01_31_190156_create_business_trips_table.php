@@ -30,11 +30,11 @@ class CreateBusinessTripsTable extends Migration
             $table->string('log_id')->nullable();
             $table->boolean('group_chat')->default(true);
             $table->float('price', 8, 2)->nullable();
-            $table->enum('belongs_to', ['BUSINESS', 'TOSCHOOL','SEATS']);
+            $table->enum('type', ['business','toschool','tocompany','seats']);
             $table->timestamps();
             $table->softDeletes();
 
-            $table->index('belongs_to');
+            $table->index('type');
             $table->index('partner_id');
             $table->index('driver_id');
             $table->index(['start_date', 'end_date']);

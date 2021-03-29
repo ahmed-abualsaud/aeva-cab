@@ -1,4 +1,4 @@
-input CreateSchoolInput {
+input CreateCompanyInput {
   zone_id: ID! @rules(apply: ["required"])
   name: String! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])
@@ -6,7 +6,7 @@ input CreateSchoolInput {
   address: String
 }
 
-input UpdateSchoolInput {
+input UpdateCompanyInput {
   id: ID! @rules(apply: ["required"])
   zone_id: ID @rules(apply: ["required_with:name"])
   name: String
@@ -15,24 +15,11 @@ input UpdateSchoolInput {
   address: String
 }
 
-input CreateSchoolGradeInput {
-  school_id: ID! @rules(apply: ["required"])
-  name: String! @rules(apply: ["required"])
-}
-
-input UpdateSchoolGradeInput {
-  id: ID! @rules(apply: ["required"])
-  school_id: ID! @rules(apply: ["required"])
-  name: String! @rules(apply: ["required"])
-}
-
-input CreateSchoolRequestInput {
+input CreateCompanyRequestInput {
   user_id: ID! @rules(apply: ["required"])
-  city_id: ID
-  school_id: ID! @rules(apply: ["required"])
-  grade_id: ID! @rules(apply: ["required"])
+  city_id: ID! @rules(apply: ["required"])
+  company_id: ID! @rules(apply: ["required"])
   price_package_id: ID! @rules(apply: ["required"])
-  student_name: String! @rules(apply: ["required"])
   contact_phone: String! @rules(apply: ["required"])
   pickup_lat: String! @rules(apply: ["required"])
   pickup_lng: String! @rules(apply: ["required"])
@@ -43,12 +30,10 @@ input CreateSchoolRequestInput {
   comment: String
 }
 
-input UpdateSchoolRequestInput {
+input UpdateCompanyRequestInput {
   id: ID! @rules(apply: ["required"])
-  school_id: ID
-  grade_id: ID
+  company_id: ID
   price_package_id: ID
-  student_name: String
   contact_phone: String
   pickup_lat: String
   pickup_lng: String
@@ -61,43 +46,35 @@ input UpdateSchoolRequestInput {
   response: String
 }
 
-input ChangeSchoolRequestStatusInput {
+input ChangeCompanyRequestStatusInput {
   requestIds: [ID!]! @rules(apply: ["required"])
   status: String! @rules(apply: ["in:PENDING,REJECTED,WAITING,APPROVED"])
-  users: [SchoolRequestStatusUsers]
+  users: [CompanyRequestStatusUsers]
   notify: Boolean
   response: String
 }
 
-input SchoolRequestStatusUsers {
+input CompanyRequestStatusUsers {
   requestId: ID! @rules(apply: ["required"])
   userId: ID! @rules(apply: ["required"])
 }
 
-type School {
+type Company {
   id: ID
   name: String
   latitude: String
   longitude: String
   address: String
   zone: Zone @belongsTo
-  grades: [SchoolGrade] @hasMany
 }
 
-type SchoolGrade {
-  id: ID
-  name: String
-}
-
-type SchoolRequest {
+type CompanyRequest {
   id: ID
   city_id: ID
   user_id: ID
   user: User @belongsTo
-  school: School @belongsTo
-  grade: SchoolGrade @belongsTo
+  company: Company @belongsTo
   pricePackage: PricePackage @belongsTo
-  student_name: String
   contact_phone: String
   pickup_lat: String
   pickup_lng: String
