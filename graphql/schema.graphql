@@ -273,6 +273,16 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "SchoolRequestResolver@destroy")
   changeSchoolRequestStatus(input: ChangeSchoolRequestStatusInput! @spread): String
     @field(resolver: "SchoolRequestResolver@changeStatus")
+
+  # Company
+  createCompanyRequest(input: CreateCompanyRequestInput! @spread): CompanyRequest 
+    @field(resolver: "CompanyRequestResolver@create")
+  updateCompanyRequest(input: UpdateCompanyRequestInput! @spread): CompanyRequest 
+    @field(resolver: "CompanyRequestResolver@update")
+  deleteCompanyRequest(id: [ID!]!): String
+    @field(resolver: "CompanyRequestResolver@destroy")
+  changeCompanyRequestStatus(input: ChangeCompanyRequestStatusInput! @spread): String
+    @field(resolver: "CompanyRequestResolver@changeStatus")
 }
 
 # Admin|Driver Guard
@@ -529,7 +539,7 @@ extend type Query @guard(with: ["admin", "user"]) {
   companyRequestsByUser(user_id: ID! @eq): [CompanyRequest] @all
 
   # Price Package
-  pricePackages(city_id: ID): [PricePackage] @all(scopes: ["whereCity"])
+  pricePackages(city_id: ID, type: String): [PricePackage] @all(scopes: ["whereCity", "whereType"])
 
   # City
   cities: [City] @all

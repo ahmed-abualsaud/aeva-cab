@@ -3,12 +3,12 @@
 namespace App\GraphQL\Mutations;
 
 use App\User;
-use App\SchoolRequest;
+use App\CompanyRequest;
 use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
 use App\Exceptions\CustomException;
 
-class SchoolRequestResolver
+class CompanyRequestResolver
 {
     use HandleDeviceTokens;
 
@@ -24,29 +24,29 @@ class SchoolRequestResolver
 
             User::updateSecondaryNumber($args['contact_phone']);
 
-            $schoolRequest = SchoolRequest::create($input);
+            $companyRequest = CompanyRequest::create($input);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to create this school request!');
+            throw new CustomException('We could not able to create this company request!');
         }
 
-        return $schoolRequest;
+        return $companyRequest;
     }
 
     public function update($_, array $args)
     {
         try {
             $input = collect($args)->except(['id', 'directive'])->toArray();
-            $schoolRequest = SchoolRequest::findOrFail($args['id']);
+            $companyRequest = CompanyRequest::findOrFail($args['id']);
 
             if (array_key_exists('contact_phone', $args) && $args['contact_phone'])
                 User::updateSecondaryNumber($args['contact_phone']);
     
-            $schoolRequest->update($input);
+            $companyRequest->update($input);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to update this school request!');
+            throw new CustomException('We could not able to update this company request!');
         }
 
-        return $schoolRequest;
+        return $companyRequest;
     }
 
     public function changeStatus($_, array $args)
@@ -56,11 +56,11 @@ class SchoolRequestResolver
 
             switch($args['status']) {
                 case 'PENDING':
-                    SchoolRequest::restore($args['requestIds']);
+                    CompanyRequest::restore($args['requestIds']);
                     break;
 
                 default:
-                    SchoolRequest::exclude($args['requestIds'], $updateInput);
+                    CompanyRequest::exclude($args['requestIds'], $updateInput);
                     if (array_key_exists('notify', $args) && $args['notify'])
                         $this->notifyUsers($args);
                     break;
@@ -79,7 +79,7 @@ class SchoolRequestResolver
                
             foreach($args['users'] as $user) {
 
-                $responseMsg = 'Your school request # ' 
+                $responseMsg = 'Your company request # ' 
                     . $user['requestId'] . ' has been ' 
                     . strtolower($args['status']);
     
@@ -90,7 +90,7 @@ class SchoolRequestResolver
                     $this->userToken($user['userId']), 
                     $responseMsg, 
                     'Qruz to School',
-                    ['view' => 'SchoolRequest', 'id' => $user['requestId']]
+                    ['view' => 'CompanyRequest', 'id' => $user['requestId']]
                 );
             }
         } catch (\Exception $e) {
@@ -101,7 +101,7 @@ class SchoolRequestResolver
     public function destroy($_, array $args)
     {
         try {
-            SchoolRequest::whereIn('id', $args['id'])->delete();
+            CompanyRequest::whereIn('id', $args['id'])->delete();
         } catch (\Exception $e) {
             throw new CustomException('We could not able to delete selected requests!');
         }

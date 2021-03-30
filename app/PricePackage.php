@@ -20,6 +20,15 @@ class PricePackage extends Model
         return $this->belongsTo(City::class);
     }
 
+    public function scopeWhereType($query, $args) 
+    {
+        if (array_key_exists('type', $args) && $args['type']) {
+            return $query->where('type', $args['type']);
+        }
+ 
+        return $query;
+    }
+
     public function scopeWhereCity($query, $args) 
     {
         if (array_key_exists('city_id', $args) && $args['city_id']) {
