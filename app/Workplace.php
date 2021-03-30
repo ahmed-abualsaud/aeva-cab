@@ -5,7 +5,7 @@ namespace App;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
-class Company extends Model
+class Workplace extends Model
 {
     use Searchable;
 

@@ -32,11 +32,15 @@ class PricePackage extends Model
     public function scopeWhereCity($query, $args) 
     {
         if (array_key_exists('city_id', $args) && $args['city_id']) {
-            return $query->where('city_id', $args['city_id'])
-                ->orderBy('order');
+            return $query->where('city_id', $args['city_id']);
         }
  
         return $query;
+    }
+
+    public function scopeSortByOrder($query) 
+    {
+        return $query->orderBy('order');
     }
 
     public static function reorder(array $orders)

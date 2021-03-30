@@ -4,7 +4,7 @@ input CreatePricePackageInput {
   price: PriceInput! @rules(apply: ["required"])
   per: String! @rules(apply: ["required"])
   order: Int! @rules(apply: ["required"])
-  type: String! @rules(apply: ["required", "in:toschool,tocompany"])
+  type: String! @rules(apply: ["required", "in:toschool,towork"])
   description: String
   description_ar: String
   photo: Upload
@@ -12,7 +12,7 @@ input CreatePricePackageInput {
 
 input UpdatePricePackageInput {
   id: ID! @rules(apply: ["required"])
-  type: String! @rules(apply: ["required", "in:toschool,tocompany"])
+  type: String! @rules(apply: ["required", "in:toschool,towork"])
   city_id: ID
   name: String
   price: PriceInput

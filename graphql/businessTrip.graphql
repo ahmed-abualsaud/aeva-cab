@@ -8,7 +8,7 @@ input CreateBusinessTripInput {
   days: TripDaysInput! @rules(apply: ["required"])
   return_time: String
   group_chat: Boolean
-  type: String! @rules(apply: ["in:business,toschool,tocompany"])
+  type: String! @rules(apply: ["in:business,toschool,towork"])
   price: Float
 }
 

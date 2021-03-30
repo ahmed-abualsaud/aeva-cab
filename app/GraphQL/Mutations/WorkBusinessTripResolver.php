@@ -3,7 +3,7 @@
 namespace App\GraphQL\Mutations;
 
 use App\BusinessTrip;
-use App\CompanyRequest;
+use App\WorkRequest;
 use App\BusinessTripUser;
 use Illuminate\Support\Arr;
 use App\BusinessTripStation;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Vinkla\Hashids\Facades\Hashids;
 
-class CompanyBusinessTripResolver
+class WorkBusinessTripResolver
 {
     /**
      * @param  null  $_
@@ -22,12 +22,12 @@ class CompanyBusinessTripResolver
     {
         DB::beginTransaction();
         try {
-            $input = Arr::except($args, ['directive', 'request_ids', 'companies', 'users']);
+            $input = Arr::except($args, ['directive', 'request_ids', 'workplaces', 'users']);
             $businessTrip = $this->createBusinessTrip($input);
-            $this->createStationsAndDestinations($args['users'], $args['companies'], $businessTrip->id);
+            $this->createStationsAndDestinations($args['users'], $args['workplaces'], $businessTrip->id);
             $this->assignUsersToStationsAndDestinations($args['users'], $businessTrip->id);
             $this->createScheduleForEachUser($args['users'], $businessTrip->id);
-            CompanyRequest::accept($args['request_ids']);
+            WorkRequest::accept($args['request_ids']);
 
             DB::commit();
         } catch(\Exception $e) {
@@ -36,14 +36,14 @@ class CompanyBusinessTripResolver
         }
     }
 
-    public function addCompanyRequest($_, array $args)
+    public function addWorkRequest($_, array $args)
     {
         DB::beginTransaction();
         try {
             if (array_key_exists('station_id', $args) && array_key_exists('destination_id', $args)) {
                 $this->assignUsersToStationAndDestination($args);
             } else if (array_key_exists('station_id', $args)) {
-                $this->createDestinations($args['companies'], $args['trip_id']);
+                $this->createDestinations($args['workplaces'], $args['trip_id']);
                 $this->assignUsersToDestinations($args['users'], $args['trip_id']);
                 $this->assignUsersToStation($args);
             } else if (array_key_exists('destination_id', $args)) {
@@ -51,13 +51,13 @@ class CompanyBusinessTripResolver
                 $this->assignUsersToStations($args['users'], $args['trip_id']);
                 $this->assignUsersToDestination($args);
             } else {
-                $this->createStationsAndDestinations($args['users'], $args['companies'], $args['trip_id']);
+                $this->createStationsAndDestinations($args['users'], $args['workplaces'], $args['trip_id']);
                 $this->assignUsersToStationsAndDestinations($args['users'], $args['trip_id']);
             }
 
             $this->updateTripSchedule($args);
             $this->createScheduleForEachUser($args['users'], $args['trip_id']);
-            CompanyRequest::accept($args['request_ids']);
+            WorkRequest::accept($args['request_ids']);
 
             DB::commit();
         } catch(\Exception $e) {
@@ -160,10 +160,10 @@ class CompanyBusinessTripResolver
         BusinessTripUser::insert($data);
     }
 
-    protected function createStationsAndDestinations($users, $companies, $trip_id)
+    protected function createStationsAndDestinations($users, $workplaces, $trip_id)
     {
         $usersData = $this->usersData($users, $trip_id);
-        $companiesData = $this->companiesData($companies, $trip_id);
+        $companiesData = $this->companiesData($workplaces, $trip_id);
         
         BusinessTripStation::insert(array_merge($usersData, $companiesData));
     }
@@ -175,9 +175,9 @@ class CompanyBusinessTripResolver
         BusinessTripStation::insert($usersData);
     }
 
-    protected function createDestinations($companies, $trip_id)
+    protected function createDestinations($workplaces, $trip_id)
     {
-        $companiesData = $this->companiesData($companies, $trip_id);
+        $companiesData = $this->companiesData($workplaces, $trip_id);
         
         BusinessTripStation::insert($companiesData);
     }
@@ -210,7 +210,7 @@ class CompanyBusinessTripResolver
     {
         $pickable = [
             'state' => 'PICKABLE',
-            'creator_type' => 'App\\CompanyRequest',
+            'creator_type' => 'App\\WorkRequest',
             'trip_id' => $trip_id,
             'created_at' => now(), 'updated_at' => now(), 'accepted_at' => now(),
         ];
@@ -225,7 +225,7 @@ class CompanyBusinessTripResolver
         return $data;
     }
 
-    protected function companiesData(array $companies, Int $trip_id)
+    protected function companiesData(array $workplaces, Int $trip_id)
     {
         $destination = [
             'creator_type' => null,
@@ -234,7 +234,7 @@ class CompanyBusinessTripResolver
             'trip_id' => $trip_id,
             'created_at' => now(), 'updated_at' => now(), 'accepted_at' => now(),
         ];
-        foreach($companies as $school) {
+        foreach($workplaces as $school) {
             $destination['name'] = $school['name'];
             $destination['latitude'] = $school['lat'];
             $destination['longitude'] = $school['lng'];
@@ -247,7 +247,7 @@ class CompanyBusinessTripResolver
     protected function stationsData(array $args)
     {
         $arr = [
-            'creator_type' => 'App\\CompanyRequest',
+            'creator_type' => 'App\\WorkRequest',
             'trip_id' => $args['trip_id'],
             'subscription_verified_at' => now(),
             'created_at' => now(), 'updated_at' => now()
@@ -273,7 +273,7 @@ class CompanyBusinessTripResolver
     protected function subscriptionData(Int $trip_id)
     {
         return [
-            'creator_type' => 'App\\CompanyRequest',
+            'creator_type' => 'App\\WorkRequest',
             'trip_id' => $trip_id,
             'subscription_verified_at' => now(),
             'created_at' => now(), 'updated_at' => now()

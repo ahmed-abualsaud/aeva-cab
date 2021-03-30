@@ -1,13 +1,13 @@
 input CreateZoneInput {
   city_id: ID! @rules(apply: ["required"])
   name: String! @rules(apply: ["required"])
-  type: String! @rules(apply: ["required", "in:toschool,tocompany"])
+  type: String! @rules(apply: ["required", "in:toschool,towork"])
   description: String
 }
 
 input UpdateZoneInput {
   id: ID! @rules(apply: ["required"])
-  type: String! @rules(apply: ["required", "in:toschool,tocompany"])
+  type: String! @rules(apply: ["required", "in:toschool,towork"])
   city_id: ID @rules(apply: ["required_with:name"])
   name: String
   description: String
@@ -18,6 +18,6 @@ type Zone {
   name: String
   description: String
   schools: [School] @hasMany 
-  companies: [Company] @hasMany 
+  workplaces: [Workplace] @hasMany 
   city: City @belongsTo
 }

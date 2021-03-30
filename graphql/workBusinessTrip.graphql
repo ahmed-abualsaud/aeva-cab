@@ -1,4 +1,4 @@
-input CreateCompanyBusinessTripInput {
+input CreateWorkBusinessTripInput {
   name: String! @rules(apply: ["required"])
   partner_id: ID! @rules(apply: ["required"])
   driver_id: ID! @rules(apply: ["required"])
@@ -9,22 +9,22 @@ input CreateCompanyBusinessTripInput {
   return_time: String
   group_chat: Boolean
   request_ids: [ID]! @rules(apply: ["required"])
-  companies: [BusinessTripCompaniesInput]! @rules(apply: ["required"])
+  workplaces: [BusinessTripWorkplacesInput]! @rules(apply: ["required"])
   users: [BusinessTripEmployeesInput]! @rules(apply: ["required"])
-  type: String! @rules(apply: ["in:business,toschool,tocompany"])
+  type: String! @rules(apply: ["in:business,toschool,towork"])
 }
 
-input AddCompanyRequestToBusinessTripInput {
+input AddWorkRequestToBusinessTripInput {
   trip_id: ID! @rules(apply: ["required"])
   request_ids: [ID]! @rules(apply: ["required"])
-  companies: [BusinessTripCompaniesInput] @rules(apply: ["required"])
+  workplaces: [BusinessTripWorkplacesInput] @rules(apply: ["required"])
   users: [BusinessTripEmployeesInput] @rules(apply: ["required"])
   days: TripDaysInput! @rules(apply: ["required"])
   station_id: ID
   destination_id: ID
 }
 
-input BusinessTripCompaniesInput {
+input BusinessTripWorkplacesInput {
   id: ID
   name: String
   lat: String
@@ -38,5 +38,5 @@ input BusinessTripEmployeesInput {
   lng: String
   request_id: ID
   days: UserDaysInput
-  company: String
+  workplace: String
 }

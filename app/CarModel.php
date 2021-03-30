@@ -33,6 +33,11 @@ class CarModel extends Model
         return $this->belongsTo(CarMake::class);
     }
 
+    public function scopeSortByOrder($query) 
+    {
+        return $query->orderBy('order');
+    }
+
     public static function reorder(array $orders)
     {
         self::flushQueryCache();

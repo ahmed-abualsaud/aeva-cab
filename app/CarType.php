@@ -29,8 +29,12 @@ class CarType extends Model
             return $query;
         }
 
-        return $query->where('ondemand', true)
-            ->orderBy('order');
+        return $query->where('ondemand', true);
+    }
+
+    public function scopeSortByOrder($query) 
+    {
+        return $query->orderBy('order');
     }
 
     public static function reorder(array $orders)

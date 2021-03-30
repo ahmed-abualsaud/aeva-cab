@@ -131,11 +131,11 @@ extend type Mutation @guard(with: ["admin"]) {
   addSchoolRequestToBusinessTrip(input: AddSchoolRequestToBusinessTripInput! @spread): Boolean 
     @field(resolver: "SchoolBusinessTripResolver@addSchoolRequest")
 
-  # Company Business Trip
-  createCompanyBusinessTrip(input: CreateCompanyBusinessTripInput! @spread): Boolean 
-    @field(resolver: "CompanyBusinessTripResolver@create")
-  addCompanyRequestToBusinessTrip(input: AddCompanyRequestToBusinessTripInput! @spread): Boolean 
-    @field(resolver: "CompanyBusinessTripResolver@addCompanyRequest")
+  # Work Business Trip
+  createWorkBusinessTrip(input: CreateWorkBusinessTripInput! @spread): Boolean 
+    @field(resolver: "WorkBusinessTripResolver@create")
+  addWorkRequestToBusinessTrip(input: AddWorkRequestToBusinessTripInput! @spread): Boolean 
+    @field(resolver: "WorkBusinessTripResolver@addWorkRequest")
 
   # Zone
   createZone(input: CreateZoneInput! @spread): Zone 
@@ -151,12 +151,12 @@ extend type Mutation @guard(with: ["admin"]) {
     @update @updateSchoolValidation
   deleteSchool(id: ID!): School @delete
 
-  # Company
-  createCompany(input: CreateCompanyInput! @spread): Company 
-    @create @createCompanyValidation
-  updateCompany(input: UpdateCompanyInput! @spread): Company 
-    @update @updateCompanyValidation
-  deleteCompany(id: ID!): Company @delete
+  # Workplace
+  createWorkplace(input: CreateWorkplaceInput! @spread): Workplace 
+    @create
+  updateWorkplace(input: UpdateWorkplaceInput! @spread): Workplace 
+    @update
+  deleteWorkplace(id: ID!): Workplace @delete
 
   # School Grade
   createSchoolGrade(input: CreateSchoolGradeInput! @spread): SchoolGrade 
@@ -274,15 +274,15 @@ extend type Mutation @guard(with: ["admin", "user"]) {
   changeSchoolRequestStatus(input: ChangeSchoolRequestStatusInput! @spread): String
     @field(resolver: "SchoolRequestResolver@changeStatus")
 
-  # Company
-  createCompanyRequest(input: CreateCompanyRequestInput! @spread): CompanyRequest 
-    @field(resolver: "CompanyRequestResolver@create")
-  updateCompanyRequest(input: UpdateCompanyRequestInput! @spread): CompanyRequest 
-    @field(resolver: "CompanyRequestResolver@update")
-  deleteCompanyRequest(id: [ID!]!): String
-    @field(resolver: "CompanyRequestResolver@destroy")
-  changeCompanyRequestStatus(input: ChangeCompanyRequestStatusInput! @spread): String
-    @field(resolver: "CompanyRequestResolver@changeStatus")
+  # Workplace
+  createWorkRequest(input: CreateWorkRequestInput! @spread): WorkRequest 
+    @field(resolver: "WorkRequestResolver@create")
+  updateWorkRequest(input: UpdateWorkRequestInput! @spread): WorkRequest 
+    @field(resolver: "WorkRequestResolver@update")
+  deleteWorkRequest(id: [ID!]!): String
+    @field(resolver: "WorkRequestResolver@destroy")
+  changeWorkRequestStatus(input: ChangeWorkRequestStatusInput! @spread): String
+    @field(resolver: "WorkRequestResolver@changeStatus")
 }
 
 # Admin|Driver Guard
@@ -390,7 +390,7 @@ type Query @guard(with: ["admin"]) {
   carMake(id: ID @eq): CarMake @find
 
   # Car Model
-  carModels: [CarModel] @all
+  carModels: [CarModel] @all(scopes: ["sortByOrder"])
   carModel(id: ID @eq): CarModel @find
   carMakeModels(make_id: ID @eq): [CarModel] @all
 
@@ -437,13 +437,13 @@ type Query @guard(with: ["admin"]) {
   schoolRequestsArchive(searchFor: String, searchQuery: String, period: String): [SchoolRequest] 
     @paginate(scopes: ["whereArchived", "wherePeriod", "search"])
 
-  # To Company
-  allCompanies(searchFor: String, searchQuery: String): [Company] 
+  # To Workplace
+  allWorkplaces(searchFor: String, searchQuery: String): [Workplace] 
     @paginate(scopes: ["search"])
-  company(id: ID! @eq): Company @find
-  companyRequests(searchFor: String, searchQuery: String, zone_id: [ID], period: String, status: String!): [CompanyRequest] 
+  workplace(id: ID! @eq): Workplace @find
+  workRequests(searchFor: String, searchQuery: String, zone_id: [ID], period: String, status: String!): [WorkRequest] 
     @paginate(scopes: ["whereStatus", "wherePeriod", "search"])
-  companyRequestsArchive(searchFor: String, searchQuery: String, period: String): [CompanyRequest] 
+  workRequestsArchive(searchFor: String, searchQuery: String, period: String): [WorkRequest] 
     @paginate(scopes: ["whereArchived", "wherePeriod", "search"])
 }
 
@@ -517,7 +517,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
 # Admin|User Guard
 extend type Query @guard(with: ["admin", "user"]) {
   # Car Type
-  carTypes(ondemand: Boolean): [CarType] @all(scopes: ["whereOndemand"])
+  carTypes(ondemand: Boolean): [CarType] @all(scopes: ["whereOndemand", "sortByOrder"])
 
   # Vehicle Model
   vehicleModelsByType(type_id: ID!): [VehicleModelsByTypeResponse!]
@@ -533,13 +533,14 @@ extend type Query @guard(with: ["admin", "user"]) {
   schoolRequest(id: ID! @eq): SchoolRequest @find
   schoolRequestsByUser(user_id: ID! @eq): [SchoolRequest] @all
 
-  # Company Request
-  companies(zone_id: ID, city_id: ID): [Company] @all(scopes: ["whereZoneOrCity"])
-  companyRequest(id: ID! @eq): CompanyRequest @find
-  companyRequestsByUser(user_id: ID! @eq): [CompanyRequest] @all
+  # Workplace Request
+  workplaces(zone_id: ID, city_id: ID): [Workplace] @all(scopes: ["whereZoneOrCity"])
+  workRequest(id: ID! @eq): WorkRequest @find
+  workRequestsByUser(user_id: ID! @eq): [WorkRequest] @all
 
   # Price Package
-  pricePackages(city_id: ID, type: String): [PricePackage] @all(scopes: ["whereCity", "whereType"])
+  pricePackages(city_id: ID, type: String): [PricePackage] 
+    @all(scopes: ["whereCity", "whereType", "sortByOrder"])
 
   # City
   cities: [City] @all
@@ -630,5 +631,5 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import utilities.graphql
 #import seatsTripTransaction.graphql
 #import zone.graphql
-#import company.graphql
-#import companyBusinessTrip.graphql
+#import workplace.graphql
+#import workBusinessTrip.graphql

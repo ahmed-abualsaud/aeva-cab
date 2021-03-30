@@ -11,7 +11,7 @@ input CreateSchoolBusinessTripInput {
   request_ids: [ID]! @rules(apply: ["required"])
   schools: [BusinessTripSchoolsInput]! @rules(apply: ["required"])
   users: [BusinessTripUsersInput]! @rules(apply: ["required"])
-  type: String! @rules(apply: ["in:business,toschool,tocompany"])
+  type: String! @rules(apply: ["in:business,toschool,towork"])
 }
 
 input AddSchoolRequestToBusinessTripInput {

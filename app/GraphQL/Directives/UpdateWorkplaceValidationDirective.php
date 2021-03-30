@@ -5,7 +5,7 @@ namespace App\GraphQL\Directives;
 use Illuminate\Validation\Rule;
 use Nuwave\Lighthouse\Schema\Directives\ValidationDirective;
 
-class UpdateCompanyValidationDirective extends ValidationDirective
+class UpdateWorkplaceValidationDirective extends ValidationDirective
 {
   /**
    * @return mixed[]
@@ -15,7 +15,7 @@ class UpdateCompanyValidationDirective extends ValidationDirective
     return [
       'name' => [
         'sometimes', 
-        Rule::unique('companies', 'name')
+        Rule::unique('workplaces', 'name')
           ->ignore($this->args['id'], 'id')
           ->where('zone_id', $this->args['zone_id'])
       ],

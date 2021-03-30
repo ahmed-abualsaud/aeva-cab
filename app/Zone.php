@@ -14,10 +14,10 @@ class Zone extends Model
             ->where('type', 'toschool');
     }
 
-    public function companies()
+    public function workplaces()
     {
-        return $this->hasMany(Company::class, 'zone_id')
-            ->where('type', 'tocompany');
+        return $this->hasMany(Workplace::class, 'zone_id')
+            ->where('type', 'towork');
     }
 
     public function city()

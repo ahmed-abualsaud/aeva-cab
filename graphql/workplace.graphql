@@ -1,4 +1,4 @@
-input CreateCompanyInput {
+input CreateWorkplaceInput {
   zone_id: ID
   name: String! @rules(apply: ["required"])
   latitude: String! @rules(apply: ["required"])
@@ -6,7 +6,7 @@ input CreateCompanyInput {
   address: String
 }
 
-input UpdateCompanyInput {
+input UpdateWorkplaceInput {
   id: ID! @rules(apply: ["required"])
   zone_id: ID
   name: String
@@ -15,10 +15,10 @@ input UpdateCompanyInput {
   address: String
 }
 
-input CreateCompanyRequestInput {
+input CreateWorkRequestInput {
   user_id: ID! @rules(apply: ["required"])
   city_id: ID! @rules(apply: ["required"])
-  company_id: ID! @rules(apply: ["required"])
+  workplace_id: ID! @rules(apply: ["required"])
   price_package_id: ID! @rules(apply: ["required"])
   contact_phone: String! @rules(apply: ["required"])
   pickup_lat: String! @rules(apply: ["required"])
@@ -30,9 +30,9 @@ input CreateCompanyRequestInput {
   comment: String
 }
 
-input UpdateCompanyRequestInput {
+input UpdateWorkRequestInput {
   id: ID! @rules(apply: ["required"])
-  company_id: ID
+  workplace_id: ID
   price_package_id: ID
   contact_phone: String
   pickup_lat: String
@@ -46,20 +46,20 @@ input UpdateCompanyRequestInput {
   response: String
 }
 
-input ChangeCompanyRequestStatusInput {
+input ChangeWorkRequestStatusInput {
   requestIds: [ID!]! @rules(apply: ["required"])
   status: String! @rules(apply: ["in:PENDING,REJECTED,WAITING,APPROVED"])
-  users: [CompanyRequestStatusUsers]
+  users: [WorkRequestStatusUsers]
   notify: Boolean
   response: String
 }
 
-input CompanyRequestStatusUsers {
+input WorkRequestStatusUsers {
   requestId: ID! @rules(apply: ["required"])
   userId: ID! @rules(apply: ["required"])
 }
 
-type Company {
+type Workplace {
   id: ID
   name: String
   latitude: String
@@ -68,12 +68,12 @@ type Company {
   zone: Zone @belongsTo
 }
 
-type CompanyRequest {
+type WorkRequest {
   id: ID
   city_id: ID
   user_id: ID
   user: User @belongsTo
-  company: Company @belongsTo
+  workplace: Workplace @belongsTo
   pricePackage: PricePackage @belongsTo
   contact_phone: String
   pickup_lat: String

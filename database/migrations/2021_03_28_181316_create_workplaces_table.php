@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCompaniesTable extends Migration
+class CreateWorkplacesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,14 @@ class CreateCompaniesTable extends Migration
      */
     public function up()
     {
-        Schema::create('companies', function (Blueprint $table) {
+        Schema::create('workplaces', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8);
             $table->string('address')->nullable();
             $table->unsignedBigInteger('zone_id')->nullable();
+            $table->timestamp('accepted_at')->nullable();
             $table->timestamps();
 
             $table->index('zone_id');
@@ -27,11 +28,11 @@ class CreateCompaniesTable extends Migration
             $table->foreign('zone_id')->references('id')->on('zones')->onDelete('cascade');
         });
 
-        Schema::create('company_requests', function (Blueprint $table) {
+        Schema::create('work_requests', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('city_id');
-            $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('workplace_id');
             $table->unsignedBigInteger('price_package_id');
             $table->string('contact_phone');
             $table->double('pickup_lat', 15, 8);
@@ -53,12 +54,12 @@ class CreateCompaniesTable extends Migration
             $table->timestamps();
 
             $table->index('user_id');
-            $table->index('company_id');
+            $table->index('workplace_id');
             $table->index('created_at');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
-            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->foreign('workplace_id')->references('id')->on('workplaces')->onDelete('cascade');
             $table->foreign('price_package_id')->references('id')->on('price_packages')->onDelete('cascade');
         });
     }
@@ -70,7 +71,7 @@ class CreateCompaniesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('company_requests');
-        Schema::dropIfExists('companies');
+        Schema::dropIfExists('work_requests');
+        Schema::dropIfExists('workplaces');
     }
 }

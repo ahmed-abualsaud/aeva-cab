@@ -6,7 +6,7 @@ use App\Traits\Searchable;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 
-class CompanyRequest extends Model
+class WorkRequest extends Model
 {
     use Searchable, Filterable;
 
@@ -17,9 +17,9 @@ class CompanyRequest extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function company()
+    public function workplace()
     {
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Workplace::class);
     }
 
     public function pricePackage()
@@ -50,7 +50,7 @@ class CompanyRequest extends Model
     public function scopeWhereStatus($query, $args) 
     {
         if (array_key_exists('zone_id', $args) && $args['zone_id']) {
-            $query = $query->whereHas('company', function($query) use ($args) {
+            $query = $query->whereHas('workplace', function($query) use ($args) {
                 $query->whereIn('zone_id', $args['zone_id']);
             });
         }

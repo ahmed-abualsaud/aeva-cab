@@ -3,12 +3,12 @@
 namespace App\GraphQL\Mutations;
 
 use App\User;
-use App\CompanyRequest;
+use App\WorkRequest;
 use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
 use App\Exceptions\CustomException;
 
-class CompanyRequestResolver
+class WorkRequestResolver
 {
     use HandleDeviceTokens;
 
@@ -24,29 +24,29 @@ class CompanyRequestResolver
 
             User::updateSecondaryNumber($args['contact_phone']);
 
-            $companyRequest = CompanyRequest::create($input);
+            $WorkRequest = WorkRequest::create($input);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to create this company request!');
+            throw new CustomException('We could not able to create this workplace request!');
         }
 
-        return $companyRequest;
+        return $WorkRequest;
     }
 
     public function update($_, array $args)
     {
         try {
             $input = collect($args)->except(['id', 'directive'])->toArray();
-            $companyRequest = CompanyRequest::findOrFail($args['id']);
+            $WorkRequest = WorkRequest::findOrFail($args['id']);
 
             if (array_key_exists('contact_phone', $args) && $args['contact_phone'])
                 User::updateSecondaryNumber($args['contact_phone']);
     
-            $companyRequest->update($input);
+            $WorkRequest->update($input);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to update this company request!');
+            throw new CustomException('We could not able to update this workplace request!');
         }
 
-        return $companyRequest;
+        return $WorkRequest;
     }
 
     public function changeStatus($_, array $args)
@@ -56,11 +56,11 @@ class CompanyRequestResolver
 
             switch($args['status']) {
                 case 'PENDING':
-                    CompanyRequest::restore($args['requestIds']);
+                    WorkRequest::restore($args['requestIds']);
                     break;
 
                 default:
-                    CompanyRequest::exclude($args['requestIds'], $updateInput);
+                    WorkRequest::exclude($args['requestIds'], $updateInput);
                     if (array_key_exists('notify', $args) && $args['notify'])
                         $this->notifyUsers($args);
                     break;
@@ -79,7 +79,7 @@ class CompanyRequestResolver
                
             foreach($args['users'] as $user) {
 
-                $responseMsg = 'Your company request # ' 
+                $responseMsg = 'Your workplace request # ' 
                     . $user['requestId'] . ' has been ' 
                     . strtolower($args['status']);
     
@@ -90,7 +90,7 @@ class CompanyRequestResolver
                     $this->userToken($user['userId']), 
                     $responseMsg, 
                     'Qruz to School',
-                    ['view' => 'CompanyRequest', 'id' => $user['requestId']]
+                    ['view' => 'WorkRequest', 'id' => $user['requestId']]
                 );
             }
         } catch (\Exception $e) {
@@ -101,7 +101,7 @@ class CompanyRequestResolver
     public function destroy($_, array $args)
     {
         try {
-            CompanyRequest::whereIn('id', $args['id'])->delete();
+            WorkRequest::whereIn('id', $args['id'])->delete();
         } catch (\Exception $e) {
             throw new CustomException('We could not able to delete selected requests!');
         }

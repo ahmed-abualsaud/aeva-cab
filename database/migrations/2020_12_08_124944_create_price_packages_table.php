@@ -23,7 +23,7 @@ class CreatePricePackagesTable extends Migration
             $table->string('per');
             $table->string('photo')->nullable();
             $table->smallInteger('order');
-            $table->enum('type', ['toschool','tocompany']);
+            $table->enum('type', ['toschool','towork']);
             $table->timestamps();
 
             $table->index('city_id');
