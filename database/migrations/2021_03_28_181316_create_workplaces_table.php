@@ -20,7 +20,6 @@ class CreateWorkplacesTable extends Migration
             $table->double('longitude', 15, 8);
             $table->string('address')->nullable();
             $table->unsignedBigInteger('zone_id')->nullable();
-            $table->timestamp('accepted_at')->nullable();
             $table->timestamps();
 
             $table->index('zone_id');

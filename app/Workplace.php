@@ -37,6 +37,6 @@ class Workplace extends Model
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
 
-        return $query;
+        return $query->orderBy('zone_id');
     }
 }

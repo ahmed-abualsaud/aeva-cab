@@ -146,9 +146,9 @@ extend type Mutation @guard(with: ["admin"]) {
 
   # School
   createSchool(input: CreateSchoolInput! @spread): School 
-    @create @createSchoolValidation
+    @create
   updateSchool(input: UpdateSchoolInput! @spread): School 
-    @update @updateSchoolValidation
+    @update
   deleteSchool(id: ID!): School @delete
 
   # Workplace
