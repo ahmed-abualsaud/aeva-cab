@@ -22,7 +22,7 @@ class CreateBusinessTripEventsTable extends Migration
 
             $table->unique('log_id');
             $table->index('trip_id');
-            $table->index('updated_at');
+            $table->index('created_at_at');
 
             $table->foreign('trip_id')
                 ->references('id')
