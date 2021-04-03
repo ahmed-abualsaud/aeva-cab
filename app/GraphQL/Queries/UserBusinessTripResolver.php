@@ -153,6 +153,7 @@ class UserBusinessTripResolver
         } else {
             $users = $users->where('business_trip_users.is_scheduled', true)
                 ->where('business_trip_users.is_picked_up', false)
+                ->whereNotNull('business_trip_users.subscription_verified_at')
                 ->addSelect('business_trip_users.is_absent');
         }
 
