@@ -39,10 +39,10 @@ input PermissionsInput {
   vehicle_read: Boolean
   vehicle_update: Boolean
   vehicle_delete: Boolean
-  business_create: Boolean
-  business_read: Boolean
-  business_update: Boolean
-  business_delete: Boolean
+  playground_create: Boolean
+  playground_read: Boolean
+  playground_update: Boolean
+  playground_delete: Boolean
   ondemand_create: Boolean
   ondemand_read: Boolean
   ondemand_update: Boolean
@@ -113,10 +113,10 @@ type Permissions {
   promocode_read: Boolean
   promocode_update: Boolean
   promocode_delete: Boolean
-  business_create: Boolean
-  business_read: Boolean
-  business_update: Boolean
-  business_delete: Boolean
+  playground_create: Boolean
+  playground_read: Boolean
+  playground_update: Boolean
+  playground_delete: Boolean
   ondemand_create: Boolean
   ondemand_read: Boolean
   ondemand_update: Boolean

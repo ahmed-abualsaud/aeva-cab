@@ -4,7 +4,6 @@ namespace App\GraphQL\Mutations;
 
 use Carbon\Carbon;
 use App\BusinessTrip;
-use App\SchoolRequest;
 use App\BusinessTripUser;
 use App\BusinessTripStation;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +34,7 @@ class BusinessTripStationResolver
             } 
             BusinessTripStation::insert($data);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to insert these stations.' . $e->getMessage());
+            throw new CustomException('We could not able to insert these stations.');
         }
 
         return BusinessTripStation::where('trip_id', $args['trip_id'])
@@ -120,46 +119,6 @@ class BusinessTripStationResolver
         }
     }
 
-    public function assignUsers($_, array $args)
-    {
-        try {
-            $arr = [
-                'trip_id' => $args['trip_id'],
-                'station_id' => $args['station_id'],
-                'subscription_verified_at' => now(),
-                'created_at' => now(), 'updated_at' => now()
-            ];
-            foreach($args['users'] as $user) {
-                $arr['user_id'] = $user;
-                $data[] = $arr;
-            }
-            return BusinessTripUser::upsert($data, ['station_id', 'updated_at']);
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to assign selected users to specified station.');
-        }
-    }
-
-    public function unassignUsers($_, array $args)
-    {
-        try {
-            $users = BusinessTripUser::where('station_id', $args['station_id'])
-                ->whereIn('user_id', $args['users']);
-
-            $schoolRequests = $users->get()
-                ->where('creator_type', 'App\\SchoolRequest')
-                ->pluck('creator_id')
-                ->toArray();
-                
-            if ($schoolRequests) 
-                SchoolRequest::restore($schoolRequests);
-
-            return $users->update(['station_id' => null]);
-
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to unassign selected users from specified station.');
-        }
-    }
-
     public function acceptStation($_, array $args)
     {
         DB::beginTransaction();
@@ -174,7 +133,7 @@ class BusinessTripStationResolver
             $data =[
                 'trip_id' => $args['trip_id'],
                 'station_id' => $args['station_id'],
-                'user_id' => $station['creator_id'],
+                'user_id' => $station['request_id'],
                 'subscription_verified_at' => now(),
                 'created_at' => now(), 
                 'updated_at' => now()
@@ -198,8 +157,12 @@ class BusinessTripStationResolver
             throw new CustomException('Station with the provided ID is not found.');
         }
 
-        if ($station->creator_type === 'App\SchoolRequest')
-            SchoolRequest::restore($station->creator_id);
+        /*
+        * Revert Business Request
+
+        if ($station->request_type)
+            $station->request_type::restore($station->request_id);
+        */
         
         $station->delete();
 

@@ -34,14 +34,3 @@ input AssignBusinessTripStationUserInput {
   station_id: ID! @rules(apply: ["required"])
   destination_id: ID! @rules(apply: ["required"])
 }
-
-input AssignBusinessTripStationUsersInput {
-  trip_id: ID! @rules(apply: ["required"])
-  station_id: ID! @rules(apply: ["required"])
-  users: [ID!]! @rules(apply: ["required"])
-}
- 
-input UnassignBusinessTripStationUsersInput {
-  station_id: ID! @rules(apply: ["required"])
-  users: [ID!]! @rules(apply: ["required"])
-}

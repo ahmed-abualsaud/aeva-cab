@@ -7,8 +7,8 @@ input CreateBusinessTripStationInput {
   state: String @rules(apply: ["in:START,END,PICKABLE,PENDING,DESTINATION"])
   distance: Int
   duration: Int
-  creator_type: String
-  creator_id: ID
+  request_type: String
+  request_id: ID
   accepted_at: DateTime
 } 
 

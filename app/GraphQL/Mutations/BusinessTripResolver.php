@@ -6,7 +6,6 @@ use App\User;
 use App\PartnerUser;
 use App\BusinessTrip;
 use App\Jobs\SendOtp;
-use App\SchoolRequest;
 use App\BusinessTripUser;
 use Illuminate\Support\Arr;
 use App\BusinessTripStation;
@@ -25,7 +24,7 @@ class BusinessTripResolver
     {
         DB::beginTransaction();
         try {
-            $input = Arr::except($args, ['directive', 'request_ids', 'schools', 'users']);
+            $input = Arr::except($args, ['directive']);
             $businessTrip = $this->createBusinessTrip($input);
 
             DB::commit();
@@ -160,16 +159,29 @@ class BusinessTripResolver
             $users = BusinessTripUser::where('trip_id', $args['trip_id'])
                 ->whereIn('user_id', $args['user_id']);
 
-            if ($users->count()) {
-                $schoolRequests = $users->get()
-                    ->where('creator_type', 'App\\SchoolRequest')
-                    ->pluck('creator_id')
-                    ->toArray();
-                    
-                if ($schoolRequests) SchoolRequest::restore($schoolRequests);
+            /*
+            * Revert Business Request
+    
+            $businessRequests = $users
+                ->select('request_type','request_id')
+                ->get()
+                ->whereNotNull('request_type');
+                
+            if ($businessRequests->count()) {
+                $requestType = $businessRequests
+                    ->first()
+                    ->request_type;
 
-                $users->delete();
+                $requestIds = $businessRequests
+                    ->pluck('request_id')
+                    ->toArray();
+
+                $requestType::restore($requestIds);
             }
+            */
+
+            $users->delete();
+
         } catch (\Exception $e) {
             throw new CustomException('Subscription cancellation failed.');
         }

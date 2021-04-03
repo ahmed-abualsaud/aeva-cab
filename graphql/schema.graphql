@@ -125,17 +125,11 @@ extend type Mutation @guard(with: ["admin"]) {
   deletePartnerDriver(input: PartnerDriverInput! @spread): DefaultResponse
     @field(resolver: "PartnerResolver@unassignDriver")
 
-  # School Business Trip
-  createSchoolBusinessTrip(input: CreateSchoolBusinessTripInput! @spread): Boolean 
-    @field(resolver: "SchoolBusinessTripResolver@create")
-  addSchoolRequestToBusinessTrip(input: AddSchoolRequestToBusinessTripInput! @spread): Boolean 
-    @field(resolver: "SchoolBusinessTripResolver@addSchoolRequest")
-
-  # Work Business Trip
-  createWorkBusinessTrip(input: CreateWorkBusinessTripInput! @spread): Boolean 
-    @field(resolver: "WorkBusinessTripResolver@create")
-  addWorkRequestToBusinessTrip(input: AddWorkRequestToBusinessTripInput! @spread): Boolean 
-    @field(resolver: "WorkBusinessTripResolver@addWorkRequest")
+  # Business Trip Request
+  createBusinessTripFromRequest(input: CreateBusinessTripFromRequestInput! @spread): Boolean 
+    @field(resolver: "BusinessTripRequestResolver@createTrip")
+  addRequestToBusinessTrip(input: AddRequestToBusinessTripInput! @spread): Boolean 
+    @field(resolver: "BusinessTripRequestResolver@addToTrip")
 
   # Zone
   createZone(input: CreateZoneInput! @spread): Zone 
@@ -216,12 +210,6 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripStationResolver@destroy") 
   acceptBusinessTripStation(input: AcceptBusinessTripStationInput! @spread): BusinessTripStation
     @field(resolver: "BusinessTripStationResolver@acceptStation") 
-
-  # Business Trip Station User
-  assignBusinessTripStationUsers(input: AssignBusinessTripStationUsersInput! @spread): Boolean 
-    @field(resolver: "BusinessTripStationResolver@assignUsers")
-  unassignBusinessTripStationUsers(input: UnassignBusinessTripStationUsersInput! @spread): Boolean
-    @field(resolver: "BusinessTripStationResolver@unassignUsers")
 
   # Business Trip User
   inviteBusinessTripUser(input: InviteBusinessTripUserInput! @spread): String 
@@ -613,7 +601,6 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import user.graphql
 #import businessTripSchedule.graphql
 #import businessTrip.graphql
-#import schoolBusinessTrip.graphql
 #import businessTripStation.graphql
 #import businessTripUser.graphql
 #import role.graphql
@@ -632,4 +619,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import seatsTripTransaction.graphql
 #import zone.graphql
 #import workplace.graphql
-#import workBusinessTrip.graphql
+#import businessTripRequest.graphql

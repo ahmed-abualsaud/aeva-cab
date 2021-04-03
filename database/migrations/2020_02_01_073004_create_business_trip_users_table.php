@@ -22,8 +22,8 @@ class CreateBusinessTripUsersTable extends Migration
             $table->boolean('is_scheduled')->default(true);
             $table->boolean('is_absent')->default(false);
             $table->boolean('is_picked_up')->default(false);
-            $table->string('creator_type')->nullable();
-            $table->unsignedBigInteger('creator_id')->nullable();
+            $table->string('request_type')->nullable();
+            $table->unsignedBigInteger('request_id')->nullable();
             $table->timestamp('subscription_verified_at')->nullable();
             $table->timestamps();
 
