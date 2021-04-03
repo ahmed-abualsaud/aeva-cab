@@ -15,11 +15,7 @@ class CreateStatementsTable extends Migration
     {
         Schema::create('statements', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->enum('type', [
-                'SCHOOL_REQUEST',
-                'WORK_REQUEST',
-                'ONDEMAND_REQUEST'
-            ]);
+            $table->enum('type', ['SCHOOL_REQUEST','WORK_REQUEST']);
             $table->string('title');
             $table->string('title_ar');
             $table->text('body');

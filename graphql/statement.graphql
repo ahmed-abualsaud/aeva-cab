@@ -3,7 +3,7 @@ input CreateStatementInput {
     @rules(apply: [
       "required", 
       "unique:statements,type", 
-      "in:SCHOOL_REQUEST,ONDEMAND_REQUEST,work_request"  
+      "in:SCHOOL_REQUEST,WORK_REQUEST"  
     ])
   title: String! @rules(apply: ["required"])
   title_ar: String! @rules(apply: ["required"])
@@ -13,7 +13,7 @@ input CreateStatementInput {
 
 input UpdateStatementInput {
   id: ID! @rules(apply: ["required"])
-  type: String
+  type: String @rules(apply: ["in:SCHOOL_REQUEST,WORK_REQUEST"])
   title: String
   title_ar: String
   body: String
