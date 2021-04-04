@@ -89,7 +89,7 @@ class WorkRequestResolver
                 SendPushNotification::dispatch(
                     $this->userToken($user['userId']), 
                     $responseMsg, 
-                    'Qruz to School',
+                    'Qruz to Work',
                     ['view' => 'WorkRequest', 'id' => $user['requestId']]
                 );
             }

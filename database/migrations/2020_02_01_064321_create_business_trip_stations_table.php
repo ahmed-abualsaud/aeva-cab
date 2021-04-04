@@ -25,6 +25,7 @@ class CreateBusinessTripStationsTable extends Migration
             $table->string('request_type')->nullable();
             $table->unsignedBigInteger('request_id')->nullable();
             $table->enum('state', ['START','END','PICKABLE','PENDING','DESTINATION'])->default('PENDING');
+            $table->smallInteger('order')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

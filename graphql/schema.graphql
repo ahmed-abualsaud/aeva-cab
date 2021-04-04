@@ -204,7 +204,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripStationResolver@create")
   updateBusinessTripStation(input: UpdateBusinessTripStationInput! @spread): 
     BusinessTripStation @update
-  updateStationsRoute(input: UpdateStationsRouteInput! @spread): Boolean 
+  updateStationsRoute(input: UpdateStationsRouteInput! @spread): BusinessTripStation 
     @field(resolver: "BusinessTripStationResolver@updateRoute")
   deleteBusinessTripStation(id: ID!): BusinessTripStation 
     @field(resolver: "BusinessTripStationResolver@destroy") 

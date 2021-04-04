@@ -5,8 +5,6 @@ input CreateBusinessTripStationInput {
   longitude: String! @rules(apply: ["required"])
   trip_id: ID
   state: String @rules(apply: ["in:START,END,PICKABLE,PENDING,DESTINATION"])
-  distance: Int
-  duration: Int
   request_type: String
   request_id: ID
   accepted_at: DateTime
@@ -29,6 +27,7 @@ input UpdateBusinessTripStationInput {
 
 input UpdateStationsRouteInput {
   trip_id: ID!
+  route: String!
   stations: [StationsRouteInput!]! @rules(apply: ["required"])
 }
 
@@ -36,11 +35,7 @@ input StationsRouteInput {
   id: ID! @rules(apply: ["required"])
   duration: Int
   distance: Int
-}
-
-input GetBusinessTripStationsInput {
-  trip_id: ID! @rules(apply: ["required"])
-  status: String! @rules(apply: ["required", "in:accepted,notAccepted"])
+  order: Int
 }
 
 input AcceptBusinessTripStationInput {

@@ -69,36 +69,43 @@ class BusinessTripStationResolver
     {
         try {
             
-            $cases = []; $ids = []; $distance = []; $duration = [];
+            $cases = []; $ids = []; $distance = []; $duration = []; $order = [];
 
             foreach ($args['stations'] as $value) {
                 $id = (int) $value['id'];
                 $cases[] = "WHEN {$id} then ?";
                 $distance[] = $value['distance'];
                 $duration[] = $value['duration'];
+                $order[] = $value['order'];
                 $ids[] = $id;
             }
 
             $ids = implode(',', $ids);
             $cases = implode(' ', $cases);
-            $params = array_merge($distance, $duration);
+            $params = array_merge($distance, $duration, $order);
             $params[] = Carbon::now();
 
             DB::update("UPDATE `business_trip_stations` SET 
                 `distance` = CASE `id` {$cases} END, 
                 `duration` = CASE `id` {$cases} END, 
+                `order` = CASE `id` {$cases} END, 
                 `updated_at` = ? 
                 WHERE `id` in ({$ids})", $params);
 
             $total = end($args['stations']);
 
             BusinessTrip::find($args['trip_id'])
-                ->update(['distance' => $total['distance'], 'duration' => $total['duration']]);
+                ->update([
+                    'route' => $args['route'], 
+                    'distance' => $total['distance'], 
+                    'duration' => $total['duration']
+                ]);
+            
 
-            return true;
+            return ['distance' => $total['distance'], 'duration' => $total['duration']];
             
         } catch (\Exception $e) {
-            throw new CustomException('Could not able to update.');
+            throw new CustomException('We could not able to update this route!');
         }
     }
 
