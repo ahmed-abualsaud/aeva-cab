@@ -2,9 +2,10 @@
 
 namespace App;
 
+use App\Traits\Reorderable;
+use App\Scopes\SortByOrderScope;
 use Illuminate\Database\Eloquent\Model;
 use Rennokki\QueryCache\Traits\QueryCacheable;
-use App\Traits\Reorderable;
 
 class CarType extends Model
 {
@@ -23,6 +24,12 @@ class CarType extends Model
      */
     protected static $flushCacheOnUpdate = true;
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new SortByOrderScope);
+    }
+
     public function scopeWhereOndemand($query, $args) 
     {
         if (array_key_exists('ondemand', $args) && !$args['ondemand']) {
@@ -30,11 +37,6 @@ class CarType extends Model
         }
 
         return $query->where('ondemand', true);
-    }
-
-    public function scopeSortByOrder($query) 
-    {
-        return $query->orderBy('order');
     }
 
     public static function reorder(array $orders)

@@ -31,7 +31,6 @@ class VehicleResolver
                 car_models.photo,
                 car_models.order
             ")
-            ->orderBy('order')
             ->get();
 
         return $models;

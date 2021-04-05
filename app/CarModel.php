@@ -2,9 +2,10 @@
 
 namespace App;
 
+use App\Traits\Reorderable;
+use App\Scopes\SortByOrderScope;
 use Illuminate\Database\Eloquent\Model;
 use Rennokki\QueryCache\Traits\QueryCacheable;
-use App\Traits\Reorderable;
 
 class CarModel extends Model
 {
@@ -22,6 +23,12 @@ class CarModel extends Model
      * @var bool
      */
     protected static $flushCacheOnUpdate = true;
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new SortByOrderScope);
+    }
 
     public function type()
     {

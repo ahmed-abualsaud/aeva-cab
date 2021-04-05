@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Traits\Reorderable;
+use App\Scopes\SortByOrderScope;
 use Illuminate\Database\Eloquent\Model;
 
 class PricePackage extends Model
@@ -14,6 +15,12 @@ class PricePackage extends Model
     protected $casts = [
         'price' => 'array',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new SortByOrderScope);
+    }
 
     public function city()
     {
@@ -36,11 +43,6 @@ class PricePackage extends Model
         }
  
         return $query;
-    }
-
-    public function scopeSortByOrder($query) 
-    {
-        return $query->orderBy('order');
     }
 
     public static function reorder(array $orders)

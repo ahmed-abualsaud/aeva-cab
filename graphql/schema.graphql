@@ -505,7 +505,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
 # Admin|User Guard
 extend type Query @guard(with: ["admin", "user"]) {
   # Car Type
-  carTypes(ondemand: Boolean): [CarType] @all(scopes: ["whereOndemand", "sortByOrder"])
+  carTypes(ondemand: Boolean): [CarType] @all(scopes: ["whereOndemand"])
 
   # Vehicle Model
   vehicleModelsByType(type_id: ID!): [VehicleModelsByTypeResponse!]
@@ -528,7 +528,7 @@ extend type Query @guard(with: ["admin", "user"]) {
 
   # Price Package
   pricePackages(city_id: ID, type: String): [PricePackage] 
-    @all(scopes: ["whereCity", "whereType", "sortByOrder"])
+    @all(scopes: ["whereCity", "whereType"])
 
   # City
   cities: [City] @all
