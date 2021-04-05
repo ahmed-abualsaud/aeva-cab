@@ -139,15 +139,11 @@ extend type Mutation @guard(with: ["admin"]) {
   deleteZone(id: ID!): Zone @delete
 
   # School
-  createSchool(input: CreateSchoolInput! @spread): School 
-    @create
   updateSchool(input: UpdateSchoolInput! @spread): School 
     @update
   deleteSchool(id: ID!): School @delete
 
   # Workplace
-  createWorkplace(input: CreateWorkplaceInput! @spread): Workplace 
-    @create
   updateWorkplace(input: UpdateWorkplaceInput! @spread): Workplace 
     @update
   deleteWorkplace(id: ID!): Workplace @delete
@@ -253,6 +249,8 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "BusinessTripEventResolver@changeBusinessTripPickupStatus")
 
   # School
+  createSchool(input: CreateSchoolInput! @spread): School 
+    @create
   createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest 
     @field(resolver: "SchoolRequestResolver@create")
   updateSchoolRequest(input: UpdateSchoolRequestInput! @spread): SchoolRequest 
@@ -263,6 +261,8 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "SchoolRequestResolver@changeStatus")
 
   # Workplace
+  createWorkplace(input: CreateWorkplaceInput! @spread): Workplace 
+    @create
   createWorkRequest(input: CreateWorkRequestInput! @spread): WorkRequest 
     @field(resolver: "WorkRequestResolver@create")
   updateWorkRequest(input: UpdateWorkRequestInput! @spread): WorkRequest 
