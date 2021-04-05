@@ -4,6 +4,8 @@ namespace App\GraphQL\Queries;
 
 use App\OndemandRequest;
 use App\Traits\Filterable;
+use App\Exceptions\CustomException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class OndemandRequestResolver
 {
@@ -14,24 +16,28 @@ class OndemandRequestResolver
      */
     public function __invoke($_, array $args)
     {
-        $req = OndemandRequest::findOrFail($args['id']);
+        try {
+            $req = OndemandRequest::findOrFail($args['id']);
 
-        if (array_key_exists('nav', $args) && $args['nav']) {
-            if (!$req->read_at) $req->update(["read_at" => now()]);
+            if (array_key_exists('nav', $args) && $args['nav']) {
+                if (!$req->read_at) $req->update(["read_at" => now()]);
 
-            $next = OndemandRequest::select('id')
-                ->where('id', '<', $req->id)
-                ->orderBy('id','desc')
-                ->first();
-            $previous = OndemandRequest::select('id')
-                ->where('id', '>', $req->id)
-                ->orderBy('id','asc')
-                ->first();
+                $next = OndemandRequest::select('id')
+                    ->where('id', '<', $req->id)
+                    ->orderBy('id','desc')
+                    ->first();
+                $previous = OndemandRequest::select('id')
+                    ->where('id', '>', $req->id)
+                    ->orderBy('id','asc')
+                    ->first();
 
-            $req->next = $next ? $next->id : null;
-            $req->previous = $previous ? $previous->id : null;
+                $req->next = $next ? $next->id : null;
+                $req->previous = $previous ? $previous->id : null;
+            }
+        } catch (ModelNotFoundException $e) {
+            throw new CustomException($e->getMessage(), "modelNotFound");
         }
-
+        
         return $req;
     }
 

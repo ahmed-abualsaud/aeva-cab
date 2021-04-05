@@ -134,7 +134,7 @@ class DriverResolver
         try {
             DriverVehicle::insert($data);
         } catch (\Exception $e) {
-            throw new CustomException('Assignment faild.' . $e->getMessage());
+            throw new CustomException('Assignment faild.');
         }
  
         return [

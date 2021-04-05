@@ -359,7 +359,7 @@ type Query @guard(with: ["admin"]) {
 
   # Fleet
   fleets: [Fleet] @all
-  fleet(id: ID @eq): Fleet @find
+  fleet(id: ID @eq): Fleet @findOrFail
 
   # Role
   roles: [Role] @all
@@ -371,14 +371,14 @@ type Query @guard(with: ["admin"]) {
   # Vehicle
   vehicles(searchFor: String, searchQuery: String): [Vehicle] 
     @paginate(scopes: ["search"])
-  vehicle(id: ID @eq): Vehicle @find
+  vehicle(id: ID @eq): Vehicle @findOrFail
 
   # Car Make
   carMakes: [CarMake] @all
   carMake(id: ID @eq): CarMake @find
 
   # Car Model
-  carModels: [CarModel] @all(scopes: ["sortByOrder"])
+  carModels: [CarModel] @all
   carModel(id: ID @eq): CarModel @find
   carMakeModels(make_id: ID @eq): [CarModel] @all
 
@@ -412,7 +412,7 @@ type Query @guard(with: ["admin"]) {
 
   # Zone
   zones(type: String! @eq): [Zone] @all
-  zone(id: ID! @eq): Zone @find
+  zone(id: ID! @eq): Zone @findOrFail
 
   # To School
   allSchools(searchFor: String, searchQuery: String): [School] 
@@ -460,7 +460,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @paginate(scopes: ["whereAssignedOrNot", "search"])
 
   # Partner
-  partner(id: ID @eq): Partner @find
+  partner(id: ID @eq): Partner @findOrFail
   partnerAvailableLines(partner_id: ID! @eq trip_id: ID!): [BusinessTrip] 
     @all(scopes: ["availableLines"])
 
@@ -560,7 +560,7 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
     @field(resolver: "UserBusinessTripResolver@businessTripAttendance")
 
   # Driver
-  driver(id: ID @eq): Driver @find
+  driver(id: ID @eq): Driver @findOrFail
   driverLiveTrip(driver_id: ID!): DriverLiveTripResponse!
     @field(resolver: "BusinessTripResolver@driverLiveTrip")
   driverLiveBusinessTrips(driver_id: ID!): [BusinessTrip]
@@ -573,7 +573,7 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
 # Admin|Partner|User|Driver Guard
 extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Business Trip
-  trip(id: ID @eq): BusinessTrip @find
+  trip(id: ID @eq): BusinessTrip @findOrFail
 
   # Business Trip Station
   businessTripStations(trip_id: ID! @eq): [BusinessTripStation] @all
