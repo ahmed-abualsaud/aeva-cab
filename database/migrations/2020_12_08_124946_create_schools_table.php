@@ -43,7 +43,7 @@ class CreateSchoolsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('city_id');
             $table->unsignedBigInteger('school_id');
-            $table->unsignedBigInteger('grade_id');
+            $table->unsignedBigInteger('grade_id')->nullable();
             $table->unsignedBigInteger('price_package_id');
             $table->string('student_name');
             $table->string('contact_phone');
@@ -68,6 +68,7 @@ class CreateSchoolsTable extends Migration
             $table->index('user_id');
             $table->index('school_id');
             $table->index('grade_id');
+            $table->index('price_package_id');
             $table->index('created_at');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

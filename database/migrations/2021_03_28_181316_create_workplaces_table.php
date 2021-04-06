@@ -54,6 +54,7 @@ class CreateWorkplacesTable extends Migration
 
             $table->index('user_id');
             $table->index('workplace_id');
+            $table->index('price_package_id');
             $table->index('created_at');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
