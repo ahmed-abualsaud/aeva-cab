@@ -27,3 +27,16 @@ type TransactionGroup {
   date: String
   sum: Float
 }
+
+type SeatsNearestStation {
+  trip_id: ID
+  price: Float
+  pickup_id: ID
+  pickup_name: String
+  pickup_time: String
+  pickup_distance: Float
+  dropoff_id: ID
+  dropoff_name: String
+  dropoff_time: String
+  dropoff_distance: Float
+}

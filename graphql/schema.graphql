@@ -504,6 +504,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
 # Admin|User Guard
 extend type Query @guard(with: ["admin", "user"]) {
+  # Seats
+  seatsNearestStations(plat: String!, plng: String!, dlat: String!, dlng: String!, day: String!): 
+    [SeatsNearestStation] @field(resolver: "SeatsResolver@nearestStations")
+
   # Car Type
   carTypes(ondemand: Boolean): [CarType] @all(scopes: ["whereOndemand"])
 
@@ -616,7 +620,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import businessTripAttendance.graphql
 #import statement.graphql
 #import utilities.graphql
-#import seatsTripTransaction.graphql
+#import seats.graphql
 #import zone.graphql
 #import workplace.graphql
 #import businessTripRequest.graphql
