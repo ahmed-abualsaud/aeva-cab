@@ -36,6 +36,19 @@ class BusinessTripResolver
         return $businessTrip;
     }
 
+    public function update($_, array $args)
+    {
+        try {
+            $tripInput = Arr::except($args, ['directive']);
+            $trip = BusinessTrip::findOrFail($args['id']);
+            $trip->update($tripInput);
+        } catch (ModelNotFoundException $e) {
+            throw new CustomException('Trip with the provided ID is not found.');
+        }
+
+        return $trip;
+    }
+
     public function copy($_, array $args)
     {
         DB::beginTransaction();
