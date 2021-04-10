@@ -4,6 +4,7 @@ namespace App\GraphQL\Queries;
 
 use Carbon\Carbon;
 use App\BusinessTrip;
+use Illuminate\Support\Facades\Cache;
 
 class BusinessTripResolver
 {
@@ -26,10 +27,14 @@ class BusinessTripResolver
     {
         $date = date('Y-m-d', strtotime($args['day']));
 
-        $userTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
-            ->where('business_trip_users.user_id', $args['user_id']);
+        $cacheKey = md5(implode(',', $args));
 
-        $userTrips = $userTrips->whereNotNull('business_trip_users.subscription_verified_at')
+        $tags[] = 'userTrips'; $tags[] = 'userTrips:'.$args['user_id'];
+
+        $userTrips = Cache::tags($tags)->remember($cacheKey, 900, function() use ($args, $date) {
+            return BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
+            ->where('business_trip_users.user_id', $args['user_id'])
+            ->whereNotNull('business_trip_users.subscription_verified_at')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('JSON_EXTRACT(business_trips.days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
             ->where(function ($query) use ($args) {
@@ -51,29 +56,23 @@ class BusinessTripResolver
                     ->where('business_trip_schedules.user_id', $args['user_id']);
             })
             ->get();
+        });
 
         if ($userTrips->isEmpty()) return [];
         
         return $this->scheduledTrips($userTrips, $args['day']);
     }
 
-    public function driverTrips($_, array $args)
-    {
-        $driverTrips = BusinessTrip::where('driver_id', $args['driver_id'])
-            ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
-            ->get();
-
-        if ($driverTrips->isEmpty()) return [];
-
-        return $this->scheduledTrips($driverTrips, $args['day'], 'driver');
-    }
-
     public function userLiveTrips($_, array $args)
     {
         $today = strtolower(date('l'));
 
-        $liveTrips = BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
+        $cacheKey = md5(implode(',', $args));
+
+        $tags[] = 'userLiveTrips'; $tags[] = 'userLiveTrips:'.$args['user_id'];
+
+        $liveTrips = Cache::tags($tags)->remember($cacheKey, 900, function() use ($args, $today) {
+            return BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
             ->where('status', true)
             ->whereRaw('JSON_EXTRACT(business_trips.days, "$.'.$today.'") <> CAST("null" AS JSON)')
@@ -87,8 +86,21 @@ class BusinessTripResolver
                     ->where('business_trip_schedules.user_id', $args['user_id']);
             })
             ->get();
+        });
 
         return $liveTrips;
+    }
+
+    public function driverTrips($_, array $args)
+    {
+        $driverTrips = BusinessTrip::where('driver_id', $args['driver_id'])
+            ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
+            ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
+            ->get();
+
+        if ($driverTrips->isEmpty()) return [];
+
+        return $this->scheduledTrips($driverTrips, $args['day'], 'driver');
     }
 
     public function driverLiveTrip($_, array $args)

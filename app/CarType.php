@@ -16,12 +16,6 @@ class CarType extends Model
 
     public $cacheFor = 3600;
 
-    /**
-     * Invalidate the cache automatically
-     * upon update in the database.
-     *
-     * @var bool
-     */
     protected static $flushCacheOnUpdate = true;
 
     protected static function boot()

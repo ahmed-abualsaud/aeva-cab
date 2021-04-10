@@ -8,12 +8,13 @@ use App\BusinessTripEntry;
 use App\BusinessTripEvent;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use App\BusinessTripSchedule;
 use App\Helpers\StaticMapUrl;
 use App\BusinessTripAttendance;
-use App\BusinessTripSchedule;
 use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
 use App\Exceptions\CustomException;
+use Illuminate\Support\Facades\Cache;
 use App\Events\BusinessTripStatusChanged;
 use App\Traits\HandleBusinessTripUserStatus;
 
@@ -125,6 +126,8 @@ class BusinessTripEventResolver
         ]);
         
         $this->updateEventPayload($args['log_id'], $payload);
+
+        $this->cacheFlush($args);
 
         return "Attendance status has been changed successfully";
     }
@@ -301,6 +304,7 @@ class BusinessTripEventResolver
                 $args['trip_name'],
                 ['view' => 'BusinessTripUserStatus', 'id' => $args['trip_id']]
             );
+
         } catch(\Exception $e) {
             //
         }
@@ -368,5 +372,13 @@ class BusinessTripEventResolver
             ]
         ];
         broadcast(new BusinessTripStatusChanged($data));
+    }
+
+    protected function cacheFlush(array $args)
+    {
+        $tags[] = 'userTrips:'.$args['user_id'];
+        $tags[] = 'userLiveTrips:'.$args['user_id'];
+
+        Cache::tags($tags)->flush();
     }
 }

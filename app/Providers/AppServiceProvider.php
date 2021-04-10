@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\BusinessTrip;
+use App\Observers\BusinessTripObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Socialite\Contracts\Factory;
@@ -31,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
         $this->bootSocialiteDriver();
+        BusinessTrip::observe(BusinessTripObserver::class);
     }
 
     public function bootSocialiteDriver()
