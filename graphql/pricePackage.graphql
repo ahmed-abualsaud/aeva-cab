@@ -8,6 +8,7 @@ input CreatePricePackageInput {
   description: String
   description_ar: String
   photo: Upload
+  is_public: Boolean
 }
 
 input UpdatePricePackageInput {
@@ -20,6 +21,7 @@ input UpdatePricePackageInput {
   description: String
   description_ar: String
   photo: Upload
+  is_public: Boolean
 }
 
 input PriceInput {
@@ -42,6 +44,7 @@ type PricePackage {
   photo: String
   city: City @belongsTo
   order: Int
+  is_public: Boolean
 }
 
 type Price {

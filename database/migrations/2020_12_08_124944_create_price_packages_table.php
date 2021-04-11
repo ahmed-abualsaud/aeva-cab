@@ -24,6 +24,7 @@ class CreatePricePackagesTable extends Migration
             $table->string('photo')->nullable();
             $table->smallInteger('order');
             $table->enum('type', ['toschool','towork']);
+            $table->boolean('is_public')->default(true);
             $table->timestamps();
 
             $table->index('city_id');

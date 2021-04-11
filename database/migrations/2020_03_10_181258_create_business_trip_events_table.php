@@ -16,13 +16,13 @@ class CreateBusinessTripEventsTable extends Migration
         Schema::create('business_trip_events', function (Blueprint $table) {
             $table->string('log_id');
             $table->unsignedBigInteger('trip_id');
-            $table->text('content');
+            $table->json('content');
             $table->text('map_url')->nullabel();
             $table->timestamps();
 
             $table->unique('log_id');
             $table->index('trip_id');
-            $table->index('created_at_at');
+            $table->index('created_at');
 
             $table->foreign('trip_id')
                 ->references('id')

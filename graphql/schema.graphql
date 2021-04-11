@@ -221,11 +221,11 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   sendDirectMessage(input: SendDirectMessageInput! @spread): String
     @field(resolver: "CommunicationResolver@sendDirectMessage")
 
-  # Seats Trip Transaction
-  createSeatsTripTransaction(input: CreateSeatsTripTransactionInput! @spread): Boolean
-    @field(resolver: "SeatsTripTransactionResolver@create")
-  deleteSeatsTripTransaction(id: [ID!]!): Boolean
-    @field(resolver: "SeatsTripTransactionResolver@destroy")
+  # Seats
+  createSeatsTransaction(input: CreateSeatsTripTransactionInput! @spread): Boolean
+    @field(resolver: "SeatsResolver@createTransaction")
+  deleteSeatsTransaction(id: [ID!]!): Boolean
+    @field(resolver: "SeatsResolver@destroyTransaction")
 }
 
 # Admin|User Guard
@@ -494,20 +494,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # Business Trip
   businessLiveTrips(type: String, partner_id: ID): [BusinessTrip] 
     @all(scopes: ["live", "partner"])
-
-  # Seats Trip Transactions
-  seatsTripTransactions(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [SeatsTripTransaction]
-    @paginate(scopes: ["wherePartnerOrTrip", "search", "filter"])
-  seatsTripTransactionsStats(period: String): SeatsTripTransactionStats
-    @field(resolver: "SeatsTripTransactionResolver@stats")
 }
 
 # Admin|User Guard
 extend type Query @guard(with: ["admin", "user"]) {
-  # Seats
-  seatsNearestStations(plat: String!, plng: String!, dlat: String!, dlng: String!, day: String!): 
-    [SeatsNearestStation] @field(resolver: "SeatsResolver@nearestStations")
-
   # Car Type
   carTypes(ondemand: Boolean): [CarType] @all(scopes: ["whereOndemand"])
 
@@ -531,8 +521,8 @@ extend type Query @guard(with: ["admin", "user"]) {
   workRequestsByUser(user_id: ID! @eq): [WorkRequest] @all
 
   # Price Package
-  pricePackages(city_id: ID, type: String): [PricePackage] 
-    @all(scopes: ["whereCity", "whereType"])
+  pricePackages(city_id: ID, type: String, is_public: Boolean): [PricePackage] 
+    @all(scopes: ["whereCity", "whereType", "whereIsPublic"])
 
   # City
   cities: [City] @all
@@ -555,6 +545,14 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   # Business Trip Schedule
   businessTripSchedule(trip_id: ID!, user_id: ID!): BusinessTripSchedule
     @field(resolver: "UserBusinessTripResolver@businessTripSchedule")
+
+  # Seats
+  seatsNearestStations(plat: String!, plng: String!, dlat: String!, dlng: String!, day: String!): 
+    [SeatsNearestStation] @field(resolver: "SeatsResolver@nearestStations")
+  seatsTripTransactions(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [SeatsTripTransaction]
+    @paginate(scopes: ["wherePartnerOrTrip", "search", "filter"])
+  seatsTripTransactionsStats(period: String): SeatsTripTransactionStats
+    @field(resolver: "SeatsResolver@stats")
 }
 
 # Admin|Partner|Driver Guard

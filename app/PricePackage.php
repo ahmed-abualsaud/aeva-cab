@@ -36,6 +36,15 @@ class PricePackage extends Model
         return $query->where('type', 'toschool');
     }
 
+    public function scopeWhereIsPublic($query, $args) 
+    {
+        if (array_key_exists('is_public', $args) && !$args['is_public']) {
+            return $query;
+        }
+
+        return $query->where('is_public', true);
+    }
+
     public function scopeWhereCity($query, $args) 
     {
         if (array_key_exists('city_id', $args) && $args['city_id']) {
