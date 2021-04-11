@@ -130,11 +130,11 @@ class BusinessTripResolver
         $dateTime = date('Y-m-d', strtotime($day));
         
         foreach($trips as $trip) {
+            $trip->flag = true;
             $trip->dayName = $day;
             $trip->is_absent = $trip->absence_date === $dateTime;
             $tripInstance = new BusinessTrip();
             $trip->date = strtotime($dateTime.' '.$trip->days[$day]) * 1000;
-            if ($for === 'driver') $trip->flag = $this->getFlag($trip->days[$day]);
             $trip->isReturn = false;
             $trip->startsAt = Carbon::parse($dateTime.' '.$trip->days[$day])->format('h:i a');
             $tripInstance->fill($trip->toArray());
@@ -142,7 +142,6 @@ class BusinessTripResolver
             if ($trip->return_time) {
                 $tripInstance = new BusinessTrip();
                 $trip->date = strtotime($dateTime.' '.$trip->return_time) * 1000;;
-                if ($for === 'driver') $trip->flag = $this->getFlag($trip->return_time);
                 $trip->startsAt = Carbon::parse($dateTime.' '.$trip->return_time)->format('h:i a');
                 $trip->isReturn = true;
                 $tripInstance->fill($trip->toArray());
@@ -154,11 +153,4 @@ class BusinessTripResolver
         
         return $sortedTrips;
     }
-
-    protected function getFlag($day) 
-    {   
-        $tripDate = Carbon::parse(date('Y-m-d') . ' ' . $day);
-        $minutes = $tripDate->diffInMinutes(now());
-        return ($minutes < 30) ? true : false;
-    } 
 }
