@@ -33,7 +33,7 @@ class PricePackage extends Model
             return $query->where('type', $args['type']);
         }
  
-        return $query;
+        return $query->where('type', 'toschool');
     }
 
     public function scopeWhereCity($query, $args) 
