@@ -322,7 +322,7 @@
     'app_url' => 'http://localhost:3000',
     'mail_to_address' => 'help.ahmadghallab@gmail.com',
     'google_dynamic_map_key' => 'AIzaSyCQz0gXRxL6CjTPgVGwkJt-oQlPxFW-AIQ',
-    'google_static_map_key' => 'AIzaSyDEFGfuD0KTwcvq5UDXJ7lRniKFvyfpo7g',
+    'GOOGLE_MAP_KEY' => 'AIzaSyDEFGfuD0KTwcvq5UDXJ7lRniKFvyfpo7g',
     'azure_storage_url' => 'https://qruz.blob.core.windows.net/uploads',
     'firebase_access_key' => 'AAAAWe3pgOY:APA91bGvj5Sg0KWBWh0dnh9zBU860LkMUtsOW72g9iRCejlfpNsrk5A0oXhvwgS6BUWgsND9DU4lK468kvbuTaexSdA0C9dCRh83ughg8Pa_m6Ka1JaopVpGxrsU_r_f65BMTjPpceGp',
     'otp_username' => '5NFU1SZf',

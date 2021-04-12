@@ -222,6 +222,10 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "CommunicationResolver@sendDirectMessage")
 
   # Seats
+  createSeatsBooking(input: CreateSeatsBookingInput! @spread): SeatsBooking
+    @field(resolver: "SeatsResolver@createBooking")
+  updateSeatsBooking(input: UpdateSeatsBookingInput! @spread): SeatsBooking
+    @field(resolver: "SeatsResolver@updateBooking")
   createSeatsTransaction(input: CreateSeatsTripTransactionInput! @spread): Boolean
     @field(resolver: "SeatsResolver@createTransaction")
   deleteSeatsTransaction(id: [ID!]!): Boolean
@@ -529,6 +533,11 @@ extend type Query @guard(with: ["admin", "user"]) {
 
   # Statement
   statement(type: String! @eq): Statement @find
+
+  # Seats
+  seatsBooking(id: ID! @eq): SeatsBooking @find
+  seatsBookingsByUser(user_id: ID! @eq, time: String! @rules(apply: ["in:past,upcoming"])): 
+    [SeatsBooking] @all(scopes: ["wherePickupTime"])
 }
 
 # Admin|Partner|User Guard
@@ -553,6 +562,8 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
     @paginate(scopes: ["wherePartnerOrTrip", "search", "filter"])
   seatsTripTransactionsStats(period: String): SeatsTripTransactionStats
     @field(resolver: "SeatsResolver@stats")
+  seatsBookings(searchFor: String, searchQuery: String, period: String, status: String): [SeatsBooking]
+    @paginate(scopes: ["whereStatus", "wherePeriod", "search"])
 }
 
 # Admin|Partner|Driver Guard

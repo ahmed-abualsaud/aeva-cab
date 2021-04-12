@@ -24,29 +24,29 @@ class WorkRequestResolver
 
             User::updateSecondaryNumber($args['contact_phone']);
 
-            $WorkRequest = WorkRequest::create($input);
+            $workRequest = WorkRequest::create($input);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to create this workplace request!');
         }
 
-        return $WorkRequest;
+        return $workRequest;
     }
 
     public function update($_, array $args)
     {
         try {
             $input = collect($args)->except(['id', 'directive'])->toArray();
-            $WorkRequest = WorkRequest::findOrFail($args['id']);
+            $workRequest = WorkRequest::findOrFail($args['id']);
 
             if (array_key_exists('contact_phone', $args) && $args['contact_phone'])
                 User::updateSecondaryNumber($args['contact_phone']);
     
-            $WorkRequest->update($input);
+            $workRequest->update($input);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to update this workplace request!');
         }
 
-        return $WorkRequest;
+        return $workRequest;
     }
 
     public function changeStatus($_, array $args)

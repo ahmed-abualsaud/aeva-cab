@@ -8,14 +8,14 @@ class StaticMapUrl
 
   public static function generatePolylines($value)
   {
-    $url = self::$map."&size=640x500&markers=color:0x9476E0%7C".$value->s_latitude.",".$value->s_longitude."&markers=color:0x9476E0%7C".$value->d_latitude.",".$value->d_longitude."&path=color:0x28077A|weight:3|enc:".$value->route_key."&key=".config('custom.google_static_map_key');
+    $url = self::$map."&size=640x500&markers=color:0x9476E0%7C".$value->s_latitude.",".$value->s_longitude."&markers=color:0x9476E0%7C".$value->d_latitude.",".$value->d_longitude."&path=color:0x28077A|weight:3|enc:".$value->route_key."&key=".config('custom.google_map_key');
 
     return urldecode($url);
   }
 
   public static function generatePath($path)
   {
-    $url = self::$map."&size=640x450&path=color:blue|weight:4|".$path."&key=".config('custom.google_static_map_key');
+    $url = self::$map."&size=640x450&path=color:blue|weight:4|".$path."&key=".config('custom.google_map_key');
     
     return urldecode($url);
   }

@@ -70,6 +70,7 @@ class CreateSchoolsTable extends Migration
             $table->index('grade_id');
             $table->index('price_package_id');
             $table->index('created_at');
+            $table->index('status');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
