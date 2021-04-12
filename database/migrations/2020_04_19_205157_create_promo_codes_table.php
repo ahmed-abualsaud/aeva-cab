@@ -19,7 +19,7 @@ class CreatePromoCodesTable extends Migration
             $table->float('discount', 10, 2);
             $table->enum('discount_type', ['PERCENT','AMOUNT'])->default('PERCENT');
             $table->date('expires_on');
-            $table->enum('type', ['toschool','towork', 'seats']);
+            $table->enum('type', ['toschool','towork', 'seats', 'ondemand']);
             $table->softDeletes();
             $table->timestamps();
 
