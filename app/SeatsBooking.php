@@ -65,7 +65,7 @@ class SeatsBooking extends Model
 
     public function scopeWherePickupTime($query, $args) 
     {
-        $now = date("Y-m-d H:i:s");
+        $now = date('Y-m-d H:i:s');
 
         switch($args['time']) {
             case 'past':

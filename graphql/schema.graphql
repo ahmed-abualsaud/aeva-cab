@@ -390,8 +390,8 @@ type Query @guard(with: ["admin"]) {
   carType(id: ID @eq): CarType @find
 
   # Promo Code
-  promoCodes: [PromoCode] @all
-  promoCode(id: ID @eq): PromoCode @find
+  promoCodes(type: String): [PromoCode] @all(scopes: ["whereType", "whereValid"])
+  promoCode(name: String! @eq): PromoCode @find
 
   # Ondemand Request
   ondemandRequests(status: String period: String): [OndemandRequest]

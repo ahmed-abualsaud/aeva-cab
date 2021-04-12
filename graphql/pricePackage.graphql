@@ -13,7 +13,6 @@ input CreatePricePackageInput {
 
 input UpdatePricePackageInput {
   id: ID! @rules(apply: ["required"])
-  type: String! @rules(apply: ["required", "in:toschool,towork"])
   city_id: ID
   name: String
   price: PriceInput
