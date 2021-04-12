@@ -1,6 +1,7 @@
 input SendDirectMessageInput {
   recipient_id: [ID!]! @rules(apply: ["required"])
   recipient_type: String! @rules(apply: ["required","in:App\\User,App\\Driver"])
+  all: Boolean
   email: Boolean! @rules(apply: ["required"])
   sms: Boolean! @rules(apply: ["required"])
   push: Boolean! @rules(apply: ["required"])

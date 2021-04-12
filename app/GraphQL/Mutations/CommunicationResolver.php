@@ -23,20 +23,42 @@ class CommunicationResolver
     public function sendDirectMessage($_, array $args)
     {
         try {
-            $recipient = $args['recipient_type']::select('phone', 'email', 'device_id')
-                ->whereIn('id', $args['recipient_id'])
-                ->get();
-    
-            $phones = $recipient->pluck('phone')->filter()->toArray();
-            $emails = $recipient->pluck('email')->filter()->toArray();
-            $tokens = $recipient->pluck('device_id')->filter()->toArray();
-            
-            if ($args['email'] && $emails) 
-                Mail::bcc($emails)->send(new DefaultMail($args['message'], $args['title']));
-            if ($args['sms'] && $phones) 
-                SendOtp::dispatch(implode(",", $phones), $args['message']);
-            if ($args['push'] && $tokens) 
-                SendPushNotification::dispatch($tokens, $args['message'], $args['title']);
+            if ($args['email']) {
+                $emails = $args['recipient_type']::select('email');
+
+                if (array_key_exists('all', $args) && !$args['all'])
+                    $emails = $emails->whereIn('id', $args['recipient_id']);
+
+                $emails = $emails->pluck('email')->filter()->flatten()->toArray();
+
+                if ($emails)
+                    Mail::bcc($emails)->send(new DefaultMail($args['message'], $args['title']));
+
+            }
+
+            if ($args['sms']) {
+                $phones = $args['recipient_type']::select('phone');
+
+                if (array_key_exists('all', $args) && !$args['all'])
+                    $phones = $phones->whereIn('id', $args['recipient_id']);
+
+                $phones = $phones->pluck('phone')->filter()->flatten()->toArray();
+
+                if ($phones)
+                    SendOtp::dispatch(implode(",", $phones), $args['message']);
+            }
+
+            if ($args['push']) {
+                $tokens = $args['recipient_type']::select('device_id');
+
+                if (array_key_exists('all', $args) && !$args['all'])
+                    $tokens = $tokens->whereIn('id', $args['recipient_id']);
+
+                $tokens = $tokens->pluck('device_id')->filter()->flatten()->toArray();
+
+                if ($tokens)
+                    SendPushNotification::dispatch($tokens, $args['message'], $args['title']);
+            }
     
             return "Message has been sent";
         } catch(\Exception $e) {
