@@ -57,6 +57,12 @@ class CommunicationResolver
                 $tokens = $tokens->pluck('device_id')->filter()->flatten()->toArray();
 
                 if ($tokens)
+                    if (count($tokens) > 1000) {
+                        $chunks = array_chunk($tokens, 1000);
+                        foreach($chunks as $chunk) {
+                            SendPushNotification::dispatch($chunk, $args['message'], $args['title']);
+                        }
+                    }
                     SendPushNotification::dispatch($tokens, $args['message'], $args['title']);
             }
     
