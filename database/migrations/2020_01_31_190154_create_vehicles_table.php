@@ -21,6 +21,7 @@ class CreateVehiclesTable extends Migration
             $table->unsignedBigInteger('car_make_id');
             $table->date('license_expires_on')->nullable();
             $table->year('year');
+            $table->unsignedSmallInteger('seats');
             $table->string('photo')->nullable();
             $table->timestamps();
             $table->softDeletes();
