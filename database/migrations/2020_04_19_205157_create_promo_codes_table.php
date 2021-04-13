@@ -24,6 +24,7 @@ class CreatePromoCodesTable extends Migration
             $table->timestamps();
 
             $table->index('type');
+            $table->index('expires_on');
         });
     }
 

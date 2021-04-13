@@ -240,6 +240,10 @@ extend type Mutation @guard(with: ["admin", "user"]) {
   changeUserPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "UserResolver@updatePassword")
 
+  # Promo codes
+  applyPromoCode(name: String!, user_id: ID!): PromoCode
+    @field(resolver: "PromoCodeResolver@apply")
+
   # Ondemand Request 
   createOndemandRequest(input: CreateOndemandRequestInput! @spread): OndemandRequest 
     @field(resolver: "OndemandRequestResolver@create")
@@ -390,7 +394,7 @@ type Query @guard(with: ["admin"]) {
   carType(id: ID @eq): CarType @find
 
   # Promo Code
-  promoCodes(type: String): [PromoCode] @all(scopes: ["whereType", "whereValid"])
+  promoCodes(type: String, is_valid: Boolean): [PromoCode] @all(scopes: ["whereType", "whereValid"])
   promoCode(name: String! @eq): PromoCode @find
 
   # Ondemand Request

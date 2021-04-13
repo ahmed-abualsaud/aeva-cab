@@ -31,7 +31,7 @@ class PromoCode extends Model
     public function scopeWhereValid($query, $args) 
     {
         if (array_key_exists('is_valid', $args) && $args['is_valid']) {
-            return $query->where('expires_on', '>=', date('Y-m-d'));
+            return $query->where('expires_on', '>', date('Y-m-d'));
         }
  
         return $query;
