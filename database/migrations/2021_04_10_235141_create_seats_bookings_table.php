@@ -16,6 +16,7 @@ class CreateSeatsBookingsTable extends Migration
         Schema::create('seats_bookings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('trip_id');
+            $table->dateTime('trip_time');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('pickup_id');
             $table->unsignedBigInteger('dropoff_id');
@@ -24,13 +25,13 @@ class CreateSeatsBookingsTable extends Migration
             $table->unsignedBigInteger('promo_code_id')->nullable();
             $table->enum('payment_method', ['CASH', 'CARD', 'FAWRY'])->default('CASH');
             $table->float('payable', 8, 2)->default(0);
-            $table->enum('status', ['CONFIRMED','CANCELLED','REJECTED'])->default('CONFIRMED');
+            $table->enum('status', ['CONFIRMED','CANCELLED'])->default('CONFIRMED');
             $table->string('comment')->nullable();
             $table->string('response')->nullable();
             $table->timestamps();
 
             $table->unique(['user_id', 'pickup_time']);
-            $table->index('trip_id');
+            $table->index(['trip_id', 'trip_time']);
             $table->index('pickup_id');
             $table->index('dropoff_id');
             $table->index('promo_code_id');

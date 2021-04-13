@@ -1,5 +1,6 @@
 input CreateSeatsBookingInput {
   trip_id: ID! @rules(apply: ["required"])
+  trip_time: String! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
   pickup_id: ID! @rules(apply: ["required"])
   dropoff_id: ID! @rules(apply: ["required"])
@@ -66,6 +67,7 @@ type SeatsBooking {
 
 type SeatsNearestStation {
   trip_id: ID
+  trip_time: String
   price: Float
   pickup_id: ID
   pickup_name: String

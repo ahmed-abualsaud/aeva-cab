@@ -26,10 +26,13 @@ class SeatsResolver
                 dropoff.id as dropoff_id,
                 dropoff.name as dropoff_name,
 
+                CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))) as trip_time,
+
                 ADDDATE(
                     CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))), 
                     INTERVAL '.'pickup.duration'.' SECOND
                 ) as pickup_time,
+
                 ADDDATE(
                     CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))), 
                     INTERVAL '.'dropoff.duration'.' SECOND
@@ -39,7 +42,7 @@ class SeatsResolver
                 ) AS pickup_distance,
                 ST_Distance_Sphere(point(dropoff.longitude, dropoff.latitude), point(?, ?)
                 ) AS dropoff_distance
-            ', [$date, $date, $args['plng'], $args['plat'], $args['dlng'], $args['dlat']])
+            ', [$date, $date, $date, $args['plng'], $args['plat'], $args['dlng'], $args['dlat']])
 
             ->join('business_trip_stations as pickup', 'business_trips.id', '=', 'pickup.trip_id')
             ->join('business_trip_stations as dropoff', 'business_trips.id', '=', 'dropoff.trip_id')
