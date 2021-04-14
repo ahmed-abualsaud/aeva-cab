@@ -5,7 +5,7 @@ namespace App\GraphQL\Mutations;
 use App\BusinessTrip;
 use App\SeatsBooking;
 use Illuminate\Support\Str;
-use App\SeatsTripTransaction;
+use App\SeatsTransaction;
 use App\Exceptions\CustomException;
 
 class SeatsResolver
@@ -46,15 +46,20 @@ class SeatsResolver
         return $seatsBooking;
     }
 
+    public function destroyBooking($_, array $args)
+    {
+        return SeatsBooking::whereIn('id', $args['id'])->delete();
+    }
+
     public function createTransaction($_, array $args)
     {
         $input = collect($args)->except(['directive'])->toArray();
-        return SeatsTripTransaction::create($input);
+        return SeatsTransaction::create($input);
     }
 
     public function destroyTransaction($_, array $args)
     {
-        return SeatsTripTransaction::whereIn('id', $args['id'])->delete();
+        return SeatsTransaction::whereIn('id', $args['id'])->delete();
     }
 
     protected function checkSeats(array $args)

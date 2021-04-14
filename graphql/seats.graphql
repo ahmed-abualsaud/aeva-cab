@@ -1,10 +1,11 @@
 input CreateSeatsBookingInput {
+  user_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
   trip_time: String! @rules(apply: ["required"])
-  user_id: ID! @rules(apply: ["required"])
   pickup_id: ID! @rules(apply: ["required"])
-  dropoff_id: ID! @rules(apply: ["required"])
   pickup_time: String! @rules(apply: ["required"])
+  dropoff_id: ID! @rules(apply: ["required"])
+  dropoff_time: String! @rules(apply: ["required"])
   payable: Float! @rules(apply: ["required"])
   seats: Int! @rules(apply: ["required"])
   promo_code_id: ID
@@ -18,7 +19,7 @@ input UpdateSeatsBookingInput {
   response: String
 }
 
-input CreateSeatsTripTransactionInput {
+input CreateSeatsTransactionsInput {
   trip_id: ID! @rules(apply: ["required"])
   amount: Float! @rules(apply: ["required"])
   user_id: ID
@@ -26,7 +27,7 @@ input CreateSeatsTripTransactionInput {
   notes: String
 }
 
-type SeatsTripTransaction {
+type SeatsTransaction {
   id: ID
   trip: BusinessTrip @belongsTo
   user: User @belongsTo
@@ -36,7 +37,7 @@ type SeatsTripTransaction {
   created_at: String
 }
 
-type SeatsTripTransactionStats {
+type SeatsTransactionsStats {
   count: Int
   sum: Float
   avg: Float
@@ -57,6 +58,7 @@ type SeatsBooking {
   promo_code: PromoCode @belongsTo
   seats: Int
   pickup_time: String
+  dropoff_time: String
   payment_method: String
   payable: Float
   status: String
@@ -69,6 +71,8 @@ type SeatsNearestStation {
   trip_id: ID
   trip_time: String
   price: Float
+  bookable: Boolean
+  partner_name: String
   pickup_id: ID
   pickup_name: String
   pickup_time: String

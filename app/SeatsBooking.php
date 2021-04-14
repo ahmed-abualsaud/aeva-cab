@@ -16,7 +16,7 @@ class SeatsBooking extends Model
 
     public function user()
     {
-        return $this->belongsTo(BusinessTrip::class);
+        return $this->belongsTo(User::class);
     }
 
     public function pickup()
@@ -44,7 +44,7 @@ class SeatsBooking extends Model
         return $query;
     }
 
-    public function scopeWherePeriod($query, $args) 
+    public function scopeForPeriod($query, $args) 
     {
         
         if (array_key_exists('period', $args) && $args['period']) {
@@ -74,5 +74,25 @@ class SeatsBooking extends Model
                 return $query->where('pickup_time', '>=', $now);
         }
 
+    }
+
+    public function scopeForPartner($query, $args) 
+    {
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            return $query->whereHas('trip', function($query) use ($args) {
+                $query->where('partner_id', $args['partner_id']);
+            });
+        }
+ 
+        return $query;
+    }
+
+    public function scopeForTrip($query, $args) 
+    {
+        if (array_key_exists('trip_id', $args) && $args['trip_id']) {
+            return $query->where('trip_id', $args['trip_id']);
+        }
+ 
+        return $query;
     }
 }

@@ -8,8 +8,9 @@ input CreateBusinessTripInput {
   days: TripDaysInput! @rules(apply: ["required"])
   return_time: String
   group_chat: Boolean
-  type: String! @rules(apply: ["in:playground,toschool,towork"])
+  type: String! @rules(apply: ["in:playground,toschool,towork,seats"])
   price: Float
+  bookable: Boolean
 }
 
 input CopyBusinessTripInput {
@@ -33,6 +34,7 @@ input UpdateBusinessTripInput {
   days: TripDaysInput
   group_chat: Boolean
   price: Float
+  bookable: Boolean
 }
 
 input TripDaysInput {
@@ -74,6 +76,7 @@ type BusinessTrip {
   vehicle: Vehicle @belongsTo
   days: TripDays
   price: Float
+  bookable: Boolean
   type: String
   stations: [BusinessTripStation] @hasMany
   userStation: BusinessTripStation @hasOne

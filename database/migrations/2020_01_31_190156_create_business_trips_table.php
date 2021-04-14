@@ -28,9 +28,10 @@ class CreateBusinessTripsTable extends Migration
             $table->integer('distance')->nullable();
             $table->boolean('status')->default(false);
             $table->string('log_id')->nullable();
-            $table->boolean('group_chat')->default(true);
+            $table->boolean('group_chat')->default(false);
             $table->float('price', 8, 2)->nullable();
             $table->text('route')->nullable();
+            $table->boolean('bookable')->default(false);
             $table->enum('type', ['playground','toschool','towork','seats']);
             $table->timestamps();
             $table->softDeletes();

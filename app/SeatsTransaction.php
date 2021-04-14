@@ -6,7 +6,7 @@ use App\Traits\Filterable;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
-class SeatsTripTransaction extends Model
+class SeatsTransaction extends Model
 {
     use Searchable, Filterable;
 
@@ -31,27 +31,32 @@ class SeatsTripTransaction extends Model
         return $query;
     }
 
-    public function scopeFilter($query, $args)
+    public function scopeForPeriod($query, $args)
     {
         if (array_key_exists('period', $args) && $args['period']) {
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
 
-        return $query;
+        return $query->latest();
     }
 
-    public function scopeWherePartnerOrTrip($query, $args) 
+    public function scopeForPartner($query, $args) 
     {
-        if (array_key_exists('trip_id', $args) && $args['trip_id']) {
-            return $query->where('trip_id', $args['trip_id']);
-        }
-
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             return $query->whereHas('trip', function($query) use ($args) {
                 $query->where('partner_id', $args['partner_id']);
             });
         }
  
-        return $query->latest();
+        return $query;
+    }
+
+    public function scopeForTrip($query, $args) 
+    {
+        if (array_key_exists('trip_id', $args) && $args['trip_id']) {
+            return $query->where('trip_id', $args['trip_id']);
+        }
+ 
+        return $query;
     }
 }

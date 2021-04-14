@@ -15,13 +15,14 @@ class CreateSeatsBookingsTable extends Migration
     {
         Schema::create('seats_bookings', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('trip_id');
             $table->dateTime('trip_time');
-            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('pickup_id');
-            $table->unsignedBigInteger('dropoff_id');
-            $table->unsignedSmallInteger('seats');
             $table->dateTime('pickup_time');
+            $table->unsignedBigInteger('dropoff_id');
+            $table->dateTime('dropoff_time');
+            $table->unsignedSmallInteger('seats');
             $table->unsignedBigInteger('promo_code_id')->nullable();
             $table->enum('payment_method', ['CASH', 'CARD', 'FAWRY'])->default('CASH');
             $table->float('payable', 8, 2)->default(0);

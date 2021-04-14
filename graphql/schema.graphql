@@ -226,7 +226,9 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "SeatsResolver@createBooking")
   updateSeatsBooking(input: UpdateSeatsBookingInput! @spread): SeatsBooking
     @field(resolver: "SeatsResolver@updateBooking")
-  createSeatsTransaction(input: CreateSeatsTripTransactionInput! @spread): Boolean
+  deleteSeatsBooking(id: [ID!]!): Boolean
+    @field(resolver: "SeatsResolver@destroyBooking")
+  createSeatsTransaction(input: CreateSeatsTransactionsInput! @spread): Boolean
     @field(resolver: "SeatsResolver@createTransaction")
   deleteSeatsTransaction(id: [ID!]!): Boolean
     @field(resolver: "SeatsResolver@destroyTransaction")
@@ -562,12 +564,12 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   # Seats
   seatsNearestStations(plat: String!, plng: String!, dlat: String!, dlng: String!, day: String!): 
     [SeatsNearestStation] @field(resolver: "SeatsResolver@nearestStations")
-  seatsTripTransactions(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [SeatsTripTransaction]
-    @paginate(scopes: ["wherePartnerOrTrip", "search", "filter"])
-  seatsTripTransactionsStats(period: String): SeatsTripTransactionStats
+  seatsTransactions(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [SeatsTransaction]
+    @paginate(scopes: ["forPartner", "forTrip", "forPeriod", "search"])
+  seatsTransactionsStats(period: String): SeatsTransactionsStats
     @field(resolver: "SeatsResolver@stats")
-  seatsBookings(searchFor: String, searchQuery: String, period: String, status: String): [SeatsBooking]
-    @paginate(scopes: ["whereStatus", "wherePeriod", "search"])
+  seatsBookings(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String, status: String): [SeatsBooking]
+    @paginate(scopes: ["forPartner", "forTrip", "forPeriod", "whereStatus", "search"])
 }
 
 # Admin|Partner|Driver Guard

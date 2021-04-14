@@ -4,7 +4,7 @@ namespace App\GraphQL\Queries;
 
 use App\BusinessTrip;
 use App\Traits\Filterable;
-use App\SeatsTripTransaction;
+use App\SeatsTransaction;
 use Illuminate\Support\Facades\Cache;
 
 class SeatsResolver
@@ -20,7 +20,9 @@ class SeatsResolver
         $stations = Cache::tags('seatsNearestStations')->remember($cacheKey, 900, function() use ($args, $date) {
             return  BusinessTrip::selectRaw('
                 business_trips.id as trip_id,
-                business_trips.price as price,
+                business_trips.price,
+                business_trips.bookable,
+                partners.name as partner_name,
                 pickup.id as pickup_id,
                 pickup.name as pickup_name,
                 dropoff.id as dropoff_id,
@@ -46,6 +48,7 @@ class SeatsResolver
 
             ->join('business_trip_stations as pickup', 'business_trips.id', '=', 'pickup.trip_id')
             ->join('business_trip_stations as dropoff', 'business_trips.id', '=', 'dropoff.trip_id')
+            ->join('partners', 'partners.id', '=', 'business_trips.partner_id')
 
             ->whereRaw('
                 JSON_EXTRACT(business_trips.days, "$.'.$args['day'].'") <> CAST("null" AS JSON)
@@ -70,9 +73,9 @@ class SeatsResolver
 
     public function stats($_, array $args)
     {
-        $transactions = SeatsTripTransaction::query();
+        $transactions = SeatsTransaction::query();
 
-        $transactionGroup = SeatsTripTransaction::selectRaw('
+        $transactionGroup = SeatsTransaction::selectRaw('
             DATE_FORMAT(created_at, "%a, %b %d, %Y") as date,
             sum(amount) as sum
         ');
