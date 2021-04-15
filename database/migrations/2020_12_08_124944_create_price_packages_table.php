@@ -19,8 +19,10 @@ class CreatePricePackagesTable extends Migration
             $table->unsignedBigInteger('city_id');
             $table->text('description')->nullable();
             $table->text('description_ar')->nullable();
-            $table->json('price');
-            $table->string('per');
+            $table->json('price')->nullable();
+            $table->string('per')->nullable();
+            $table->float('base_fare', 8, 2)->nullable();
+            $table->float('fare_per_km', 8, 2)->nullable();
             $table->string('photo')->nullable();
             $table->smallInteger('order');
             $table->enum('type', ['toschool','towork']);
