@@ -1,10 +1,8 @@
 input CreatePricePackageInput {
   city_id: ID! @rules(apply: ["required"])
   name: String! @rules(apply: ["required"])
-  price: PriceInput
-  per: String
-  base_fare: Float
-  fare_per_km: Float
+  price: PriceInput! @rules(apply: ["required"])
+  per: String! @rules(apply: ["required"])
   order: Int! @rules(apply: ["required"])
   type: String! @rules(apply: ["required", "in:toschool,towork"])
   description: String
@@ -19,8 +17,6 @@ input UpdatePricePackageInput {
   name: String
   price: PriceInput
   per: String
-  base_fare: Float
-  fare_per_km: Float
   description: String
   description_ar: String
   photo: Upload
@@ -44,8 +40,6 @@ type PricePackage {
   description_ar: String
   price: Price
   per: String
-  base_fare: Float
-  fare_per_km: Float
   photo: String
   city: City @belongsTo
   order: Int

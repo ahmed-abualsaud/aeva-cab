@@ -27,8 +27,6 @@ input CreateWorkRequestInput {
   days: String! @rules(apply: ["required"])
   enter_time: String! @rules(apply: ["required"])
   exit_time: String! @rules(apply: ["required"])
-  way: String @rules(apply: ["in:ONE_WAY,TWO_WAYS"])
-  payable: Float
   comment: String
 }
 

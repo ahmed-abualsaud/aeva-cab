@@ -40,8 +40,6 @@ class CreateWorkplacesTable extends Migration
             $table->string('days');
             $table->time('enter_time');
             $table->time('exit_time');
-            $table->enum('way', ['ONE_WAY', 'TWO_WAYS'])->nullable();
-            $table->float('payable', 8, 2)->nullable();
             $table->enum('status', [
                 'ACCEPTED', 
                 'REJECTED',
