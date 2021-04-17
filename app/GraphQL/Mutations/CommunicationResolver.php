@@ -126,7 +126,11 @@ class CommunicationResolver
                 $token, 
                 $msg, 
                 $sender->name,
-                ['view' => 'BusinessTripDirectMessage', 'id' => $args['trip_id']]
+                [
+                    'view' => 'BusinessTripDirectMessage', 
+                    'id' => $args['trip_id'], 
+                    'sender_id' => $args['sender_id']
+                ]
             );
         } catch(\Exception $e) {
             //
