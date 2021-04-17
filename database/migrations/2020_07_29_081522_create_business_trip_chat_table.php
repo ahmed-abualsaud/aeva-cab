@@ -19,10 +19,10 @@ class CreateBusinessTripChatTable extends Migration
             $table->morphs('sender');
             $table->unsignedBigInteger('recipient_id')->nullable();
             $table->string('message');
-            $table->boolean('is_direct')->default(false);
+            $table->boolean('is_private')->default(false);
             $table->timestamps();
 
-            $table->index('log_id');
+            $table->index(['log_id', 'is_private']);
             $table->index(['sender_id', 'recipient_id']);
         });
     }

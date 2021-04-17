@@ -606,7 +606,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "UserBusinessTripResolver@businessTripSubscribers")
 
   # Communication
-  businessTripChatMessages(log_id: String!, user_id: ID, is_direct: Boolean): [BusinessTripChat] 
+  businessTripChatMessages(log_id: String!, user_id: ID, is_direct: Boolean, is_private: Boolean): [BusinessTripChat] 
     @field(resolver: "CommunicationResolver@businessTripChatMessages")
 }
 

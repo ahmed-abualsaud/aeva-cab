@@ -79,10 +79,13 @@ class CommunicationResolver
 
         if(array_key_exists('recipient_id', $args) && $args['recipient_id']) {
             $this->notifyRecipient($args, $message['message'], $sender);
+            $args['private'] = true;
         } else {
             $this->notifyGroup($args, $message['message'], $sender);
-            $this->broadcastMessage($message, $sender, $args['log_id']);
+            $args['private'] = false;
         }
+
+        $this->broadcastMessage($message, $sender, $args);
 
         return $message;
     }
@@ -92,7 +95,7 @@ class CommunicationResolver
         try {
             $input = Arr::except($args, ['directive', 'driver_id', 'trip_id']);
             if(array_key_exists('recipient_id', $args) && $args['recipient_id']) 
-                $input['is_direct'] = true;
+                $input['is_private'] = true;
             $msg = BusinessTripChat::create($input);
             $msg->time = date('h:i a');
             return $msg;
@@ -111,7 +114,7 @@ class CommunicationResolver
         }
     }
 
-    protected function notifyRecipient(array $args, $msg, $sender)
+    protected function notifyRecipient($args, $msg, $sender)
     {
         try {
             switch($args['sender_type']) {
@@ -137,7 +140,7 @@ class CommunicationResolver
         }
     }
 
-    protected function notifyGroup(array $args, $msg, $sender)
+    protected function notifyGroup($args, $msg, $sender)
     {
         try {
             switch ($args['sender_type']) {
@@ -165,7 +168,7 @@ class CommunicationResolver
         }
     }
 
-    protected function broadcastMessage($msg, $sender, $log_id)
+    protected function broadcastMessage($msg, $sender, $args)
     {
         try {
             $res = [ 
@@ -182,9 +185,22 @@ class CommunicationResolver
                 '__typename' => 'Message'
             ];
     
-            broadcast(new MessageSent('App.BusinessTrip.'.$log_id, $res))->toOthers();
+            broadcast(new MessageSent($this->getChannelName($args), $res))->toOthers();
         } catch (\Exception $e) {
             //
         }
+    }
+
+    protected function getChannelName($args)
+    {
+        if ($args['private']) {
+            $user_id = $args['sender_type'] == 'App\\User' 
+                ? $args['sender_id'] 
+                : $args['recipient_id'];
+
+            return 'App.BusinessTripPrivateChat.'.$args['log_id'].'.'.$user_id;
+        }
+
+        return 'App.BusinessTrip.'.$args['log_id'];
     }
 }
