@@ -8,6 +8,7 @@ input CreateSeatsBookingInput {
   dropoff_time: String! @rules(apply: ["required"])
   payable: Float! @rules(apply: ["required"])
   seats: Int! @rules(apply: ["required"])
+  bookable: Boolean! @rules(apply: ["required"])
   promo_code_id: ID
   payment_method: String
 }

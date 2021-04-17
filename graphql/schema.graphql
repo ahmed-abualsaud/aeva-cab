@@ -222,14 +222,8 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "CommunicationResolver@sendDirectMessage")
 
   # Seats
-  createSeatsBooking(input: CreateSeatsBookingInput! @spread): SeatsBooking
-    @field(resolver: "SeatsResolver@createBooking")
-  updateSeatsBooking(input: UpdateSeatsBookingInput! @spread): SeatsBooking
-    @field(resolver: "SeatsResolver@updateBooking")
   deleteSeatsBooking(id: [ID!]!): Boolean
     @field(resolver: "SeatsResolver@destroyBooking")
-  createSeatsTransaction(input: CreateSeatsTransactionsInput! @spread): Boolean
-    @field(resolver: "SeatsResolver@createTransaction")
   deleteSeatsTransaction(id: [ID!]!): Boolean
     @field(resolver: "SeatsResolver@destroyTransaction")
 }
@@ -281,6 +275,14 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "WorkRequestResolver@destroy")
   changeWorkRequestStatus(input: ChangeWorkRequestStatusInput! @spread): String
     @field(resolver: "WorkRequestResolver@changeStatus")
+
+  # Seats
+  createSeatsBooking(input: CreateSeatsBookingInput! @spread): SeatsBooking
+    @field(resolver: "SeatsResolver@createBooking")
+  updateSeatsBooking(input: UpdateSeatsBookingInput! @spread): SeatsBooking
+    @field(resolver: "SeatsResolver@updateBooking")
+  createSeatsTransaction(input: CreateSeatsTransactionsInput! @spread): Boolean
+    @field(resolver: "SeatsResolver@createTransaction")
 }
 
 # Admin|Driver Guard

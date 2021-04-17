@@ -18,8 +18,8 @@ class SeatsResolver
     public function createBooking($_, array $args)
     {
         try {
-
-            $this->checkSeats($args);
+            if ($args['bookable'])
+                $this->checkSeats($args);
 
             $seatsBooking = $this->saveBooking($args);
 
@@ -87,7 +87,7 @@ class SeatsResolver
     protected function saveBooking(array $args)
     {
         try {
-            $input = collect($args)->except(['directive'])->toArray();
+            $input = collect($args)->except(['directive', 'bookable'])->toArray();
             return SeatsBooking::create($input);
         } catch (\Exception $e) {
             throw new \Exception('You already have a trip at this time!');
