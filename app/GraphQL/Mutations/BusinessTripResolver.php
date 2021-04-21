@@ -49,17 +49,22 @@ class BusinessTripResolver
         return $trip;
     }
 
+    public function updateRoute($_, array $args)
+    {
+        return BusinessTrip::reroute($args);
+    }
+
     public function copy($_, array $args)
     {
         DB::beginTransaction();
         try {
-            $businessTrip = $this->createTripCopy($args);
+            $trip = $this->createTripCopy($args);
 
             if ($args['include_stations'])
-                $this->createStationsCopy($args['id'], $businessTrip->id);
+                $this->createStationsCopy($args['id'], $trip->id);
 
             if ($args['include_subscriptions'])
-                $this->createSubscriptionsCopy($args['id'], $businessTrip->id);
+                $this->createSubscriptionsCopy($args['id'], $trip->id);
 
             DB::commit();
         } catch(\Exception $e) {
@@ -67,7 +72,7 @@ class BusinessTripResolver
             throw new CustomException('We could not able to copy this trip!');
         }
 
-        return $businessTrip;
+        return $trip;
     }
 
     public function inviteUser($_, array $args)
@@ -235,7 +240,7 @@ class BusinessTripResolver
     {
         $originalTrip = BusinessTrip::select(
             'partner_id', 'driver_id', 'vehicle_id', 'start_date', 'end_date', 
-            'return_time', 'days', 'duration', 'distance', 'group_chat', 'type'
+            'return_time', 'days', 'duration', 'distance', 'group_chat', 'route', 'type'
             )
             ->findOrFail($args['id'])
             ->toArray();
@@ -248,7 +253,7 @@ class BusinessTripResolver
     protected function createStationsCopy($oldTripId, $newTripId)
     {
         $originalStations = BusinessTripStation::select(
-            'name', 'latitude', 'longitude', 'duration', 'distance', 'state'
+            'name', 'latitude', 'longitude', 'duration', 'distance', 'state', 'accepted_at', 'order'
             )
             ->where('trip_id', $oldTripId)
             ->get();

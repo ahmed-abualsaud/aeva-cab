@@ -4,7 +4,7 @@ namespace App\Observers;
 
 use Illuminate\Support\Facades\Cache;
 
-class BusinessTripObserver
+class SeatsTripObserver
 {
 
     public function updated()
@@ -19,6 +19,6 @@ class BusinessTripObserver
 
     protected function cacheFlush()
     {
-        Cache::tags(['userTrips', 'userLiveTrips'])->flush();
+        Cache::tags(['seatsNearbyStations'])->flush();
     }
 }

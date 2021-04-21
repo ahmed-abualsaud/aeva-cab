@@ -2,19 +2,16 @@
 
 namespace App;
 
-use App\Traits\Filterable;
-use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
-class SeatsTransaction extends Model
+class SeatsTripBooking extends Model
 {
-    use Searchable, Filterable;
 
     protected $guarded = [];
 
     public function trip()
     {
-        return $this->belongsTo(BusinessTrip::class);
+        return $this->belongsTo(SeatsTrip::class);
     }
 
     public function user()
@@ -22,8 +19,24 @@ class SeatsTransaction extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function pickup()
+    {
+        return $this->belongsTo(SeatsTripStation::class, 'pickup_id');
+    }
+
+    public function dropoff()
+    {
+        return $this->belongsTo(SeatsTripStation::class, 'dropoff_id');
+    }
+
+    public function promoCode()
+    {
+        return $this->belongsTo(PromoCode::class, 'promo_code_id');
+    }
+
     public function scopeSearch($query, $args) 
     {
+        
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
@@ -31,13 +44,36 @@ class SeatsTransaction extends Model
         return $query;
     }
 
-    public function scopeForPeriod($query, $args)
+    public function scopeForPeriod($query, $args) 
     {
+        
         if (array_key_exists('period', $args) && $args['period']) {
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
 
-        return $query->latest();
+        return $query->latest('created_at');
+    }
+
+    public function scopeWhereStatus($query, $args) 
+    {
+        if (array_key_exists('status', $args) && $args['status']) {
+            $query->where('status', $args['status']);
+        }
+
+        return $query;
+    }
+
+    public function scopeWherePickupTime($query, $args) 
+    {
+        $now = date('Y-m-d H:i:s');
+
+        switch($args['time']) {
+            case 'past':
+                return $query->where('pickup_time', '<', $now);
+            default:
+                return $query->where('pickup_time', '>=', $now);
+        }
+
     }
 
     public function scopeForPartner($query, $args) 

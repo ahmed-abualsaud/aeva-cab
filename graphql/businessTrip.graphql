@@ -8,9 +8,7 @@ input CreateBusinessTripInput {
   days: TripDaysInput! @rules(apply: ["required"])
   return_time: String
   group_chat: Boolean
-  type: String! @rules(apply: ["in:playground,toschool,towork,seats"])
-  price: Float
-  bookable: Boolean
+  type: String! @rules(apply: ["in:playground,toschool,towork"])
 }
 
 input CopyBusinessTripInput {
@@ -23,28 +21,13 @@ input CopyBusinessTripInput {
 input UpdateBusinessTripInput {
   id: ID! @rules(apply: ["required"])
   name: String
-  log_id: String
-  status: Boolean
   driver_id: ID
   vehicle_id: ID
-  subscription_code: String
   return_time: String
   start_date: Date
   end_date: Date
   days: TripDaysInput
   group_chat: Boolean
-  price: Float
-  bookable: Boolean
-}
-
-input TripDaysInput {
-  saturday: String
-  sunday: String
-  monday: String
-  tuesday: String
-  wednesday: String
-  thursday: String
-  friday: String
 }
 
 type DriverLiveTripResponse {
@@ -55,6 +38,8 @@ type DriverLiveTripResponse {
 
 type BusinessTrip {
   id: ID
+  log_id: String
+  status: Boolean
   name: String
   return_time: String
   start_date: Date
@@ -62,12 +47,8 @@ type BusinessTrip {
   subscription_code: String
   distance: Int
   duration: Int
-  log_id: String
   startsAt: String
-  dayName: String
   date: String
-  status: Boolean
-  flag: Boolean
   isReturn: Boolean
   is_absent: Boolean
   group_chat: Boolean
@@ -75,21 +56,9 @@ type BusinessTrip {
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
   days: TripDays
-  price: Float
-  bookable: Boolean
   type: String
   stations: [BusinessTripStation] @hasMany
   userStation: BusinessTripStation @hasOne
   userDestination: BusinessTripStation @hasOne
   users: [User] @hasMany
-}
-
-type TripDays {
-  saturday: String
-  sunday: String
-  monday: String
-  tuesday: String
-  wednesday: String
-  thursday: String
-  friday: String
 }

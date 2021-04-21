@@ -18,6 +18,12 @@ input UpdateBusinessTripDriverLocationInput {
   longitude: String! @rules(apply: ["required"])
 }
 
+input UpdateTripDriverLocationInput {
+  log_id: String! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+}
+
 input NearYouInput {
   station_id: ID! @rules(apply: ["required"])
   station_name: String! @rules(apply: ["required"])
@@ -76,13 +82,30 @@ type BusinessTripEvent {
   driver_id: ID
   driver_name: String
   map_url: String
-  content: Content
+  content: BusinessTripEventContent
 }
 
-type Content {
+type BusinessTripEventContent {
   started: EventObj
   ended: EventObj
   payload: [EventObj]
+}
+
+type SeatsTripEvent {
+  log_id: String
+  trip_id: ID
+  trip_name: String
+  partner_id: ID
+  partner_name: String
+  driver_id: ID
+  driver_name: String
+  map_url: String
+  content: SeatsTripEventContent
+}
+
+type SeatsTripEventContent {
+  started: EventObj
+  ended: EventObj
 }
 
 type EventObj {

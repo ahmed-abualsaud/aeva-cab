@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBusinessTripEventsTable extends Migration
+class CreateSeatsTripEventsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateBusinessTripEventsTable extends Migration
      */
     public function up()
     {
-        Schema::create('business_trip_events', function (Blueprint $table) {
+        Schema::create('seats_trip_events', function (Blueprint $table) {
             $table->uuid('log_id');
             $table->unsignedBigInteger('trip_id');
             $table->json('content');
@@ -26,7 +26,7 @@ class CreateBusinessTripEventsTable extends Migration
 
             $table->foreign('trip_id')
                 ->references('id')
-                ->on('business_trips')
+                ->on('seats_trips')
                 ->onDelete('cascade');
         });
     }
@@ -38,6 +38,6 @@ class CreateBusinessTripEventsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('business_trip_events');
+        Schema::dropIfExists('seats_trip_events');
     }
 }

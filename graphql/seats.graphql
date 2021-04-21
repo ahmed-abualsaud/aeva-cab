@@ -1,4 +1,34 @@
-input CreateSeatsBookingInput {
+input CreateSeatsTripInput {
+  name: String! @rules(apply: ["required"])
+  partner_id: ID! @rules(apply: ["required"])
+  driver_id: ID! @rules(apply: ["required"])
+  vehicle_id: ID! @rules(apply: ["required"])
+  start_date: Date! @rules(apply: ["required"])
+  end_date: Date! @rules(apply: ["required"])
+  days: TripDaysInput! @rules(apply: ["required"])
+  price: Float! @rules(apply: ["required"])
+  bookable: Boolean! @rules(apply: ["required"])
+}
+
+input CopySeatsTripInput {
+  id: ID! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required"])
+  include_stations: Boolean! @rules(apply: ["required"])
+}
+
+input UpdateSeatsTripInput {
+  id: ID! @rules(apply: ["required"])
+  name: String
+  driver_id: ID
+  vehicle_id: ID
+  start_date: Date
+  end_date: Date
+  days: TripDaysInput
+  price: Float
+  bookable: Boolean
+}
+
+input CreateSeatsTripBookingInput {
   user_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
   trip_time: String! @rules(apply: ["required"])
@@ -13,14 +43,14 @@ input CreateSeatsBookingInput {
   payment_method: String
 }
 
-input UpdateSeatsBookingInput {
+input UpdateSeatsTripBookingInput {
   id: ID! @rules(apply: ["required"])
-  status: String @rules(apply: ["in:CONFIRMED,REJECTED,CANCELLED"])
+  status: String @rules(apply: ["in:CONFIRMED,CANCELLED,MISSED"])
   comment: String
   response: String
 }
 
-input CreateSeatsTransactionsInput {
+input CreateSeatsTripTransactionsInput {
   trip_id: ID! @rules(apply: ["required"])
   amount: Float! @rules(apply: ["required"])
   user_id: ID
@@ -28,9 +58,9 @@ input CreateSeatsTransactionsInput {
   notes: String
 }
 
-type SeatsTransaction {
+type SeatsTripTransaction {
   id: ID
-  trip: BusinessTrip @belongsTo
+  trip: SeatsTrip @belongsTo
   user: User @belongsTo
   amount: Float
   payment_method: String
@@ -38,7 +68,7 @@ type SeatsTransaction {
   created_at: String
 }
 
-type SeatsTransactionsStats {
+type SeatsTripTransactionsStats {
   count: Int
   sum: Float
   avg: Float
@@ -50,12 +80,12 @@ type TransactionGroup {
   sum: Float
 }
 
-type SeatsBooking {
+type SeatsTripBooking {
   id: ID
   user: User @belongsTo
-  trip: BusinessTrip @belongsTo
-  pickup: BusinessTripStation @belongsTo
-  dropoff: BusinessTripStation @belongsTo
+  trip: SeatsTrip @belongsTo
+  pickup: SeatsTripStation @belongsTo
+  dropoff: SeatsTripStation @belongsTo
   promo_code: PromoCode @belongsTo
   seats: Int
   pickup_time: String
@@ -68,7 +98,7 @@ type SeatsBooking {
   created_at: String
 }
 
-type SeatsNearestStation {
+type SeatsNearbyStation {
   trip_id: ID
   trip_time: String
   price: Float
@@ -82,4 +112,23 @@ type SeatsNearestStation {
   dropoff_name: String
   dropoff_time: String
   dropoff_distance: Float
+}
+
+type SeatsTrip {
+  id: ID
+  log_id: String
+  name: String
+  start_date: Date
+  end_date: Date
+  distance: Int
+  duration: Int
+  startsAt: String
+  date: String
+  partner: Partner @belongsTo
+  driver: Driver @belongsTo
+  vehicle: Vehicle @belongsTo
+  days: TripDays
+  price: Float
+  bookable: Boolean
+  stations: [SeatsTripStation] @hasMany
 }

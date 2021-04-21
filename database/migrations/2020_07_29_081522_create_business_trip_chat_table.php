@@ -15,7 +15,7 @@ class CreateBusinessTripChatTable extends Migration
     {
         Schema::create('business_trip_chat', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('log_id');
+            $table->uuid('log_id');
             $table->morphs('sender');
             $table->unsignedBigInteger('recipient_id')->nullable();
             $table->string('message');

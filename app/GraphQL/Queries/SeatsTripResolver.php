@@ -2,26 +2,26 @@
 
 namespace App\GraphQL\Queries;
 
-use App\BusinessTrip;
+use App\SeatsTrip;
 use App\Traits\Filterable;
-use App\SeatsTransaction;
+use App\SeatsTripTransaction;
 use Illuminate\Support\Facades\Cache;
 
-class SeatsResolver
+class SeatsTripResolver
 {
     use Filterable;
 
-    public function nearestStations($_, array $args)
+    public function nearbyStations($_, array $args)
     {
         $date = date('Y-m-d', strtotime($args['day']));
 
         $cacheKey = md5(implode(',', $args));
 
-        $stations = Cache::tags('seatsNearestStations')->remember($cacheKey, 900, function() use ($args, $date) {
-            return  BusinessTrip::selectRaw('
-                business_trips.id as trip_id,
-                business_trips.price,
-                business_trips.bookable,
+        $stations = Cache::tags('seatsNearbyStations')->remember($cacheKey, 900, function() use ($args, $date) {
+            return  SeatsTrip::selectRaw('
+                seats_trips.id as trip_id,
+                seats_trips.price,
+                seats_trips.bookable,
                 partners.name as partner_name,
                 pickup.id as pickup_id,
                 pickup.name as pickup_name,
@@ -46,12 +46,12 @@ class SeatsResolver
                 ) AS dropoff_distance
             ', [$date, $date, $date, $args['plng'], $args['plat'], $args['dlng'], $args['dlat']])
 
-            ->join('business_trip_stations as pickup', 'business_trips.id', '=', 'pickup.trip_id')
-            ->join('business_trip_stations as dropoff', 'business_trips.id', '=', 'dropoff.trip_id')
-            ->join('partners', 'partners.id', '=', 'business_trips.partner_id')
+            ->join('seats_trip_stations as pickup', 'seats_trips.id', '=', 'pickup.trip_id')
+            ->join('seats_trip_stations as dropoff', 'seats_trips.id', '=', 'dropoff.trip_id')
+            ->join('partners', 'partners.id', '=', 'seats_trips.partner_id')
 
             ->whereRaw('
-                JSON_EXTRACT(business_trips.days, "$.'.$args['day'].'") <> CAST("null" AS JSON)
+                JSON_EXTRACT(seats_trips.days, "$.'.$args['day'].'") <> CAST("null" AS JSON)
                 and pickup.`order` < dropoff.`order`
             ')
             
@@ -73,9 +73,9 @@ class SeatsResolver
 
     public function stats($_, array $args)
     {
-        $transactions = SeatsTransaction::query();
+        $transactions = SeatsTripTransaction::query();
 
-        $transactionGroup = SeatsTransaction::selectRaw('
+        $transactionGroup = SeatsTripTransaction::selectRaw('
             DATE_FORMAT(created_at, "%a, %b %d, %Y") as date,
             sum(amount) as sum
         ');

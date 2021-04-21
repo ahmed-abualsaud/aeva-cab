@@ -74,7 +74,7 @@ class BusinessTripResolver
         $liveTrips = Cache::tags($tags)->remember($cacheKey, 900, function() use ($args, $today) {
             return BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
-            ->where('status', true)
+            ->whereNotNull('log_id')
             ->whereRaw('JSON_EXTRACT(business_trips.days, "$.'.$today.'") <> CAST("null" AS JSON)')
             ->where(function ($query) use ($today) {
                 $query->whereNull('business_trip_schedules.days')
@@ -108,7 +108,7 @@ class BusinessTripResolver
         try {
             $liveTrip = BusinessTrip::select('id')
                 ->where('driver_id', $args['driver_id'])
-                ->where('status', true)
+                ->whereNotNull('log_id')
                 ->firstOrFail();
             return ["status" => true, "tripType" => "App\BusinessTrip", "tripID" => $liveTrip->id];
         } catch (\Exception $e) {
@@ -119,7 +119,7 @@ class BusinessTripResolver
     public function driverLiveTrips($_, array $args)
     {
         $liveTrips = BusinessTrip::where('driver_id', $args['driver_id'])
-            ->where('status', true)
+            ->whereNotNull('log_id')
             ->get();
 
         return $liveTrips;
@@ -130,7 +130,6 @@ class BusinessTripResolver
         $dateTime = date('Y-m-d', strtotime($day));
         
         foreach($trips as $trip) {
-            $trip->flag = true;
             $trip->dayName = $day;
             $trip->is_absent = $trip->absence_date === $dateTime;
             $tripInstance = new BusinessTrip();

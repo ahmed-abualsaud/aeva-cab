@@ -2,8 +2,6 @@
 
 namespace App\GraphQL\Mutations;
 
-use Carbon\Carbon;
-use App\BusinessTrip;
 use App\BusinessTripUser;
 use App\BusinessTripStation;
 use Illuminate\Support\Facades\DB;
@@ -63,50 +61,6 @@ class BusinessTripStationResolver
         $station->update($input);
 
         return $station;
-    }
-
-    public function updateRoute($_, array $args)
-    {
-        try {
-            
-            $cases = []; $ids = []; $distance = []; $duration = []; $order = [];
-
-            foreach ($args['stations'] as $value) {
-                $id = (int) $value['id'];
-                $cases[] = "WHEN {$id} then ?";
-                $distance[] = $value['distance'];
-                $duration[] = $value['duration'];
-                $order[] = $value['order'];
-                $ids[] = $id;
-            }
-
-            $ids = implode(',', $ids);
-            $cases = implode(' ', $cases);
-            $params = array_merge($distance, $duration, $order);
-            $params[] = Carbon::now();
-
-            DB::update("UPDATE `business_trip_stations` SET 
-                `distance` = CASE `id` {$cases} END, 
-                `duration` = CASE `id` {$cases} END, 
-                `order` = CASE `id` {$cases} END, 
-                `updated_at` = ? 
-                WHERE `id` in ({$ids})", $params);
-
-            $total = end($args['stations']);
-
-            BusinessTrip::find($args['trip_id'])
-                ->update([
-                    'route' => $args['route'], 
-                    'distance' => $total['distance'], 
-                    'duration' => $total['duration']
-                ]);
-            
-
-            return ['distance' => $total['distance'], 'duration' => $total['duration']];
-            
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to update this route!');
-        }
     }
 
     public function assignUser($_, array $args)

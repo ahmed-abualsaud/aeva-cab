@@ -29,9 +29,9 @@ class BusinessTripEventResolver
 
         if ($trip->status) throw new CustomException('This Trip has already been started!');
 
-        $log_id = $trip->subscription_code.'-'.Str::random(4).'-'.uniqid();
+        $logId = (string) Str::uuid();
 
-        $this->initTripEvent($args, $log_id);
+        $this->initTripEvent($args, $logId);
 
         $this->checkAbsence($args['trip_id']);
 
@@ -47,10 +47,10 @@ class BusinessTripEventResolver
         );
 
         $this->broadcastTripStatus(
-            $trip, ['status' => 'STARTED', 'log_id' => $log_id]
+            $trip, ['status' => 'STARTED', 'log_id' => $logId]
         );
 
-        $trip->update(['status' => true, 'log_id' => $log_id]);
+        $trip->update(['log_id' => $logId, 'status' => true]);
 
         return $trip;
     }
@@ -171,16 +171,16 @@ class BusinessTripEventResolver
 
         if (!$trip->status) throw new CustomException('This trip has already been ended!');
 
-        $log_id = $trip->log_id;
+        $logId = $trip->log_id;
 
-        $trip->update(['status' => false, 'log_id' => null]);
+        $trip->update(['log_id' => null, 'status' => false]);
 
         $this->updateUserStatus(
             $args['trip_id'],
             ['is_picked_up' => false, 'is_absent' => false, 'is_scheduled' => true]
         );
 
-        $this->closeTripEvent($args, $log_id, $trip);
+        $this->closeTripEvent($args, $logId, $trip);
 
         return 'Trip has been ended.';
     }
@@ -237,10 +237,10 @@ class BusinessTripEventResolver
         }
     }
 
-    protected function updateEventPayload($log_id, $payload)
+    protected function updateEventPayload($logId, $payload)
     {
         try {
-            $event = BusinessTripEvent::findOrFail($log_id);
+            $event = BusinessTripEvent::findOrFail($logId);
     
             if (array_key_exists('payload', $event->content)) 
                 $payload = array_merge($event->content['payload'], $payload);
@@ -251,12 +251,12 @@ class BusinessTripEventResolver
         }
     }
 
-    protected function closeTripEvent($args, $log_id, $trip)
+    protected function closeTripEvent($args, $logId, $trip)
     {
         try {
-            $event = BusinessTripEvent::findOrFail($log_id);
+            $event = BusinessTripEvent::findOrFail($logId);
 
-            $locations = BusinessTripEntry::where('log_id', $log_id);
+            $locations = BusinessTripEntry::where('log_id', $logId);
 
             if ($locations->count()) {
                 foreach($locations->get() as $loc) $path[] = $loc->latitude.','.$loc->longitude;
@@ -271,7 +271,7 @@ class BusinessTripEventResolver
                 $ended['lng'] = $args['longitude'];
 
                 $this->broadcastTripStatus(
-                    $trip, ['status' => 'ENDED', 'log_id' => $log_id]
+                    $trip, ['status' => 'ENDED', 'log_id' => $logId]
                 );
             }
 
@@ -334,12 +334,12 @@ class BusinessTripEventResolver
         }
     }
 
-    protected function initTripEvent($args, $log_id)
+    protected function initTripEvent($args, $logId)
     {
         try {
             $input = [
                 'trip_id' => $args['trip_id'],
-                'log_id' => $log_id,
+                'log_id' => $logId,
                 'content' => [ 
                     'started' => [
                         'at' => date("Y-m-d H:i:s"),

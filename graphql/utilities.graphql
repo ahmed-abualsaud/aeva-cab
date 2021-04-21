@@ -46,3 +46,36 @@ type DefaultResponse {
   status: Boolean!
   message: String 
 }
+
+input TripDaysInput {
+  saturday: String
+  sunday: String
+  monday: String
+  tuesday: String
+  wednesday: String
+  thursday: String
+  friday: String
+}
+
+type TripDays {
+  saturday: String
+  sunday: String
+  monday: String
+  tuesday: String
+  wednesday: String
+  thursday: String
+  friday: String
+}
+
+input UpdateTripRouteInput {
+  trip_id: ID!
+  route: String!
+  stations: [TripRouteInput!]! @rules(apply: ["required"])
+}
+
+input TripRouteInput {
+  id: ID! @rules(apply: ["required"])
+  duration: Int
+  distance: Int
+  order: Int
+}

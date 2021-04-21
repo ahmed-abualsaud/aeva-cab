@@ -1,4 +1,4 @@
-input CreateBusinessTripStationInput {
+ input CreateStationInput {
   id: ID
   name: String
   latitude: String! @rules(apply: ["required"])
@@ -12,10 +12,10 @@ input CreateBusinessTripStationInput {
 
 input CreateBusinessTripStationsInput {
   trip_id: ID! @rules(apply: ["required"])
-  stations: [CreateBusinessTripStationInput!]! @rules(apply: ["required"])
+  stations: [CreateStationInput!]! @rules(apply: ["required"])
 }
 
-input UpdateBusinessTripStationInput {
+input UpdateStationInput {
   id: ID! @rules(apply: ["required"])
   trip_id: ID
   name: String
@@ -23,19 +23,6 @@ input UpdateBusinessTripStationInput {
   longitude: String
   state: String
   accepted_at: DateTime
-}
-
-input UpdateStationsRouteInput {
-  trip_id: ID!
-  route: String!
-  stations: [StationsRouteInput!]! @rules(apply: ["required"])
-}
-
-input StationsRouteInput {
-  id: ID! @rules(apply: ["required"])
-  duration: Int
-  distance: Int
-  order: Int
 }
 
 input AcceptBusinessTripStationInput {
@@ -57,4 +44,14 @@ type BusinessTripStation {
   is_my_station: Boolean
   is_my_destination: Boolean
   users: [User] @belongsToMany
+}
+
+type SeatsTripStation {
+  id: ID
+  name: String
+  latitude: String
+  longitude: String
+  state: String
+  distance: Int
+  duration: Int
 }
