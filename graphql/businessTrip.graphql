@@ -49,6 +49,7 @@ type BusinessTrip {
   duration: Int
   startsAt: String
   dayName: String
+  flag: Boolean
   date: String
   isReturn: Boolean
   is_absent: Boolean
