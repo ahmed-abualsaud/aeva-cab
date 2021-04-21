@@ -48,6 +48,7 @@ type BusinessTrip {
   distance: Int
   duration: Int
   startsAt: String
+  dayName: String
   date: String
   isReturn: Boolean
   is_absent: Boolean
