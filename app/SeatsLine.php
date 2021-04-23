@@ -2,42 +2,20 @@
 
 namespace App;
 
-use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
-class SeatsTrip extends Model
+class SeatsLine extends Model
 {
-    use Searchable;
-    
     protected $guarded = [];
-
-    protected $casts = [
-        'days' => 'array'
-    ];
 
     public function partner()
     {
         return $this->belongsTo(Partner::class);
     }
 
-    public function driver()
-    {
-        return $this->belongsTo(Driver::class);
-    }
-
-    public function vehicle()
-    {
-        return $this->belongsTo(Vehicle::class);
-    }
-
-    public function line() 
+    public function stations() 
     {        
-        return $this->belongsTo(SeatsLine::class);
-    }
-
-    public function scopeLive($query) 
-    {
-        return $query->whereNotNull('log_id');
+        return $this->hasMany(SeatsLineStation::class, 'line_id');
     }
 
     public function scopePartner($query, $args) 
@@ -56,6 +34,4 @@ class SeatsTrip extends Model
 
         return $query;
     }
-    
 }
-

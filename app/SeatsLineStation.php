@@ -5,7 +5,7 @@ namespace App;
 use App\Scopes\SortByOrderScope;
 use Illuminate\Database\Eloquent\Model;
 
-class SeatsTripStation extends Model
+class SeatsLineStation extends Model
 {
     protected $guarded = [];
 

@@ -26,7 +26,8 @@ class CreateSeatsTripBookingsTable extends Migration
             $table->unsignedBigInteger('promo_code_id')->nullable();
             $table->enum('payment_method', ['CASH', 'CARD', 'FAWRY'])->default('CASH');
             $table->float('payable', 8, 2)->default(0);
-            $table->enum('status', ['CONFIRMED','CANCELLED', 'MISSED'])->default('CONFIRMED');
+            $table->enum('status', ['CONFIRMED','CANCELLED','MISSED','COMPLETED'])
+                ->default('CONFIRMED');
             $table->string('comment')->nullable();
             $table->string('response')->nullable();
             $table->timestamps();
@@ -41,8 +42,8 @@ class CreateSeatsTripBookingsTable extends Migration
 
             $table->foreign('trip_id')->references('id')->on('seats_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('pickup_id')->references('id')->on('seats_trip_stations')->onDelete('cascade');
-            $table->foreign('dropoff_id')->references('id')->on('seats_trip_stations')->onDelete('cascade');
+            $table->foreign('pickup_id')->references('id')->on('seats_line_stations')->onDelete('cascade');
+            $table->foreign('dropoff_id')->references('id')->on('seats_line_stations')->onDelete('cascade');
             $table->foreign('promo_code_id')->references('id')->on('promo_codes')->onDelete('set null');
         });
     }

@@ -70,12 +70,23 @@ type TripDays {
 input UpdateTripRouteInput {
   trip_id: ID!
   route: String!
-  stations: [TripRouteInput!]! @rules(apply: ["required"])
+  stations: [RouteInput!]! @rules(apply: ["required"])
 }
 
-input TripRouteInput {
+input UpdateLineRouteInput {
+  line_id: ID!
+  route: String!
+  stations: [RouteInput!]! @rules(apply: ["required"])
+}
+
+input RouteInput {
   id: ID! @rules(apply: ["required"])
   duration: Int
   distance: Int
   order: Int
+}
+
+input CopyInput {
+  id: ID! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required"])
 }

@@ -46,8 +46,8 @@ class SeatsTripResolver
                 ) AS dropoff_distance
             ', [$date, $date, $date, $args['plng'], $args['plat'], $args['dlng'], $args['dlat']])
 
-            ->join('seats_trip_stations as pickup', 'seats_trips.id', '=', 'pickup.trip_id')
-            ->join('seats_trip_stations as dropoff', 'seats_trips.id', '=', 'dropoff.trip_id')
+            ->join('seats_line_stations as pickup', 'pickup.line_id', '=', 'seats_trips.line_id')
+            ->join('seats_line_stations as dropoff', 'dropoff.line_id', '=', 'seats_trips.line_id')
             ->join('partners', 'partners.id', '=', 'seats_trips.partner_id')
 
             ->whereRaw('
@@ -59,7 +59,7 @@ class SeatsTripResolver
                 pickup_distance < ? and
                 dropoff_distance < ? and
                 pickup_time > ?
-            ', [2000, 2000, date("Y-m-d H:i:s")])
+            ', [12000, 12000, date("Y-m-d H:i:s")])
 
             ->orderBy('pickup_time')
             

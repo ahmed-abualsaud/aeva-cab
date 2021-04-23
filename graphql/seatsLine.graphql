@@ -1,0 +1,25 @@
+input CreateSeatsLineInput {
+  partner_id: ID! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required"])
+  code: String! @rules(apply: ["required"])
+  price: Float! @rules(apply: ["required"])
+}
+
+input UpdateSeatsLineInput {
+  id: ID! @rules(apply: ["required"])
+  name: String
+  code: String
+  price: Float
+}
+
+type SeatsLine {
+  id: ID
+  name: String
+  code: String
+  distance: Int
+  duration: Int
+  price: Float 
+  route: String
+  partner: Partner @belongsTo
+  stations: [SeatsLineStation] @hasMany
+}

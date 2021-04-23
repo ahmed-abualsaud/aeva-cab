@@ -19,8 +19,8 @@ class CreateBusinessTripStationsTable extends Migration
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8); 
             $table->unsignedBigInteger('trip_id');
-            $table->integer('duration')->nullable();
-            $table->integer('distance')->nullable();
+            $table->integer('duration')->default(0);
+            $table->integer('distance')->default(0);
             $table->timestamp('accepted_at')->nullable();
             $table->string('request_type')->nullable();
             $table->unsignedBigInteger('request_id')->nullable();

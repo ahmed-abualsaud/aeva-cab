@@ -21,12 +21,12 @@ class SeatsTripBooking extends Model
 
     public function pickup()
     {
-        return $this->belongsTo(SeatsTripStation::class, 'pickup_id');
+        return $this->belongsTo(SeatsLineStation::class, 'pickup_id');
     }
 
     public function dropoff()
     {
-        return $this->belongsTo(SeatsTripStation::class, 'dropoff_id');
+        return $this->belongsTo(SeatsLineStation::class, 'dropoff_id');
     }
 
     public function promoCode()

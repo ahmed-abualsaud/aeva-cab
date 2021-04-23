@@ -2,14 +2,12 @@
 
 namespace App;
 
-use App\Traits\Reroute;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
 class BusinessTrip extends Model
 {
     use Searchable;
-    use Reroute;
     
     protected $guarded = [];
 
@@ -78,11 +76,6 @@ class BusinessTrip extends Model
             ->whereNotNull('business_trip_users.subscription_verified_at');
     }
 
-    public function scopeAvailableLines($query, $args) 
-    {
-        return $query->where('id', '<>', $args['trip_id']);
-    }
-
     public function scopeLive($query) 
     {
         return $query->whereNotNull('log_id');
@@ -106,14 +99,6 @@ class BusinessTrip extends Model
         }
 
         return $query;
-    }
-
-    public static function reroute(array $args)
-    {
-        return self::handleReroute(
-            (new self())->getTable(),
-            $args,
-        );
     }
     
 }

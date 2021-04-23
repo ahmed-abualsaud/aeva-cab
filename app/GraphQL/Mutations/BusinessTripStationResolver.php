@@ -14,31 +14,6 @@ class BusinessTripStationResolver
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function create($_, array $args)
-    { 
-        try {
-            $arr = [
-                'trip_id' => $args['trip_id'],
-                'created_at' => now(), 
-                'updated_at' => now()
-            ];
-            foreach($args['stations'] as $station) {
-                $arr['name'] = $station['name'];
-                $arr['latitude'] = $station['latitude'];
-                $arr['longitude'] = $station['longitude'];
-                $arr['state'] = $station['state'];
-                $arr['accepted_at'] = $station['accepted_at'];
-                $data[] = $arr;
-            } 
-            BusinessTripStation::insert($data);
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to insert these stations.');
-        }
-
-        return BusinessTripStation::where('trip_id', $args['trip_id'])
-            ->get();
-    }
-
     public function update($_, array $args)
     {
         $input = collect($args)->except(['id', 'directive', 'trip_id', 'state'])->toArray();

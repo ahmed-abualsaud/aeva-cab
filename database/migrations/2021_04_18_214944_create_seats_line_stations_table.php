@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSeatsTripStationsTable extends Migration
+class CreateSeatsLineStationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,21 +13,21 @@ class CreateSeatsTripStationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('seats_trip_stations', function (Blueprint $table) {
+        Schema::create('seats_line_stations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8); 
-            $table->unsignedBigInteger('trip_id');
-            $table->integer('duration')->nullable();
-            $table->integer('distance')->nullable();
+            $table->unsignedBigInteger('line_id');
+            $table->integer('duration')->default(0);
+            $table->integer('distance')->default(0);
             $table->enum('state', ['START','PICKABLE','END'])->default('PICKABLE');
             $table->smallInteger('order')->nullable();
             $table->timestamps();
 
-            $table->index('trip_id');
+            $table->index('line_id');
             
-            $table->foreign('trip_id')->references('id')->on('seats_trips')->onDelete('cascade');
+            $table->foreign('line_id')->references('id')->on('seats_lines')->onDelete('cascade');
         });
     }
 

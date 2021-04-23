@@ -1,0 +1,41 @@
+input CreateSeatsTripInput {
+  name: String! @rules(apply: ["required"])
+  line_id: ID! @rules(apply: ["required"])
+  partner_id: ID! @rules(apply: ["required"])
+  driver_id: ID! @rules(apply: ["required"])
+  vehicle_id: ID! @rules(apply: ["required"])
+  start_date: Date! @rules(apply: ["required"])
+  end_date: Date! @rules(apply: ["required"])
+  days: TripDaysInput! @rules(apply: ["required"])
+  bookable: Boolean! @rules(apply: ["required"])
+  price: Float! @rules(apply: ["required"])
+}
+
+input UpdateSeatsTripInput {
+  id: ID! @rules(apply: ["required"])
+  name: String
+  driver_id: ID
+  vehicle_id: ID
+  start_date: Date
+  end_date: Date
+  days: TripDaysInput
+  bookable: Boolean
+  price: Float
+}
+
+type SeatsTrip {
+  id: ID
+  name: String
+  log_id: String
+  line_id: ID
+  name: String
+  start_date: Date
+  end_date: Date
+  days: TripDays
+  bookable: Boolean
+  price: Float
+  partner: Partner @belongsTo
+  driver: Driver @belongsTo
+  vehicle: Vehicle @belongsTo
+  line: SeatsLine @belongsTo
+}

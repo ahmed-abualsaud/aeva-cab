@@ -198,9 +198,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   deleteBusinessTrip(id: ID!): BusinessTrip @delete
 
   # Business Trip Station
-  createBusinessTripStations(input: CreateBusinessTripStationsInput! @spread): [BusinessTripStation] 
-    @field(resolver: "BusinessTripStationResolver@create")
-  updateBusinessTripStation(input: UpdateStationInput! @spread): 
+  updateBusinessTripStation(input: UpdateBusinessTripStationInput! @spread): 
     BusinessTripStation @update
   deleteBusinessTripStation(id: ID!): BusinessTripStation 
     @field(resolver: "BusinessTripStationResolver@destroy") 
@@ -228,28 +226,33 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   # Seats Trip
   createSeatsTrip(input: CreateSeatsTripInput! @spread): SeatsTrip 
     @field(resolver: "SeatsTripResolver@create")
-  copySeatsTrip(input: CopySeatsTripInput! @spread): SeatsTrip 
+  copySeatsTrip(input: CopyInput! @spread): SeatsTrip 
     @field(resolver: "SeatsTripResolver@copy")
   updateSeatsTrip(input: UpdateSeatsTripInput! @spread): SeatsTrip
     @field(resolver: "SeatsTripResolver@update")
-  updateSeatsTripRoute(input: UpdateTripRouteInput! @spread): SeatsTrip 
-    @field(resolver: "SeatsTripResolver@updateRoute")
   deleteSeatsTrip(id: ID!): SeatsTrip @delete
 
+  # Seats Lines
+  createSeatsLine(input: CreateSeatsLineInput! @spread): SeatsLine @create
+  copySeatsLine(input: CopyInput! @spread): SeatsLine 
+    @field(resolver: "SeatsLineResolver@copy")
+  updateSeatsLine(input: UpdateSeatsLineInput! @spread): SeatsLine @update
+  updateSeatsLineRoute(input: UpdateLineRouteInput! @spread): SeatsLine 
+    @field(resolver: "SeatsLineResolver@updateRoute")
+  deleteSeatsLine(id: ID!): SeatsLine @delete
+
   # Seats Trip Station
-  createSeatsTripStation(input: CreateStationInput! @spread): 
-    SeatsTripStation @create
-  updateSeatsTripStation(input: UpdateStationInput! @spread): 
-    SeatsTripStation @update
-  deleteSeatsTripStation(id: ID!): SeatsTripStation @delete
+  createSeatsLineStation(input: CreateSeatsLineStationInput! @spread): SeatsLineStation @create
+  updateSeatsLineStation(input: UpdateSeatsLineStationInput! @spread): SeatsLineStation @update
+  deleteSeatsLineStation(id: ID!): SeatsLineStation @delete
 
   # Seats Trip Booking
   deleteSeatsTripBooking(id: [ID!]!): Boolean
-    @field(resolver: "SeatsTripResolver@destroyBooking")
+    @field(resolver: "SeatsTripBookingResolver@destroyBooking")
 
   # Seats Trip Transaction
   deleteSeatsTripTransaction(id: [ID!]!): Boolean
-    @field(resolver: "SeatsTripResolver@destroyTransaction")
+    @field(resolver: "SeatsTripTransactionResolver@destroyTransaction")
 }
 
 # Admin|User Guard
@@ -302,11 +305,11 @@ extend type Mutation @guard(with: ["admin", "user"]) {
 
   # Seats
   createSeatsTripBooking(input: CreateSeatsTripBookingInput! @spread): SeatsTripBooking
-    @field(resolver: "SeatsTripResolver@createBooking")
+    @field(resolver: "SeatsTripBookingResolver@createBooking")
   updateSeatsTripBooking(input: UpdateSeatsTripBookingInput! @spread): SeatsTripBooking
-    @field(resolver: "SeatsTripResolver@updateBooking")
+    @field(resolver: "SeatsTripBookingResolver@updateBooking")
   createSeatsTripTransaction(input: CreateSeatsTripTransactionsInput! @spread): Boolean
-    @field(resolver: "SeatsTripResolver@createTransaction")
+    @field(resolver: "SeatsTripTransactionResolver@createTransaction")
 }
 
 # Admin|Driver Guard
@@ -347,7 +350,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "UserResolver@update") @updateUserValidation
 
   # Business Trip Station
-  createBusinessTripStation(input: CreateStationInput! @spread): 
+  createBusinessTripStation(input: CreateBusinessTripStationInput! @spread): 
     BusinessTripStation @create
 
   # Business Trip User
@@ -505,8 +508,6 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Partner
   partner(id: ID @eq): Partner @findOrFail
-  partnerAvailableLines(partner_id: ID! @eq trip_id: ID!): [BusinessTrip] 
-    @all(scopes: ["availableLines"])
 
   # Partner Driver 
   partnerAssignedDrivers(partner_id: ID!): [Driver] 
@@ -540,13 +541,19 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # Seats Trip
   seatsTrips(partner_id: ID, searchFor: String, searchQuery: String): [SeatsTrip] 
     @paginate(scopes: ["partner", "search"])
-  partnerSeatsTrips(partner_id: ID! @eq): [SeatsTrip] @all
   liveSeatsTrips(partner_id: ID): [SeatsTrip] 
     @all(scopes: ["live", "partner"])
   
   # Seats Trip Event
   seatsTripEvents(searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [SeatsTripEvent]
     @paginate(scopes: ["trip", "search", "filter"])
+
+  # Seats Lines
+  seatsLines(partner_id: ID, searchFor: String, searchQuery: String): [SeatsLine] 
+    @paginate(scopes: ["partner", "search"])
+  seatsLine(id: ID! @eq): SeatsLine @findOrFail
+  seatsLineStations(line_id: ID! @eq): [SeatsLineStation] @all
+  partnerSeatsLines(partner_id: ID! @eq): [SeatsLine] @all
 }
 
 # Admin|User Guard
@@ -651,40 +658,41 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Seats Trip
   seatsTrip(id: ID @eq): SeatsTrip @findOrFail
 
-  # Seats Trip Station
-  seatsTripStations(trip_id: ID! @eq): [SeatsTripStation] @all
-
   # Communication
   businessTripChatMessages(log_id: String!, user_id: ID, is_direct: Boolean, is_private: Boolean): [BusinessTripChat] 
     @field(resolver: "CommunicationResolver@businessTripChatMessages")
 }
 
+#import role.graphql
+#import admin.graphql
+#import user.graphql
+#import partner.graphql
 #import fleet.graphql 
 #import driver.graphql
 #import vehicle.graphql
 #import carType.graphql
 #import carMake.graphql
 #import carModel.graphql
-#import partner.graphql
-#import user.graphql
-#import businessTripSchedule.graphql
-#import businessTrip.graphql
-#import station.graphql
-#import businessTripUser.graphql
-#import role.graphql
-#import admin.graphql
 #import communication.graphql
-#import tripEvent.graphql
 #import document.graphql
 #import promoCode.graphql
 #import ondemandRequest.graphql
 #import school.graphql
 #import city.graphql
 #import pricePackage.graphql
-#import businessTripAttendance.graphql
 #import statement.graphql
-#import utilities.graphql
-#import seats.graphql
 #import zone.graphql
 #import workplace.graphql
+#import utilities.graphql
+#import businessTrip.graphql
+#import businessTripStation.graphql
+#import businessTripUser.graphql
+#import businessTripSchedule.graphql
+#import businessTripAttendance.graphql
 #import businessTripRequest.graphql
+#import seatsTrip.graphql
+#import seatsLine.graphql
+#import seatsLineStation.graphql
+#import seatsBooking.graphql
+#import seatsTransaction.graphql
+#import tripEvent.graphql
