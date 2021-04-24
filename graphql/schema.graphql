@@ -592,7 +592,7 @@ extend type Query @guard(with: ["admin", "user"]) {
 
   # Seats
   seatsTripBooking(id: ID! @eq): SeatsTripBooking @find
-  seatsTripBookingsByUser(user_id: ID! @eq, time: String! @rules(apply: ["in:past,upcoming"])): 
+  userSeatsTripBookings(user_id: ID! @eq, time: String! @rules(apply: ["in:past,upcoming"])): 
     [SeatsTripBooking] @all(scopes: ["wherePickupTime"])
 }
 
@@ -606,6 +606,8 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   userTrips(user_id: ID!, day: String!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userTrips")
   user(id: ID @eq): User @find
+  userLiveSeatsTrips(user_id: ID!): [SeatsTrip]
+    @field(resolver: "SeatsTripResolver@userLiveTrips")
 
   # Business Trip Schedule
   businessTripSchedule(trip_id: ID!, user_id: ID!): BusinessTripSchedule
@@ -613,11 +615,11 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
 
   # Seats
   seatsNearbyStations(plat: String!, plng: String!, dlat: String!, dlng: String!, day: String!): 
-    [SeatsNearbyStation] @field(resolver: "SeatsTripResolver@nearbystations")
+    [SeatsNearbyStation] @field(resolver: "SeatsLineStationResolver@nearby")
   seatsTripTransactions(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [SeatsTripTransaction]
     @paginate(scopes: ["forPartner", "forTrip", "forPeriod", "search"])
   seatsTripTransactionsStats(period: String): SeatsTripTransactionsStats
-    @field(resolver: "SeatsTripResolver@stats")
+    @field(resolver: "SeatsTripTransactionResolver@stats")
   seatsTripBookings(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String, status: String): [SeatsTripBooking]
     @paginate(scopes: ["forPartner", "forTrip", "forPeriod", "whereStatus", "search"])
 }
@@ -637,6 +639,10 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
   driverTrips(driver_id: ID!, day: String!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverTrips")
   driverBusinessTrips(driver_id: ID! @eq): [BusinessTrip] @all
+  driverLiveSeatsTrips(driver_id: ID!): [SeatsTrip]
+    @field(resolver: "SeatsTripResolver@driverLiveTrips")
+  driverSeatsTrips(driver_id: ID!, day: String!): [SeatsTrip]
+    @field(resolver: "SeatsTripResolver@driverTrips")
 }
 
 # Admin|Partner|User|Driver Guard

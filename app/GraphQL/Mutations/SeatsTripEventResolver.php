@@ -9,6 +9,7 @@ use App\SeatsTripEvent;
 use Illuminate\Support\Str;
 use App\Helpers\StaticMapUrl;
 use App\Exceptions\CustomException;
+use App\Events\SeatsTripStatusChanged;
 
 class SeatsTripEventResolver
 {
@@ -24,6 +25,8 @@ class SeatsTripEventResolver
         $this->initTripEvent($args, $logId);
 
         Driver::updateLocation($args['latitude'], $args['longitude']);
+
+        $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $logId]);
 
         $trip->update(['log_id' => $logId]);
 
@@ -70,23 +73,11 @@ class SeatsTripEventResolver
     protected function getTripById($id)
     {
         try {
-            return SeatsTrip::findOrFail($id);
+            return SeatsTrip::with('partner:id,name')
+                ->with('driver:id,name')
+                ->findOrFail($id);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to find this trip!');
-        }
-    }
-
-    protected function updateEventPayload($log_id, $payload)
-    {
-        try {
-            $event = SeatsTripEvent::findOrFail($log_id);
-    
-            if (array_key_exists('payload', $event->content)) 
-                $payload = array_merge($event->content['payload'], $payload);
-                
-            $event->update(['content' => array_merge($event->content, ['payload' => $payload])]);
-        } catch (\Exception $e) {
-            //
         }
     }
 
@@ -110,7 +101,7 @@ class SeatsTripEventResolver
         }
     }
 
-    protected function closeTripEvent($args, $logId)
+    protected function closeTripEvent($args, $logId, $trip)
     {
         try {
             $event = SeatsTripEvent::findOrFail($logId);
@@ -128,6 +119,8 @@ class SeatsTripEventResolver
             if (array_key_exists('latitude', $args) && array_key_exists('longitude', $args)) {
                 $ended['lat'] = $args['latitude'];
                 $ended['lng'] = $args['longitude'];
+
+                $this->broadcastTripStatus($trip, ['status' => 'ENDED', 'log_id' => $logId]);
             }
 
             $updatedData['content'] = array_merge($event->content, ['ended' => $ended]);
@@ -136,6 +129,28 @@ class SeatsTripEventResolver
         } catch (\Exception $e) {
             //
         }
+    }
+
+    protected function broadcastTripStatus($trip, $input)
+    {
+        $data = [
+            'id' => $trip->id,
+            'log_id' => $input['log_id'],
+            'name' => $trip->name,
+            'status' => $input['status'],
+            'partner' => [
+                'id' => $trip->partner->id,
+                'name' => $trip->partner->name,
+                '__typename' => 'Partner'
+            ],
+            'driver' => [
+                'id' => $trip->driver->id,
+                'name' => $trip->driver->name,
+                '__typename' => 'Driver'
+            ],
+            '__typename' => 'SeatsTrip'
+        ];
+        broadcast(new SeatsTripStatusChanged($data));
     }
 
 }

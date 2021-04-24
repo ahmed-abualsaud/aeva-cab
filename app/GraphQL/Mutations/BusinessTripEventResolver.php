@@ -46,9 +46,7 @@ class BusinessTripEventResolver
             ['view' => 'BusinessTrip', 'id' => $args['trip_id']]
         );
 
-        $this->broadcastTripStatus(
-            $trip, ['status' => 'STARTED', 'log_id' => $logId]
-        );
+        $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $logId]);
 
         $trip->update(['log_id' => $logId, 'status' => true]);
 
@@ -270,9 +268,7 @@ class BusinessTripEventResolver
                 $ended['lat'] = $args['latitude'];
                 $ended['lng'] = $args['longitude'];
 
-                $this->broadcastTripStatus(
-                    $trip, ['status' => 'ENDED', 'log_id' => $logId]
-                );
+                $this->broadcastTripStatus($trip, ['status' => 'ENDED', 'log_id' => $logId]);
             }
 
             $updatedData['content'] = array_merge($event->content, ['ended' => $ended]);
@@ -357,19 +353,22 @@ class BusinessTripEventResolver
     protected function broadcastTripStatus($trip, $input)
     {
         $data = [
-            "id" => $trip->id,
-            "log_id" => $input['log_id'],
-            "name" => $trip->name,
-            "status" => $input['status'],
-            "type" => $trip->type,
-            "partner" => [
-                "id" => $trip->partner->id,
-                "name" => $trip->partner->name
+            'id' => $trip->id,
+            'log_id' => $input['log_id'],
+            'name' => $trip->name,
+            'status' => $input['status'],
+            'type' => $trip->type,
+            'partner' => [
+                'id' => $trip->partner->id,
+                'name' => $trip->partner->name,
+                '__typename' => 'Partner'
             ],
-            "driver" => [
-                "id" => $trip->driver->id,
-                "name" => $trip->driver->name
-            ]
+            'driver' => [
+                'id' => $trip->driver->id,
+                'name' => $trip->driver->name,
+                '__typename' => 'Driver'
+            ],
+            '__typename' => 'BusinessTrip'
         ];
         broadcast(new BusinessTripStatusChanged($data));
     }

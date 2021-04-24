@@ -100,7 +100,7 @@ class BusinessTripResolver
 
         if ($driverTrips->isEmpty()) return [];
 
-        return $this->scheduledTrips($driverTrips, $args['day'], 'driver');
+        return $this->scheduledTrips($driverTrips, $args['day']);
     }
 
     public function driverLiveTrip($_, array $args)
@@ -125,7 +125,7 @@ class BusinessTripResolver
         return $liveTrips;
     }
 
-    protected function scheduledTrips($trips, $day, $for = null) 
+    protected function scheduledTrips($trips, $day) 
     {
         $dateTime = date('Y-m-d', strtotime($day));
         

@@ -35,6 +35,11 @@ class SeatsTrip extends Model
         return $this->belongsTo(SeatsLine::class);
     }
 
+    public function stations() 
+    {        
+        return $this->hasMany(SeatsLineStation::class, 'line_id', 'line_id');
+    }
+
     public function scopeLive($query) 
     {
         return $query->whereNotNull('log_id');

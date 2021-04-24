@@ -27,10 +27,10 @@ type SeatsTrip {
   id: ID
   name: String
   log_id: String
-  line_id: ID
   name: String
   start_date: Date
   end_date: Date
+  start_time: String
   days: TripDays
   bookable: Boolean
   price: Float
@@ -38,4 +38,5 @@ type SeatsTrip {
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
   line: SeatsLine @belongsTo
+  stations: [SeatsLineStation] @hasMany
 }

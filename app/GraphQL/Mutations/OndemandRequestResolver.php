@@ -38,9 +38,9 @@ class OndemandRequestResolver
             throw new CustomException('We could not able to create this request!');
         }
 
-        $this->broadcastRequest($request);
-
         $this->smsRequest($request->id);
+        
+        // $this->broadcastRequest($request);
 
         // $this->mailRequest($request->id);
 
