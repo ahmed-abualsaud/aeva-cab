@@ -6,7 +6,11 @@ use Illuminate\Support\Facades\Cache;
 
 class SeatsTripObserver
 {
-
+    public function created()
+    {
+        $this->cacheFlush();
+    }
+    
     public function updated()
     {
         $this->cacheFlush();

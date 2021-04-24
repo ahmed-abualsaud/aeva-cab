@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Cache;
 
 class BusinessTripObserver
 {
-
     public function updated()
     {
         $this->cacheFlush();
