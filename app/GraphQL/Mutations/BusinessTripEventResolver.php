@@ -268,7 +268,7 @@ class BusinessTripEventResolver
                 $ended['lat'] = $args['latitude'];
                 $ended['lng'] = $args['longitude'];
 
-                $this->broadcastTripStatus($trip, ['status' => 'ENDED', 'log_id' => $logId]);
+                $this->broadcastTripStatus($trip, ['status' => 'ENDED', 'log_id' => null]);
             }
 
             $updatedData['content'] = array_merge($event->content, ['ended' => $ended]);
