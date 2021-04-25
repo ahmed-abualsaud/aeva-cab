@@ -52,7 +52,7 @@ class SeatsTripBookingResolver
     protected function checkSeats(array $args)
     {
         $bookedSeats = SeatsTripBooking::where('trip_id', $args['trip_id'])
-            ->where('trip_time', $args['trip_time'])
+            ->where('date', $args['date'])
             ->where('status', 'CONFIRMED')
             ->sum('seats');
         

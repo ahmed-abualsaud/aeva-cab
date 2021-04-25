@@ -15,9 +15,9 @@ class CreateSeatsTripBookingsTable extends Migration
     {
         Schema::create('seats_trip_bookings', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->date('date');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('trip_id');
-            $table->dateTime('trip_time');
             $table->unsignedBigInteger('pickup_id');
             $table->dateTime('pickup_time');
             $table->unsignedBigInteger('dropoff_id');
@@ -30,10 +30,11 @@ class CreateSeatsTripBookingsTable extends Migration
                 ->default('CONFIRMED');
             $table->string('comment')->nullable();
             $table->string('response')->nullable();
+            $table->boolean('is_picked_up')->default(false);
             $table->timestamps();
 
             $table->unique(['user_id', 'pickup_time']);
-            $table->index(['trip_id', 'trip_time']);
+            $table->index(['trip_id', 'date']);
             $table->index('pickup_id');
             $table->index('dropoff_id');
             $table->index('promo_code_id');

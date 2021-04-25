@@ -1,22 +1,3 @@
-input StartTripInput {
-  trip_id: ID! @rules(apply: ["required"])
-  latitude: String! @rules(apply: ["required"])
-  longitude: String! @rules(apply: ["required"])
-}
-
-input EndTripInput {
-  trip_id: ID! @rules(apply: ["required"])
-  log_id: String
-  latitude: String
-  longitude: String
-}
-
-input UpdateTripDriverLocationInput {
-  log_id: String! @rules(apply: ["required"])
-  latitude: String! @rules(apply: ["required"])
-  longitude: String! @rules(apply: ["required"])
-}
-
 input NearYouInput {
   station_id: ID! @rules(apply: ["required"])
   station_name: String! @rules(apply: ["required"])
@@ -76,34 +57,4 @@ type BusinessTripEvent {
   driver_name: String
   map_url: String
   content: TripEventContent
-}
-
-type SeatsTripEvent {
-  log_id: String
-  trip_id: ID
-  trip_name: String
-  partner_id: ID
-  partner_name: String
-  driver_id: ID
-  driver_name: String
-  map_url: String
-  content: TripEventContent
-}
-
-type TripEventContent {
-  started: EventObj
-  ended: EventObj
-  payload: [EventObj]
-}
-
-type EventObj {
-  user_id: ID
-  user_name: String
-  station_id: ID
-  station_name: String
-  status: String
-  at: DateTime
-  by: String
-  lat: String
-  lng: String
 }

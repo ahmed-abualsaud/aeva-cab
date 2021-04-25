@@ -4,11 +4,10 @@ namespace App\GraphQL\Queries;
 
 use App\User;
 use App\BusinessTripUser;
-use App\BusinessTripSchedule;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 
-class UserBusinessTripResolver
+class BusinessTripUserResolver
 {
     /**
      * @param  null  $_
@@ -68,7 +67,7 @@ class UserBusinessTripResolver
 
     public function businessTripSubscribers($_, array $args)
     {
-        $users = User::select('users.id', 'users.name', 'users.phone', 'users.secondary_no', 'users.avatar')
+        $users = User::select('users.id', 'users.name', 'users.phone', 'users.secondary_no')
             ->join('business_trip_users', 'users.id', '=', 'business_trip_users.user_id');
 
             if (array_key_exists('trip_id', $args) && $args['trip_id']) {
@@ -135,40 +134,5 @@ class UserBusinessTripResolver
         }
 
         return $status;
-    }
-
-    public function businessTripAttendance($_, array $args)
-    {
-        $users = User::select('users.id', 'users.name', 'users.phone', 'users.secondary_no', 'users.avatar')
-            ->join('business_trip_users', 'users.id', '=', 'business_trip_users.user_id')
-            ->where('business_trip_users.trip_id', $args['trip_id']);
-
-        if (array_key_exists('date', $args) && $args['date']) {
-            $users = $users->leftJoin('business_trip_attendance', function ($join) use ($args) {
-                $join->on('business_trip_attendance.user_id', '=', 'users.id')
-                    ->where('business_trip_attendance.trip_id', $args['trip_id'])
-                    ->whereDate('business_trip_attendance.date', $args['date']);
-                })
-                ->addSelect('business_trip_attendance.is_absent', 'business_trip_attendance.comment');
-        } else {
-            $users = $users->where('business_trip_users.is_scheduled', true)
-                ->where('business_trip_users.is_picked_up', false)
-                ->whereNotNull('business_trip_users.subscription_verified_at')
-                ->addSelect('business_trip_users.is_absent');
-        }
-
-        return $users->get();
-    }
-
-    public function businessTripSchedule($_, array $args)
-    {
-        try {
-            return BusinessTripSchedule::select('days')
-                ->where('trip_id', $args['trip_id'])
-                ->where('user_id', $args['user_id'])
-                ->firstOrFail();
-        } catch(\Exception $e) {
-            throw new CustomException('There is no schedule for this user at this trip!');
-        }
     }
 }

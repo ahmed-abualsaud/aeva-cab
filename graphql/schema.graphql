@@ -337,10 +337,16 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
   # Seats Trip Event
   startSeatsTrip(input: StartTripInput! @spread): SeatsTrip 
     @field(resolver: "SeatsTripEventResolver@startTrip")
-  endSeatsTrip(input: EndTripInput! @spread): String
+  endSeatsTrip(input: EndTripInput! @spread): Boolean
     @field(resolver: "SeatsTripEventResolver@endTrip")
-  updateSeatsTripDriverLocation(input: UpdateTripDriverLocationInput! @spread): String 
+  updateSeatsTripDriverLocation(input: UpdateTripDriverLocationInput! @spread): Boolean 
     @field(resolver: "SeatsTripEventResolver@updateDriverLocation")
+  atSeatsTripStation(input: AtSeatsTripStationInput! @spread): Boolean 
+    @field(resolver: "SeatsTripEventResolver@atStation")
+  pickSeatsTripUser(input: PickSeatsTripUserInput! @spread): Boolean 
+    @field(resolver: "SeatsTripEventResolver@pickUser")
+  dropSeatsTripUser(input: DropSeatsTripUserInput! @spread): Boolean 
+    @field(resolver: "SeatsTripEventResolver@dropUser")
 }
 
 # Admin|Partner|User Guard
@@ -526,11 +532,11 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Business Trip Station User
   businessTripStationUsers(trip_id: ID!, station_id: ID!, status: String!): [User] 
-    @field(resolver: "UserBusinessTripResolver@businessTripStationUsers")
+    @field(resolver: "BusinessTripUserResolver@businessTripStationUsers")
 
   # Business Trip User
   businessTripSubscribedUsers(trip_id: ID!): [User] 
-    @field(resolver: "UserBusinessTripResolver@businessTripSubscribedUsers")
+    @field(resolver: "BusinessTripUserResolver@businessTripSubscribedUsers")
   businessTripUnsubscribedUsers(trip_id: ID!, partner_id: ID, searchFor: String, searchQuery: String): 
     [User] @paginate(scopes: ["whereUnsubscribed", "search"])
 
@@ -611,7 +617,7 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
 
   # Business Trip Schedule
   businessTripSchedule(trip_id: ID!, user_id: ID!): BusinessTripSchedule
-    @field(resolver: "UserBusinessTripResolver@businessTripSchedule")
+    @field(resolver: "BusinessTripScheduleResolver")
 
   # Seats
   seatsNearbyStations(plat: String!, plng: String!, dlat: String!, dlng: String!, day: String!): 
@@ -628,7 +634,7 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
 extend type Query @guard(with: ["admin", "partner", "driver"]) {
   # Business Trip Attendance
   businessTripAttendance(trip_id: ID!, date: Date): [BusinessTripAttendance]
-    @field(resolver: "UserBusinessTripResolver@businessTripAttendance")
+    @field(resolver: "BusinessTripAttendanceResolver")
 
   # Driver
   driver(id: ID @eq): Driver @findOrFail
@@ -655,14 +661,16 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Business Trip Event
   businessTripUserStatus(trip_id: ID!, user_id: ID!): User 
-    @field(resolver: "UserBusinessTripResolver@businessTripUserStatus")
+    @field(resolver: "BusinessTripUserResolver@businessTripUserStatus")
   businessTripUsersStatus(trip_id: ID, station_id: ID): [User]
-    @field(resolver: "UserBusinessTripResolver@businessTripUsersStatus")
+    @field(resolver: "BusinessTripUserResolver@businessTripUsersStatus")
   businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
-    @field(resolver: "UserBusinessTripResolver@businessTripSubscribers")
+    @field(resolver: "BusinessTripUserResolver@businessTripSubscribers")
 
   # Seats Trip
   seatsTrip(id: ID @eq): SeatsTrip @findOrFail
+  seatsTripUsers(trip_id: ID!, station_id: ID!, status: String!): [User]
+    @field(resolver: "SeatsTripUserResolver")
 
   # Communication
   businessTripChatMessages(log_id: String!, user_id: ID, is_direct: Boolean, is_private: Boolean): [BusinessTripChat] 
@@ -702,3 +710,5 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import seatsBooking.graphql
 #import seatsTransaction.graphql
 #import tripEvent.graphql
+#import businessTripEvent.graphql
+#import seatsTripEvent.graphql

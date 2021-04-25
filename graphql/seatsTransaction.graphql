@@ -1,6 +1,6 @@
 input CreateSeatsTripTransactionsInput {
   trip_id: ID! @rules(apply: ["required"])
-  amount: Float! @rules(apply: ["required"])
+  paid: Float! @rules(apply: ["required"])
   user_id: ID
   payment_method: String
   notes: String
@@ -10,7 +10,7 @@ type SeatsTripTransaction {
   id: ID
   trip: SeatsTrip @belongsTo
   user: User @belongsTo
-  amount: Float
+  paid: Float
   payment_method: String
   notes: String
   created_at: String

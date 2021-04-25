@@ -15,10 +15,8 @@ class SeatsLineStationResolver
     {
         $date = date('Y-m-d', strtotime($args['day']));
 
-        $cacheKey = md5(implode(',', $args));
-
         $stations = Cache::tags('seatsNearbyStations')
-            ->remember($cacheKey, 900, function() use ($args, $date) {
+            ->remember(md5(implode(',', $args)), 900, function() use ($args, $date) {
             return  SeatsTrip::selectRaw('
                 seats_trips.id as trip_id,
                 seats_trips.price,
@@ -28,8 +26,6 @@ class SeatsLineStationResolver
                 pickup.name as pickup_name,
                 dropoff.id as dropoff_id,
                 dropoff.name as dropoff_name,
-
-                CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))) as trip_time,
 
                 ADDDATE(
                     CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))), 
@@ -45,7 +41,7 @@ class SeatsLineStationResolver
                 ) AS pickup_distance,
                 ST_Distance_Sphere(point(dropoff.longitude, dropoff.latitude), point(?, ?)
                 ) AS dropoff_distance
-            ', [$date, $date, $date, $args['plng'], $args['plat'], $args['dlng'], $args['dlat']])
+            ', [$date, $date, $args['plng'], $args['plat'], $args['dlng'], $args['dlat']])
 
             ->join('seats_line_stations as pickup', 'pickup.line_id', '=', 'seats_trips.line_id')
             ->join('seats_line_stations as dropoff', 'dropoff.line_id', '=', 'seats_trips.line_id')

@@ -1,0 +1,33 @@
+input PickSeatsTripUserInput {
+  user_id: ID! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+}
+
+input DropSeatsTripUserInput {
+  user_id: ID! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+  payable: Float! @rules(apply: ["required"])
+  paid: Float! @rules(apply: ["required"])
+}
+
+input AtSeatsTripStationInput {
+  station_id: ID! @rules(apply: ["required"])
+  station_name: String! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+  trip_name: String! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+}
+
+type SeatsTripEvent {
+  log_id: String
+  trip_id: ID
+  trip_name: String
+  partner_id: ID
+  partner_name: String
+  driver_id: ID
+  driver_name: String
+  map_url: String
+  content: TripEventContent
+}
