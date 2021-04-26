@@ -83,4 +83,5 @@ type User {
   subscription_verified_at: DateTime
   payable: Float
   booking_id: ID
+  boarding_pass: Int
 }

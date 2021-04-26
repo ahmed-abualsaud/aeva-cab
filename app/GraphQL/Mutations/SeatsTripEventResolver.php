@@ -68,8 +68,7 @@ class SeatsTripEventResolver
 
     public function pickUser($_, array $args)
     {
-        $data = ['is_picked_up' => true];
-        return $this->updateBooking($args, $data);
+        return $this->updateBooking($args, ['is_picked_up' => true]);
     }
 
     public function dropUser($_, array $args)
@@ -77,8 +76,7 @@ class SeatsTripEventResolver
         DB::beginTransaction();
         try {
             
-            $data = ['is_picked_up' => false, 'status' => 'COMPLETED'];
-            $this->updateBooking($args, $data);
+            $this->updateBooking($args, ['is_picked_up' => false, 'status' => 'COMPLETED']);
 
             if ($args['paid'] > 0) {
                 $this->createTransaction($args);

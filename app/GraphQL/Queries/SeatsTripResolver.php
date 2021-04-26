@@ -15,9 +15,10 @@ class SeatsTripResolver
         $today = strtolower(date('l'));
 
         return SeatsTrip::join('seats_trip_bookings as b', 'b.trip_id', '=', 'seats_trips.id')
-            ->whereDate('trip_time', $today)
+            ->where('date', $today)
             ->where('user_id', $args['user_id'])
             ->whereNotNull('log_id')
+            ->where('status', 'CONFIRMED')
             ->get();
     }
 

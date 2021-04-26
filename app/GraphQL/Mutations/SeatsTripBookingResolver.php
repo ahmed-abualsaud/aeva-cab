@@ -88,16 +88,28 @@ class SeatsTripBookingResolver
             throw new \Exception('No available seats');
             
         else if ($availableSeats < $args['seats'])
-            throw new \Exception('There are only '.$availableSeats.' '. Str::plural('seat', $availableSeats));
+            throw new \Exception(
+                'Only '.$availableSeats.' '.Str::plural('seat', $availableSeats).' available'
+            );
     }
 
     protected function saveBooking(array $args)
     {
         try {
             $input = collect($args)->except(['directive', 'bookable'])->toArray();
+
+            $input['boarding_pass'] = $this->createBoardingPass($args);
+
             return SeatsTripBooking::create($input);
         } catch (\Exception $e) {
             throw new \Exception('You already have a trip at this time!');
         }
+    }
+
+    protected function createBoardingPass(array $args)
+    {
+        return SeatsTripBooking::where('trip_id', $args['trip_id'])
+            ->where('date', $args['date'])
+            ->max('boarding_pass') + 1;
     }
 }

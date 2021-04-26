@@ -33,6 +33,7 @@ type SeatsTripBooking {
   dropoff_time: String
   payment_method: String
   payable: Float
+  boarding_pass: Int
   status: String
   comment: String
   response: String

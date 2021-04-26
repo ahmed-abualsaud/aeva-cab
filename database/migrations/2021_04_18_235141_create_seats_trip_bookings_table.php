@@ -31,6 +31,7 @@ class CreateSeatsTripBookingsTable extends Migration
             $table->string('comment')->nullable();
             $table->string('response')->nullable();
             $table->boolean('is_picked_up')->default(false);
+            $table->smallInteger('boarding_pass');
             $table->timestamps();
 
             $table->unique(['user_id', 'pickup_time']);
