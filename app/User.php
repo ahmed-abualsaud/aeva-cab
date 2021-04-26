@@ -122,5 +122,11 @@ class User extends Authenticatable implements JWTSubject
             //
         }
     }
+
+    public function scopeUpdateBalance($query, $user_id, $balance)
+    {
+        return $query->where('id', $user_id)
+            ->decrement('wallet_balance', $balance);
+    }
 }
  

@@ -2,7 +2,9 @@
 
 namespace App\GraphQL\Mutations;
 
+use App\User;
 use App\SeatsTrip;
+use Carbon\Carbon;
 use App\SeatsTripBooking;
 use Illuminate\Support\Str;
 use App\Exceptions\CustomException;
@@ -35,6 +37,11 @@ class SeatsTripBookingResolver
 
             $booking = SeatsTripBooking::findOrFail($args['id']);
 
+            if (array_key_exists('status', $args) 
+                && $args['status'] 
+                && $booking->status == 'CONFIRMED')
+                $this->updateUserBalance($args, $booking);
+
             $booking->update($input);
 
         } catch (\Exception $e) {
@@ -47,6 +54,19 @@ class SeatsTripBookingResolver
     public function destroyBooking($_, array $args)
     {
         return SeatsTripBooking::whereIn('id', $args['id'])->delete();
+    }
+
+    protected function updateUserBalance($args, $booking)
+    {
+        switch($args['status']) {
+            case 'MISSED':
+                User::updateBalance($booking->user_id, $booking->payable);
+            break;
+            case 'CANCELLED':
+                if (Carbon::parse(now())->diffInMinutes($booking->pickup_time, false) < 10)
+                    User::updateBalance($booking->user_id, $booking->payable);
+            break;
+        }
     }
 
     protected function checkSeats(array $args)

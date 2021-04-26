@@ -68,7 +68,8 @@ class SeatsTripEventResolver
 
     public function pickUser($_, array $args)
     {
-        return $this->flipPickupStatus($args, true);
+        $data = ['is_picked_up' => true];
+        return $this->updateBooking($args, $data);
     }
 
     public function dropUser($_, array $args)
@@ -76,14 +77,17 @@ class SeatsTripEventResolver
         DB::beginTransaction();
         try {
             
-            $this->flipPickupStatus($args, false);
-            $this->updateBookingStatus($args, 'COMPLETED');
+            $data = ['is_picked_up' => false, 'status' => 'COMPLETED'];
+            $this->updateBooking($args, $data);
 
-            if ($args['paid'] > 0) 
+            if ($args['paid'] > 0) {
                 $this->createTransaction($args);
+            }
 
-            if ($args['payable'] != $args['paid']) 
-                $this->updateUserBalance($args);
+            if ($args['payable'] != $args['paid']) {
+                $balance = $args['payable'] - $args['paid'];
+                User::updateBalance($args['user_id'], $balance);
+            }
 
             DB::commit();
         } catch(\Exception $e) {
@@ -189,22 +193,10 @@ class SeatsTripEventResolver
         }
     }
 
-    protected function flipPickupStatus(array $args, bool $status)
-    {
-        try {
-            return SeatsTripBooking::where('user_id', $args['user_id'])
-                ->where('trip_id', $args['trip_id'])
-                ->where('date', date('Y-m-d'))
-                ->update(['is_picked_up' => $status]);
-        } catch (\Exception $e) {
-            throw new CustomException('Could not flip status!');
-        }
-    }
-
     protected function createTransaction(array $args)
     {
         try {
-            $input = collect($args)->except(['payable', 'directive'])->toArray();
+            $input = collect($args)->only(['user_id', 'trip_id', 'paid'])->toArray();
 
             return SeatsTripTransaction::create($input);
         } catch (\Exception $e) {
@@ -212,27 +204,13 @@ class SeatsTripEventResolver
         }
     }
 
-    protected function updateUserBalance(array $args)
+    protected function updateBooking(array $args, array $data)
     {
         try {
-            $balance = $args['payable'] - $args['paid'];
-
-            return User::where('id', $args['user_id'])
-                ->decrement('wallet_balance', $balance);
+            return SeatsTripBooking::where('id', $args['booking_id'])
+                ->update($data);
         } catch (\Exception $e) {
-            throw new CustomException('Could not create transaction!');
-        }
-    }
-
-    protected function updateBookingStatus(array $args, String $status)
-    {
-        try {
-            return SeatsTripBooking::where('user_id', $args['user_id'])
-                ->where('trip_id', $args['trip_id'])
-                ->where('date', date('Y-m-d'))
-                ->update(['status' => $status]);
-        } catch (\Exception $e) {
-            throw new CustomException('Could not update status!');
+            throw new CustomException('Could not update booking!');
         }
     }
 

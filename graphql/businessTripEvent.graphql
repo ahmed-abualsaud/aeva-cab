@@ -1,3 +1,10 @@
+input UpdateBusinessTripDriverLocationInput {
+  trip_id: ID! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+}
+
 input NearYouInput {
   station_id: ID! @rules(apply: ["required"])
   station_name: String! @rules(apply: ["required"])

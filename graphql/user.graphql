@@ -82,4 +82,5 @@ type User {
   station_type: String
   subscription_verified_at: DateTime
   payable: Float
+  booking_id: ID
 }

@@ -13,11 +13,12 @@ class SeatsTripUserResolver
     public function __invoke($_, array $args)
     {
         $bookings = User::select(
-            'users.id', 'users.name', 'users.phone', 'seats_trip_bookings.payable'
+            'users.name', 'users.phone', 'booking.id as booking_id', 'booking.payable'
             )
-            ->join('seats_trip_bookings', 'users.id', '=', 'seats_trip_bookings.user_id')
+            ->join('seats_trip_bookings as booking', 'users.id', '=', 'booking.user_id')
             ->where('trip_id', $args['trip_id'])
-            ->where('date', date('Y-m-d'));
+            ->where('date', date('Y-m-d'))
+            ->where('status', 'CONFIRMED');
 
             switch($args['status']) {
                 case 'PICK_UP':

@@ -325,7 +325,7 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "BusinessTripEventResolver@startTrip")
   endTrip(input: EndTripInput! @spread): String
     @field(resolver: "BusinessTripEventResolver@endTrip")
-  updateBusinessTripDriverLocation(input: UpdateTripDriverLocationInput! @spread): String 
+  updateBusinessTripDriverLocation(input: UpdateBusinessTripDriverLocationInput! @spread): String 
     @field(resolver: "BusinessTripEventResolver@updateDriverLocation")
   nearYou(input: NearYouInput! @spread): String
     @field(resolver: "BusinessTripEventResolver@nearYou")
