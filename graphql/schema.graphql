@@ -598,7 +598,7 @@ extend type Query @guard(with: ["admin", "user"]) {
 
   # Seats
   seatsTripBooking(id: ID! @eq): SeatsTripBooking @find
-  userSeatsTripBookings(user_id: ID! @eq, time: String! @rules(apply: ["in:past,upcoming"])): 
+  userSeatsTripBookings(user_id: ID! @eq, time: String!): 
     [SeatsTripBooking] @all(scopes: ["wherePickupTime"])
 }
 
@@ -669,7 +669,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Seats Trip
   seatsTrip(id: ID @eq): SeatsTrip @findOrFail
-  seatsTripUsers(trip_id: ID!, station_id: ID!, status: String!): [User]
+  seatsTripUsers(trip_id: ID!, station_id: ID, status: String!): [User]
     @field(resolver: "SeatsTripUserResolver")
 
   # Communication

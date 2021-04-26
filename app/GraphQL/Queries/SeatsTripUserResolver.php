@@ -13,7 +13,8 @@ class SeatsTripUserResolver
     public function __invoke($_, array $args)
     {
         $bookings = User::select(
-            'users.name', 'users.phone', 'booking.id as booking_id', 'booking.payable', 'booking.boarding_pass'
+            'users.name', 'users.phone', 'users.wallet_balance', 
+            'booking.id as booking_id', 'booking.payable', 'booking.boarding_pass'
             )
             ->join('seats_trip_bookings as booking', 'users.id', '=', 'booking.user_id')
             ->where('trip_id', $args['trip_id'])
@@ -22,16 +23,15 @@ class SeatsTripUserResolver
 
             switch($args['status']) {
                 case 'PICK_UP':
-                    $bookings = $bookings->where(function ($query) use ($args) {
-                        $query->where('seats_trip_bookings.is_picked_up', false)
-                            ->where('seats_trip_bookings.pickup_id', $args['station_id']);
-                    });
+                    $bookings = $bookings->where('booking.is_picked_up', false);
+                    if (array_key_exists('station_id', $args) && $args['station_id'])
+                        $bookings = $bookings->where('booking.pickup_id', $args['station_id']);
+
                 break;
                 case 'DROP_OFF':
-                    $bookings = $bookings->where(function ($query) use ($args) {
-                        $query->where('seats_trip_bookings.is_picked_up', true)
-                            ->where('seats_trip_bookings.dropoff_id', $args['station_id']);
-                    });
+                    $bookings = $bookings->where('booking.is_picked_up', true);
+                    if (array_key_exists('station_id', $args) && $args['station_id'])
+                        $bookings = $bookings->where('booking.dropoff_id', $args['station_id']);
                 break;
                 default:
                     $bookings = $bookings;
