@@ -337,7 +337,7 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
   # Seats Trip Event
   startSeatsTrip(input: StartTripInput! @spread): SeatsTrip 
     @field(resolver: "SeatsTripEventResolver@startTrip")
-  endSeatsTrip(input: EndTripInput! @spread): Boolean
+  endSeatsTrip(input: EndTripInput! @spread): [SeatsTripTransaction]
     @field(resolver: "SeatsTripEventResolver@endTrip")
   updateSeatsTripDriverLocation(input: UpdateTripDriverLocationInput! @spread): Boolean 
     @field(resolver: "SeatsTripEventResolver@updateDriverLocation")
@@ -535,7 +535,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripUserResolver@businessTripStationUsers")
 
   # Business Trip User
-  businessTripSubscribedUsers(trip_id: ID!): [User] 
+  businessTripSubscribedUsers(trip_id: ID!): [BusinessTripSubbedUser] 
     @field(resolver: "BusinessTripUserResolver@businessTripSubscribedUsers")
   businessTripUnsubscribedUsers(trip_id: ID!, partner_id: ID, searchFor: String, searchQuery: String): 
     [User] @paginate(scopes: ["whereUnsubscribed", "search"])
@@ -669,7 +669,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Seats Trip
   seatsTrip(id: ID @eq): SeatsTrip @findOrFail
-  seatsTripUsers(trip_id: ID!, station_id: ID, status: String!): [User]
+  seatsTripUsers(trip_id: ID!, station_id: ID, status: String!): [SeatsTripBookedUser]
     @field(resolver: "SeatsTripUserResolver")
 
   # Communication

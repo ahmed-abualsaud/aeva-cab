@@ -15,6 +15,7 @@ class CreateSeatsTripTransactionsTable extends Migration
     {
         Schema::create('seats_trip_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->uuid('log_id')->nullable();
             $table->unsignedBigInteger('trip_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->float('paid', 8, 2);
@@ -22,6 +23,7 @@ class CreateSeatsTripTransactionsTable extends Migration
             $table->string('notes')->nullable();
             $table->timestamps();
 
+            $table->index('log_id');
             $table->index('trip_id');
             $table->index('user_id');
             $table->index('created_at');

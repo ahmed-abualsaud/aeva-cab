@@ -20,7 +20,7 @@ class BusinessTripAttendanceResolver
             $users = $users->leftJoin('business_trip_attendance', function ($join) use ($args) {
                 $join->on('business_trip_attendance.user_id', '=', 'users.id')
                     ->where('business_trip_attendance.trip_id', $args['trip_id'])
-                    ->whereDate('business_trip_attendance.date', $args['date']);
+                    ->where('business_trip_attendance.date', $args['date']);
                 })
                 ->addSelect('business_trip_attendance.is_absent', 'business_trip_attendance.comment');
         } else {

@@ -13,8 +13,8 @@ class SeatsTripUserResolver
     public function __invoke($_, array $args)
     {
         $bookings = User::select(
-            'users.name', 'users.phone', 'users.wallet_balance', 
-            'booking.id as booking_id', 'booking.payable', 'booking.boarding_pass'
+            'users.id', 'users.name', 'users.phone', 'users.wallet_balance', 
+            'booking.id as booking_id', 'booking.payable', 'booking.boarding_pass', 'booking.seats'
             )
             ->join('seats_trip_bookings as booking', 'users.id', '=', 'booking.user_id')
             ->where('trip_id', $args['trip_id'])

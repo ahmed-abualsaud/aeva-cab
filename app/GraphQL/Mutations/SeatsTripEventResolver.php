@@ -107,13 +107,21 @@ class SeatsTripEventResolver
 
         $trip->update(['log_id' => null]);
 
-        return $this->closeTripEvent($args, $logId, $trip);
+        $this->closeTripEvent($args, $logId, $trip);
+
+        return $this->tripTransactions($logId);
     }
 
     public function destroy($_, array $args)
     {
         return SeatsTripEvent::whereIn('log_id', $args['log_id'])
             ->delete();
+    }
+
+    protected function tripTransactions($logId)
+    {
+        return SeatsTripTransaction::where('log_id', $logId)
+            ->get();
     }
 
     protected function updateEventPayload($logId, $payload)
@@ -180,7 +188,7 @@ class SeatsTripEventResolver
                 $ended['lat'] = $args['latitude'];
                 $ended['lng'] = $args['longitude'];
 
-                $this->broadcastTripStatus($trip, ['status' => 'ENDED', 'log_id' => null]);
+                // $this->broadcastTripStatus($trip, ['status' => 'ENDED', 'log_id' => null]);
             }
 
             $updatedData['content'] = array_merge($event->content, ['ended' => $ended]);
@@ -194,7 +202,7 @@ class SeatsTripEventResolver
     protected function createTransaction(array $args)
     {
         try {
-            $input = collect($args)->only(['user_id', 'trip_id', 'paid'])->toArray();
+            $input = collect($args)->except(['directive', 'booking_id', 'payable'])->toArray();
 
             return SeatsTripTransaction::create($input);
         } catch (\Exception $e) {

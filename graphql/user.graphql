@@ -75,13 +75,29 @@ type User {
   phone_verified_at: String
   is_absent: Boolean
   is_picked_up: Boolean
+  station_type: String
+}
+
+type BusinessTripSubbedUser {
+  id: ID
+  name: String
+  phone: String
+  avatar: String
   station_id: ID
   station_name: String
   destination_id: ID
   destination_name: String
   station_type: String
   subscription_verified_at: DateTime
+}
+
+type SeatsTripBookedUser {
+  id: ID
+  name: String
+  phone: String
+  wallet_balance: Float
   payable: Float
   booking_id: ID
   boarding_pass: Int
+  seats: Int
 }
