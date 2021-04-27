@@ -248,7 +248,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
 
   # Seats Trip Booking
   deleteSeatsTripBooking(id: [ID!]!): Boolean
-    @field(resolver: "SeatsTripBookingResolver@destroyBooking")
+    @field(resolver: "SeatsTripBookingResolver@destroy")
 
   # Seats Trip Transaction
   deleteSeatsTripTransaction(id: [ID!]!): Boolean
@@ -305,9 +305,9 @@ extend type Mutation @guard(with: ["admin", "user"]) {
 
   # Seats
   createSeatsTripBooking(input: CreateSeatsTripBookingInput! @spread): SeatsTripBooking
-    @field(resolver: "SeatsTripBookingResolver@createBooking")
+    @field(resolver: "SeatsTripBookingResolver@create")
   updateSeatsTripBooking(input: UpdateSeatsTripBookingInput! @spread): SeatsTripBooking
-    @field(resolver: "SeatsTripBookingResolver@updateBooking")
+    @field(resolver: "SeatsTripBookingResolver@update")
   createSeatsTripTransaction(input: CreateSeatsTripTransactionsInput! @spread): Boolean
     @field(resolver: "SeatsTripTransactionResolver@createTransaction")
 }

@@ -78,9 +78,7 @@ class SeatsTripEventResolver
             
             $this->updateBooking($args, ['is_picked_up' => false, 'status' => 'COMPLETED']);
 
-            if ($args['paid'] > 0) {
-                $this->createTransaction($args);
-            }
+            $this->createTransaction($args);
 
             if ($args['payable'] != $args['paid']) {
                 $balance = $args['payable'] - $args['paid'];
@@ -200,7 +198,7 @@ class SeatsTripEventResolver
     protected function createTransaction(array $args)
     {
         try {
-            $input = collect($args)->except(['directive', 'booking_id', 'payable'])->toArray();
+            $input = collect($args)->except(['directive', 'payable'])->toArray();
 
             return SeatsTripTransaction::create($input);
         } catch (\Exception $e) {

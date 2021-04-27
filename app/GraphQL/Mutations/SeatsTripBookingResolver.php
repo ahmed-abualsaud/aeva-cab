@@ -7,6 +7,8 @@ use App\SeatsTrip;
 use Carbon\Carbon;
 use App\SeatsTripBooking;
 use Illuminate\Support\Str;
+use App\SeatsTripTransaction;
+use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 
 class SeatsTripBookingResolver
@@ -15,32 +17,41 @@ class SeatsTripBookingResolver
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function createBooking($_, array $args)
+    public function create($_, array $args)
     {
+        DB::beginTransaction();
         try {
             if ($args['bookable'])
                 $this->checkSeats($args);
 
             $booking = $this->saveBooking($args);
 
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollback();
             throw new CustomException($e->getMessage());
         }
 
         return $booking;
     }
 
-    public function updateBooking($_, array $args)
+    public function update($_, array $args)
     {
         try {
             $input = collect($args)->except(['id','directive'])->toArray();
 
             $booking = SeatsTripBooking::findOrFail($args['id']);
 
-            if (array_key_exists('status', $args) 
-                && $args['status'] 
-                && $booking->status == 'CONFIRMED')
-                $this->updateUserBalance($args, $booking);
+            if (array_key_exists('status', $args) && $booking->status == 'CONFIRMED') {
+                switch($args['status']) {
+                    case 'MISSED':
+                        User::updateBalance($booking->user_id, $booking->payable);
+                    break;
+                    case 'CANCELLED':
+                        $this->cancelBooking($booking);
+                    break;
+                }
+            }
 
             $booking->update($input);
 
@@ -51,21 +62,19 @@ class SeatsTripBookingResolver
         return $booking;
     }
 
-    public function destroyBooking($_, array $args)
+    public function destroy($_, array $args)
     {
         return SeatsTripBooking::whereIn('id', $args['id'])->delete();
     }
 
-    protected function updateUserBalance($args, $booking)
+    protected function cancelBooking($booking)
     {
-        switch($args['status']) {
-            case 'MISSED':
-                User::updateBalance($booking->user_id, $booking->payable);
-            break;
-            case 'CANCELLED':
-                if (Carbon::parse(now())->diffInMinutes($booking->pickup_time, false) < 10)
-                    User::updateBalance($booking->user_id, $booking->payable);
-            break;
+        if (Carbon::parse(now())->diffInMinutes($booking->pickup_time, false) < 10) {
+            User::updateBalance($booking->user_id, $booking->payable);
+        } else if ($booking->is_paid) {
+            User::updateBalance($booking->user_id, -abs($booking->payable));
+            SeatsTripTransaction::where('booking_id', $booking->id)
+                ->delete();
         }
     }
 
@@ -95,14 +104,47 @@ class SeatsTripBookingResolver
 
     protected function saveBooking(array $args)
     {
+        $input = collect($args)->except(['directive', 'bookable'])->toArray();
+        $input['boarding_pass'] = $this->createBoardingPass($args);
+
+        if ($args['payment_method'] === 'CASH' 
+            && auth('user')->user() 
+            && auth('user')->user()->wallet_balance >= $args['payable']) {
+
+            $input['is_paid'] = true;
+            $booking = $this->confirmBooking($input);
+            $this->createTransaction($args, $booking);
+
+            return $booking;
+        }
+
+        return $this->confirmBooking($input);;
+    }
+
+    protected function confirmBooking($input)
+    {
         try {
-            $input = collect($args)->except(['directive', 'bookable'])->toArray();
-
-            $input['boarding_pass'] = $this->createBoardingPass($args);
-
             return SeatsTripBooking::create($input);
         } catch (\Exception $e) {
             throw new \Exception('You already have a trip at this time!');
+        }
+    }
+
+    protected function createTransaction(array $args, $booking)
+    {
+        try {
+            $input = collect($args)
+                ->only(['user_id', 'trip_id', 'payment_method'])
+                ->toArray();
+
+            $input['paid'] = $args['payable'];
+            $input['booking_id'] = $booking->id;
+
+            User::updateBalance($input['user_id'], $input['paid']);
+
+            return SeatsTripTransaction::create($input);
+        } catch (\Exception $e) {
+            throw new CustomException($e->getMessage());
         }
     }
 

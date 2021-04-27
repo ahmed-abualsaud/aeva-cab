@@ -9,8 +9,8 @@ input CreateSeatsTripBookingInput {
   payable: Float! @rules(apply: ["required"])
   seats: Int! @rules(apply: ["required"])
   bookable: Boolean! @rules(apply: ["required"])
+  payment_method: String! @rules(apply: ["required","in:CASH,CARD,FAWRY"])
   promo_code_id: ID
-  payment_method: String
 }
 
 input UpdateSeatsTripBookingInput {
