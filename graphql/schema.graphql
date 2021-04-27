@@ -337,7 +337,7 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
   # Seats Trip Event
   startSeatsTrip(input: StartTripInput! @spread): SeatsTrip 
     @field(resolver: "SeatsTripEventResolver@startTrip")
-  endSeatsTrip(input: EndTripInput! @spread): [SeatsTripTransaction]
+  endSeatsTrip(input: EndTripInput! @spread): Boolean
     @field(resolver: "SeatsTripEventResolver@endTrip")
   updateSeatsTripDriverLocation(input: UpdateTripDriverLocationInput! @spread): Boolean 
     @field(resolver: "SeatsTripEventResolver@updateDriverLocation")
@@ -671,6 +671,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   seatsTrip(id: ID @eq): SeatsTrip @findOrFail
   seatsTripUsers(trip_id: ID!, station_id: ID, status: String!): [SeatsTripBookedUser]
     @field(resolver: "SeatsTripUserResolver")
+  liveSeatsTripTransactions(log_id: String! @eq): [SeatsTripTransaction] @all
 
   # Communication
   businessTripChatMessages(log_id: String!, user_id: ID, is_direct: Boolean, is_private: Boolean): [BusinessTripChat] 

@@ -14,12 +14,14 @@ class SeatsTripTransaction extends Model
 
     public function trip()
     {
-        return $this->belongsTo(SeatsTrip::class);
+        return $this->belongsTo(SeatsTrip::class)
+            ->select('id', 'name');
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)
+            ->select('id', 'name');
     }
 
     public function scopeSearch($query, $args) 

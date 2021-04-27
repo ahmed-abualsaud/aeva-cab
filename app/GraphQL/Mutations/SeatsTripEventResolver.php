@@ -107,21 +107,13 @@ class SeatsTripEventResolver
 
         $trip->update(['log_id' => null]);
 
-        $this->closeTripEvent($args, $logId, $trip);
-
-        return $this->tripTransactions($logId);
+        return $this->closeTripEvent($args, $logId, $trip);
     }
 
     public function destroy($_, array $args)
     {
         return SeatsTripEvent::whereIn('log_id', $args['log_id'])
             ->delete();
-    }
-
-    protected function tripTransactions($logId)
-    {
-        return SeatsTripTransaction::where('log_id', $logId)
-            ->get();
     }
 
     protected function updateEventPayload($logId, $payload)
@@ -174,12 +166,18 @@ class SeatsTripEventResolver
         try {
             $event = SeatsTripEvent::findOrFail($logId);
 
-            $locations = SeatsTripEntry::where('log_id', $logId);
+            $locations = SeatsTripEntry::select('latitude', 'longitude')
+                ->where('log_id', $logId)
+                ->get();
 
-            if ($locations->count()) {
-                foreach($locations->get() as $loc) $path[] = $loc->latitude.','.$loc->longitude;
+            if ($locations->isNotEmpty()) {
+                foreach($locations as $loc) 
+                    $path[] = $loc->latitude.','.$loc->longitude;
+
                 $updatedData['map_url'] = StaticMapUrl::generatePath(implode('|', $path));
-                $locations->delete();
+
+                SeatsTripEntry::where('log_id', $logId)
+                    ->delete();
             }
 
             $ended = ['at' => date("Y-m-d H:i:s")];
@@ -188,7 +186,7 @@ class SeatsTripEventResolver
                 $ended['lat'] = $args['latitude'];
                 $ended['lng'] = $args['longitude'];
 
-                // $this->broadcastTripStatus($trip, ['status' => 'ENDED', 'log_id' => null]);
+                $this->broadcastTripStatus($trip, ['status' => 'ENDED', 'log_id' => null]);
             }
 
             $updatedData['content'] = array_merge($event->content, ['ended' => $ended]);

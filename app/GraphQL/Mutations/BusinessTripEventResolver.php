@@ -254,12 +254,18 @@ class BusinessTripEventResolver
         try {
             $event = BusinessTripEvent::findOrFail($logId);
 
-            $locations = BusinessTripEntry::where('log_id', $logId);
+            $locations = BusinessTripEntry::select('latitude', 'longitude')
+                ->where('log_id', $logId)
+                ->get();
 
-            if ($locations->count()) {
-                foreach($locations->get() as $loc) $path[] = $loc->latitude.','.$loc->longitude;
+            if ($locations->isNotEmpty()) {
+                foreach($locations as $loc) 
+                    $path[] = $loc->latitude.','.$loc->longitude;
+
                 $updatedData['map_url'] = StaticMapUrl::generatePath(implode('|', $path));
-                $locations->delete();
+
+                BusinessTripEntry::where('log_id', $logId)
+                    ->delete();
             }
 
             $ended = ['at' => date("Y-m-d H:i:s")];
