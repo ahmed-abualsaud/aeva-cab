@@ -45,7 +45,7 @@ class SeatsTripBookingResolver
             if (array_key_exists('status', $args) && $booking->status == 'CONFIRMED') {
                 switch($args['status']) {
                     case 'MISSED':
-                        User::updateBalance($booking->user_id, $booking->payable);
+                        $this->userMissed($booking);
                     break;
                     case 'CANCELLED':
                         $this->cancelBooking($booking);
@@ -67,14 +67,25 @@ class SeatsTripBookingResolver
         return SeatsTripBooking::whereIn('id', $args['id'])->delete();
     }
 
+    protected function userMissed($booking)
+    {
+        if (!$booking->prepaid)
+            User::updateBalance($booking->user_id, $booking->payable);
+    }
+
     protected function cancelBooking($booking)
     {
-        if (Carbon::parse(now())->diffInMinutes($booking->pickup_time, false) < 10) {
-            User::updateBalance($booking->user_id, $booking->payable);
-        } else if ($booking->prepaid) {
-            User::updateBalance($booking->user_id, -abs($booking->payable));
-            SeatsTripTransaction::where('booking_id', $booking->id)
-                ->delete();
+        $timeout = Carbon::parse(now())->diffInMinutes($booking->pickup_time, false) < 10;
+
+        if ($booking->prepaid) {
+            if (!$timeout) {
+                User::updateBalance($booking->user_id, -abs($booking->payable));
+                SeatsTripTransaction::where('booking_id', $booking->id)
+                    ->delete();
+            }
+        } else {
+            if ($timeout)
+                User::updateBalance($booking->user_id, $booking->payable);
         }
     }
 
