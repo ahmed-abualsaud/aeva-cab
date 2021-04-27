@@ -71,7 +71,7 @@ class SeatsTripBookingResolver
     {
         if (Carbon::parse(now())->diffInMinutes($booking->pickup_time, false) < 10) {
             User::updateBalance($booking->user_id, $booking->payable);
-        } else if ($booking->is_paid) {
+        } else if ($booking->prepaid) {
             User::updateBalance($booking->user_id, -abs($booking->payable));
             SeatsTripTransaction::where('booking_id', $booking->id)
                 ->delete();
@@ -111,7 +111,7 @@ class SeatsTripBookingResolver
             && auth('user')->user() 
             && auth('user')->user()->wallet_balance >= $args['payable']) {
 
-            $input['is_paid'] = true;
+            $input['prepaid'] = true;
             $booking = $this->confirmBooking($input);
             $this->createTransaction($args, $booking);
 

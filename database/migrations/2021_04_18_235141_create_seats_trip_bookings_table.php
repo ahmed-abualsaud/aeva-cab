@@ -26,12 +26,12 @@ class CreateSeatsTripBookingsTable extends Migration
             $table->unsignedBigInteger('promo_code_id')->nullable();
             $table->enum('payment_method', ['CASH', 'CARD', 'FAWRY'])->default('CASH');
             $table->float('payable', 8, 2)->default(0);
+            $table->boolean('prepaid')->default(false);
             $table->enum('status', ['CONFIRMED','CANCELLED','MISSED','COMPLETED'])
                 ->default('CONFIRMED');
             $table->string('comment')->nullable();
             $table->string('response')->nullable();
             $table->boolean('is_picked_up')->default(false);
-            $table->boolean('is_paid')->default(false);
             $table->smallInteger('boarding_pass');
             $table->timestamps();
 

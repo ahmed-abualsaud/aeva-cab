@@ -100,5 +100,5 @@ type SeatsTripBookedUser {
   booking_id: ID
   boarding_pass: Int
   seats: Int
-  is_paid: Boolean
+  prepaid: Boolean
 }
