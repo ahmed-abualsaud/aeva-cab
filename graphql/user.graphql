@@ -97,8 +97,8 @@ type SeatsTripBookedUser {
   phone: String
   wallet_balance: Float
   payable: Float
+  paid: Float
   booking_id: ID
   boarding_pass: Int
   seats: Int
-  prepaid: Boolean
 }

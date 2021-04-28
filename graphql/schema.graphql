@@ -669,8 +669,8 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Seats Trip
   seatsTrip(id: ID @eq): SeatsTrip @findOrFail
-  seatsTripUsers(trip_id: ID!, station_id: ID, status: String!): [SeatsTripBookedUser]
-    @field(resolver: "SeatsTripUserResolver")
+  seatsTripUsers(date: String!, trip_id: ID!, station_id: ID, status: String!): 
+    [SeatsTripBookedUser] @field(resolver: "SeatsTripUserResolver")
   liveSeatsTripTransactions(log_id: String! @eq): [SeatsTripTransaction] @all
 
   # Communication

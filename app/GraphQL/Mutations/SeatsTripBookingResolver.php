@@ -48,7 +48,7 @@ class SeatsTripBookingResolver
                         $this->userMissed($booking);
                     break;
                     case 'CANCELLED':
-                        $this->cancelBooking($booking);
+                        $this->userCancelled($booking);
                     break;
                 }
             }
@@ -69,24 +69,55 @@ class SeatsTripBookingResolver
 
     protected function userMissed($booking)
     {
-        if (!$booking->prepaid)
+        if ($booking->paid)
+            $this->userDidPayAndMissed($booking);
+        else
             User::updateBalance($booking->user_id, $booking->payable);
     }
 
-    protected function cancelBooking($booking)
+    protected function userCancelled($booking)
     {
         $timeout = Carbon::parse(now())->diffInMinutes($booking->pickup_time, false) < 10;
 
-        if ($booking->prepaid) {
-            if (!$timeout) {
-                User::updateBalance($booking->user_id, -abs($booking->payable));
-                SeatsTripTransaction::where('booking_id', $booking->id)
-                    ->delete();
-            }
-        } else {
+        if ($booking->paid)
+            $this->userDidPayAndCancelled($booking, $timeout);
+        else 
             if ($timeout)
                 User::updateBalance($booking->user_id, $booking->payable);
-        }
+    }
+
+    protected function userDidPayAndCancelled($booking, $timeout)
+    {
+        if ($booking->paid == $booking->payable) {
+            if (!$timeout) {
+                User::updateBalance($booking->user_id, -abs($booking->paid));
+                $this->cancelTransaction($booking);
+            }
+            
+        } else if ($booking->paid < $booking->payable) {
+            if ($timeout) {
+                $diff = $booking->payable - $booking->paid;
+                User::updateBalance($booking->user_id, $diff); 
+            } else {
+                User::updateBalance($booking->user_id, -abs($booking->paid));
+                $this->cancelTransaction($booking);
+            }
+            
+        } 
+    }
+
+    protected function userDidPayAndMissed($booking)
+    {
+        if ($booking->paid < $booking->payable) {
+            $diff = $booking->payable - $booking->paid;
+            User::updateBalance($booking->user_id, $diff); 
+        } 
+    }
+
+    protected function cancelTransaction($booking)
+    {
+        SeatsTripTransaction::where('booking_id', $booking->id)
+            ->delete();
     }
 
     protected function checkSeats(array $args)
@@ -118,15 +149,16 @@ class SeatsTripBookingResolver
         $input = collect($args)->except(['directive', 'bookable'])->toArray();
         $input['boarding_pass'] = $this->createBoardingPass($args);
 
-        if ($args['payment_method'] === 'CASH' 
-            && auth('user')->user() 
-            && auth('user')->user()->wallet_balance >= $args['payable']) {
-
-            $input['prepaid'] = true;
-            $booking = $this->confirmBooking($input);
-            $this->createTransaction($args, $booking);
-
-            return $booking;
+        switch($args['payment_method']) {
+            case 'CASH':
+                $wallet = auth('user')->user()->wallet_balance;
+                if ($wallet > 0) {
+                    $input['paid'] = $wallet >= $args['payable'] ? $args['payable'] : $wallet;
+                    $booking = $this->confirmBooking($input);
+                    $this->createTransaction($input, $booking);
+                    return $booking;
+                }
+            break;
         }
 
         return $this->confirmBooking($input);;
@@ -145,10 +177,9 @@ class SeatsTripBookingResolver
     {
         try {
             $input = collect($args)
-                ->only(['user_id', 'trip_id', 'payment_method'])
+                ->only(['user_id', 'trip_id', 'payment_method', 'paid'])
                 ->toArray();
 
-            $input['paid'] = $args['payable'];
             $input['booking_id'] = $booking->id;
 
             User::updateBalance($input['user_id'], $input['paid']);
