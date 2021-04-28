@@ -33,6 +33,7 @@ class CreateSeatsTripsTable extends Migration
             $table->index('partner_id');
             $table->index('driver_id');
             $table->index(['start_date', 'end_date']);
+            $table->index('created_at');
             
             $table->foreign('line_id')->references('id')->on('seats_lines')->onDelete('cascade');
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');

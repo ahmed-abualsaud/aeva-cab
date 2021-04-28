@@ -404,11 +404,11 @@ type Query @guard(with: ["admin"]) {
 
   # User
   users(searchFor: String, searchQuery: String): [User] 
-    @paginate(scopes: ["sort", "search"])
+    @paginate(scopes: ["search"])
 
   # Driver
   drivers(fleet_id: ID, searchFor: String, searchQuery: String): [Driver] 
-    @paginate(scopes: ["filterByFleet", "search"])
+    @paginate(scopes: ["whereFleet", "search"])
 
   # Fleet
   fleets: [Fleet] @all
@@ -437,10 +437,6 @@ type Query @guard(with: ["admin"]) {
 
   # Car Type
   carType(id: ID @eq): CarType @find
-
-  # Promo Code
-  promoCodes(type: String, is_valid: Boolean): [PromoCode] @all(scopes: ["whereType", "whereValid"])
-  promoCode(name: String! @eq): PromoCode @find
 
   # Ondemand Request
   ondemandRequests(status: String period: String): [OndemandRequest]
@@ -564,6 +560,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
 # Admin|User Guard
 extend type Query @guard(with: ["admin", "user"]) {
+  # Promo Code
+  promoCodes(type: String, is_valid: Boolean): [PromoCode] @all(scopes: ["whereType", "whereValid"])
+  promoCode(name: String! @eq): PromoCode @find
+
   # Car Type
   carTypes(ondemand: Boolean): [CarType] @all(scopes: ["whereOndemand"])
 

@@ -39,6 +39,7 @@ class CreateBusinessTripsTable extends Migration
             $table->index('partner_id');
             $table->index('driver_id');
             $table->index(['start_date', 'end_date']);
+            $table->index('created_at');
             
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('cascade');
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');

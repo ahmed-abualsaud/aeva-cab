@@ -34,6 +34,9 @@ class CreateDriversTable extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            $table->index('fleet_id');
+            $table->index('created_at');
+
             $table->foreign('fleet_id')->references('id')->on('fleets')->onDelete('cascade');
         });
     }

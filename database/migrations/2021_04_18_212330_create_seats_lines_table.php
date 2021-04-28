@@ -25,6 +25,7 @@ class CreateSeatsLinesTable extends Migration
             $table->timestamps();
 
             $table->index('partner_id');
+            $table->index('created_at');
 
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
         });

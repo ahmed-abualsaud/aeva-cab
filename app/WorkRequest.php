@@ -34,7 +34,7 @@ class WorkRequest extends Model
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
 
-        return $query;
+        return $query->latest();
     }
 
     public function scopeWherePeriod($query, $args) 
@@ -55,14 +55,12 @@ class WorkRequest extends Model
             });
         }
 
-        return $query->where('status', $args['status'])
-            ->latest('created_at');
+        return $query->where('status', $args['status']);
     }
 
     public function scopeWhereArchived($query)
     {
-        return $query->whereIn('status', ['ACCEPTED','REJECTED', 'CANCELLED'])
-            ->latest('created_at');
+        return $query->whereIn('status', ['ACCEPTED','REJECTED', 'CANCELLED']);
     }
 
     public static function accept($ids)

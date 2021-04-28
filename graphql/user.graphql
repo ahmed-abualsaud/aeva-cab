@@ -62,7 +62,7 @@ type User {
   avatar: String
   title: String
   partner_id: ID
-  payment_mode: String
+  payment_method: String
   latitude: String
   longitude: String
   wallet_balance: Float

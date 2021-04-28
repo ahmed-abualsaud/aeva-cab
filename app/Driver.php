@@ -70,31 +70,26 @@ class Driver extends Authenticatable implements JWTSubject
         return $this->morphMany(Document::class, 'documentable');
     }
 
-    public function deviceTokens()
-    {
-        return $this->morphMany(DeviceToken::class, 'tokenable');
-    }
-
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = ucwords($value);
     }
 
-    public function scopeFilterByFleet($query, $args) 
+    public function scopeWhereFleet($query, $args) 
     {
         if (array_key_exists('fleet_id', $args) && $args['fleet_id']) {
             $query->where('fleet_id', $args['fleet_id']);
         }
 
-        return $query->orderBy('created_at', 'DESC');
+        return $query;
     }
 
     public function scopeNotAssigned($query, $args) 
     {
-        $partnerDrivers = PartnerDriver::where('partner_id', $args['partner_id'])->pluck('driver_id');
+        $partnerDrivers = PartnerDriver::where('partner_id', $args['partner_id'])
+            ->pluck('driver_id');
 
-        return $query->whereNotIn('id', $partnerDrivers)
-            ->orderBy('created_at', 'DESC');
+        return $query->whereNotIn('id', $partnerDrivers);
     }
 
     public function scopeSearch($query, $args) 
@@ -103,7 +98,7 @@ class Driver extends Authenticatable implements JWTSubject
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
 
-        return $query;
+        return $query->latest();
     }
 
     public static function updateLocation(string $lat, string $lng)

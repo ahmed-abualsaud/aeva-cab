@@ -39,7 +39,7 @@ class SchoolRequest extends Model
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
 
-        return $query;
+        return $query->latest();
     }
 
     public function scopeWherePeriod($query, $args) 
@@ -60,8 +60,7 @@ class SchoolRequest extends Model
             });
         }
 
-        return $query->where('status', $args['status'])
-            ->latest('created_at');
+        return $query->where('status', $args['status']);
     }
 
     public function scopeWhereArchived($query)

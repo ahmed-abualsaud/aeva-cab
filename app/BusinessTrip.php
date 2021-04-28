@@ -89,7 +89,7 @@ class BusinessTrip extends Model
             $query->where('type', $args['type']);
         }
  
-        return $query->latest();
+        return $query;
     }
 
     public function scopeSearch($query, $args) 
@@ -98,7 +98,7 @@ class BusinessTrip extends Model
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
 
-        return $query;
+        return $query->latest();
     }
     
 }

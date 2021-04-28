@@ -51,7 +51,7 @@ class SeatsTrip extends Model
             $query->where('partner_id', $args['partner_id']);
         
  
-        return $query->latest();
+        return $query;
     }
 
     public function scopeSearch($query, $args) 
@@ -59,7 +59,7 @@ class SeatsTrip extends Model
         if (array_key_exists('searchQuery', $args) && $args['searchQuery'])
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
 
-        return $query;
+        return $query->latest();
     }
     
 }

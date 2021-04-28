@@ -55,19 +55,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Partner::class);
     }
 
-    public function deviceTokens()
-    {
-        return $this->morphMany(DeviceToken::class, 'tokenable');
-    }
-
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = ucwords($value);
-    }
-
-    public function scopeSort($query) 
-    { 
-        return $query->orderBy('created_at', 'DESC');
     }
 
     public function scopeSearch($query, $args) 
@@ -77,7 +67,7 @@ class User extends Authenticatable implements JWTSubject
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
 
-        return $query;
+        return $query->latest();
     }
 
     public function scopeWhereAssignedOrNot($query, $args) 
@@ -91,7 +81,7 @@ class User extends Authenticatable implements JWTSubject
             $query->whereNotIn('id', $partnerUsers);
         }
 
-        return $query->orderBy('created_at', 'DESC');
+        return $query;
     }
 
     public function scopeWhereUnsubscribed($query, $args) 

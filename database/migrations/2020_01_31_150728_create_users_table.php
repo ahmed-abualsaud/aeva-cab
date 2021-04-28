@@ -26,7 +26,7 @@ class CreateUsersTable extends Migration
             $table->string('avatar')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
             $table->unsignedBigInteger('referrer_id')->nullable();
-            $table->enum('payment_mode', ['CASH', 'CARD', 'PAYPAL'])->nullable();
+            $table->enum('payment_method', ['CASH', 'CARD', 'FAWRY'])->nullable();
             $table->double('latitude', 15, 8)->nullable();
             $table->double('longitude',15,8)->nullable();
             $table->float('wallet_balance')->default(0);
@@ -40,6 +40,7 @@ class CreateUsersTable extends Migration
             $table->softDeletes();
 
             $table->index(['provider', 'provider_id']);
+            $table->index('created_at');
             
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->foreign('referrer_id')->references('id')->on('users')->onDelete('set null');
