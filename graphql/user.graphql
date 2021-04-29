@@ -37,6 +37,7 @@ input UpdateUserInput {
   avatar: Upload
   phone_verified_at: String
   device_id: String
+  wallet_balance: Float
 }
 
 input UserPhoneVerificationInput {

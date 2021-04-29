@@ -18,7 +18,7 @@ class SeatsTripTransactionResolver
 
         $transactionGroup = SeatsTripTransaction::selectRaw('
             DATE_FORMAT(created_at, "%a, %b %d, %Y") as date,
-            sum(amount) as sum
+            sum(paid) as sum
         ');
 
         if (array_key_exists('period', $args) && $args['period']) {
@@ -27,8 +27,8 @@ class SeatsTripTransactionResolver
         }
 
         $transactionCount = $transactions->count();
-        $transactionSum = $transactions->sum('amount');
-        $transactionAvg = $transactions->avg('amount');
+        $transactionSum = $transactions->sum('paid');
+        $transactionAvg = $transactions->avg('paid');
         $transactionGroup = $transactionGroup->groupBy('date')->get();
 
         $response = [
