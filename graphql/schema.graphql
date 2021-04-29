@@ -600,6 +600,8 @@ extend type Query @guard(with: ["admin", "user"]) {
   seatsTripBooking(id: ID! @eq): SeatsTripBooking @find
   userSeatsTripBookings(user_id: ID! @eq, time: String!): 
     [SeatsTripBooking] @all(scopes: ["wherePickupTime"])
+  preSeatsTripBooking(pickup_id: ID!, dropoff_id: ID!): PreSeatsTripBooking
+    @field(resolver: "SeatsTripBookingResolver@pre")
 }
 
 # Admin|Partner|User Guard

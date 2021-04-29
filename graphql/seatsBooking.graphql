@@ -40,3 +40,9 @@ type SeatsTripBooking {
   response: String
   created_at: String
 }
+
+type PreSeatsTripBooking {
+  wallet: Float
+  pickup: SeatsLineStation
+  dropoff: SeatsLineStation
+}
