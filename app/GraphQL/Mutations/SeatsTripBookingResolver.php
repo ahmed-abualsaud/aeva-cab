@@ -169,7 +169,7 @@ class SeatsTripBookingResolver
         try {
             return SeatsTripBooking::create($input);
         } catch (\Exception $e) {
-            throw new \Exception('You already have a trip at this time!');
+            throw new \Exception('Could not confirm booking!');
         }
     }
 
