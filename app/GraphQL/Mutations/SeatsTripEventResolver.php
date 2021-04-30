@@ -30,7 +30,7 @@ class SeatsTripEventResolver
 
         Driver::updateLocation($args['latitude'], $args['longitude']);
 
-        $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $logId]);
+        // $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $logId]);
 
         $trip->update(['log_id' => $logId]);
 
@@ -145,6 +145,7 @@ class SeatsTripEventResolver
         try {
             $input = [
                 'trip_id' => $args['trip_id'],
+                'trip_time' => $args['trip_time'],
                 'log_id' => $logId,
                 'content' => [ 
                     'started' => [

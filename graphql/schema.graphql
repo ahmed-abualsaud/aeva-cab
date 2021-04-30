@@ -335,7 +335,7 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "BusinessTripEventResolver@dropUsers")
 
   # Seats Trip Event
-  startSeatsTrip(input: StartTripInput! @spread): SeatsTrip 
+  startSeatsTrip(input: StartSeatsTripInput! @spread): SeatsTrip 
     @field(resolver: "SeatsTripEventResolver@startTrip")
   endSeatsTrip(input: EndTripInput! @spread): Boolean
     @field(resolver: "SeatsTripEventResolver@endTrip")

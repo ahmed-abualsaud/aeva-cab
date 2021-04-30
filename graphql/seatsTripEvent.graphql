@@ -1,3 +1,10 @@
+input StartSeatsTripInput {
+  trip_id: ID! @rules(apply: ["required"])
+  trip_time: String! @rules(apply: ["required"])
+  latitude: String! @rules(apply: ["required"])
+  longitude: String! @rules(apply: ["required"])
+}
+
 input PickSeatsTripUserInput {
   booking_id: ID! @rules(apply: ["required"])
 }

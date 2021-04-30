@@ -16,6 +16,7 @@ class CreateSeatsTripEventsTable extends Migration
         Schema::create('seats_trip_events', function (Blueprint $table) {
             $table->uuid('log_id');
             $table->unsignedBigInteger('trip_id');
+            $table->dateTime('trip_time');
             $table->json('content');
             $table->text('map_url')->nullabel();
             $table->timestamps();
