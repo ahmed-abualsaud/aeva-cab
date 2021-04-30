@@ -23,6 +23,6 @@ class SeatsTripObserver
 
     protected function cacheFlush()
     {
-        Cache::tags(['seatsNearbyStations'])->flush();
+        Cache::tags('seatsNearbyStations')->flush();
     }
 }

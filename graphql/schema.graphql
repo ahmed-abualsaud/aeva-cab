@@ -315,7 +315,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
 # Admin|Driver Guard
 extend type Mutation @guard(with: ["admin", "driver"]) {
   # Driver
-  updateDriver(input: UpdateDriverInput! @spread): Driver 
+  updateDriver(input: UpdateDriverInput! @spread): Driver
     @field(resolver: "DriverResolver@update") @updateDriverValidation
   changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "DriverResolver@updatePassword")

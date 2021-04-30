@@ -19,20 +19,11 @@ class BusinessTripScheduleResolver
             $input = Arr::except($args, ['directive']);
             $input['days'] = json_encode($input['days']);
 
-            $this->cacheFlush($args);
+            Cache::tags('userTrips:'.$args['user_id'])->flush();
             
             return BusinessTripSchedule::upsert($input, ['days']);
         } catch(\Exception $e) {
             throw new CustomException('We could not able to update or even create this schedule!');
         }
     }
-
-    protected function cacheFlush(array $args)
-    {
-        $tags[] = 'userTrips:'.$args['user_id'];
-        $tags[] = 'userLiveTrips:'.$args['user_id'];
-
-        Cache::tags($tags)->flush();
-    }
-
 }

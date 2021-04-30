@@ -103,6 +103,7 @@ type EventObj {
   station_name: String
   status: String
   at: DateTime
+  eta: DateTime
   by: String
   lat: String
   lng: String

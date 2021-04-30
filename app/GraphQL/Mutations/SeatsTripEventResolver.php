@@ -59,6 +59,7 @@ class SeatsTripEventResolver
             'station_name' => $args['station_name'],
             'status' => 'at station',
             'at' => date("Y-m-d H:i:s"),
+            'eta' => $args['eta'],
             'lat' => $args['latitude'],
             'lng' => $args['longitude']
         ]);

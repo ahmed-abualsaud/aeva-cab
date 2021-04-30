@@ -18,6 +18,6 @@ class BusinessTripObserver
 
     protected function cacheFlush()
     {
-        Cache::tags(['userTrips', 'userLiveTrips'])->flush();
+        Cache::tags('userTrips')->flush();
     }
 }

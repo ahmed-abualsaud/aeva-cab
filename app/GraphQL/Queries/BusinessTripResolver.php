@@ -29,10 +29,14 @@ class BusinessTripResolver
 
         $cacheKey = md5(implode(',', $args));
 
-        $tags[] = 'userTrips'; $tags[] = 'userTrips:'.$args['user_id'];
+        $tags = ['userTrips', 'userTrips:'.$args['user_id']];
 
-        $userTrips = Cache::tags($tags)->remember($cacheKey, 900, function() use ($args, $date) {
-            return BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
+        $userTrips = Cache::tags($tags)->remember($cacheKey, 900, fn() =>
+            BusinessTrip::selectRaw(
+                'business_trips.*,
+                business_trip_attendance.date AS absence_date'
+            )
+            ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
             ->whereNotNull('business_trip_users.subscription_verified_at')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
@@ -41,25 +45,21 @@ class BusinessTripResolver
                 $query->whereNull('business_trip_schedules.days')
                     ->orWhere('business_trip_schedules.days->'.$args['day'], true);
             })
-            ->selectRaw(
-                'business_trips.*,
-                business_trip_attendance.date AS absence_date'
-            )
             ->leftJoin('business_trip_attendance', function ($join) use ($args, $date) {
                 $join->on('business_trips.id', '=', 'business_trip_attendance.trip_id')
                     ->where('business_trip_attendance.user_id', $args['user_id'])
                     ->where('business_trip_attendance.is_absent', true)
-                    ->whereDate('business_trip_attendance.date', $date);
+                    ->where('business_trip_attendance.date', $date);
             })
             ->leftJoin('business_trip_schedules', function ($join) use ($args) {
                 $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
                     ->where('business_trip_schedules.user_id', $args['user_id']);
             })
-            ->get();
-        });
+            ->get()
+        );
 
         if ($userTrips->isEmpty()) return [];
-        
+
         return $this->scheduledTrips($userTrips, $args['day']);
     }
 
@@ -69,10 +69,13 @@ class BusinessTripResolver
 
         $cacheKey = md5(implode(',', $args));
 
-        $tags[] = 'userLiveTrips'; $tags[] = 'userLiveTrips:'.$args['user_id'];
+        $tags = ['userTrips', 'userTrips:'.$args['user_id']];
 
-        $liveTrips = Cache::tags($tags)->remember($cacheKey, 900, function() use ($args, $today) {
-            return BusinessTrip::join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
+        return Cache::tags($tags)->remember($cacheKey, 900, fn() =>
+            BusinessTrip::select(
+                'business_trips.*'
+            )
+            ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
             ->whereNotNull('log_id')
             ->whereRaw('JSON_EXTRACT(business_trips.days, "$.'.$today.'") <> CAST("null" AS JSON)')
@@ -80,15 +83,12 @@ class BusinessTripResolver
                 $query->whereNull('business_trip_schedules.days')
                     ->orWhere('business_trip_schedules.days->'.$today, true);
             })
-            ->select('business_trips.*')
             ->leftJoin('business_trip_schedules', function ($join) use ($args) {
                 $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
                     ->where('business_trip_schedules.user_id', $args['user_id']);
             })
-            ->get();
-        });
-
-        return $liveTrips;
+            ->get()
+        );
     }
 
     public function driverTrips($_, array $args)

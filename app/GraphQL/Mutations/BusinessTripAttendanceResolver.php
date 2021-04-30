@@ -34,7 +34,7 @@ class BusinessTripAttendanceResolver
             $firstArgs = collect($args)->only(['date', 'trip_id', 'user_id'])->toArray();
             $secondArgs = collect($args)->only(['is_absent', 'comment'])->toArray();
 
-            $this->cacheFlush($args);
+            Cache::tags('userTrips:'.$args['user_id'])->flush();
             
            return BusinessTripAttendance::updateOrCreate($firstArgs, $secondArgs);
 
@@ -43,11 +43,4 @@ class BusinessTripAttendanceResolver
         }
     }
 
-    protected function cacheFlush(array $args)
-    {
-        $tags[] = 'userTrips:'.$args['user_id'];
-        $tags[] = 'userLiveTrips:'.$args['user_id'];
-
-        Cache::tags($tags)->flush();
-    }
 }

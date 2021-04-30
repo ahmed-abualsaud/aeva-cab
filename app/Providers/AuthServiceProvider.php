@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -30,7 +30,12 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         // Gate::before(function ($user = null, $ability) {
-        //     if (auth('admin')->user()->can[$ability]) {
+        //     try {
+        //         if (auth('admin')->user()->can[$ability]) 
+        //             return true;
+        //         else 
+        //             return false;
+        //     } catch (\Exception $e) {
         //         return true;
         //     }
         // });
