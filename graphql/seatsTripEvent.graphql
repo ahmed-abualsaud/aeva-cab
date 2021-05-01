@@ -14,6 +14,7 @@ input DropSeatsTripUserInput {
   booking_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
+  trip_time: String! @rules(apply: ["required"])
   payable: Float! @rules(apply: ["required"])
   paid: Float! @rules(apply: ["required"])
   notes: String

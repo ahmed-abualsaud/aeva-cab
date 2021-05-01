@@ -200,7 +200,7 @@ class SeatsTripEventResolver
     protected function createTransaction(array $args)
     {
         try {
-            $input = collect($args)->except(['directive', 'payable'])->toArray();
+            $input = collect($args)->except(['directive', 'payable', 'log_id'])->toArray();
 
             return SeatsTripTransaction::create($input);
         } catch (\Exception $e) {

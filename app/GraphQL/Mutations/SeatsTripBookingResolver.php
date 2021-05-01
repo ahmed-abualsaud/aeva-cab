@@ -177,10 +177,11 @@ class SeatsTripBookingResolver
     {
         try {
             $input = collect($args)
-                ->only(['user_id', 'trip_id', 'payment_method', 'paid'])
+                ->only(['user_id', 'trip_id', 'trip_time', 'payment_method', 'paid'])
                 ->toArray();
 
             $input['booking_id'] = $booking->id;
+            $input['created_by'] = 'USER';
 
             User::updateBalance($input['user_id'], $input['paid']);
 

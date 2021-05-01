@@ -15,18 +15,18 @@ class CreateSeatsTripTransactionsTable extends Migration
     {
         Schema::create('seats_trip_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->uuid('log_id')->nullable();
             $table->unsignedBigInteger('booking_id');
             $table->unsignedBigInteger('trip_id');
+            $table->dateTime('trip_time');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->float('paid', 8, 2);
             $table->enum('payment_method', ['CASH', 'CARD', 'FAWRY'])->default('CASH');
             $table->string('notes')->nullable();
+            $table->enum('created_by', ['USER', 'DRIVER'])->default('DRIVER');
             $table->timestamps();
 
-            $table->index('log_id');
             $table->index('booking_id');
-            $table->index('trip_id');
+            $table->index(['trip_id', 'trip_time']);
             $table->index('user_id');
             $table->index('created_at');
 

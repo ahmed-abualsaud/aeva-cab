@@ -10,10 +10,12 @@ type SeatsTripTransaction {
   id: ID
   booking_id: ID
   trip: SeatsTrip @belongsTo
+  trip_time: String
   user: User @belongsTo
   paid: Float
   payment_method: String
   notes: String
+  created_by: String
   created_at: String
 }
 
