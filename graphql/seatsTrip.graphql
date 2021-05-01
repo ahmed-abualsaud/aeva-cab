@@ -30,7 +30,7 @@ type SeatsTrip {
   name: String
   start_date: Date
   end_date: Date
-  start_time: String
+  starts_at: String
   days: TripDays
   bookable: Boolean
   price: Float

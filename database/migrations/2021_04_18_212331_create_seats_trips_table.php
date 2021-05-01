@@ -17,6 +17,7 @@ class CreateSeatsTripsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name');
             $table->uuid('log_id')->nullable();
+            $table->dateTime('starts_at')->nullable();
             $table->unsignedBigInteger('line_id');
             $table->unsignedBigInteger('partner_id');
             $table->unsignedBigInteger('driver_id');

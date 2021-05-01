@@ -49,7 +49,7 @@ class SeatsTripResolver
         
         foreach($trips as $trip) {
             $tripInstance = new SeatsTrip();
-            $trip->start_time = strtotime($dateTime.' '.$trip->days[$day]) * 1000;
+            $trip->starts_at = $dateTime.' '.$trip->days[$day];
             $tripInstance->fill($trip->toArray());
             $sortedTrips[] = $tripInstance;
         }

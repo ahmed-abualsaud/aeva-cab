@@ -32,7 +32,7 @@ class SeatsTripEventResolver
 
         // $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $logId]);
 
-        $trip->update(['log_id' => $logId]);
+        $trip->update(['log_id' => $logId, 'starts_at' => $args['trip_time']]);
 
         return $trip;
     }
@@ -104,7 +104,7 @@ class SeatsTripEventResolver
 
         $logId = $trip->log_id;
 
-        $trip->update(['log_id' => null]);
+        $trip->update(['log_id' => null, 'starts_at' => null]);
 
         return $this->closeTripEvent($args, $logId, $trip);
     }
