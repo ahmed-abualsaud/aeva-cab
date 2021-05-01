@@ -306,8 +306,6 @@ extend type Mutation @guard(with: ["admin", "user"]) {
   # Seats
   createSeatsTripBooking(input: CreateSeatsTripBookingInput! @spread): SeatsTripBooking
     @field(resolver: "SeatsTripBookingResolver@create")
-  updateSeatsTripBooking(input: UpdateSeatsTripBookingInput! @spread): SeatsTripBooking
-    @field(resolver: "SeatsTripBookingResolver@update")
   createSeatsTripTransaction(input: CreateSeatsTripTransactionsInput! @spread): Boolean
     @field(resolver: "SeatsTripTransactionResolver@createTransaction")
 }
@@ -389,6 +387,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Business Trip Event
   changeBusinessTripAttendanceStatus(input: ChangeBusinessTripAttendanceStatusInput! @spread): String
     @field(resolver: "BusinessTripEventResolver@changeBusinessTripAttendanceStatus")
+  
+  # Seats
+  updateSeatsTripBooking(input: UpdateSeatsTripBookingInput! @spread): SeatsTripBooking
+    @field(resolver: "SeatsTripBookingResolver@update")
 }
 
 # -- QUERIES --
