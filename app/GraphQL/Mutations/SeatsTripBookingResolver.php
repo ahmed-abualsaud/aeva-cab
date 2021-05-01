@@ -123,7 +123,7 @@ class SeatsTripBookingResolver
     protected function checkSeats(array $args)
     {
         $bookedSeats = SeatsTripBooking::where('trip_id', $args['trip_id'])
-            ->where('date', $args['date'])
+            ->where('trip_time', $args['trip_time'])
             ->where('status', 'CONFIRMED')
             ->sum('seats');
         
@@ -193,7 +193,7 @@ class SeatsTripBookingResolver
     protected function createBoardingPass(array $args)
     {
         return SeatsTripBooking::where('trip_id', $args['trip_id'])
-            ->where('date', $args['date'])
+            ->where('trip_time', $args['trip_time'])
             ->max('boarding_pass') + 1;
     }
 }

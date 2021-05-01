@@ -18,7 +18,7 @@ class SeatsTripUserResolver
             )
             ->join('seats_trip_bookings as booking', 'users.id', '=', 'booking.user_id')
             ->where('trip_id', $args['trip_id'])
-            ->where('date', $args['date'])
+            ->where('trip_time', $args['trip_time'])
             ->where('status', 'CONFIRMED');
 
             switch($args['status']) {

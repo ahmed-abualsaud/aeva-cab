@@ -26,6 +26,7 @@ type SeatsLineStation {
 
 type SeatsNearbyStation {
   trip_id: ID
+  trip_time: String
   price: Float
   bookable: Boolean
   partner_name: String

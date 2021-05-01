@@ -1,7 +1,7 @@
 input CreateSeatsTripBookingInput {
-  date: String! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
+  trip_time: String! @rules(apply: ["required"])
   pickup_id: ID! @rules(apply: ["required"])
   pickup_time: String! @rules(apply: ["required"])
   dropoff_id: ID! @rules(apply: ["required"])
@@ -25,12 +25,13 @@ type SeatsTripBooking {
   id: ID
   user: User @belongsTo
   trip: SeatsTrip @belongsTo
+  trip_time: String
   pickup: SeatsLineStation @belongsTo
+  pickup_time: String
   dropoff: SeatsLineStation @belongsTo
+  dropoff_time: String
   promoCode: PromoCode @belongsTo
   seats: Int
-  pickup_time: String
-  dropoff_time: String
   payment_method: String
   payable: Float
   paid: Float

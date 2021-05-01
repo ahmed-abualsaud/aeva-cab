@@ -2,7 +2,6 @@
 
 namespace App\GraphQL\Queries;
 
-use App\PromoCode;
 use App\SeatsLineStation;
 
 class SeatsTripBookingResolver
