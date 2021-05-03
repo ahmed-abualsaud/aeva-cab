@@ -33,12 +33,11 @@ input AtSeatsTripStationInput {
 
 type SeatsTripEvent {
   log_id: String
-  trip_id: ID
-  trip_name: String
-  partner_id: ID
-  partner_name: String
-  driver_id: ID
-  driver_name: String
+  trip_time: String
   map_url: String
   content: TripEventContent
+  created_at: DateTime
+  updated_at: DateTime
+  trip: SeatsTrip @belongsTo
+  driver: Driver @belongsTo
 }

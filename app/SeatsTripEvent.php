@@ -27,38 +27,35 @@ class SeatsTripEvent extends Model
         return $this->belongsTo(SeatsTrip::class);
     }
 
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class)->select('id', 'name');
+    }
+
     public function scopeSearch($query, $args) 
     {
-        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+        if (array_key_exists('searchQuery', $args) && $args['searchQuery'])
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
-        }
+
+        return $query->latest();
+    }
+
+    public function scopeWhereTrip($query, $args)
+    {
+        if (array_key_exists('trip_id', $args) && $args['trip_id'])
+            return $query->where('trip_id', $args['trip_id']);
 
         return $query;
     }
 
-    public function scopeTrip($query, $args)
+    public function scopeWherePartner($query, $args)
     {
-        if (array_key_exists('trip_id', $args) && $args['trip_id']) {
-            $events = $query->select('log_id', 'content', 'map_url')
-                ->where('trip_id', $args['trip_id']);
-        } else {
-            $events = $query->selectRaw('
-                seats_trips.id AS trip_id, seats_trips.name AS trip_name,
-                drivers.id AS driver_id, drivers.name AS driver_name,
-                seats_trip_events.log_id, seats_trip_events.content, seats_trip_events.map_url
-            ')
-            ->join('seats_trips', 'seats_trips.id', '=', 'seats_trip_events.trip_id')
-            ->join('drivers', 'drivers.id', '=', 'seats_trips.driver_id');
+        if (array_key_exists('partner_id', $args) && $args['partner_id'])
+            return $query->whereHas('trip', function($query) use ($args) {
+                $query->where('partner_id', $args['partner_id']);
+            });
 
-            if (array_key_exists('partner_id', $args) && $args['partner_id']) {
-                $events = $events->where('seats_trips.partner_id', '=', $args['partner_id']);
-            } else {
-                $events = $events->join('partners', 'partners.id', '=', 'seats_trips.partner_id')
-                    ->addSelect('partners.id AS partner_id', 'partners.name AS partner_name');
-            } 
-        }
-
-        return $events->latest('seats_trip_events.created_at');
+        return $query;
     }
 
     public function scopeFilter($query, $args)

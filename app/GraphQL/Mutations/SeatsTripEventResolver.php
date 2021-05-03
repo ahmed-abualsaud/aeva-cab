@@ -26,11 +26,11 @@ class SeatsTripEventResolver
 
         $logId = (string) Str::uuid();
 
-        $this->initTripEvent($args, $logId);
+        $this->initTripEvent($args, $logId, $trip->driver_id);
 
         Driver::updateLocation($args['latitude'], $args['longitude']);
 
-        // $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $logId]);
+        $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $logId]);
 
         $trip->update(['log_id' => $logId, 'starts_at' => $args['trip_time']]);
 
@@ -129,22 +129,12 @@ class SeatsTripEventResolver
         }
     }
 
-    protected function getTripById($id)
-    {
-        try {
-            return SeatsTrip::with('partner:id,name')
-                ->with('driver:id,name')
-                ->findOrFail($id);
-        } catch (\Exception $e) {
-            throw new CustomException('We could not able to find this trip!');
-        }
-    }
-
-    protected function initTripEvent($args, $logId)
+    protected function initTripEvent($args, $logId, $driverId)
     {
         try {
             $input = [
                 'trip_id' => $args['trip_id'],
+                'driver_id' => $driverId,
                 'trip_time' => $args['trip_time'],
                 'log_id' => $logId,
                 'content' => [ 
@@ -164,7 +154,8 @@ class SeatsTripEventResolver
     protected function closeTripEvent($args, $logId, $trip)
     {
         try {
-            $event = SeatsTripEvent::findOrFail($logId);
+            $event = SeatsTripEvent::select('content')
+                ->findOrFail($logId);
 
             $locations = SeatsTripEntry::select('latitude', 'longitude')
                 ->where('log_id', $logId)
@@ -191,7 +182,8 @@ class SeatsTripEventResolver
 
             $updatedData['content'] = array_merge($event->content, ['ended' => $ended]);
 
-            return $event->update($updatedData);
+            return SeatsTripEvent::where('log_id', $logId)
+                ->update($updatedData);
         } catch (\Exception $e) {
             //
         }
@@ -218,6 +210,22 @@ class SeatsTripEventResolver
         }
     }
 
+    protected function getTripById($id)
+    {
+        try {
+            return SeatsTrip::select(
+                'seats_trips.id', 'seats_trips.name', 'seats_trips.log_id',
+                'drivers.id as driver_id', 'drivers.name as driver_name',
+                'partners.id as partner_id', 'partners.name as partner_name'
+            )
+            ->join('drivers', 'drivers.id', '=', 'seats_trips.driver_id')
+            ->join('partners', 'partners.id', '=', 'seats_trips.partner_id')
+            ->findOrFail($id);
+        } catch (\Exception $e) {
+            throw new CustomException('Could not find this trip!');
+        }
+    }
+
     protected function broadcastTripStatus($trip, $input)
     {
         $data = [
@@ -226,17 +234,18 @@ class SeatsTripEventResolver
             'name' => $trip->name,
             'status' => $input['status'],
             'partner' => [
-                'id' => $trip->partner->id,
-                'name' => $trip->partner->name,
+                'id' => $trip->partner_id,
+                'name' => $trip->partner_name,
                 '__typename' => 'Partner'
             ],
             'driver' => [
-                'id' => $trip->driver->id,
-                'name' => $trip->driver->name,
+                'id' => $trip->driver_id,
+                'name' => $trip->driver_name,
                 '__typename' => 'Driver'
             ],
             '__typename' => 'SeatsTrip'
         ];
+
         broadcast(new SeatsTripStatusChanged($data));
     }
 

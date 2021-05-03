@@ -549,8 +549,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @all(scopes: ["live", "partner"])
   
   # Seats Trip Event
-  seatsTripEvents(searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [SeatsTripEvent]
-    @paginate(scopes: ["trip", "search", "filter"])
+  seatsTripEvents(searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [SeatsTripEvent] @paginate(scopes: ["whereTrip", "wherePartner", "search", "filter"])
 
   # Seats Lines
   seatsLines(partner_id: ID, searchFor: String, searchQuery: String): [SeatsLine] 
