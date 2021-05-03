@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use App\SeatsTripTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SeatsTripBookingResolver
 {
@@ -146,14 +147,14 @@ class SeatsTripBookingResolver
 
     protected function saveBooking(array $args)
     {
-        $input = collect($args)->except(['directive', 'bookable'])->toArray();
-        $input['boarding_pass'] = $this->createBoardingPass($args);
+        $input = collect($args)->except(['directive', 'bookable', 'wallet'])->toArray();
 
         switch($args['payment_method']) {
             case 'CASH':
-                $wallet = auth('user')->user()->wallet_balance;
-                if ($wallet > 0) {
-                    $input['paid'] = $wallet >= $args['payable'] ? $args['payable'] : $wallet;
+                if ($args['wallet'] > 0) {
+                    $input['paid'] = $args['wallet'] >= $args['payable'] 
+                        ? $args['payable'] 
+                        : $args['wallet'];
                     $booking = $this->confirmBooking($input);
                     $this->createTransaction($input, $booking);
                     return $booking;
@@ -167,9 +168,16 @@ class SeatsTripBookingResolver
     protected function confirmBooking($input)
     {
         try {
+            SeatsTripBooking::where('trip_id', $input['trip_id'])
+                ->where('trip_time', $input['trip_time'])
+                ->where('status', 'CONFIRMED')
+                ->firstOrFail();
+
+                throw new \Exception('You have already booked this trip!');
+
+        } catch (ModelNotFoundException $e) {
+            $input['boarding_pass'] = $this->createBoardingPass($input);
             return SeatsTripBooking::create($input);
-        } catch (\Exception $e) {
-            throw new \Exception('Could not confirm booking!');
         }
     }
 
@@ -191,10 +199,10 @@ class SeatsTripBookingResolver
         }
     }
 
-    protected function createBoardingPass(array $args)
+    protected function createBoardingPass(array $input)
     {
-        return SeatsTripBooking::where('trip_id', $args['trip_id'])
-            ->where('trip_time', $args['trip_time'])
+        return SeatsTripBooking::where('trip_id', $input['trip_id'])
+            ->where('trip_time', $input['trip_time'])
             ->max('boarding_pass') + 1;
     }
 }
