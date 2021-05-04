@@ -2,15 +2,15 @@
 
 namespace App\Providers;
 
-use App\SeatsLine;
 use App\SeatsTrip;
 use App\BusinessTrip;
-use App\Observers\SeatsLineObserver;
+use App\SeatsLineStation;
 use App\Observers\SeatsTripObserver;
 use Illuminate\Support\Facades\Schema;
 use App\Observers\BusinessTripObserver;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Socialite\Contracts\Factory;
+use App\Observers\SeatsLineStationObserver;
 use GeneaLabs\LaravelSignInWithApple\Providers\SignInWithAppleProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
         $this->bootSocialiteDriver();
         BusinessTrip::observe(BusinessTripObserver::class);
         SeatsTrip::observe(SeatsTripObserver::class);
-        SeatsLine::observe(SeatsLineObserver::class);
+        SeatsLineStation::observe(SeatsLineStationObserver::class);
     }
 
     public function bootSocialiteDriver()
