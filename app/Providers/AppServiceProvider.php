@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\SeatsLine;
 use App\SeatsTrip;
 use App\BusinessTrip;
+use App\Observers\SeatsLineObserver;
 use App\Observers\SeatsTripObserver;
 use Illuminate\Support\Facades\Schema;
 use App\Observers\BusinessTripObserver;
@@ -37,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
         $this->bootSocialiteDriver();
         BusinessTrip::observe(BusinessTripObserver::class);
         SeatsTrip::observe(SeatsTripObserver::class);
+        SeatsLine::observe(SeatsLineObserver::class);
     }
 
     public function bootSocialiteDriver()
