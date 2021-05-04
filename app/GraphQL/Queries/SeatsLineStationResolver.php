@@ -51,7 +51,7 @@ class SeatsLineStationResolver
                 pickup_distance < ? and
                 dropoff_distance < ? and
                 pickup_time > ?
-            ', [6000, 6000, date("Y-m-d H:i:s")])
+            ', [1500, 1500, date("Y-m-d H:i:s")])
             ->orderBy('pickup_time')
             ->limit(10)
             ->get()
