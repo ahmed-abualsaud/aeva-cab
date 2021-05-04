@@ -27,7 +27,8 @@ class BusinessTripEventResolver
     {
         $trip = $this->getTripById($args['trip_id']);
 
-        if ($trip->status) throw new CustomException('This Trip has already been started!');
+        if ($trip->log_id) 
+            throw new CustomException('This Trip has already been started!');
 
         $logId = (string) Str::uuid();
 
@@ -38,13 +39,6 @@ class BusinessTripEventResolver
         $this->checkSchedule($args['trip_id']);
 
         Driver::updateLocation($args['latitude'], $args['longitude']);
-
-        SendPushNotification::dispatch(
-            $this->tripUsersToken($trip->id), 
-            'has been started', 
-            $trip->name,
-            ['view' => 'BusinessTrip', 'id' => $args['trip_id']]
-        );
 
         $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $logId]);
 
@@ -167,7 +161,8 @@ class BusinessTripEventResolver
     {
         $trip = $this->getTripById($args['trip_id']);
 
-        if (!$trip->status) throw new CustomException('This trip has already been ended!');
+        if (!$trip->log_id) 
+            throw new CustomException('This trip has already been ended!');
 
         $logId = $trip->log_id;
 
@@ -191,11 +186,17 @@ class BusinessTripEventResolver
     protected function getTripById($id)
     {
         try {
-            return BusinessTrip::with('partner:id,name')
-                ->with('driver:id,name')
-                ->findOrFail($id);
+            return BusinessTrip::select(
+                'business_trips.id', 'business_trips.name', 
+                'business_trips.log_id', 'business_trips.type',
+                'drivers.id as driver_id', 'drivers.name as driver_name',
+                'partners.id as partner_id', 'partners.name as partner_name'
+            )
+            ->join('drivers', 'drivers.id', '=', 'business_trips.driver_id')
+            ->join('partners', 'partners.id', '=', 'business_trips.partner_id')
+            ->findOrFail($id);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to find this trip!');
+            throw new CustomException('Could not find this trip!');
         }
     }
 
@@ -231,14 +232,15 @@ class BusinessTripEventResolver
 
             $this->updateEventPayload($args['log_id'], $data);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to change selected users status!');
+            throw new CustomException('Could not change selected users status!');
         }
     }
 
     protected function updateEventPayload($logId, $payload)
     {
         try {
-            $event = BusinessTripEvent::findOrFail($logId);
+            $event = BusinessTripEvent::select('content', 'log_id')
+                ->findOrFail($logId);
     
             if (array_key_exists('payload', $event->content)) 
                 $payload = array_merge($event->content['payload'], $payload);
@@ -252,7 +254,8 @@ class BusinessTripEventResolver
     protected function closeTripEvent($args, $logId, $trip)
     {
         try {
-            $event = BusinessTripEvent::findOrFail($logId);
+            $event = BusinessTripEvent::select('content', 'log_id')
+                ->findOrFail($logId);
 
             $locations = BusinessTripEntry::select('latitude', 'longitude')
                 ->where('log_id', $logId)
@@ -365,13 +368,13 @@ class BusinessTripEventResolver
             'status' => $input['status'],
             'type' => $trip->type,
             'partner' => [
-                'id' => $trip->partner->id,
-                'name' => $trip->partner->name,
+                'id' => $trip->partner_id,
+                'name' => $trip->partner_name,
                 '__typename' => 'Partner'
             ],
             'driver' => [
-                'id' => $trip->driver->id,
-                'name' => $trip->driver->name,
+                'id' => $trip->driver_id,
+                'name' => $trip->driver_name,
                 '__typename' => 'Driver'
             ],
             '__typename' => 'BusinessTrip'

@@ -118,7 +118,8 @@ class SeatsTripEventResolver
     protected function updateEventPayload($logId, $payload)
     {
         try {
-            $event = SeatsTripEvent::findOrFail($logId);
+            $event = SeatsTripEvent::select('content', 'log_id')
+                ->findOrFail($logId);
     
             if (array_key_exists('payload', $event->content)) 
                 $payload = array_merge($event->content['payload'], $payload);
@@ -154,7 +155,7 @@ class SeatsTripEventResolver
     protected function closeTripEvent($args, $logId, $trip)
     {
         try {
-            $event = SeatsTripEvent::select('content')
+            $event = SeatsTripEvent::select('content', 'log_id')
                 ->findOrFail($logId);
 
             $locations = SeatsTripEntry::select('latitude', 'longitude')
@@ -182,8 +183,7 @@ class SeatsTripEventResolver
 
             $updatedData['content'] = array_merge($event->content, ['ended' => $ended]);
 
-            return SeatsTripEvent::where('log_id', $logId)
-                ->update($updatedData);
+            return $event->update($updatedData);
         } catch (\Exception $e) {
             //
         }
