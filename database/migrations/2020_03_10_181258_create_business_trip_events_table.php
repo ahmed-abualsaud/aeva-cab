@@ -16,6 +16,7 @@ class CreateBusinessTripEventsTable extends Migration
         Schema::create('business_trip_events', function (Blueprint $table) {
             $table->uuid('log_id');
             $table->unsignedBigInteger('trip_id');
+            $table->unsignedBigInteger('driver_id');
             $table->json('content');
             $table->text('map_url')->nullabel();
             $table->timestamps();
@@ -27,6 +28,11 @@ class CreateBusinessTripEventsTable extends Migration
             $table->foreign('trip_id')
                 ->references('id')
                 ->on('business_trips')
+                ->onDelete('cascade');
+
+            $table->foreign('driver_id')
+                ->references('id')
+                ->on('drivers')
                 ->onDelete('cascade');
         });
     }

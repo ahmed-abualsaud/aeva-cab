@@ -48,14 +48,11 @@ class BusinessTripEvent extends Model
                 business_trip_events.log_id, business_trip_events.content, business_trip_events.map_url
             ')
             ->join('business_trips', 'business_trips.id', '=', 'business_trip_events.trip_id')
-            ->join('drivers', 'drivers.id', '=', 'business_trips.driver_id');
+            ->join('drivers', 'drivers.id', '=', 'business_trip_events.driver_id');
 
             if (array_key_exists('partner_id', $args) && $args['partner_id']) {
                 $events = $events->where('business_trips.partner_id', '=', $args['partner_id']);
-            } else {
-                $events = $events->join('partners', 'partners.id', '=', 'business_trips.partner_id')
-                    ->addSelect('partners.id AS partner_id', 'partners.name AS partner_name');
-            } 
+            }
 
             if (array_key_exists('type', $args) && $args['type']) {
                 $events = $events->where('business_trips.type', $args['type']);

@@ -32,7 +32,7 @@ class BusinessTripEventResolver
 
         $logId = (string) Str::uuid();
 
-        $this->initTripEvent($args, $logId);
+        $this->initTripEvent($args, $logId, $trip->driver_id);
 
         $this->checkAbsence($args['trip_id']);
 
@@ -339,11 +339,12 @@ class BusinessTripEventResolver
         }
     }
 
-    protected function initTripEvent($args, $logId)
+    protected function initTripEvent($args, $logId, $driverId)
     {
         try {
             $input = [
                 'trip_id' => $args['trip_id'],
+                'driver_id' => $driverId,
                 'log_id' => $logId,
                 'content' => [ 
                     'started' => [
