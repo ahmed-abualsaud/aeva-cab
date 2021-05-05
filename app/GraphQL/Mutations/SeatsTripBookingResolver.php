@@ -22,8 +22,8 @@ class SeatsTripBookingResolver
     {
         DB::beginTransaction();
         try {
-            if ($args['bookable'])
-                $this->checkSeats($args);
+            // if ($args['bookable'])
+                // $this->checkSeats($args);
 
             $booking = $this->saveBooking($args);
 
