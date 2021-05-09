@@ -14,6 +14,7 @@ use App\Exceptions\CustomException;
 use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\QueryException;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
  
@@ -195,7 +196,10 @@ class UserResolver
     public function socialLogin($_, array $args)
     {
         try {
-            if (array_key_exists('platform', $args) && $args['platform'] == 'android' && $args['provider'] == 'google') {
+            if (array_key_exists('platform', $args) 
+                && $args['platform'] == 'android' 
+                && $args['provider'] == 'google') 
+            {
                 $args['token'] = Socialite::driver('google')
                     ->getAccessTokenResponse($args['token'])['access_token'];
             }
@@ -203,7 +207,7 @@ class UserResolver
             $input = ['provider' => $args['provider']];
             if ($args['provider'] == 'apple') {
                 $input['provider_id'] = $userData->id;
-                $input['name'] = $userData->name ?? explode('@', $userData->email)[0];
+                $input['name'] = $userData->name ?? 'Apple User';
                 $input['email'] = $userData->email;
             } else {
                 $input['provider_id'] = $userData->getId();
@@ -218,13 +222,21 @@ class UserResolver
         $updateData = [];
 
         try {
-            $user = User::where('provider', Str::lower($args['provider']))
-                ->where('provider_id', $input['provider_id'])->firstOrFail();
+            $user = User::select('id', 'device_id')
+                ->where('provider', Str::lower($args['provider']))
+                ->where('provider_id', $input['provider_id'])
+                ->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            $user = User::create($input);
-            $updateData['ref_code'] = Hashids::encode($user->id);
+            try {
+                $user = User::create($input);
+                $updateData['ref_code'] = Hashids::encode($user->id);
+            } catch (QueryException $e) {
+                $user = User::select('id', 'device_id')
+                    ->where('email', $input['email'])
+                    ->first();
+            }
         }
-
+        
         if (array_key_exists('device_id', $args) 
             && $args['device_id'] 
             && $user->device_id != $args['device_id']) 
