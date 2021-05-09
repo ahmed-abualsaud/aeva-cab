@@ -222,7 +222,7 @@ class UserResolver
         $updateData = [];
 
         try {
-            $user = User::select('id', 'device_id')
+            $user = User::select('id', 'device_id', 'phone_verified_at')
                 ->where('provider', Str::lower($args['provider']))
                 ->where('provider_id', $input['provider_id'])
                 ->firstOrFail();
@@ -231,7 +231,7 @@ class UserResolver
                 $user = User::create($input);
                 $updateData['ref_code'] = Hashids::encode($user->id);
             } catch (QueryException $e) {
-                $user = User::select('id', 'device_id')
+                $user = User::select('id', 'device_id', 'phone_verified_at')
                     ->where('email', $input['email'])
                     ->first();
             }
