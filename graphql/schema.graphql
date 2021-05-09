@@ -441,8 +441,8 @@ type Query @guard(with: ["admin"]) {
   carType(id: ID @eq): CarType @find
 
   # Ondemand Request
-  ondemandRequests(status: String period: String): [OndemandRequest]
-    @paginate(scopes: ["filter"])
+  ondemandRequests(status: String, period: String, searchFor: String, searchQuery: String): 
+    [OndemandRequest] @paginate(scopes: ["filter", "search"])
   ondemandRequestsStats(status: String period: String): OndemandRequestStats
     @field(resolver: "OndemandRequestResolver@stats")
 

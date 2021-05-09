@@ -6,7 +6,7 @@ trait Searchable
 {
     protected function search($searchFor, $searchQuery, $result)
     {
-        $q = '%' . $searchQuery . '%';
+        $q = $searchQuery . '%';
 
         if (str_contains($searchFor, '.')) {
             list($model, $field) = preg_split('~\.(?=[^.]*$)~', $searchFor);
