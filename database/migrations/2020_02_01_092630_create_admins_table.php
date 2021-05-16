@@ -24,10 +24,11 @@ class CreateAdminsTable extends Migration
             $table->string('status')->nullable();
             $table->unsignedBigInteger('role_id');
             $table->boolean('is_super_admin')->default(false);
-            $table->json('can');
             $table->text('token')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index('role_id');
             
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
         });

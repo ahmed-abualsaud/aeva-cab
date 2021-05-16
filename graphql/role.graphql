@@ -1,13 +1,38 @@
 input CreateRoleInput {
   name: String! @rules(apply: ["required", "unique:roles,name"])
+  permissions: RolePermissionInput! @rules(apply: ["required"])
 }
 
 input UpdateRoleInput {
-  id: ID! @rules(apply: ["required"])
+  id: ID
   name: String
+  permissions: RolePermissionInput
+}
+
+input RolePermissionInput {
+  admins: Boolean
+  users: Boolean
+  drivers: Boolean
+  vehicles: Boolean
+  ondemand: Boolean
+  business: Boolean
+  seats: Boolean
+  settings: Boolean
 }
 
 type Role {
   id: ID
   name: String
+  permissions: RolePermission
+}
+
+type RolePermission {
+  admins: Boolean
+  users: Boolean
+  drivers: Boolean
+  vehicles: Boolean
+  ondemand: Boolean
+  business: Boolean
+  seats: Boolean
+  settings: Boolean
 }

@@ -2,68 +2,17 @@ input CreateAdminInput {
   name: String! @rules(apply: ["required"])
   email: String @rules(apply: ["email", "unique:admins,email"])
   phone: String! @rules(apply: ["required", "unique:admins,phone"])
-  avatar: Upload
   role_id: ID! @rules(apply: ["required"])
-  can: PermissionsInput! @rules(apply: ["required"])
+  avatar: Upload
 }
 
 input UpdateAdminInput {
-  id: ID! @rules(apply: ["required"])
+  id: ID
+  role_id: ID
   name: String
   email: String
   phone: String
   avatar: Upload
-  status: String
-  role_id: ID
-  can: PermissionsInput
-}
-
-input PermissionsInput {
-  member_create: Boolean
-  member_read: Boolean
-  member_update: Boolean
-  member_delete: Boolean
-  partner_create: Boolean
-  partner_read: Boolean
-  partner_update: Boolean
-  partner_delete: Boolean
-  user_create: Boolean
-  user_read: Boolean
-  user_update: Boolean
-  user_delete: Boolean
-  driver_create: Boolean
-  driver_read: Boolean
-  driver_update: Boolean
-  driver_delete: Boolean
-  vehicle_create: Boolean
-  vehicle_read: Boolean
-  vehicle_update: Boolean
-  vehicle_delete: Boolean
-  playground_create: Boolean
-  playground_read: Boolean
-  playground_update: Boolean
-  playground_delete: Boolean
-  ondemand_create: Boolean
-  ondemand_read: Boolean
-  ondemand_update: Boolean
-  ondemand_delete: Boolean
-  seats_create: Boolean
-  seats_read: Boolean
-  seats_update: Boolean
-  seats_delete: Boolean
-  toschool_create: Boolean
-  toschool_read: Boolean
-  toschool_update: Boolean
-  toschool_delete: Boolean
-  towork_create: Boolean
-  towork_read: Boolean
-  towork_update: Boolean
-  towork_delete: Boolean
-  settings_create: Boolean
-  settings_read: Boolean
-  settings_update: Boolean
-  settings_delete: Boolean
-  statistics_read: Boolean
 }
 
 type AdminAuthPayload {
@@ -81,53 +30,4 @@ type Admin {
   status: String
   role: Role @belongsTo
   is_super_admin: Boolean
-  can: Permissions
-}
-
-type Permissions {
-  member_create: Boolean
-  member_read: Boolean
-  member_update: Boolean
-  member_delete: Boolean
-  partner_create: Boolean
-  partner_read: Boolean
-  partner_update: Boolean
-  partner_delete: Boolean
-  user_create: Boolean
-  user_read: Boolean
-  user_update: Boolean
-  user_delete: Boolean
-  driver_create: Boolean
-  driver_read: Boolean
-  driver_update: Boolean
-  driver_delete: Boolean
-  vehicle_create: Boolean
-  vehicle_read: Boolean
-  vehicle_update: Boolean
-  vehicle_delete: Boolean
-  playground_create: Boolean
-  playground_read: Boolean
-  playground_update: Boolean
-  playground_delete: Boolean
-  ondemand_create: Boolean
-  ondemand_read: Boolean
-  ondemand_update: Boolean
-  ondemand_delete: Boolean
-  seats_create: Boolean
-  seats_read: Boolean
-  seats_update: Boolean
-  seats_delete: Boolean
-  toschool_create: Boolean
-  toschool_read: Boolean
-  toschool_update: Boolean
-  toschool_delete: Boolean
-  towork_create: Boolean
-  towork_read: Boolean
-  towork_update: Boolean
-  towork_delete: Boolean
-  settings_create: Boolean
-  settings_read: Boolean
-  settings_update: Boolean
-  settings_delete: Boolean
-  statistics_read: Boolean
 }

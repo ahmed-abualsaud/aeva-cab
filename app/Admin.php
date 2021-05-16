@@ -15,10 +15,6 @@ class Admin extends Authenticatable implements JWTSubject
 
     protected $hidden = ['password'];
 
-    protected $casts = [
-        'can' => 'array'
-    ];
-
     /**
      * Send the password reset notification.
      *
