@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Extensions\CachingAdminProvider;
+use App\Extensions\CachingDriverProvider;
+use App\Extensions\CachingPartnerProvider;
+use App\Extensions\CachingUserProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -29,9 +33,41 @@ class AuthServiceProvider extends ServiceProvider
             return true;
         });
 
+        $this->app['auth']->provider('cached-user',
+            function($app, array $config) {
+                return new CachingUserProvider(
+                    $this->app['hash'],
+                    $config['model']
+                );
+            });
+        
+        $this->app['auth']->provider('cached-driver',
+            function($app, array $config) {
+                return new CachingDriverProvider(
+                    $this->app['hash'],
+                    $config['model']
+                );
+            });
+
+        $this->app['auth']->provider('cached-admin',
+            function($app, array $config) {
+                return new CachingAdminProvider(
+                    $this->app['hash'],
+                    $config['model']
+                );
+            });
+
+        $this->app['auth']->provider('cached-partner',
+            function($app, array $config) {
+                return new CachingPartnerProvider(
+                    $this->app['hash'],
+                    $config['model']
+                );
+            });
+
         // Gate::before(function ($user = null, $ability) {
         //     try {
-        //         if (auth('admin')->user()->can[$ability]) 
+        //         if ($user->role->permissions[$ability]) 
         //             return true;
         //         else 
         //             return false;

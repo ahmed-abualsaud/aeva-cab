@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'admin',
         'passwords' => 'users',
     ],
 
@@ -43,22 +43,22 @@ return [
  
         'admin' => [
             'driver' => 'jwt',
-            'provider' => 'admins'
+            'provider' => 'cached-admins'
         ],
 
         'partner' => [
             'driver' => 'jwt',
-            'provider' => 'partners',
+            'provider' => 'cached-partners',
         ],
 
         'user' => [
             'driver' => 'jwt',
-            'provider' => 'users',
+            'provider' => 'cached-users',
         ],
 
         'driver' => [
             'driver' => 'jwt',
-            'provider' => 'drivers',
+            'provider' => 'cached-drivers',
         ],
 
     ],
@@ -99,7 +99,27 @@ return [
         'drivers' => [
             'driver' => 'eloquent',
             'model' => App\Driver::class,
-        ]
+        ],
+
+        'cached-admins' => [
+            'driver' => 'cached-admin',
+            'model' => App\Admin::class,
+        ],
+
+        'cached-partners' => [
+            'driver' => 'cached-partner',
+            'model' => App\Partner::class,
+        ],
+
+        'cached-users' => [
+            'driver' => 'cached-user',
+            'model' => App\User::class,
+        ],
+
+        'cached-drivers' => [
+            'driver' => 'cached-driver',
+            'model' => App\Driver::class,
+        ],
     ],
 
     /*
