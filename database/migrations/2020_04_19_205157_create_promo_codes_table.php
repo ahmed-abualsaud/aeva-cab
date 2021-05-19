@@ -20,7 +20,7 @@ class CreatePromoCodesTable extends Migration
             $table->float('amount', 10, 2);
             $table->smallInteger('usage')->default(1);
             $table->date('expires_on');
-            $table->enum('type', ['toschool','towork', 'seats', 'ondemand']);
+            $table->enum('type', ['TOSCHOOL','TOWORK','SEATS','ONDEMAND']);
             $table->softDeletes();
             $table->timestamps();
 

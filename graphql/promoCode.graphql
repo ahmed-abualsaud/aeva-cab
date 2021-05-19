@@ -4,7 +4,7 @@ input CreatePromoCodeInput {
   description: String
   usage: Int! @rules(apply: ["required"])
   expires_on: Date! @rules(apply: ["required"])
-  type: String! @rules(apply: ["required", "in:toschool,towork,seats,ondemand"])
+  type: String! @rules(apply: ["required", "in:TOSCHOOL,TOWORK,SEATS,ONDEMAND"])
 }
 
 input UpdatePromoCodeInput {

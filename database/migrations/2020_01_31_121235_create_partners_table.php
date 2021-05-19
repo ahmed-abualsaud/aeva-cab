@@ -25,7 +25,7 @@ class CreatePartnersTable extends Migration
             $table->date('license_expires_on')->nullable();
             $table->unsignedInteger('max_no_of_trips')->nullable();
             $table->string('logo')->nullable();
-            $table->enum('type', ['playground','toschool','towork','seats']);
+            $table->enum('type', ['TOSCHOOL','TOWORK','PLAYGROUND','SEATS']);
             $table->timestamps();
             $table->softDeletes();
 

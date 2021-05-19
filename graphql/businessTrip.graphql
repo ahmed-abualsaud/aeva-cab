@@ -8,7 +8,7 @@ input CreateBusinessTripInput {
   days: TripDaysInput! @rules(apply: ["required"])
   return_time: String
   group_chat: Boolean
-  type: String! @rules(apply: ["in:playground,toschool,towork"])
+  type: String! @rules(apply: ["in:PLAYGROUND,TOSCHOOL,TOWORK"])
 }
 
 input CopyBusinessTripInput {

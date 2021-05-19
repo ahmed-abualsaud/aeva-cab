@@ -33,7 +33,7 @@ class PricePackage extends Model
             return $query->where('type', $args['type']);
         }
  
-        return $query->where('type', 'toschool');
+        return $query->where('type', 'TOSCHOOL');
     }
 
     public function scopeWhereIsPublic($query, $args) 

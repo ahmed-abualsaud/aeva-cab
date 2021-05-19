@@ -6,7 +6,7 @@ input CreatePartnerInput {
   classification: String
   size: String
   logo: Upload
-  type: String! @rules(apply: ["in:playground,toschool,towork,seats"])
+  type: String! @rules(apply: ["in:PLAYGROUND,TOSCHOOL,TOWORK,SEATS"])
   license_expires_on: Date
   max_no_of_trips: Int
 }
