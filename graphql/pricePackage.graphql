@@ -4,7 +4,7 @@ input CreatePricePackageInput {
   price: PriceInput! @rules(apply: ["required"])
   per: String! @rules(apply: ["required"])
   order: Int! @rules(apply: ["required"])
-  type: String! @rules(apply: ["required", "in:TOSCHOOL,towork"])
+  type: String! @rules(apply: ["required", "in:TOSCHOOL,TOWORK"])
   description: String
   description_ar: String
   photo: Upload
