@@ -45,8 +45,8 @@ class SeatsTripEventResolver
                 'latitude' => $args['latitude'],
                 'longitude' => $args['longitude']
             ];
-            SeatsTripEntry::create($input);
-            return Driver::updateLocation($args['latitude'], $args['longitude']);
+            Driver::updateLocation($args['latitude'], $args['longitude']);
+            return SeatsTripEntry::create($input);
         } catch (\Exception $e) {
             //
         }

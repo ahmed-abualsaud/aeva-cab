@@ -3,7 +3,7 @@ input CreateRoleInput {
   permissions: RolePermissionInput! @rules(apply: ["required"])
 }
 
-input UpdateRoleInput {
+input UpdateRoleInput @validator {
   id: ID
   name: String
   permissions: RolePermissionInput

@@ -1,8 +1,8 @@
 input CreateWorkplaceInput {
   zone_id: ID
   name: String! @rules(apply: ["required"])
-  latitude: String! @rules(apply: ["required"])
-  longitude: String! @rules(apply: ["required"])
+  latitude: Float! @rules(apply: ["required"])
+  longitude: Float! @rules(apply: ["required"])
   address: String
 }
 
@@ -10,8 +10,8 @@ input UpdateWorkplaceInput {
   id: ID! @rules(apply: ["required"])
   zone_id: ID
   name: String
-  latitude: String
-  longitude: String
+  latitude: Float
+  longitude: Float
   address: String
 }
 
@@ -62,8 +62,8 @@ input WorkRequestStatusUsers {
 type Workplace {
   id: ID
   name: String
-  latitude: String
-  longitude: String
+  latitude: Float
+  longitude: Float
   address: String
   zone: Zone @belongsTo
 }

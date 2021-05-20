@@ -6,7 +6,7 @@ input CreateAdminInput {
   avatar: Upload
 }
 
-input UpdateAdminInput {
+input UpdateAdminInput @validator {
   id: ID
   role_id: ID
   name: String

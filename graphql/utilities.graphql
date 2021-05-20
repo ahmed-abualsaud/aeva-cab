@@ -1,37 +1,3 @@
-input LoginInput {
-  emailOrPhone: String! @rules(apply: ["required"])
-  password: String! @rules(apply: ["required"])
-  platform: String @rules(apply: ["in:android,ios"])
-  device_id: String
-}
-
-input SocialLoginInput {
-  provider: String! @rules(apply: ["required", "in:facebook,google,apple"])
-  token: String! @rules(apply: ["required"])
-  platform: String @rules(apply: ["in:android,ios"])
-  device_id: String
-}
-
-input ForgotPasswordInput {
-  email: String! @rules(apply: ["required", "email"])
-  type: String! @rules(apply: ["required", "in:users,drivers,partners,admins"])
-}
-
-input NewPasswordWithCodeInput {
-  email: String! @rules(apply: ["required", "email"])
-  type: String! @rules(apply: ["required", "in:users,drivers,partners,admins"])
-  token: String! @rules(apply: ["required", "string"])
-  password: String! @rules(apply: ["required", "confirmed", "min:8"])
-  password_confirmation: String!
-}
-
-input ChangePasswordInput {
-  id: ID! @rules(apply: ["required"])
-  current_password: String! @rules(apply: ["required"])
-  new_password: String! @rules(apply: ["required", "confirmed"])
-  new_password_confirmation: String!
-}
-
 input UpdateOrderInput {
   model: String! @rules(apply: ["required"])
   orders: [OrderInput!]! @rules(apply: ["required"])

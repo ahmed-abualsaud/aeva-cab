@@ -11,8 +11,8 @@ input CreateStatementInput {
   body_ar: String! @rules(apply: ["required"])
 }
 
-input UpdateStatementInput {
-  id: ID! @rules(apply: ["required"])
+input UpdateStatementInput @validator {
+  id: ID
   type: String @rules(apply: ["in:SCHOOL_REQUEST,WORK_REQUEST"])
   title: String
   title_ar: String

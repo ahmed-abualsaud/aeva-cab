@@ -8,8 +8,8 @@ input CreateFleetInput {
   max_no_of_cars: Int
 }
 
-input UpdateFleetInput {
-  id: ID! @rules(apply: ["required"])
+input UpdateFleetInput @validator {
+  id: ID
   name: String
   email: String
   phone: String

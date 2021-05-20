@@ -29,15 +29,15 @@ input AddRequestToBusinessTripInput {
 input BusinessTripDestinationsInput {
   id: ID
   name: String
-  lat: String
-  lng: String
+  lat: Float
+  lng: Float
 }
 
 input BusinessTripUsersInput {
   id: ID
   address: String
-  lat: String
-  lng: String
+  lat: Float
+  lng: Float
   request_id: ID
   days: UserDaysInput
   destination: String

@@ -1,8 +1,8 @@
 input CreateSchoolInput {
   zone_id: ID
   name: String! @rules(apply: ["required"])
-  latitude: String! @rules(apply: ["required"])
-  longitude: String! @rules(apply: ["required"])
+  latitude: Float! @rules(apply: ["required"])
+  longitude: Float! @rules(apply: ["required"])
   address: String
 }
 
@@ -10,20 +10,20 @@ input UpdateSchoolInput {
   id: ID! @rules(apply: ["required"])
   zone_id: ID
   name: String
-  latitude: String
-  longitude: String
+  latitude: Float
+  longitude: Float
   address: String
 }
 
-input CreateSchoolGradeInput {
+input CreateSchoolGradeInput @validator {
+  name: String
   school_id: ID! @rules(apply: ["required"])
-  name: String! @rules(apply: ["required"])
 }
 
-input UpdateSchoolGradeInput {
+input UpdateSchoolGradeInput @validator {
+  name: String
   id: ID! @rules(apply: ["required"])
   school_id: ID! @rules(apply: ["required"])
-  name: String! @rules(apply: ["required"])
 }
 
 input CreateSchoolRequestInput {
@@ -77,8 +77,8 @@ input SchoolRequestStatusUsers {
 type School {
   id: ID
   name: String
-  latitude: String
-  longitude: String
+  latitude: Float
+  longitude: Float
   address: String
   zone: Zone @belongsTo
   grades: [SchoolGrade] @hasMany

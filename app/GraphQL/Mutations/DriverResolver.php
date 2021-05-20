@@ -55,7 +55,6 @@ class DriverResolver
     public function login($_, array $args)
     {
         $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
-        $credentials = [];
 
         if ($emailOrPhone) {
             $credentials["email"] = $args['emailOrPhone'];
@@ -65,7 +64,7 @@ class DriverResolver
 
         $credentials["password"] = $args['password'];
 
-        if (! $token = auth('driver')->attempt($credentials)) {
+        if (!$token = auth('driver')->attempt($credentials)) {
             throw new CustomException('The provided authentication credentials are invalid.');
         }
 

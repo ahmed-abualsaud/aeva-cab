@@ -11,8 +11,8 @@ input CreateCarTypeInput {
   order: Int! @rules(apply: ["required"])
 }
 
-input UpdateCarTypeInput {
-  id: ID! @rules(apply: ["required"])
+input UpdateCarTypeInput @validator {
+  id: ID
   name: String
   seats: Int
   fixed: Int

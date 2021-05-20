@@ -3,7 +3,7 @@ input CreateCityInput {
   name_ar: String! @rules(apply: ["required", "unique:cities,name_ar"])
 }
 
-input UpdateCityInput {
+input UpdateCityInput @validator {
   id: ID! @rules(apply: ["required"])
   name: String
   name_ar: String

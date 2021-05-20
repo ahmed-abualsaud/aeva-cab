@@ -42,38 +42,39 @@ extend type Mutation @guard(with: ["admin"]) {
   createFleet(input: CreateFleetInput! @spread): Fleet
     @field(resolver: "FleetResolver@create")
   updateFleet(input: UpdateFleetInput! @spread): Fleet 
-    @field(resolver: "FleetResolver@update") @updateFleetValidation
+    @field(resolver: "FleetResolver@update")
   deleteFleet(id: ID!): Fleet @delete
 
   # Admin
   createAdmin(input: CreateAdminInput! @spread): Admin
     @field(resolver: "AdminResolver@create")
   updateAdmin(input: UpdateAdminInput! @spread): Admin 
-    @field(resolver: "AdminResolver@update") @updateAdminValidation
+    @field(resolver: "AdminResolver@update")
   changeAdminPassword(input: ChangePasswordInput @spread): String 
     @field(resolver: "AdminResolver@updatePassword")
   deleteAdmin(id: ID!): Admin @delete
 
   # Role Type
   createRole(input: CreateRoleInput! @spread): Role @create
-  updateRole(input: UpdateRoleInput! @spread): Role @update @updateRoleValidation
+  updateRole(input: UpdateRoleInput! @spread): Role 
+    @field(resolver: "RoleResolver@update")
   deleteRole(id: ID!): Role @delete
 
   # Statement
   createStatement(input: CreateStatementInput! @spread): Statement @create
-  updateStatement(input: UpdateStatementInput! @spread): Statement @update @updateStatementValidation
+  updateStatement(input: UpdateStatementInput! @spread): Statement @update
   deleteStatement(id: ID!): Statement @delete
 
   # Vehicle
   createVehicle(input: CreateVehicleInput! @spread): Vehicle 
     @field(resolver: "VehicleResolver@create")
   updateVehicle(input: UpdateVehicleInput! @spread): Vehicle 
-    @field(resolver: "VehicleResolver@update") @updateVehicleValidation
+    @field(resolver: "VehicleResolver@update")
   deleteVehicle(id: ID!): Vehicle @delete
 
   # Car Make
   createCarMake(input: CreateCarMakeInput! @spread): CarMake @create
-  updateCarMake(input: UpdateCarMakeInput! @spread): CarMake @update @updateCarMakeValidation
+  updateCarMake(input: UpdateCarMakeInput! @spread): CarMake @update
   deleteCarMake(id: ID!): CarMake @delete
 
   # Car Model
@@ -87,12 +88,12 @@ extend type Mutation @guard(with: ["admin"]) {
   createCarType(input: CreateCarTypeInput! @spread): CarType
     @field(resolver: "CarTypeResolver@create")
   updateCarType(input: UpdateCarTypeInput! @spread): CarType 
-    @field(resolver: "CarTypeResolver@update") @updateCarTypeValidation
+    @field(resolver: "CarTypeResolver@update")
   deleteCarType(id: ID!): CarType @delete
 
   # Promo Code
   createPromoCode(input: CreatePromoCodeInput! @spread): PromoCode @create
-  updatePromoCode(input: UpdatePromoCodeInput! @spread): PromoCode @update @updatePromoCodeValidation
+  updatePromoCode(input: UpdatePromoCodeInput! @spread): PromoCode @update
   deletePromoCode(id: ID!): PromoCode @delete
 
   # Document
@@ -133,9 +134,9 @@ extend type Mutation @guard(with: ["admin"]) {
 
   # Zone
   createZone(input: CreateZoneInput! @spread): Zone 
-    @create @createZoneValidation
+    @create
   updateZone(input: UpdateZoneInput! @spread): Zone 
-    @update @updateZoneValidation
+    @update
   deleteZone(id: ID!): Zone @delete
 
   # School
@@ -150,9 +151,9 @@ extend type Mutation @guard(with: ["admin"]) {
 
   # School Grade
   createSchoolGrade(input: CreateSchoolGradeInput! @spread): SchoolGrade 
-    @create @createSchoolGradeValidation
+    @create
   updateSchoolGrade(input: UpdateSchoolGradeInput! @spread): SchoolGrade 
-    @update @updateSchoolGradeValidation
+    @update
   deleteSchoolGrade(id: ID!): SchoolGrade @delete
 
   # Price Package
@@ -164,7 +165,7 @@ extend type Mutation @guard(with: ["admin"]) {
 
   # City
   createCity(input: CreateCityInput! @spread): City @create
-  updateCity(input: UpdateCityInput! @spread): City @update @updateCityValidation
+  updateCity(input: UpdateCityInput! @spread): City @update
   deleteCity(id: ID!): City @delete
 
   # Reorder
@@ -184,7 +185,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   changePartnerPassword(input: ChangePasswordInput @spread): String 
     @field(resolver: "PartnerResolver@updatePassword")
   updatePartner(input: UpdatePartnerInput! @spread): Partner 
-    @field(resolver: "PartnerResolver@update") @updatePartnerValidation
+    @field(resolver: "PartnerResolver@update")
 
   # Business Trip
   createBusinessTrip(input: CreateBusinessTripInput! @spread): BusinessTrip 
@@ -280,7 +281,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "BusinessTripEventResolver@changeBusinessTripPickupStatus")
 
   # School
-  createSchool(input: CreateSchoolInput! @spread): School 
+  createSchool(input: CreateSchoolInput! @spread): School
     @create
   createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest 
     @field(resolver: "SchoolRequestResolver@create")
@@ -314,7 +315,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
 extend type Mutation @guard(with: ["admin", "driver"]) {
   # Driver
   updateDriver(input: UpdateDriverInput! @spread): Driver
-    @field(resolver: "DriverResolver@update") @updateDriverValidation
+    @field(resolver: "DriverResolver@update")
   changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "DriverResolver@updatePassword")
 
@@ -351,7 +352,7 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
 extend type Mutation @guard(with: ["admin", "partner", "user"]) {
   # User
   updateUser(input: UpdateUserInput! @spread): UserPayload 
-    @field(resolver: "UserResolver@update") @updateUserValidation
+    @field(resolver: "UserResolver@update")
 
   # Business Trip Station
   createBusinessTripStation(input: CreateBusinessTripStationInput! @spread): 
@@ -441,8 +442,8 @@ type Query @guard(with: ["admin"]) {
   carType(id: ID @eq): CarType @find
 
   # Ondemand Request
-  ondemandRequests(status: String, period: String, searchFor: String, searchQuery: String): 
-    [OndemandRequest] @paginate(scopes: ["filter", "search"])
+  ondemandRequests(status: String, period: String, searchFor: String, searchQuery: String): [OndemandRequest]
+    @paginate(scopes: ["filter", "search"])
   ondemandRequestsStats(status: String period: String): OndemandRequestStats
     @field(resolver: "OndemandRequestResolver@stats")
 
@@ -599,8 +600,8 @@ extend type Query @guard(with: ["admin", "user"]) {
 
   # Seats
   seatsTripBooking(id: ID! @eq): SeatsTripBooking @find
-  userSeatsTripBookings(user_id: ID! @eq, time: String!): 
-    [SeatsTripBooking] @all(scopes: ["wherePickupTime"])
+  userSeatsTripBookings(user_id: ID! @eq, time: String!): [SeatsTripBooking] 
+    @paginate(scopes: ["wherePickupTime"] type: SIMPLE, defaultCount: 10)
   preSeatsTripBooking(pickup_id: ID!, dropoff_id: ID!): PreSeatsTripBooking
     @field(resolver: "SeatsTripBookingResolver@pre")
 }
@@ -624,7 +625,9 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
 
   # Seats
   seatsNearbyStations(plat: String!, plng: String!, dlat: String!, dlng: String!, day: String!): 
-    [SeatsNearbyStation] @field(resolver: "SeatsLineStationResolver@nearby")
+    [SeatsNearbyStation] 
+    @paginate(builder: "App\\SeatsLineStation@nearby", type: SIMPLE, defaultCount: 10)
+    @cache(maxAge: 300)
   seatsTripTransactions(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [SeatsTripTransaction]
     @paginate(scopes: ["forPartner", "forTrip", "forPeriod", "search"])
   seatsTripTransactionsStats(period: String): SeatsTripTransactionsStats
@@ -681,6 +684,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "CommunicationResolver@businessTripChatMessages")
 }
 
+#import auth.graphql
 #import role.graphql
 #import admin.graphql
 #import user.graphql

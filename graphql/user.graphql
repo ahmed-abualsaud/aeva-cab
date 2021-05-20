@@ -25,8 +25,8 @@ input UserFromFileInput {
   phone: String! @rules(apply: ["required"])
 }
 
-input UpdateUserInput {
-  id: ID! @rules(apply: ["required"])
+input UpdateUserInput @validator {
+  id: ID
   name: String
   email: String
   partner_id: ID
@@ -64,8 +64,8 @@ type User {
   title: String
   partner_id: ID
   payment_method: String
-  latitude: String
-  longitude: String
+  latitude: Float
+  longitude: Float
   wallet_balance: Float
   rating: Float
   ref_code: String

@@ -41,13 +41,15 @@ class AdminResolver
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
-            if ($admin->avatar) $this->deleteOneFile($admin->avatar, 'avatars');
+            if ($admin->avatar) 
+                $this->deleteOneFile($admin->avatar, 'avatars');
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $input['avatar'] = $url;
         }
 
-        if ($admin->token) 
-            JWTAuth::setToken($admin->token)->invalidate();
+        if (array_key_exists('role_id', $args) && $args['role_id']) {
+            $this->invalidateToken($admin);
+        }
 
         $admin->update($input);
 
@@ -110,5 +112,13 @@ class AdminResolver
         $admin->save();
 
         return 'Password changed successfully.';
+    }
+
+    protected function invalidateToken($admin)
+    {
+        if ($admin->token) {
+            JWTAuth::setToken($admin->token)->invalidate();
+            $admin->update(['token' => null]);
+        }
     }
 }

@@ -9,8 +9,8 @@ input CreateVehicleInput {
   photo: Upload
 }
 
-input UpdateVehicleInput {
-  id: ID! @rules(apply: ["required"])
+input UpdateVehicleInput @validator {
+  id: ID
   license_plate: String
   license_expires_on: Date
   car_type_id: ID

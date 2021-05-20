@@ -11,8 +11,8 @@ input CreatePartnerInput {
   max_no_of_trips: Int
 }
 
-input UpdatePartnerInput {
-  id: ID! @rules(apply: ["required"])
+input UpdatePartnerInput @validator {
+  id: ID
   name: String
   email: String
   classification: String

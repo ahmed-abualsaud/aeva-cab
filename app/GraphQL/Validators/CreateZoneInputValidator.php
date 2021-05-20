@@ -1,11 +1,11 @@
 <?php
 
-namespace App\GraphQL\Directives;
+namespace App\GraphQL\Validators;
 
 use Illuminate\Validation\Rule;
-use Nuwave\Lighthouse\Schema\Directives\ValidationDirective;
+use Nuwave\Lighthouse\Validation\Validator;
 
-class UpdateSchoolValidationDirective extends ValidationDirective
+class CreateZoneInputValidator extends Validator
 {
   /**
    * @return mixed[]
@@ -14,10 +14,10 @@ class UpdateSchoolValidationDirective extends ValidationDirective
   {
     return [
       'name' => [
-        'sometimes', 
-        Rule::unique('schools', 'name')
-          ->ignore($this->args['id'], 'id')
-          ->where('zone_id', $this->args['zone_id'])
+        'required', 
+        Rule::unique('zones', 'name')
+          ->where('city_id', $this->args['city_id'])
+          ->where('type', $this->args['type'])
       ],
     ];
   }

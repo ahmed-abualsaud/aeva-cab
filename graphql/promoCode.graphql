@@ -7,8 +7,8 @@ input CreatePromoCodeInput {
   type: String! @rules(apply: ["required", "in:TOSCHOOL,TOWORK,SEATS,ONDEMAND"])
 }
 
-input UpdatePromoCodeInput {
-  id: ID! @rules(apply: ["required"])
+input UpdatePromoCodeInput @validator {
+  id: ID
   name: String
   amount: Float
   description: String

@@ -11,8 +11,8 @@ input CreateDriverInput {
   status: Boolean
 }
 
-input UpdateDriverInput {
-  id: ID! @rules(apply: ["required"])
+input UpdateDriverInput @validator {
+  id: ID
   name: String
   email: String
   phone: String
@@ -46,8 +46,8 @@ type Driver {
   phone: String
   license_expires_on: Date
   avatar: String
-  latitude: String
-  longitude: String
+  latitude: Float
+  longitude: Float
   rating: Float
   status: Boolean
   city: String

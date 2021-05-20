@@ -1,7 +1,7 @@
 input CreateSeatsLineStationInput {
   name: String! @rules(apply: ["required"])
-  latitude: String! @rules(apply: ["required"])
-  longitude: String! @rules(apply: ["required"])
+  latitude: Float! @rules(apply: ["required"])
+  longitude: Float! @rules(apply: ["required"])
   line_id: ID! @rules(apply: ["required"])
   state: String @rules(apply: ["in:START,END,PICKABLE"])
 } 
@@ -9,16 +9,16 @@ input CreateSeatsLineStationInput {
 input UpdateSeatsLineStationInput {
   id: ID! @rules(apply: ["required"])
   name: String
-  latitude: String
-  longitude: String
+  latitude: Float
+  longitude: Float
   state: String @rules(apply: ["in:START,END,PICKABLE"])
 } 
 
 type SeatsLineStation {
   id: ID
   name: String
-  latitude: String
-  longitude: String
+  latitude: Float
+  longitude: Float
   state: String
   distance: Int
   duration: Int

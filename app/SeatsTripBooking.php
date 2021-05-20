@@ -72,10 +72,13 @@ class SeatsTripBooking extends Model
 
         switch($args['time']) {
             case 'PAST':
-                return $query->where('pickup_time', '<', $now);
+                $query = $query->where('pickup_time', '<', $now);
+            break;
             default:
-                return $query->where('pickup_time', '>=', $now);
+                $query = $query->where('pickup_time', '>=', $now);
         }
+
+        return $query->latest('pickup_time');
 
     }
 
