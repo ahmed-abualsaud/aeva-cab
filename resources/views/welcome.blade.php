@@ -60,7 +60,7 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <div class="title m-b-md">
-                    Qruz
+                    Qruz v2
                 </div>
             </div>
         </div>

@@ -12,8 +12,7 @@
 */
 
 Route::group(['middleware' => ['auth:user']], function () {
-    Route::group(['prefix' => 'user'], function () { 
-        Route::post('/pay', 'PaymentController@pay');
+    Route::group(['prefix' => 'user'], function () {
         Route::post('/update/avatar', 'UserController@handleAvatar');
     });
 });

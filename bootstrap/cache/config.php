@@ -250,7 +250,7 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/storage/framework/cache/data',
+        'path' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/storage/framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -347,9 +347,6 @@
     'otp_username' => '5NFU1SZf',
     'otp_password' => '3iZFppXQxD',
     'otp_sender_id' => 'Qruz',
-    'valulus_app_id' => '3b0d7231-7586-49e3-944b-27f63b50f569',
-    'valulus_password' => 'Ah3210779',
-    'valulus_hash_secret' => 'b7b8909732336565353931302d666165',
   ),
   'database' => 
   array (
@@ -461,12 +458,12 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/storage/app',
+        'root' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/storage/app',
       ),
       'public' => 
       array (
         'driver' => 'local',
-        'root' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/storage/app/public',
+        'root' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/storage/app/public',
         'url' => 'http://localhost:3000/storage',
         'visibility' => 'public',
       ),
@@ -629,7 +626,7 @@
     'guard' => NULL,
     'schema' => 
     array (
-      'register' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/graphql/schema.graphql',
+      'register' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/graphql/schema.graphql',
     ),
     'cache' => 
     array (
@@ -747,13 +744,13 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/storage/logs/laravel.log',
+        'path' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/storage/logs/laravel.log',
         'level' => 'debug',
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/storage/logs/laravel.log',
+        'path' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/storage/logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
       ),
@@ -803,7 +800,7 @@
       ),
       'emergency' => 
       array (
-        'path' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/storage/logs/laravel.log',
+        'path' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/storage/logs/laravel.log',
       ),
     ),
   ),
@@ -826,7 +823,7 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/resources/views/vendor/mail',
+        0 => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/resources/views/vendor/mail',
       ),
     ),
     'log_channel' => NULL,
@@ -939,7 +936,7 @@
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/storage/framework/sessions',
+    'files' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/storage/framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -1040,9 +1037,9 @@
   array (
     'paths' => 
     array (
-      0 => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/resources/views',
+      0 => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/resources/views',
     ),
-    'compiled' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz/storage/framework/views',
+    'compiled' => '/Users/ahmadghallab/Documents/Projects/PHP/code/qruz-v2/storage/framework/views',
   ),
   'websockets' => 
   array (

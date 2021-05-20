@@ -10,8 +10,5 @@ return [
     'otp_username' => env('OTP_USERNAME'),
     'otp_password' => env('OTP_PASSWORD'),
     'otp_sender_id' => env('OTP_SENDER_ID'),
-    'valulus_app_id' => env('VAPULUS_APP_ID'),
-    'valulus_password' => env('VAPULUS_PASSWORD'),
-    'valulus_hash_secret' => env('VAPULUS_HASH_SECRET'),
 
 ];
