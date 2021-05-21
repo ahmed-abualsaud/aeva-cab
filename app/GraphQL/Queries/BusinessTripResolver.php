@@ -2,7 +2,6 @@
 
 namespace App\GraphQL\Queries;
 
-use Carbon\Carbon;
 use App\BusinessTrip;
 use Illuminate\Support\Facades\Cache;
 
@@ -33,7 +32,7 @@ class BusinessTripResolver
 
         $userTrips = Cache::tags($tags)->remember($cacheKey, 900, fn() =>
             BusinessTrip::selectRaw(
-                'business_trips.*,
+                'business_trips.id, business_trips.name, business_trips.days,
                 business_trip_attendance.date AS absence_date'
             )
             ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
@@ -60,7 +59,7 @@ class BusinessTripResolver
 
         if ($userTrips->isEmpty()) return [];
 
-        return $this->scheduledTrips($userTrips, $args['day']);
+        return $this->schedule($userTrips, $args['day']);
     }
 
     public function userLiveTrips($_, array $args)
@@ -73,7 +72,7 @@ class BusinessTripResolver
 
         return Cache::tags($tags)->remember($cacheKey, 900, fn() =>
             BusinessTrip::select(
-                'business_trips.*'
+                'business_trips.id, business_trips.name'
             )
             ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
@@ -93,63 +92,36 @@ class BusinessTripResolver
 
     public function driverTrips($_, array $args)
     {
-        $driverTrips = BusinessTrip::where('driver_id', $args['driver_id'])
+        $driverTrips = BusinessTrip::select('id', 'name', 'days')
+            ->where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
             ->get();
 
         if ($driverTrips->isEmpty()) return [];
 
-        return $this->scheduledTrips($driverTrips, $args['day']);
-    }
-
-    public function driverLiveTrip($_, array $args)
-    {
-        try {
-            $liveTrip = BusinessTrip::select('id')
-                ->where('driver_id', $args['driver_id'])
-                ->whereNotNull('log_id')
-                ->firstOrFail();
-            return ["status" => true, "tripType" => "App\BusinessTrip", "tripID" => $liveTrip->id];
-        } catch (\Exception $e) {
-            return ["status" => false, "tripType" => null, "tripID" => null];
-        }
+        return $this->schedule($driverTrips, $args['day']);
     }
 
     public function driverLiveTrips($_, array $args)
     {
-        $liveTrips = BusinessTrip::where('driver_id', $args['driver_id'])
+        $liveTrips = BusinessTrip::select('id', 'name')
+            ->where('driver_id', $args['driver_id'])
             ->whereNotNull('log_id')
             ->get();
 
         return $liveTrips;
     }
 
-    protected function scheduledTrips($trips, $day) 
+    protected function schedule($trips, $day) 
     {
         $dateTime = date('Y-m-d', strtotime($day));
         
         foreach($trips as $trip) {
-            $trip->dayName = $day;
             $trip->is_absent = $trip->absence_date === $dateTime;
-            $tripInstance = new BusinessTrip();
-            $trip->date = strtotime($dateTime.' '.$trip->days[$day]) * 1000;
-            $trip->isReturn = false;
-            $trip->startsAt = Carbon::parse($dateTime.' '.$trip->days[$day])->format('h:i a');
-            $tripInstance->fill($trip->toArray());
-            $sortedTrips[] = $tripInstance;
-            if ($trip->return_time) {
-                $tripInstance = new BusinessTrip();
-                $trip->date = strtotime($dateTime.' '.$trip->return_time) * 1000;;
-                $trip->startsAt = Carbon::parse($dateTime.' '.$trip->return_time)->format('h:i a');
-                $trip->isReturn = true;
-                $tripInstance->fill($trip->toArray());
-                $sortedTrips[] = $tripInstance;
-            }
+            $trip->starts_at = $dateTime.' '.$trip->days[$day];
         }
-
-        usort($sortedTrips, function ($a, $b) { return ($a['date'] > $b['date']); });
         
-        return $sortedTrips;
+        return $trips->sortBy('starts_at');;
     }
 }

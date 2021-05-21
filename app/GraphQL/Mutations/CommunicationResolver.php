@@ -127,8 +127,8 @@ class CommunicationResolver
 
             SendPushNotification::dispatch(
                 $token, 
-                $msg, 
-                $sender->name,
+                $sender->name.': '.$msg, 
+                $args['trip_name'],
                 [
                     'view' => 'BusinessTripDirectMessage', 
                     'id' => $args['trip_id'], 
@@ -159,9 +159,12 @@ class CommunicationResolver
     
             SendPushNotification::dispatch(
                 $tokens, 
-                $msg, 
-                $sender->name,
-                ['view' => 'BusinessTripGroupChat', 'id' => $args['trip_id']]
+                $sender->name.': '.$msg, 
+                $args['trip_name'],
+                [
+                    'view' => 'BusinessTripGroupChat', 
+                    'id' => $args['trip_id']
+                ]
             );
         } catch (\Exception $e) {
             //

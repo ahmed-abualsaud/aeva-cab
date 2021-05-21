@@ -42,17 +42,17 @@ class BusinessTripEventResolver
 
         $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $logId]);
 
-        $trip->update(['log_id' => $logId, 'status' => true]);
+        $trip->update(['log_id' => $logId, 'starts_at' => $args['trip_time']]);
 
         return $trip;
     }
 
-    public function nearYou($_, array $args)
+    public function atStation($_, array $args)
     {
         try { 
             SendPushNotification::dispatch(
                 $this->stationUsersToken($args['station_id']), 
-                'Qruz captain is so close to you',
+                'Qruz captain has arrived at your station and will leave after 1 min',
                 $args['trip_name'],
                 ['view' => 'BusinessTrip', 'id' => $args['trip_id']]
             );
@@ -60,18 +60,18 @@ class BusinessTripEventResolver
             $payload = array([
                 'station_id' => $args['station_id'],
                 'station_name' => $args['station_name'],
-                'status' => 'nearby',
+                'status' => 'at station',
                 'at' => date("Y-m-d H:i:s"),
+                'eta' => $args['eta'],
                 'lat' => $args['latitude'],
                 'lng' => $args['longitude']
             ]);
-            $this->updateEventPayload($args['log_id'], $payload);
+            
+            return $this->updateEventPayload($args['log_id'], $payload);
 
         } catch (\Exception $e) {
             throw new CustomException("We could not able to notify selected station's users!");
         }
-
-        return "Selected station's users have been notified!";
     }
 
     public function changeBusinessTripPickupStatus($_, array $args)
@@ -89,9 +89,8 @@ class BusinessTripEventResolver
             'lng' => $args['longitude'],
             'by' => 'user'
         ]);
-        $this->updateEventPayload($args['log_id'], $data);
-
-        return "Pick up status has been changed successfully";
+        
+        return $this->updateEventPayload($args['log_id'], $data);
     }
 
     public function changeBusinessTripAttendanceStatus($_, array $args)
@@ -116,28 +115,24 @@ class BusinessTripEventResolver
             'lng' => $args['longitude'],
             'by' => $args['by']
         ]);
-        
-        $this->updateEventPayload($args['log_id'], $payload);
 
         Cache::tags('userTrips:'.$args['user_id'])->flush();
-
-        return "Attendance status has been changed successfully";
+        
+        return $this->updateEventPayload($args['log_id'], $payload);
     }
 
     public function pickUsers($_, array $args)
     {
         $msg = 'Welcome! May you be happy and safe throughout this trip.';
-        $this->pickOrDropUsers($args, true, $msg);
 
-        return $msg;
+        return $this->pickOrDropUsers($args, true, $msg);
     }
 
     public function dropUsers($_, array $args)
     {
         $msg = 'Bye! We can\'t wait to see you next time.';
-        $this->pickOrDropUsers($args, false, $msg);
-
-        return $msg;
+        
+        return $this->pickOrDropUsers($args, false, $msg);
     }
 
     public function updateDriverLocation($_, array $args)
@@ -149,12 +144,10 @@ class BusinessTripEventResolver
                 'longitude' => $args['longitude']
             ];
             Driver::updateLocation($args['latitude'], $args['longitude']);
-            BusinessTripEntry::create($input);
+            return BusinessTripEntry::create($input);
         } catch (\Exception $e) {
             //
         }
-
-        return "Location has been updated";
     }
 
     public function endTrip($_, array $args)
@@ -166,16 +159,14 @@ class BusinessTripEventResolver
 
         $logId = $trip->log_id;
 
-        $trip->update(['log_id' => null, 'status' => false]);
+        $trip->update(['log_id' => null, 'starts_at' => null]);
 
         $this->updateUserStatus(
             $args['trip_id'],
             ['is_picked_up' => false, 'is_absent' => false, 'is_scheduled' => true]
         );
 
-        $this->closeTripEvent($args, $logId, $trip);
-
-        return 'Trip has been ended.';
+        return $this->closeTripEvent($args, $logId, $trip);
     }
 
     public function destroy($_, array $args)
@@ -230,7 +221,8 @@ class BusinessTripEventResolver
                 $data[] = $payload;
             }
 
-            $this->updateEventPayload($args['log_id'], $data);
+            return $this->updateEventPayload($args['log_id'], $data);
+
         } catch (\Exception $e) {
             throw new CustomException('Could not change selected users status!');
         }
@@ -245,7 +237,7 @@ class BusinessTripEventResolver
             if (array_key_exists('payload', $event->content)) 
                 $payload = array_merge($event->content['payload'], $payload);
                 
-            $event->update(['content' => array_merge($event->content, ['payload' => $payload])]);
+            return $event->update(['content' => array_merge($event->content, ['payload' => $payload])]);
         } catch (\Exception $e) {
             //
         }
@@ -282,7 +274,7 @@ class BusinessTripEventResolver
 
             $updatedData['content'] = array_merge($event->content, ['ended' => $ended]);
 
-            $event->update($updatedData);
+            return $event->update($updatedData);
         } catch (\Exception $e) {
             //
         }
@@ -345,6 +337,7 @@ class BusinessTripEventResolver
             $input = [
                 'trip_id' => $args['trip_id'],
                 'driver_id' => $driverId,
+                'trip_time' => $args['trip_time'],
                 'log_id' => $logId,
                 'content' => [ 
                     'started' => [

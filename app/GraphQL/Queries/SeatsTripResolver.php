@@ -24,39 +24,35 @@ class SeatsTripResolver
 
     public function driverTrips($_, array $args)
     {
-        $driverTrips = SeatsTrip::where('driver_id', $args['driver_id'])
+        $driverTrips = SeatsTrip::select('id', 'name', 'days')
+            ->where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
             ->get();
 
         if ($driverTrips->isEmpty()) return [];
 
-        return $this->scheduledTrips($driverTrips, $args['day']);
+        return $this->schedule($driverTrips, $args['day']);
     }
 
     public function driverLiveTrips($_, array $args)
     {
-        $liveTrips = SeatsTrip::where('driver_id', $args['driver_id'])
+        $liveTrips = SeatsTrip::select('id', 'name')
+            ->where('driver_id', $args['driver_id'])
             ->whereNotNull('log_id')
             ->get();
 
         return $liveTrips;
     }
 
-    protected function scheduledTrips($trips, $day) 
+    protected function schedule($trips, $day) 
     {
         $dateTime = date('Y-m-d', strtotime($day));
         
-        foreach($trips as $trip) {
-            $tripInstance = new SeatsTrip();
+        foreach($trips as $trip)
             $trip->starts_at = $dateTime.' '.$trip->days[$day];
-            $tripInstance->fill($trip->toArray());
-            $sortedTrips[] = $tripInstance;
-        }
-
-        usort($sortedTrips, function ($a, $b) { return ($a['start_time'] > $b['start_time']); });
         
-        return $sortedTrips;
+        return $trips->sortBy('starts_at');
     }
     
 }

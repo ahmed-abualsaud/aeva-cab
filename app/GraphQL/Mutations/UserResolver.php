@@ -149,7 +149,7 @@ class UserResolver
 
         $user->update($input);
 
-        return ['user' => $user];
+        return $user;
     }
 
     public function login($_, array $args)

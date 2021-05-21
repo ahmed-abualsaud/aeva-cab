@@ -1,5 +1,17 @@
 input StartTripInput {
   trip_id: ID! @rules(apply: ["required"])
+  trip_time: String! @rules(apply: ["required"])
+  latitude: Float! @rules(apply: ["required"])
+  longitude: Float! @rules(apply: ["required"])
+}
+
+input AtTripStationInput {
+  eta: String! @rules(apply: ["required"])
+  station_id: ID! @rules(apply: ["required"])
+  station_name: String! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+  trip_name: String! @rules(apply: ["required"])
+  log_id: String! @rules(apply: ["required"])
   latitude: Float! @rules(apply: ["required"])
   longitude: Float! @rules(apply: ["required"])
 }
@@ -15,79 +27,6 @@ input UpdateTripDriverLocationInput {
   log_id: String! @rules(apply: ["required"])
   latitude: Float! @rules(apply: ["required"])
   longitude: Float! @rules(apply: ["required"])
-}
-
-input NearYouInput {
-  station_id: ID! @rules(apply: ["required"])
-  station_name: String! @rules(apply: ["required"])
-  trip_id: ID! @rules(apply: ["required"])
-  trip_name: String! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: Float! @rules(apply: ["required"])
-  longitude: Float! @rules(apply: ["required"])
-}
-
-input ChangeBusinessTripPickupStatusInput {
-  trip_id: ID! @rules(apply: ["required"])
-  trip_name: String! @rules(apply: ["required"])
-  user_id: ID! @rules(apply: ["required"])
-  user_name: String! @rules(apply: ["required"])
-  is_picked_up: Boolean! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: Float! @rules(apply: ["required"])
-  longitude: Float! @rules(apply: ["required"])
-  driver_id: ID! @rules(apply: ["required"])
-}
-
-input ChangeBusinessTripAttendanceStatusInput {
-  trip_id: ID! @rules(apply: ["required"])
-  trip_name: String! @rules(apply: ["required"])
-  user_id: ID! @rules(apply: ["required"])
-  user_name: String! @rules(apply: ["required"])
-  is_absent: Boolean! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: Float! @rules(apply: ["required"])
-  longitude: Float! @rules(apply: ["required"])
-  driver_id: ID! @rules(apply: ["required"])
-  by: String! @rules(apply: ["required", "in:driver,user"])
-}
-
-input SelectUsersInput {
-  trip_id: ID! @rules(apply: ["required"])
-  trip_name: String! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: Float! @rules(apply: ["required"])
-  longitude: Float! @rules(apply: ["required"])
-  users: [UserObj] @rules(apply: ["required"])
-}
-
-input UserObj {
-  id: ID! @rules(apply: ["required"])
-  name: String! @rules(apply: ["required"])
-}
-
-type BusinessTripEvent {
-  log_id: String
-  trip_id: ID
-  trip_name: String
-  partner_id: ID
-  partner_name: String
-  driver_id: ID
-  driver_name: String
-  map_url: String
-  content: TripEventContent
-}
-
-type SeatsTripEvent {
-  log_id: String
-  trip_id: ID
-  trip_name: String
-  partner_id: ID
-  partner_name: String
-  driver_id: ID
-  driver_name: String
-  map_url: String
-  content: TripEventContent
 }
 
 type TripEventContent {

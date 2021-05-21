@@ -1,8 +1,5 @@
 input CreateOndemandRequestInput {
   user_id: ID! @rules(apply: ["required"])
-  verb: String! @rules(apply: ["required", "in:RENT,ORGANIZE,SUBSCRIBE"])
-  type: String @rules(apply: ["max:10"])
-  event_name: String
   find_people: Boolean
   contact_phone: String
   start_date: String! @rules(apply: ["required"])
@@ -32,10 +29,10 @@ input RequestVehicles {
 }
 
 input RequestLines {
-  from_lat: String! @rules(apply: ["required"])
-  from_lng: String! @rules(apply: ["required"])
-  to_lat: String! @rules(apply: ["required"])
-  to_lng: String! @rules(apply: ["required"])
+  from_lat: Float! @rules(apply: ["required"])
+  from_lng: Float! @rules(apply: ["required"])
+  to_lat: Float! @rules(apply: ["required"])
+  to_lng: Float! @rules(apply: ["required"])
   from_address: String
   to_address: String
 }
@@ -43,9 +40,6 @@ input RequestLines {
 type OndemandRequest {
   id: ID
   user: User @belongsTo
-  verb: String
-  type: String
-  event_name: String
   find_people: Boolean
   contact_phone: String
   start_date: String
@@ -75,10 +69,10 @@ type OndemandRequestVehicle {
 
 type OndemandRequestLine {
   id: ID
-  from_lat: String
-  from_lng: String 
-  to_lat: String
-  to_lng: String
+  from_lat: Float
+  from_lng: Float 
+  to_lat: Float
+  to_lng: Float
   from_address: String
   to_address: String
 }

@@ -17,6 +17,7 @@ class CreateBusinessTripEventsTable extends Migration
             $table->uuid('log_id');
             $table->unsignedBigInteger('trip_id');
             $table->unsignedBigInteger('driver_id');
+            $table->dateTime('trip_time');
             $table->json('content');
             $table->text('map_url')->nullabel();
             $table->timestamps();

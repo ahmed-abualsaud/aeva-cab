@@ -20,13 +20,13 @@ input CreateWorkRequestInput {
   city_id: ID! @rules(apply: ["required"])
   workplace_id: ID! @rules(apply: ["required"])
   price_package_id: ID! @rules(apply: ["required"])
-  contact_phone: String! @rules(apply: ["required"])
-  pickup_lat: String! @rules(apply: ["required"])
-  pickup_lng: String! @rules(apply: ["required"])
+  pickup_lat: Float! @rules(apply: ["required"])
+  pickup_lng: Float! @rules(apply: ["required"])
   pickup_address: String! @rules(apply: ["required"])
   days: String! @rules(apply: ["required"])
   enter_time: String! @rules(apply: ["required"])
   exit_time: String! @rules(apply: ["required"])
+  contact_phone: String
   comment: String
 }
 
@@ -35,8 +35,8 @@ input UpdateWorkRequestInput {
   workplace_id: ID
   price_package_id: ID
   contact_phone: String
-  pickup_lat: String
-  pickup_lng: String
+  pickup_lat: Float
+  pickup_lng: Float
   pickup_address: String
   days: String
   enter_time: String
@@ -76,8 +76,8 @@ type WorkRequest {
   workplace: Workplace @belongsTo
   pricePackage: PricePackage @belongsTo
   contact_phone: String
-  pickup_lat: String
-  pickup_lng: String
+  pickup_lat: Float
+  pickup_lng: Float
   pickup_address: String
   days: String
   enter_time: String

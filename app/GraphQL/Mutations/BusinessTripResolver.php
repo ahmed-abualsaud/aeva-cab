@@ -197,53 +197,24 @@ class BusinessTripResolver
     public function unsubscribeUser($_, array $args)
     {
         try {
-            $users = BusinessTripUser::where('trip_id', $args['trip_id'])
-                ->whereIn('user_id', $args['user_id']);
-
-            /*
-            * Revert Business Request
-    
-            $businessRequests = $users
-                ->select('request_type','request_id')
-                ->get()
-                ->whereNotNull('request_type');
-                
-            if ($businessRequests->count()) {
-                $requestType = $businessRequests
-                    ->first()
-                    ->request_type;
-
-                $requestIds = $businessRequests
-                    ->pluck('request_id')
-                    ->toArray();
-
-                $requestType::restore($requestIds);
-            }
-            */
-
-            $users->delete();
+            return BusinessTripUser::where('trip_id', $args['trip_id'])
+                ->whereIn('user_id', $args['user_id'])
+                ->delete();
 
         } catch (\Exception $e) {
             throw new CustomException('Subscription cancellation failed.');
         }
-        
-        return [
-            "status" => true,
-            "message" => "Subscription cancellation has done successfully."
-        ];
     }
 
     public function verifyUserSubscription($_, array $args)
     {
         try {
-            BusinessTripUser::where('trip_id', $args['trip_id'])
+            return BusinessTripUser::where('trip_id', $args['trip_id'])
                 ->where('user_id', $args['user_id'])
                 ->update(['subscription_verified_at' => $args['subscription_verified_at']]);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to toggle this subscription!');
         }
-
-        return "Subscription toggled successfully";
     }
 
     protected function notifyUserViaSms(array $args)

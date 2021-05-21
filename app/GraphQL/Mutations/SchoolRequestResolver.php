@@ -63,7 +63,6 @@ class SchoolRequestResolver
                     SchoolRequest::exclude($args['requestIds'], $updateInput);
                     if (array_key_exists('notify', $args) && $args['notify'])
                         $this->notifyUsers($args);
-                    break;
             }
             
         } catch (\Exception $e) {

@@ -21,14 +21,6 @@ input UpdateVehicleInput @validator {
   photo: Upload
 }
 
-type VehicleModelsByTypeResponse {
-  id: ID
-  photo: String
-  name: String
-  seats: Int
-  order: Int
-}
-
 type Vehicle {
   id: ID
   license_plate: String

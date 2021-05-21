@@ -16,9 +16,6 @@ class CreateOndemandRequestsTable extends Migration
         Schema::create('ondemand_requests', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
-            $table->enum('verb', ['RENT', 'ORGANIZE', 'SUBSCRIBE']);
-            $table->string('type', 10)->nullable();
-            $table->string('event_name')->nullable();
             $table->enum('frequency', ['DAILY', 'ONE_TIME'])->nullable();
             $table->enum('way', ['ONE_WAY', 'TWO_WAYS'])->nullable();
             $table->enum('classification', ['EDUCATIONAL', 'CORPORATE', 'INDIVIDUAL', 'GROUP'])->nullable();

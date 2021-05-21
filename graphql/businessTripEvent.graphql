@@ -1,20 +1,3 @@
-input UpdateBusinessTripDriverLocationInput {
-  trip_id: ID! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: Float! @rules(apply: ["required"])
-  longitude: Float! @rules(apply: ["required"])
-}
-
-input NearYouInput {
-  station_id: ID! @rules(apply: ["required"])
-  station_name: String! @rules(apply: ["required"])
-  trip_id: ID! @rules(apply: ["required"])
-  trip_name: String! @rules(apply: ["required"])
-  log_id: String! @rules(apply: ["required"])
-  latitude: Float! @rules(apply: ["required"])
-  longitude: Float! @rules(apply: ["required"])
-}
-
 input ChangeBusinessTripPickupStatusInput {
   trip_id: ID! @rules(apply: ["required"])
   trip_name: String! @rules(apply: ["required"])
@@ -40,7 +23,7 @@ input ChangeBusinessTripAttendanceStatusInput {
   by: String! @rules(apply: ["required", "in:driver,user"])
 }
 
-input SelectUsersInput {
+input SelectBusinessTripUsersInput {
   trip_id: ID! @rules(apply: ["required"])
   trip_name: String! @rules(apply: ["required"])
   log_id: String! @rules(apply: ["required"])
@@ -56,6 +39,7 @@ input UserObj {
 
 type BusinessTripEvent {
   log_id: String
+  trip_time: String
   trip_id: ID
   trip_name: String
   partner_id: ID

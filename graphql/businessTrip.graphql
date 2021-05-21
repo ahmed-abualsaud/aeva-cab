@@ -30,28 +30,17 @@ input UpdateBusinessTripInput {
   group_chat: Boolean
 }
 
-type DriverLiveTripResponse {
-  status: Boolean
-  tripType: String
-  tripID: ID
-}
-
 type BusinessTrip {
   id: ID
-  log_id: String
-  status: Boolean
   name: String
+  log_id: String
+  starts_at: String
   return_time: String
   start_date: Date
   end_date: Date
   subscription_code: String
   distance: Int
   duration: Int
-  startsAt: String
-  dayName: String
-  flag: Boolean
-  date: String
-  isReturn: Boolean
   is_absent: Boolean
   group_chat: Boolean
   partner: Partner @belongsTo

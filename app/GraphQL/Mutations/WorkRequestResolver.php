@@ -22,7 +22,8 @@ class WorkRequestResolver
         try {
             $input = collect($args)->except(['directive'])->toArray();
 
-            User::updateSecondaryNumber($args['contact_phone']);
+            if (array_key_exists('contact_phone', $args) && $args['contact_phone'])
+                User::updateSecondaryNumber($args['contact_phone']);
 
             $workRequest = WorkRequest::create($input);
         } catch (\Exception $e) {

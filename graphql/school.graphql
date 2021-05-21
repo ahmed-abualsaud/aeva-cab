@@ -34,8 +34,8 @@ input CreateSchoolRequestInput {
   price_package_id: ID! @rules(apply: ["required"])
   student_name: String! @rules(apply: ["required"])
   contact_phone: String! @rules(apply: ["required"])
-  pickup_lat: String! @rules(apply: ["required"])
-  pickup_lng: String! @rules(apply: ["required"])
+  pickup_lat: Float! @rules(apply: ["required"])
+  pickup_lng: Float! @rules(apply: ["required"])
   pickup_address: String! @rules(apply: ["required"])
   days: String! @rules(apply: ["required"])
   enter_time: String! @rules(apply: ["required"])
@@ -50,8 +50,8 @@ input UpdateSchoolRequestInput {
   price_package_id: ID
   student_name: String
   contact_phone: String
-  pickup_lat: String
-  pickup_lng: String
+  pickup_lat: Float
+  pickup_lng: Float
   pickup_address: String
   days: String
   enter_time: String
@@ -99,8 +99,8 @@ type SchoolRequest {
   pricePackage: PricePackage @belongsTo
   student_name: String
   contact_phone: String
-  pickup_lat: String
-  pickup_lng: String
+  pickup_lat: Float
+  pickup_lng: Float
   pickup_address: String
   days: String
   enter_time: String

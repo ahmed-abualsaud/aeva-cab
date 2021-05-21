@@ -33,7 +33,7 @@ class CreateWorkplacesTable extends Migration
             $table->unsignedBigInteger('city_id');
             $table->unsignedBigInteger('workplace_id');
             $table->unsignedBigInteger('price_package_id');
-            $table->string('contact_phone');
+            $table->string('contact_phone')->nullable();
             $table->double('pickup_lat', 15, 8);
             $table->double('pickup_lng', 15, 8);
             $table->string('pickup_address');
