@@ -40,7 +40,7 @@ class SeatsTripEvent extends Model
         return $query->latest();
     }
 
-    public function scopeWhereTrip($query, $args)
+    public function scopeTrip($query, $args)
     {
         if (array_key_exists('trip_id', $args) && $args['trip_id'])
             return $query->where('trip_id', $args['trip_id']);
@@ -48,7 +48,7 @@ class SeatsTripEvent extends Model
         return $query;
     }
 
-    public function scopeWherePartner($query, $args)
+    public function scopePartner($query, $args)
     {
         if (array_key_exists('partner_id', $args) && $args['partner_id'])
             return $query->whereHas('trip', function($query) use ($args) {

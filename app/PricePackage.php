@@ -27,7 +27,7 @@ class PricePackage extends Model
         return $this->belongsTo(City::class);
     }
 
-    public function scopeWhereType($query, $args) 
+    public function scopeOfType($query, $args) 
     {
         if (array_key_exists('type', $args) && $args['type']) {
             return $query->where('type', $args['type']);
@@ -36,16 +36,16 @@ class PricePackage extends Model
         return $query->where('type', 'TOSCHOOL');
     }
 
-    public function scopeWhereIsPublic($query, $args) 
+    public function scopeIsPublic($query, $args) 
     {
-        if (array_key_exists('is_public', $args) && !$args['is_public']) {
-            return $query;
+        if (array_key_exists('is_public', $args) && $args['is_public']) {
+            return $query->where('is_public', true);
         }
-
-        return $query->where('is_public', true);
+        
+        return $query;
     }
 
-    public function scopeWhereCity($query, $args) 
+    public function scopeCity($query, $args) 
     {
         if (array_key_exists('city_id', $args) && $args['city_id']) {
             return $query->where('city_id', $args['city_id']);

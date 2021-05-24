@@ -30,6 +30,8 @@ class SeatsTripBookingResolver
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
+            if ($args['payment_method'] === 'CARD')
+                User::updateBalance($args['user_id'], -abs($args['payable']));
             throw new CustomException($e->getMessage());
         }
 
@@ -151,18 +153,22 @@ class SeatsTripBookingResolver
 
         switch($args['payment_method']) {
             case 'CASH':
-                if ($args['wallet'] > 0) {
-                    $input['paid'] = $args['wallet'] >= $args['payable'] 
-                        ? $args['payable'] 
-                        : $args['wallet'];
-                    $booking = $this->confirmBooking($input);
-                    $this->createTransaction($input, $booking);
-                    return $booking;
-                }
+                if ($args['paid'])
+                    return $this->confirmBookingAndCreateTransaction($input);
             break;
+            
+            case 'CARD':
+                return $this->confirmBookingAndCreateTransaction($input);
         }
 
-        return $this->confirmBooking($input);;
+        return $this->confirmBooking($input);
+    }
+
+    protected function confirmBookingAndCreateTransaction($input)
+    {
+        $booking = $this->confirmBooking($input);
+        $this->createTransaction($input, $booking);
+        return $booking;
     }
 
     protected function confirmBooking($input)

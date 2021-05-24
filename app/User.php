@@ -70,7 +70,7 @@ class User extends Authenticatable implements JWTSubject
         return $query->latest();
     }
 
-    public function scopeWhereAssignedOrNot($query, $args) 
+    public function scopeAssignedOrNot($query, $args) 
     {
         $partnerUsers = PartnerUser::select('user_id')
             ->where('partner_id', $args['partner_id']);
@@ -84,7 +84,7 @@ class User extends Authenticatable implements JWTSubject
         return $query;
     }
 
-    public function scopeWhereUnsubscribed($query, $args) 
+    public function scopeUnsubscribed($query, $args) 
     {
         $businessTripUsers = BusinessTripUser::select('user_id')
             ->where('trip_id', $args['trip_id']);

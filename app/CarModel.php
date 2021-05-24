@@ -34,9 +34,13 @@ class CarModel extends Model
         return $this->belongsTo(CarMake::class);
     }
 
-    public function scopeSortByOrder($query) 
+    public function scopeIsPublic($query, $args) 
     {
-        return $query->orderBy('order');
+        if (array_key_exists('is_public', $args) && $args['is_public']) {
+            return $query->where('ondemand', true);
+        }
+        
+        return $query;
     }
 
     public static function reorder(array $orders)

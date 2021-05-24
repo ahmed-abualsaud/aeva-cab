@@ -47,7 +47,7 @@ class SeatsTripBooking extends Model
         return $query;
     }
 
-    public function scopeForPeriod($query, $args) 
+    public function scopePeriod($query, $args) 
     {
         
         if (array_key_exists('period', $args) && $args['period']) {
@@ -57,7 +57,7 @@ class SeatsTripBooking extends Model
         return $query->latest('created_at');
     }
 
-    public function scopeWhereStatus($query, $args) 
+    public function scopeStatus($query, $args) 
     {
         if (array_key_exists('status', $args) && $args['status']) {
             $query->where('status', $args['status']);
@@ -66,7 +66,7 @@ class SeatsTripBooking extends Model
         return $query;
     }
 
-    public function scopeWherePickupTime($query, $args) 
+    public function scopePickupTime($query, $args) 
     {
         $now = date('Y-m-d H:i:s');
 
@@ -82,7 +82,7 @@ class SeatsTripBooking extends Model
 
     }
 
-    public function scopeForPartner($query, $args) 
+    public function scopePartner($query, $args) 
     {
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             return $query->whereHas('trip', function($query) use ($args) {
@@ -93,7 +93,7 @@ class SeatsTripBooking extends Model
         return $query;
     }
 
-    public function scopeForTrip($query, $args) 
+    public function scopeTrip($query, $args) 
     {
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
             return $query->where('trip_id', $args['trip_id']);

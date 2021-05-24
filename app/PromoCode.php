@@ -19,7 +19,7 @@ class PromoCode extends Model
         return $this->hasMany(PromoCodeUsage::class, 'promo_code_id');
     }
 
-    public function scopeWhereType($query, $args) 
+    public function scopeOfType($query, $args) 
     {
         if (array_key_exists('type', $args) && $args['type']) {
             return $query->where('type', $args['type']);
@@ -28,7 +28,7 @@ class PromoCode extends Model
         return $query;
     }
 
-    public function scopeWhereValid($query, $args) 
+    public function scopeIsValid($query, $args) 
     {
         if (array_key_exists('is_valid', $args) && $args['is_valid']) {
             return $query->where('expires_on', '>', date('Y-m-d'));

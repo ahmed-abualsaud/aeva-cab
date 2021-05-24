@@ -24,13 +24,13 @@ class CarType extends Model
         static::addGlobalScope(new SortByOrderScope);
     }
 
-    public function scopeWhereOndemand($query, $args) 
+    public function scopeIsPublic($query, $args) 
     {
-        if (array_key_exists('ondemand', $args) && !$args['ondemand']) {
-            return $query;
+        if (array_key_exists('is_public', $args) && $args['is_public']) {
+            return $query->where('ondemand', true);
         }
-
-        return $query->where('ondemand', true);
+        
+        return $query;
     }
 
     public static function reorder(array $orders)

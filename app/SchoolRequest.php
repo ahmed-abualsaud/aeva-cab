@@ -42,7 +42,7 @@ class SchoolRequest extends Model
         return $query->latest();
     }
 
-    public function scopeWherePeriod($query, $args) 
+    public function scopePeriod($query, $args) 
     {
         
         if (array_key_exists('period', $args) && $args['period']) {
@@ -52,7 +52,7 @@ class SchoolRequest extends Model
         return $query;
     }
 
-    public function scopeWhereStatus($query, $args) 
+    public function scopeStatus($query, $args) 
     {
         if (array_key_exists('zone_id', $args) && $args['zone_id']) {
             $query = $query->whereHas('school', function($query) use ($args) {
@@ -63,7 +63,7 @@ class SchoolRequest extends Model
         return $query->where('status', $args['status']);
     }
 
-    public function scopeWhereArchived($query)
+    public function scopeArchived($query)
     {
         return $query->whereIn('status', ['ACCEPTED','REJECTED', 'CANCELLED'])
             ->latest('created_at');
