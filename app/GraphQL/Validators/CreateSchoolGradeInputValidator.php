@@ -16,7 +16,7 @@ class CreateSchoolGradeInputValidator extends Validator
       'name' => [
         'required', 
         Rule::unique('school_grades', 'name')
-          ->where('school_id', $this->args['school_id'])
+          ->where('school_id', $this->arg('school_id'))
       ],
     ];
   }

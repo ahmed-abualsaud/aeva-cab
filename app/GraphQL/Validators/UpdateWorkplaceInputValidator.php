@@ -17,7 +17,7 @@ class UpdateWorkplaceInputValidator extends Validator
         'sometimes', 
         Rule::unique('workplaces', 'name')
           ->ignore($this->arg('id'), 'id')
-          ->where('zone_id', $this->args['zone_id'])
+          ->where('zone_id', $this->arg('zone_id'))
       ],
     ];
   }

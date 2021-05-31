@@ -16,7 +16,7 @@ class CreateWorkplaceInputValidator extends Validator
       'name' => [
         'required', 
         Rule::unique('workplaces', 'name')
-          ->where('zone_id', $this->args['zone_id'])
+          ->where('zone_id', $this->arg('zone_id'))
       ],
     ];
   }

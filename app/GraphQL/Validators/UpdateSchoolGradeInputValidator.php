@@ -17,7 +17,7 @@ class UpdateSchoolGradeInputValidator extends Validator
         'sometimes', 
         Rule::unique('school_grades', 'name')
           ->ignore($this->arg('id'), 'id')
-          ->where('school_id', $this->args['school_id'])
+          ->where('school_id', $this->arg('school_id'))
       ],
     ];
   }

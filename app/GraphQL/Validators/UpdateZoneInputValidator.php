@@ -17,8 +17,8 @@ class UpdateZoneInputValidator extends Validator
         'sometimes', 
         Rule::unique('zones', 'name')
           ->ignore($this->arg('id'), 'id')
-          ->where('city_id', $this->args['city_id'])
-          ->where('type', $this->args['type'])
+          ->where('city_id', $this->arg('city_id'))
+          ->where('type', $this->arg('type'))
       ],
     ];
   }

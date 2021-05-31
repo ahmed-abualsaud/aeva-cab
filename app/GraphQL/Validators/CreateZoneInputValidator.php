@@ -16,8 +16,8 @@ class CreateZoneInputValidator extends Validator
       'name' => [
         'required', 
         Rule::unique('zones', 'name')
-          ->where('city_id', $this->args['city_id'])
-          ->where('type', $this->args['type'])
+          ->where('city_id', $this->arg('city_id'))
+          ->where('type', $this->arg('type'))
       ],
     ];
   }

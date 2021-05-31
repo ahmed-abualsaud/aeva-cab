@@ -16,7 +16,7 @@ class CreateSchoolInputValidator extends Validator
       'name' => [
         'required', 
         Rule::unique('schools', 'name')
-          ->where('zone_id', $this->args['zone_id'])
+          ->where('zone_id', $this->arg('zone_id'))
       ],
     ];
   }
