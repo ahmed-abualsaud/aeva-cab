@@ -14,7 +14,6 @@ use App\BusinessTripAttendance;
 use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
 use App\Exceptions\CustomException;
-use Illuminate\Support\Facades\Cache;
 use App\Events\BusinessTripStatusChanged;
 use App\Traits\HandleBusinessTripUserStatus;
 
@@ -115,8 +114,6 @@ class BusinessTripEventResolver
             'lng' => $args['longitude'],
             'by' => $args['by']
         ]);
-
-        Cache::tags('userTrips:'.$args['user_id'])->flush();
         
         return $this->updateEventPayload($args['log_id'], $payload);
     }

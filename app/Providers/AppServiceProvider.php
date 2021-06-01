@@ -2,17 +2,15 @@
 
 namespace App\Providers;
 
-use App\Admin;
 use App\User;
-use App\BusinessTrip;
+use App\Admin;
 use App\Driver;
-use App\Observers\AdminObserver;
+use App\Partner;
 use App\Observers\UserObserver;
-use Illuminate\Support\Facades\Schema;
-use App\Observers\BusinessTripObserver;
+use App\Observers\AdminObserver;
 use App\Observers\DriverObserver;
 use App\Observers\PartnerObserver;
-use App\Partner;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Socialite\Contracts\Factory;
 use GeneaLabs\LaravelSignInWithApple\Providers\SignInWithAppleProvider;
@@ -47,7 +45,6 @@ class AppServiceProvider extends ServiceProvider
         Partner::observe(PartnerObserver::class);
         User::observe(UserObserver::class);
         Driver::observe(DriverObserver::class);
-        BusinessTrip::observe(BusinessTripObserver::class);
     }
 
     public function bootSocialiteDriver()

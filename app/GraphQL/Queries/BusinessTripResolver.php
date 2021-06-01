@@ -3,7 +3,6 @@
 namespace App\GraphQL\Queries;
 
 use App\BusinessTrip;
-use Illuminate\Support\Facades\Cache;
 
 class BusinessTripResolver
 {
@@ -26,36 +25,30 @@ class BusinessTripResolver
     {
         $date = date('Y-m-d', strtotime($args['day']));
 
-        $cacheKey = md5(implode(',', $args));
-
-        $tags = ['userTrips', 'userTrips:'.$args['user_id']];
-
-        $userTrips = Cache::tags($tags)->remember($cacheKey, 900, fn() =>
-            BusinessTrip::selectRaw(
-                'business_trips.id, business_trips.name, business_trips.days,
-                business_trip_attendance.date AS absence_date'
-            )
-            ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
-            ->where('business_trip_users.user_id', $args['user_id'])
-            ->whereNotNull('business_trip_users.subscription_verified_at')
-            ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->whereRaw('JSON_EXTRACT(business_trips.days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
-            ->where(function ($query) use ($args) {
-                $query->whereNull('business_trip_schedules.days')
-                    ->orWhere('business_trip_schedules.days->'.$args['day'], true);
-            })
-            ->leftJoin('business_trip_attendance', function ($join) use ($args, $date) {
-                $join->on('business_trips.id', '=', 'business_trip_attendance.trip_id')
-                    ->where('business_trip_attendance.user_id', $args['user_id'])
-                    ->where('business_trip_attendance.is_absent', true)
-                    ->where('business_trip_attendance.date', $date);
-            })
-            ->leftJoin('business_trip_schedules', function ($join) use ($args) {
-                $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
-                    ->where('business_trip_schedules.user_id', $args['user_id']);
-            })
-            ->get()
-        );
+        $userTrips = BusinessTrip::selectRaw(
+            'business_trips.id, business_trips.name, business_trips.days,
+            business_trip_attendance.date AS absence_date'
+        )
+        ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
+        ->where('business_trip_users.user_id', $args['user_id'])
+        ->whereNotNull('business_trip_users.subscription_verified_at')
+        ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
+        ->whereRaw('JSON_EXTRACT(business_trips.days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
+        ->where(function ($query) use ($args) {
+            $query->whereNull('business_trip_schedules.days')
+                ->orWhere('business_trip_schedules.days->'.$args['day'], true);
+        })
+        ->leftJoin('business_trip_attendance', function ($join) use ($args, $date) {
+            $join->on('business_trips.id', '=', 'business_trip_attendance.trip_id')
+                ->where('business_trip_attendance.user_id', $args['user_id'])
+                ->where('business_trip_attendance.is_absent', true)
+                ->where('business_trip_attendance.date', $date);
+        })
+        ->leftJoin('business_trip_schedules', function ($join) use ($args) {
+            $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
+                ->where('business_trip_schedules.user_id', $args['user_id']);
+        })
+        ->get();
 
         if ($userTrips->isEmpty()) return [];
 
@@ -66,14 +59,7 @@ class BusinessTripResolver
     {
         $today = strtolower(date('l'));
 
-        $cacheKey = md5(implode(',', $args));
-
-        $tags = ['userTrips', 'userTrips:'.$args['user_id']];
-
-        return Cache::tags($tags)->remember($cacheKey, 900, fn() =>
-            BusinessTrip::select(
-                'business_trips.id, business_trips.name'
-            )
+        return BusinessTrip::selectRaw('business_trips.id, business_trips.name')
             ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
             ->whereNotNull('log_id')
@@ -86,13 +72,12 @@ class BusinessTripResolver
                 $join->on('business_trips.id', '=', 'business_trip_schedules.trip_id')
                     ->where('business_trip_schedules.user_id', $args['user_id']);
             })
-            ->get()
-        );
+            ->get();
     }
 
     public function driverTrips($_, array $args)
     {
-        $driverTrips = BusinessTrip::select('id', 'name', 'days')
+        $driverTrips = BusinessTrip::select('id', 'name')
             ->where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
