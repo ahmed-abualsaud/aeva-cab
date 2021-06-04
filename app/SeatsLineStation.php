@@ -30,7 +30,6 @@ class SeatsLineStation extends Model
                 pickup.name as pickup_name,
                 dropoff.id as dropoff_id,
                 dropoff.name as dropoff_name,
-                "Placeholder Partner" as partner_name,
                 CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))) as trip_time,
                 ADDDATE(
                     CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))), 

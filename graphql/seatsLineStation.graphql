@@ -29,7 +29,6 @@ type SeatsNearbyStation {
   trip_time: String
   price: Float
   bookable: Boolean
-  partner_name: String
   pickup_id: ID
   pickup_name: String
   pickup_time: String
