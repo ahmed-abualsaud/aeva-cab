@@ -8,6 +8,7 @@ input CreateBusinessTripInput {
   days: TripDaysInput! @rules(apply: ["required"])
   return_time: String
   group_chat: Boolean
+  price: Float! @rules(apply: ["required"])
   type: String! @rules(apply: ["in:PLAYGROUND,TOSCHOOL,TOWORK"])
 }
 
@@ -28,6 +29,7 @@ input UpdateBusinessTripInput {
   end_date: Date
   days: TripDaysInput
   group_chat: Boolean
+  price: Float! @rules(apply: ["required"])
 }
 
 type BusinessTrip {
@@ -39,6 +41,7 @@ type BusinessTrip {
   start_date: Date
   end_date: Date
   subscription_code: String
+  due_date: Date
   distance: Int
   duration: Int
   is_absent: Boolean
@@ -47,6 +50,7 @@ type BusinessTrip {
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
   days: TripDays
+  price: Float
   type: String
   stations: [BusinessTripStation] @hasMany
   userStation: BusinessTripStation @hasOne

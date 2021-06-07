@@ -3,11 +3,11 @@
 namespace App\GraphQL\Queries;
 
 use App\User;
-use App\BusinessTripUser;
+use App\BusinessTripSubscription;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 
-class BusinessTripUserResolver
+class BusinessTripSubscriptionResolver
 {
     /**
      * @param  null  $_
@@ -16,25 +16,25 @@ class BusinessTripUserResolver
     public function businessTripSubscribedUsers($_, array $args)
     {
         $users = User::selectRaw(
-                'users.id, users.name, users.avatar, users.phone, 
-                station.id AS station_id, station.name AS station_name, 
-                destination.id AS destination_id, destination.name AS destination_name, 
-                subscription.subscription_verified_at'
-            )
-            ->join(
-                'business_trip_users as subscription', 
-                'subscription.user_id', '=', 'users.id'
-            )
-            ->leftJoin(
-                'business_trip_stations as station', 
-                'station.id', '=', 'subscription.station_id'
-            )
-            ->leftJoin(
-                'business_trip_stations as destination', 
-                'destination.id', '=', 'subscription.destination_id'
-            )
-            ->where('subscription.trip_id', $args['trip_id'])
-            ->get();
+            'users.id, users.name, users.avatar, users.phone, 
+            station.id AS station_id, station.name AS station_name, 
+            destination.id AS destination_id, destination.name AS destination_name, 
+            subscription.subscription_verified_at, subscription.payable, subscription.due_date'
+        )
+        ->join(
+            'business_trip_users as subscription', 
+            'subscription.user_id', '=', 'users.id'
+        )
+        ->leftJoin(
+            'business_trip_stations as station', 
+            'station.id', '=', 'subscription.station_id'
+        )
+        ->leftJoin(
+            'business_trip_stations as destination', 
+            'destination.id', '=', 'subscription.destination_id'
+        )
+        ->where('subscription.trip_id', $args['trip_id'])
+        ->get();
 
         return $users;
     }
@@ -125,7 +125,7 @@ class BusinessTripUserResolver
     public function businessTripUserStatus($_, array $args) 
     {
         try {
-            $status = BusinessTripUser::select('is_absent', 'is_picked_up')
+            $status = BusinessTripSubscription::select('is_absent', 'is_picked_up')
                 ->where('trip_id', $args['trip_id'])
                 ->where('user_id', $args['user_id'])
                 ->firstOrFail();

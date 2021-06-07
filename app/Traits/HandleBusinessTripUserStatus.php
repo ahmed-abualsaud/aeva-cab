@@ -2,13 +2,13 @@
 
 namespace App\Traits;
 
-use App\BusinessTripUser;
+use App\BusinessTripSubscription;
 
 trait HandleBusinessTripUserStatus
 {
     protected function updateUserStatus($trip_id, $status, $users = null)
     {
-        $usersStatus = BusinessTripUser::where('trip_id', $trip_id);
+        $usersStatus = BusinessTripSubscription::where('trip_id', $trip_id);
 
         if ($users) {
             if (is_array(($users))) {

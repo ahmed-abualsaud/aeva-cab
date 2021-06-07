@@ -86,7 +86,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function scopeUnsubscribed($query, $args) 
     {
-        $businessTripUsers = BusinessTripUser::select('user_id')
+        $businessTripUsers = BusinessTripSubscription::select('user_id')
             ->where('trip_id', $args['trip_id']);
 
         $query->select('id', 'name', 'avatar', 'phone');

@@ -1,4 +1,5 @@
 input CreateSeatsTripBookingInput {
+  trx_id: ID
   user_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
   trip_time: String! @rules(apply: ["required"])

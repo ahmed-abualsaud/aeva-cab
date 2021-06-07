@@ -27,7 +27,8 @@ class BusinessTripResolver
 
         $userTrips = BusinessTrip::selectRaw(
             'business_trips.id, business_trips.name, business_trips.days,
-            business_trip_attendance.date AS absence_date'
+            business_trip_attendance.date AS absence_date,
+            business_trip_users.due_date'
         )
         ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
         ->where('business_trip_users.user_id', $args['user_id'])

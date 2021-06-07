@@ -6,7 +6,7 @@ use App\User;
 use App\PartnerUser;
 use App\BusinessTrip;
 use App\Jobs\SendOtp;
-use App\BusinessTripUser;
+use App\BusinessTripSubscription;
 use Illuminate\Support\Arr;
 use App\BusinessTripStation;
 use Illuminate\Support\Facades\DB;
@@ -125,7 +125,7 @@ class BusinessTripResolver
                 $data[] = $arr;
             } 
 
-            BusinessTripUser::insert($data);
+            BusinessTripSubscription::insert($data);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to invite selected users!');
         }
@@ -135,7 +135,7 @@ class BusinessTripResolver
         return 'Selected users have been invited but still not verified';
     }
 
-    public function subscribeUser($_, array $args)
+    public function createSubscription($_, array $args)
     {
         try {
             $arr = [
@@ -144,7 +144,9 @@ class BusinessTripResolver
                 'destination_id' => $args['destination_id'],
                 'created_at' => now(), 
                 'updated_at' => now(),
-                'subscription_verified_at' => now()
+                'subscription_verified_at' => now(),
+                'payable' => $args['payable'],
+                'due_date' => date('Y-m-d')
             ];
 
             foreach($args['user_id'] as $val) {
@@ -152,7 +154,7 @@ class BusinessTripResolver
                 $data[] = $arr;
             } 
 
-            BusinessTripUser::upsert($data, ['station_id', 'destination_id', 'updated_at']);
+            BusinessTripSubscription::upsert($data, ['station_id', 'destination_id', 'payable', 'updated_at']);
         } catch (\Exception $e) {
             throw new CustomException('We could not able to subscribe selected users!');
         }
@@ -160,7 +162,7 @@ class BusinessTripResolver
         return 'Selected users have been subscribed';
     }
 
-    public function confirmUserSubscription($_, array $args) 
+    public function confirmSubscription($_, array $args) 
     {
         try {
             $trip_id = Hashids::decode($args['subscription_code']);
@@ -170,19 +172,25 @@ class BusinessTripResolver
         }
         
         try {
-            $tripUser = BusinessTripUser::where('trip_id', $trip->id)
+            $tripUser = BusinessTripSubscription::where('trip_id', $trip->id)
                 ->where('user_id', $args['user_id'])
                 ->firstOrFail();
             if ($tripUser->subscription_verified_at) {
                 throw new CustomException('You have already subscribed to this trip.');
             } else {
-                $tripUser->update(['subscription_verified_at' => now()]);
+                $tripUser->update([
+                    'subscription_verified_at' => now(),
+                    'payable' => $trip->price,
+                    'due_date' => date('Y-m-d')
+                ]);
             }
         } catch (ModelNotFoundException $e) {
-            BusinessTripUser::create([
+            BusinessTripSubscription::create([
                 'trip_id' => $trip->id,
                 'user_id' => $args['user_id'],
-                'subscription_verified_at' => now()
+                'subscription_verified_at' => now(),
+                'due_date' => date('Y-m-d'),
+                'payable' => $trip->price
             ]);
 
             PartnerUser::firstOrCreate([
@@ -194,10 +202,10 @@ class BusinessTripResolver
         return $trip;
     }
 
-    public function unsubscribeUser($_, array $args)
+    public function deleteSubscription($_, array $args)
     {
         try {
-            return BusinessTripUser::where('trip_id', $args['trip_id'])
+            return BusinessTripSubscription::where('trip_id', $args['trip_id'])
                 ->whereIn('user_id', $args['user_id'])
                 ->delete();
 
@@ -206,10 +214,10 @@ class BusinessTripResolver
         }
     }
 
-    public function verifyUserSubscription($_, array $args)
+    public function verifySubscription($_, array $args)
     {
         try {
-            return BusinessTripUser::where('trip_id', $args['trip_id'])
+            return BusinessTripSubscription::where('trip_id', $args['trip_id'])
                 ->where('user_id', $args['user_id'])
                 ->update(['subscription_verified_at' => $args['subscription_verified_at']]);
         } catch (\Exception $e) {
@@ -246,8 +254,8 @@ class BusinessTripResolver
     protected function createTripCopy(array $args)
     {
         $originalTrip = BusinessTrip::select(
-            'partner_id', 'driver_id', 'vehicle_id', 'start_date', 'end_date', 
-            'return_time', 'days', 'duration', 'distance', 'group_chat', 'route', 'type'
+            'partner_id', 'driver_id', 'vehicle_id', 'start_date', 'end_date', 'return_time', 
+            'days', 'duration', 'distance', 'group_chat', 'route', 'price', 'type'
             )
             ->findOrFail($args['id'])
             ->toArray();
@@ -277,17 +285,18 @@ class BusinessTripResolver
 
     protected function createSubscriptionsCopy($oldTripId, $newTripId)
     {
-        $originalSubscriptions = BusinessTripUser::select('user_id')
+        $originalSubscriptions = BusinessTripSubscription::select('user_id')
             ->where('trip_id', $oldTripId)
             ->get();
 
-        foreach($originalSubscriptions as $ubscription) {
-            $ubscription->trip_id = $newTripId;
-            $ubscription->created_at = now();
-            $ubscription->updated_at = now();
-            $ubscription->subscription_verified_at = now();
+        foreach($originalSubscriptions as $subscription) {
+            $subscription->trip_id = $newTripId;
+            $subscription->created_at = now();
+            $subscription->updated_at = now();
+            $subscription->subscription_verified_at = now();
+            $subscription->due_date = date('Y-m-d');
         }
 
-        return BusinessTripUser::insert($originalSubscriptions->toArray());
+        return BusinessTripSubscription::insert($originalSubscriptions->toArray());
     }
 }

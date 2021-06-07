@@ -1,0 +1,24 @@
+input CreateBusinessTripTransactionInput {
+  trx_id: ID
+  subscription_id: ID! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+  user_id: ID! @rules(apply: ["required"])
+  due_date: Date! @rules(apply: ["required"])
+  paid: Float! @rules(apply: ["required"])
+  payment_method: String! @rules(apply: ["required","in:CASH,CARD,FAWRY"])
+  type: String! @rules(apply: ["in:TOSCHOOL,TOWORK,PLAYGROUND"])
+  notes: String
+}
+
+type BusinessTripTransaction {
+  id: ID
+  trx_id: ID
+  subscription_id: ID
+  trip: BusinessTrip @belongsTo
+  user: User @belongsTo
+  due_date: Date
+  paid: Float
+  payment_method: String
+  notes: String
+  created_at: String
+}

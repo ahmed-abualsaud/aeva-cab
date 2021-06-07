@@ -10,13 +10,13 @@ class SeatsTripTransactionResolver
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function createTransaction($_, array $args)
+    public function create($_, array $args)
     {
         $input = collect($args)->except(['directive'])->toArray();
         return SeatsTripTransaction::create($input);
     }
 
-    public function destroyTransaction($_, array $args)
+    public function destroy($_, array $args)
     {
         return SeatsTripTransaction::whereIn('id', $args['id'])->delete();
     }

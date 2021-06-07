@@ -149,39 +149,38 @@ class SeatsTripBookingResolver
 
     protected function saveBooking(array $args)
     {
-        $input = collect($args)->except(['directive', 'bookable', 'wallet'])->toArray();
-
         switch($args['payment_method']) {
             case 'CASH':
                 if ($args['paid'])
-                    return $this->confirmBookingAndCreateTransaction($input);
+                    return $this->confirmBookingAndCreateTransaction($args);
             break;
             
             case 'CARD':
-                return $this->confirmBookingAndCreateTransaction($input);
+                return $this->confirmBookingAndCreateTransaction($args);
         }
 
-        return $this->confirmBooking($input);
+        return $this->confirmBooking($args);
     }
 
-    protected function confirmBookingAndCreateTransaction($input)
+    protected function confirmBookingAndCreateTransaction($args)
     {
-        $booking = $this->confirmBooking($input);
-        $this->createTransaction($input, $booking);
+        $booking = $this->confirmBooking($args);
+        $this->createTransaction($args, $booking);
         return $booking;
     }
 
-    protected function confirmBooking($input)
+    protected function confirmBooking($args)
     {
         try {
-            SeatsTripBooking::where('trip_id', $input['trip_id'])
-                ->where('trip_time', $input['trip_time'])
+            SeatsTripBooking::where('trip_id', $args['trip_id'])
+                ->where('trip_time', $args['trip_time'])
                 ->where('status', 'CONFIRMED')
                 ->firstOrFail();
 
                 throw new \Exception('You have already booked this trip!');
 
         } catch (ModelNotFoundException $e) {
+            $input = collect($args)->except(['directive', 'bookable', 'wallet', 'trx_id'])->toArray();
             $input['boarding_pass'] = $this->createBoardingPass($input);
             return SeatsTripBooking::create($input);
         }
@@ -191,7 +190,7 @@ class SeatsTripBookingResolver
     {
         try {
             $input = collect($args)
-                ->only(['user_id', 'trip_id', 'trip_time', 'payment_method', 'paid'])
+                ->only(['trx_id', 'user_id', 'trip_id', 'trip_time', 'payment_method', 'paid'])
                 ->toArray();
 
             $input['booking_id'] = $booking->id;

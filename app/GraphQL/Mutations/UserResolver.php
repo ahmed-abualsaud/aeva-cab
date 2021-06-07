@@ -6,7 +6,7 @@ use JWTAuth;
 use App\User;
 use App\PartnerUser;
 use App\Jobs\SendOtp;
-use App\BusinessTripUser;
+use App\BusinessTripSubscription;
 use Illuminate\Support\Str;
 use App\Traits\HandleUpload;
 use Illuminate\Support\Facades\DB;
@@ -69,7 +69,7 @@ class UserResolver
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $this->createPartnerUser($args['partner_id'], $user->id);
             if (array_key_exists('trip_id', $args) && $args['trip_id'])
-                $this->subscribeUser($args['trip_id'], $user->id);
+                $this->createSubscription($args['trip_id'], $user->id);
         } else {
             Auth::onceUsingId($user->id);
             $token = JWTAuth::fromUser($user);
@@ -98,7 +98,7 @@ class UserResolver
             $users = $this->getPartnerUsers($args['partner_id']);
             $this->createPartnerUsers($users, $args['partner_id']);
             if (array_key_exists('trip_id', $args) && $args['trip_id'])
-                $this->subscribeUsers($users, $args['trip_id']);
+                $this->createSubscriptions($users, $args['trip_id']);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -325,23 +325,23 @@ class UserResolver
         PartnerUser::insertOrIgnore($partnerUserData); 
     }
 
-    protected function subscribeUser($trip_id, $user_id)
+    protected function createSubscription($trip_id, $user_id)
     {
-        BusinessTripUser::create([
+        BusinessTripSubscription::create([
             'trip_id' => $trip_id,
             'user_id' => $user_id,
             'subscription_verified_at' => now()
         ]);
     }
 
-    protected function subscribeUsers(array $users, int $trip_id)
+    protected function createSubscriptions(array $users, int $trip_id)
     {
         $tripUserArr = ['trip_id' => $trip_id, 'subscription_verified_at' => now()];
         foreach($users as $user) {
             $tripUserArr['user_id'] = $user;
             $tripUserData[] = $tripUserArr;
         }
-        BusinessTripUser::insertOrIgnore($tripUserData);
+        BusinessTripSubscription::insertOrIgnore($tripUserData);
     }
 
     protected function getPartnerUsers(int $partner_id)

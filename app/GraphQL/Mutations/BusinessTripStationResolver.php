@@ -2,7 +2,7 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\BusinessTripUser;
+use App\BusinessTripSubscription;
 use App\BusinessTripStation;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
@@ -49,7 +49,7 @@ class BusinessTripStationResolver
                 'subscription_verified_at' => now(),
                 'created_at' => now(), 'updated_at' => now()
             ];
-            return BusinessTripUser::upsert($data, ['station_id', 'destination_id', 'updated_at']);
+            return BusinessTripSubscription::upsert($data, ['station_id', 'destination_id', 'updated_at']);
         } catch (\Exception $e) {
             throw new CustomException('Something went wrong! please try again');
         }
@@ -74,7 +74,7 @@ class BusinessTripStationResolver
                 'created_at' => now(), 
                 'updated_at' => now()
             ];
-            BusinessTripUser::upsert($data, ['station_id', 'updated_at']);
+            BusinessTripSubscription::upsert($data, ['station_id', 'updated_at']);
 
             DB::commit();
         } catch(\Exception $e) {

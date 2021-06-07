@@ -13,6 +13,7 @@ input CreateBusinessTripFromRequestInput {
   users: [BusinessTripUsersInput]! @rules(apply: ["required"])
   type: String! @rules(apply: ["in:TOSCHOOL,TOWORK"])
   request_type: String! @rules(apply: ["required","in:App\\SchoolRequest,App\\WorkRequest"])
+  price: Float! @rules(apply: ["required"])
 }
 
 input AddRequestToBusinessTripInput {
@@ -24,6 +25,7 @@ input AddRequestToBusinessTripInput {
   station_id: ID
   destination_id: ID
   request_type: String! @rules(apply: ["required","in:App\\SchoolRequest,App\\WorkRequest"])
+  price: Float! @rules(apply: ["required"])
 }
 
 input BusinessTripDestinationsInput {

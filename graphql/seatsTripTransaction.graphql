@@ -1,13 +1,16 @@
-input CreateSeatsTripTransactionsInput {
+input CreateSeatsTripTransactionInput {
+  trx_id: ID
+  booking_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
+  user_id: ID! @rules(apply: ["required"])
   paid: Float! @rules(apply: ["required"])
-  user_id: ID
-  payment_method: String
+  payment_method: String! @rules(apply: ["required","in:CASH,CARD,FAWRY"])
   notes: String
 }
 
 type SeatsTripTransaction {
   id: ID
+  trx_id: ID
   booking_id: ID
   trip: SeatsTrip @belongsTo
   trip_time: String
@@ -19,7 +22,7 @@ type SeatsTripTransaction {
   created_at: String
 }
 
-type SeatsTripTransactionsStats {
+type SeatsTripTransactionStats {
   count: Int
   sum: Float
   avg: Float

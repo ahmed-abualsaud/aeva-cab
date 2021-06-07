@@ -3,7 +3,7 @@
 namespace App\GraphQL\Mutations;
 
 use App\BusinessTrip;
-use App\BusinessTripUser;
+use App\BusinessTripSubscription;
 use Illuminate\Support\Arr;
 use App\BusinessTripStation;
 use App\BusinessTripSchedule;
@@ -71,7 +71,7 @@ class BusinessTripRequestResolver
             
             $data = $this->stationsData($args);
 
-            BusinessTripUser::upsert(
+            BusinessTripSubscription::upsert(
                 $data, ['station_id', 'destination_id', 'request_type', 'request_id']
             );
 
@@ -86,7 +86,7 @@ class BusinessTripRequestResolver
             
             $data = $this->stationsData($args);
 
-            BusinessTripUser::upsert(
+            BusinessTripSubscription::upsert(
                 $data, ['station_id', 'request_type', 'request_id']
             );
 
@@ -101,7 +101,7 @@ class BusinessTripRequestResolver
             
             $data = $this->stationsData($args);
 
-            BusinessTripUser::upsert(
+            BusinessTripSubscription::upsert(
                 $data, ['destination_id', 'request_type', 'request_id']
             );
 
@@ -112,7 +112,7 @@ class BusinessTripRequestResolver
 
     protected function assignUsersToStationsAndDestinations(array $args, int $trip_id)
     {
-        $arr = $this->subscriptionData($args['request_type'], $trip_id);
+        $arr = $this->subscriptionData($args, $trip_id);
 
         $stations = $this->stationsByTrip($trip_id);
 
@@ -124,12 +124,12 @@ class BusinessTripRequestResolver
             $data[] = $arr;
         }
 
-        BusinessTripUser::insert($data);
+        BusinessTripSubscription::insert($data);
     }
 
     protected function assignUsersToStations(array $args)
     {
-        $arr = $this->subscriptionData($args['request_type'], $args['trip_id']);
+        $arr = $this->subscriptionData($args, $args['trip_id']);
 
         $stations = $this->stationsByTrip($args['trip_id']);
 
@@ -140,12 +140,12 @@ class BusinessTripRequestResolver
             $data[] = $arr;
         }
 
-        BusinessTripUser::insert($data);
+        BusinessTripSubscription::insert($data);
     }
 
     protected function assignUsersToDestinations(array $args)
     {
-        $arr = $this->subscriptionData($args['request_type'], $args['trip_id']);
+        $arr = $this->subscriptionData($args, $args['trip_id']);
 
         $stations = $this->stationsByTrip($args['trip_id']);
 
@@ -156,7 +156,7 @@ class BusinessTripRequestResolver
             $data[] = $arr;
         }
 
-        BusinessTripUser::insert($data);
+        BusinessTripSubscription::insert($data);
     }
 
     protected function createStationsAndDestinations(array $args, int $trip_id)
@@ -249,7 +249,10 @@ class BusinessTripRequestResolver
             'request_type' => $args['request_type'],
             'trip_id' => $args['trip_id'],
             'subscription_verified_at' => now(),
-            'created_at' => now(), 'updated_at' => now()
+            'payable' => $args['price'],
+            'due_date' => date('Y-m-d'),
+            'created_at' => now(), 
+            'updated_at' => now()
         ];
 
         if (array_key_exists('station_id', $args)) {
@@ -269,13 +272,16 @@ class BusinessTripRequestResolver
         return $data;
     }
 
-    protected function subscriptionData(string $request_type, int $trip_id)
+    protected function subscriptionData(array $args, int $trip_id)
     {
         return [
-            'request_type' => $request_type,
+            'request_type' => $args['request_type'],
             'trip_id' => $trip_id,
             'subscription_verified_at' => now(),
-            'created_at' => now(), 'updated_at' => now()
+            'payable' => $args['price'],
+            'due_date' => date('Y-m-d'),
+            'created_at' => now(), 
+            'updated_at' => now()
         ];
     }
 
