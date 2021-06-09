@@ -12,17 +12,19 @@ input CreateUserInput {
   platform: String @rules(apply: ["in:android,ios"])
   device_id: String
   ref_code: String
+  payable: Float
 }
 
 input CreateMultipleUsersInput {
   partner_id: ID
   trip_id: ID
+  payable: Float
   users: [UserFromFileInput]! @rules(apply: ["required"])
 }
 
 input UserFromFileInput {
   name: String! @rules(apply: ["required"])
-  phone: String! @rules(apply: ["required"])
+  phone: Int! @rules(apply: ["required"])
 }
 
 input UpdateUserInput @validator {

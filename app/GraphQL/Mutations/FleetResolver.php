@@ -13,19 +13,14 @@ class FleetResolver
     use HandleUpload;
 
     /**
-     * Return a value for the field.
-     *
-     * @param  null  $rootValue Usually contains the result returned from the parent field. In this case, it is always `null`.
-     * @param  mixed[]  $args The arguments that were passed into the field.
-     * @param  \Nuwave\Lighthouse\Support\Contracts\GraphQLContext  $context Arbitrary data that is shared between all fields of a single query.
-     * @param  \GraphQL\Type\Definition\ResolveInfo  $resolveInfo Information about the query itself, such as the execution state, the field name, path to the field from the root, and more.
-     * @return mixed
+     * @param  null  $_
+     * @param  array<string, mixed>  $args
      */
-    public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function create($_, array $args)
     {
         $fleetInput = collect($args)->except(['directive', 'avatar'])->toArray();
 
-        if ($args['avatar']) {
+        if (array_key_exists('avatar', $args) && $args['avatar']) {
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $fleetInput['avatar'] = $driverInput['avatar'] = $url;
         }
@@ -35,7 +30,7 @@ class FleetResolver
         return $fleet;
     }
 
-    public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    public function update($_, array $args)
     {
         $input = collect($args)->except(['id', 'directive', 'avatar'])->toArray();
 
@@ -45,7 +40,7 @@ class FleetResolver
             throw new \Exception('The provided fleet ID is not found.');
         }
 
-        if ($args['avatar']) {
+        if (array_key_exists('avatar', $args) && $args['avatar']) {
             if ($fleet->avatar) $this->deleteOneFile($fleet->avatar, 'avatars');
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $input['avatar'] = $url;

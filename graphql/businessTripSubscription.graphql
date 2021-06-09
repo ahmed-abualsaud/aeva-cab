@@ -5,7 +5,7 @@ input InviteBusinessTripUserInput {
   subscription_code: String! @rules(apply: ["required"])
 }
 
-input SubscribeBusinessTripUserInput {
+input CreateBusinessTripSubscriptionInput {
   trip_id: ID! @rules(apply: ["required"])
   user_id: [ID!]! @rules(apply: ["required"])
   station_id: ID! @rules(apply: ["required"])

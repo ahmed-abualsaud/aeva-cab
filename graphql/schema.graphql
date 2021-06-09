@@ -213,7 +213,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   # Business Trip Subscription
   inviteBusinessTripUser(input: InviteBusinessTripUserInput! @spread): String 
     @field(resolver: "BusinessTripResolver@inviteUser")
-  createBusinessTripSubscription(input: SubscribeBusinessTripUserInput! @spread): String 
+  createBusinessTripSubscription(input: CreateBusinessTripSubscriptionInput! @spread): String 
     @field(resolver: "BusinessTripResolver@createSubscription")
 
   # Business Trip Event

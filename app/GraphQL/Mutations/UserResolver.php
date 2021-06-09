@@ -29,7 +29,7 @@ class UserResolver
     public function create($_, array $args)
     {
         $input = collect($args)
-            ->except(['directive', 'avatar', 'platform', 'ref_code', 'trip_id'])
+            ->except(['directive', 'avatar', 'platform', 'ref_code', 'trip_id', 'payable'])
             ->toArray(); 
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -66,10 +66,11 @@ class UserResolver
         }
 
         $token = null;
+
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $this->createPartnerUser($args['partner_id'], $user->id);
             if (array_key_exists('trip_id', $args) && $args['trip_id'])
-                $this->createSubscription($args['trip_id'], $user->id);
+                $this->createSubscription($args, $user->id);
         } else {
             Auth::onceUsingId($user->id);
             $token = JWTAuth::fromUser($user);
@@ -98,7 +99,7 @@ class UserResolver
             $users = $this->getPartnerUsers($args['partner_id']);
             $this->createPartnerUsers($users, $args['partner_id']);
             if (array_key_exists('trip_id', $args) && $args['trip_id'])
-                $this->createSubscriptions($users, $args['trip_id']);
+                $this->createSubscriptions($users, $args);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -325,18 +326,26 @@ class UserResolver
         PartnerUser::insertOrIgnore($partnerUserData); 
     }
 
-    protected function createSubscription($trip_id, $user_id)
+    protected function createSubscription($args, $user_id)
     {
         BusinessTripSubscription::create([
-            'trip_id' => $trip_id,
+            'trip_id' => $args['trip_id'],
             'user_id' => $user_id,
-            'subscription_verified_at' => now()
+            'subscription_verified_at' => now(),
+            'due_date' =>  date('Y-m-d'),
+            'payable' => $args['payable']
         ]);
     }
 
-    protected function createSubscriptions(array $users, int $trip_id)
+    protected function createSubscriptions(array $users, array $args)
     {
-        $tripUserArr = ['trip_id' => $trip_id, 'subscription_verified_at' => now()];
+        $tripUserArr = [
+            'trip_id' => $args['trip_id'], 
+            'subscription_verified_at' => now(),
+            'due_date' =>  date('Y-m-d'),
+            'payable' => $args['payable']
+        ];
+
         foreach($users as $user) {
             $tripUserArr['user_id'] = $user;
             $tripUserData[] = $tripUserArr;
