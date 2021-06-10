@@ -231,7 +231,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   # Seats Trip
   createSeatsTrip(input: CreateSeatsTripInput! @spread): SeatsTrip 
     @field(resolver: "SeatsTripResolver@create")
-  copySeatsTrip(input: CopyInput! @spread): SeatsTrip 
+  copySeatsTrip(input: CopySeatsTripInput! @spread): SeatsTrip 
     @field(resolver: "SeatsTripResolver@copy")
   updateSeatsTrip(input: UpdateSeatsTripInput! @spread): SeatsTrip
     @field(resolver: "SeatsTripResolver@update")
@@ -239,7 +239,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
 
   # Seats Lines
   createSeatsLine(input: CreateSeatsLineInput! @spread): SeatsLine @create
-  copySeatsLine(input: CopyInput! @spread): SeatsLine 
+  copySeatsLine(input: CopySeatsTripInput! @spread): SeatsLine 
     @field(resolver: "SeatsLineResolver@copy")
   updateSeatsLine(input: UpdateSeatsLineInput! @spread): SeatsLine @update
   updateSeatsLineRoute(input: UpdateLineRouteInput! @spread): SeatsLine 

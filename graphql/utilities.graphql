@@ -51,8 +51,3 @@ input RouteInput {
   distance: Int
   order: Int
 }
-
-input CopyInput {
-  id: ID! @rules(apply: ["required"])
-  name: String! @rules(apply: ["required"])
-}

@@ -23,6 +23,11 @@ input UpdateSeatsTripInput {
   price: Float
 }
 
+input CopySeatsTripInput {
+  id: ID! @rules(apply: ["required"])
+  name: String! @rules(apply: ["required"])
+}
+
 type SeatsTrip {
   id: ID
   name: String

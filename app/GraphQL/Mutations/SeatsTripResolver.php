@@ -66,7 +66,7 @@ class SeatsTripResolver
     {
         $originalTrip = SeatsTrip::select(
             'line_id', 'partner_id', 'driver_id', 'vehicle_id', 'start_date', 'end_date', 
-            'days', 'bookable', 'route', 'price'
+            'days', 'bookable', 'price'
             )
             ->findOrFail($args['id'])
             ->toArray();
