@@ -554,8 +554,8 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @paginate(scopes: ["trip", "search", "filter"])
 
   # Business Trip Transaction
-  businessTripTransactions(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [BusinessTripTransaction]
-    @paginate(scopes: ["partner", "trip", "period", "search"])
+  businessTripTransactions(type: String, partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [BusinessTripTransaction]
+    @paginate(scopes: ["ofType", "partner", "trip", "period", "search"])
 
   # Seats Trip
   seatsTrips(partner_id: ID, searchFor: String, searchQuery: String): [SeatsTrip] 

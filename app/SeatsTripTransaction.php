@@ -12,16 +12,20 @@ class SeatsTripTransaction extends Model
 
     protected $guarded = [];
 
+    public function booking()
+    {
+        return $this->belongsTo(SeatsTripBooking::class);
+    }
+
     public function trip()
     {
-        return $this->belongsTo(SeatsTrip::class)
-            ->select('id', 'name');
+        return $this->belongsTo(SeatsTrip::class);
     }
 
     public function user()
     {
         return $this->belongsTo(User::class)
-            ->select('id', 'name');
+            ->select('id', 'name', 'phone', 'avatar');
     }
 
     public function scopeSearch($query, $args) 

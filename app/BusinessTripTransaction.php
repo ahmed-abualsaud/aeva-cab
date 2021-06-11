@@ -12,16 +12,20 @@ class BusinessTripTransaction extends Model
 
     protected $guarded = [];
 
+    public function subscription()
+    {
+        return $this->belongsTo(BusinessTripSubscription::class);
+    }
+
     public function trip()
     {
-        return $this->belongsTo(BusinessTrip::class)
-            ->select('id', 'name');
+        return $this->belongsTo(BusinessTrip::class);
     }
 
     public function user()
     {
         return $this->belongsTo(User::class)
-            ->select('id', 'name');
+            ->select('id', 'name', 'phone', 'avatar');
     }
 
     public function scopeSearch($query, $args) 
@@ -57,6 +61,15 @@ class BusinessTripTransaction extends Model
     {
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
             return $query->where('trip_id', $args['trip_id']);
+        }
+ 
+        return $query;
+    }
+
+    public function scopeOfType($query, $args) 
+    {
+        if (array_key_exists('type', $args) && $args['type']) {
+            return $query->where('type', $args['type']);
         }
  
         return $query;
