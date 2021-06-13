@@ -699,7 +699,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   singleSeatsTripTransactions(trip_id: ID! @eq, trip_time: String! @eq): [SeatsTripTransaction] @all
 
   # Communication
-  businessTripChatMessages(log_id: String!, user_id: ID, is_direct: Boolean, is_private: Boolean): [BusinessTripChat] 
+  businessTripChatMessages(log_id: String!, user_id: ID, is_private: Boolean): [BusinessTripChat] 
     @field(resolver: "CommunicationResolver@businessTripChatMessages")
 }
 
