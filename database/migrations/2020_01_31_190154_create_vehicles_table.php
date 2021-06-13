@@ -23,12 +23,16 @@ class CreateVehiclesTable extends Migration
             $table->year('year');
             $table->unsignedSmallInteger('seats');
             $table->string('photo')->nullable();
+            $table->unsignedBigInteger('partner_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index('partner_id');
             
             $table->foreign('car_make_id')->references('id')->on('car_makes')->onDelete('cascade');
             $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('cascade');
             $table->foreign('car_model_id')->references('id')->on('car_models')->onDelete('cascade');
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
         });
     }
 

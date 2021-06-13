@@ -10,13 +10,11 @@ class DriverVehicle extends Model
 
     public $timestamps = false;
 
-    public function driver()
+    public function scopeByDriver($query, array $args)
     {
-        return $this->belongsTo('App\Driver', 'driver_id');
+        return $query->select('vehicle_id')
+            ->where('driver_id', $args['driver_id'])
+            ->pluck('vehicle_id');
     }
 
-    public function vehicle()
-    {
-        return $this->belongsTo('App\Vehicle');
-    }
 }

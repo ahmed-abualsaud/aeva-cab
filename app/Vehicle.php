@@ -27,11 +27,23 @@ class Vehicle extends Model
         return $this->belongsTo(CarType::class, 'car_type_id');
     }
 
+    public function scopeAssigned($query, $args) 
+    {
+        return $query->whereIn('id', DriverVehicle::byDriver($args));
+    }
+
     public function scopeNotAssigned($query, $args) 
     {
-        $driverVehicles = DriverVehicle::where('driver_id', $args['driver_id'])->get()->pluck('vehicle_id');
+        return $query->whereNotIn('id', DriverVehicle::byDriver($args));
+    }
 
-        return $query->whereNotIn('id', $driverVehicles);
+    public function scopePartner($query, $args) 
+    {
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            return $query->where('partner_id', $args['partner_id']);
+        }
+ 
+        return $query;
     }
 
     public function scopeSearch($query, $args) 
