@@ -16,14 +16,15 @@ class CreateSeatsTripTerminalTransactionsTable extends Migration
         Schema::create('seats_trip_terminal_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('trnx_id');
-            $table->unsignedBigInteger('order_id');
-            $table->string('payment_method');
+            $table->unsignedBigInteger('operator_id');
+            $table->unsignedBigInteger('terminal_id')->nullable();
+            $table->string('api_source');
             $table->float('amount');
             $table->string('currency');
-            $table->string('date_created');
-            $table->string('payment_source');
+            $table->string('type');
+            $table->string('sub_type');
             $table->string('status');
-            $table->timestamps();
+            $table->string('created_at');
         });
     }
 

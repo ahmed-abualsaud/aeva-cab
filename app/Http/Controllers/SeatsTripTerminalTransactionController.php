@@ -10,8 +10,9 @@ class SeatsTripTerminalTransactionController extends Controller
     public function create(Request $req) {
 
         $obj = json_decode(json_encode($req->obj));
-        $ord = json_decode(json_encode($obj->order));
+        $source = json_decode(json_encode($obj->source_data));
 
+        //return response()->json($obj);
     	if(!($obj->pending) && !($obj->success)){
     		$status = 'Declined';
     	}
@@ -23,14 +24,16 @@ class SeatsTripTerminalTransactionController extends Controller
     	else $status = 'Pending';
 
     	return SeatsTripTerminalTransaction::create([
-    		'trnx_id'        => $obj->id,
-    		'order_id'       => $ord->id,
-    		'payment_method' => $ord->payment_method,
-    		'amount'         => $obj->amount_cents,
-    		'currency'       => $obj->currency,
-    		'date_created'   => $obj->created_at,
-    		'payment_source' => json_encode($obj->source_data),
-    		'status'         => $status,
+    		'trnx_id'     => $obj->id,
+    		'operator_id' => $obj->profile_id,
+            'terminal_id' => $obj->terminal_id,
+    		'api_source'  => $obj->api_source,
+    		'amount'      => $obj->amount_cents,
+    		'currency'    => $obj->currency,
+    		'type'        => $source->type,
+            'sub_type'    => $source->sub_type,
+    		'status'      => $status,
+            'created_at'  => $obj->created_at,
     	]);
     }
 }
