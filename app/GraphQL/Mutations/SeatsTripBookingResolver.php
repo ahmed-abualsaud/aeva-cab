@@ -171,19 +171,19 @@ class SeatsTripBookingResolver
 
     protected function confirmBooking($args)
     {
-        try {
-            SeatsTripBooking::where('trip_id', $args['trip_id'])
-                ->where('trip_time', $args['trip_time'])
-                ->where('status', 'CONFIRMED')
-                ->firstOrFail();
+        // try {
+        //     SeatsTripBooking::where('user_id', $args['user_id'])
+        //         ->where('pickup_time', $args['pickup_time'])
+        //         ->where('status', 'CONFIRMED')
+        //         ->firstOrFail();
 
-                throw new \Exception('You have already booked this trip!');
+        //         throw new \Exception('You have already booked this trip!');
 
-        } catch (ModelNotFoundException $e) {
+        // } catch (ModelNotFoundException $e) {
             $input = collect($args)->except(['directive', 'bookable', 'wallet', 'trx_id'])->toArray();
             $input['boarding_pass'] = $this->createBoardingPass($input);
             return SeatsTripBooking::create($input);
-        }
+        // }
     }
 
     protected function createTransaction(array $args, $booking)
