@@ -5,7 +5,7 @@ namespace App\GraphQL\Validators;
 use Illuminate\Validation\Rule;
 use Nuwave\Lighthouse\Validation\Validator;
 
-class UpdateTerminalInputValidator extends Validator
+class CreateTerminalInputValidator extends Validator
 {
   /**
    * @return mixed[]
@@ -13,10 +13,8 @@ class UpdateTerminalInputValidator extends Validator
   public function rules(): array
   {
     return [
-      'id' => ['required'],
       'partner_id' => ['required'],
-      'terminal_id' => ['required', Rule::unique('terminals', 'terminal_id')
-        ->ignore($this->arg('id'), 'id')],
+      'terminal_id' => ['required', Rule::unique('terminals', 'terminal_id')],
     ];
   }
 

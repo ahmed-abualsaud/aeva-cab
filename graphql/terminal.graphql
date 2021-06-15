@@ -1,6 +1,6 @@
-input CreateTerminalInput {
-  partner_id: ID @rules(apply: ["required"])
-  terminal_id: ID! @rules(apply: ["required", "unique:terminals,terminal_id"])
+input CreateTerminalInput @validator {
+  partner_id: ID! 
+  terminal_id: ID!
   description: String
 }
 
