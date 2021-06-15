@@ -93,7 +93,7 @@ class CommunicationResolver
     protected function createMessage($args)
     {
         try {
-            $input = Arr::except($args, ['directive', 'driver_id', 'trip_id']);
+            $input = Arr::except($args, ['directive', 'driver_id', 'trip_id', 'trip_name']);
             if(array_key_exists('recipient_id', $args) && $args['recipient_id']) 
                 $input['is_private'] = true;
             $msg = BusinessTripChat::create($input);

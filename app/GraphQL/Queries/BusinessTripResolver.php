@@ -78,7 +78,7 @@ class BusinessTripResolver
 
     public function driverTrips($_, array $args)
     {
-        $driverTrips = BusinessTrip::select('id', 'name')
+        $driverTrips = BusinessTrip::select('id', 'name', 'days')
             ->where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')

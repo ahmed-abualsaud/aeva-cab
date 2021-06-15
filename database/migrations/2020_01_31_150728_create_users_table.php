@@ -29,7 +29,7 @@ class CreateUsersTable extends Migration
             $table->enum('payment_method', ['CASH', 'CARD', 'FAWRY'])->nullable();
             $table->double('latitude', 15, 8)->nullable();
             $table->double('longitude',15,8)->nullable();
-            $table->float('wallet_balance')->default(0);
+            $table->float('wallet_balance')->default('0.00');
             $table->decimal('rating', 4, 2)->default(5);
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();

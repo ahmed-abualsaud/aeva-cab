@@ -150,11 +150,10 @@ class OndemandRequestResolver
 
     protected function smsRequest($request_id)
     {
-        $phones = '01110782632,01099637684';
+        $phones = config('custom.otp_to_number');
         $msg = 'New On-Demand request # '.$request_id.' has been submitted';
 
         SendOtp::dispatch($phones, $msg);
-
     }
 
 }

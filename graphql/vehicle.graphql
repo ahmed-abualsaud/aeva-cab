@@ -7,6 +7,8 @@ input CreateVehicleInput {
   year: Int! @rules(apply: ["required", "min:4", "max:4"])
   seats: Int! @rules(apply: ["required"])
   photo: Upload
+  partner_id: ID
+  terminal_id: ID
 }
 
 input UpdateVehicleInput @validator {
@@ -19,6 +21,8 @@ input UpdateVehicleInput @validator {
   year: Int @rules(apply: ["min:4", "max:4"])
   seats: Int
   photo: Upload
+  partner_id: ID
+  terminal_id: ID
 }
 
 type Vehicle {
@@ -31,4 +35,6 @@ type Vehicle {
   year: Int
   seats: Int
   photo: String
+  partner_id: ID
+  terminal_id: ID
 }

@@ -6,6 +6,7 @@ use App\Driver;
 use App\DriverVehicle;
 use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;
+use App\PartnerDriver;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -25,8 +26,12 @@ class DriverResolver
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $input['avatar'] = $url;
         }
-        
+
         $driver = Driver::create($input);
+        
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            $this->createPartnerDriver($args['partner_id'], $driver->id);
+        }
 
         return $driver;
     }
@@ -50,6 +55,14 @@ class DriverResolver
         $driver->update($input);
 
         return $driver;
+    }
+
+    protected function createPartnerDriver($partner_id, $driver_id)
+    {
+        PartnerDriver::create([
+            "partner_id" => $partner_id,
+            "driver_id" => $driver_id
+        ]);
     }
 
     public function login($_, array $args)

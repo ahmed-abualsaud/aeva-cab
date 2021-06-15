@@ -19,10 +19,6 @@ class BusinessTripAttendanceResolver
     public function create($_, array $args)
     {
         try {
-            
-            if (array_key_exists('status', $args))
-                $args['is_absent'] = !$args['status'];
-
             if ($args['date'] === date('Y-m-d'))
                 $this->updateUserStatus(
                     $args['trip_id'], 

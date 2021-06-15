@@ -34,10 +34,6 @@ type Mutation {
 
 # Admin Guard
 extend type Mutation @guard(with: ["admin"]) {
-  # Driver
-  deleteDriver(id: [ID!]!): Boolean
-    @field(resolver: "DriverResolver@destroy")
-
   # Fleet
   createFleet(input: CreateFleetInput! @spread): Fleet
     @field(resolver: "FleetResolver@create")
@@ -65,13 +61,6 @@ extend type Mutation @guard(with: ["admin"]) {
   updateStatement(input: UpdateStatementInput! @spread): Statement @update
   deleteStatement(id: ID!): Statement @delete
 
-  # Vehicle
-  createVehicle(input: CreateVehicleInput! @spread): Vehicle 
-    @field(resolver: "VehicleResolver@create")
-  updateVehicle(input: UpdateVehicleInput! @spread): Vehicle 
-    @field(resolver: "VehicleResolver@update")
-  deleteVehicle(id: ID!): Vehicle @delete
-
   # Car Make
   createCarMake(input: CreateCarMakeInput! @spread): CarMake @create
   updateCarMake(input: UpdateCarMakeInput! @spread): CarMake @update
@@ -95,19 +84,6 @@ extend type Mutation @guard(with: ["admin"]) {
   createPromoCode(input: CreatePromoCodeInput! @spread): PromoCode @create
   updatePromoCode(input: UpdatePromoCodeInput! @spread): PromoCode @update
   deletePromoCode(id: ID!): PromoCode @delete
-
-  # Document
-  uploadDocument(input: UploadDocumentInput @spread): Document
-    @field(resolver: "DocumentResolver@create")
-  deleteDocument(id: ID!): String
-    @field(resolver: "DocumentResolver@delete")
-  updateDocument(input: UpdateDocumentInput! @spread): Document @update
-
-  # Driver Vehicle
-  createDriverVehicle(input: DriverVehicleInput! @spread): DefaultResponse! 
-    @field(resolver: "DriverResolver@assignVehicle")
-  deleteDriverVehicle(input: DriverVehicleInput! @spread): DefaultResponse! 
-    @field(resolver: "DriverResolver@unassignVehicle")
 
   # Partner
   createPartner(input: CreatePartnerInput! @spread): Partner
@@ -171,6 +147,11 @@ extend type Mutation @guard(with: ["admin"]) {
   # Reorder
   reorder(input: UpdateOrderInput! @spread): Boolean 
     @field(resolver: "ReorderResolver")
+
+  # Terminal
+  createTerminal(input: CreateTerminalInput! @spread): Terminal @create
+  updateTerminal(input: UpdateTerminalInput! @spread): Terminal @update
+  deleteTerminal(id: ID!): Terminal @delete
 } 
 
 # Admin|Partner Guard
@@ -186,6 +167,23 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "PartnerResolver@updatePassword")
   updatePartner(input: UpdatePartnerInput! @spread): Partner 
     @field(resolver: "PartnerResolver@update")
+
+  # Vehicle
+  createVehicle(input: CreateVehicleInput! @spread): Vehicle 
+    @field(resolver: "VehicleResolver@create")
+  updateVehicle(input: UpdateVehicleInput! @spread): Vehicle 
+    @field(resolver: "VehicleResolver@update")
+  deleteVehicle(id: ID!): Vehicle @delete
+
+  # Driver
+  deleteDriver(id: [ID!]!): Boolean
+    @field(resolver: "DriverResolver@destroy")
+
+  # Driver Vehicle
+  createDriverVehicle(input: DriverVehicleInput! @spread): DefaultResponse! 
+    @field(resolver: "DriverResolver@assignVehicle")
+  deleteDriverVehicle(input: DriverVehicleInput! @spread): DefaultResponse! 
+    @field(resolver: "DriverResolver@unassignVehicle")
 
   # Business Trip
   createBusinessTrip(input: CreateBusinessTripInput! @spread): BusinessTrip 
@@ -258,6 +256,13 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   # Seats Trip Transaction
   deleteSeatsTripTransaction(id: [ID!]!): Boolean
     @field(resolver: "SeatsTripTransactionResolver@destroy")
+
+  # Document
+  uploadDocument(input: UploadDocumentInput @spread): Document
+    @field(resolver: "DocumentResolver@create")
+  deleteDocument(id: ID!): String
+    @field(resolver: "DocumentResolver@delete")
+  updateDocument(input: UpdateDocumentInput! @spread): Document @update
 }
 
 # Admin|User Guard
@@ -324,8 +329,6 @@ extend type Mutation @guard(with: ["admin", "user"]) {
 # Admin|Driver Guard
 extend type Mutation @guard(with: ["admin", "driver"]) {
   # Driver
-  updateDriver(input: UpdateDriverInput! @spread): Driver
-    @field(resolver: "DriverResolver@update")
   changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "DriverResolver@updatePassword")
 
@@ -385,6 +388,13 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "BusinessTripScheduleResolver@reschedule")
 }
 
+# Admin|Partner|Driver Guard
+extend type Mutation @guard(with: ["admin", "partner", "driver"]) {
+  # Driver
+  updateDriver(input: UpdateDriverInput! @spread): Driver
+    @field(resolver: "DriverResolver@update")
+}
+
 # Admin|Partner|User|Driver Guard
 extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Communication
@@ -434,39 +444,14 @@ type Query @guard(with: ["admin"]) {
   # Statement
   statements: [Statement] @all
 
-  # Vehicle
-  vehicles(searchFor: String, searchQuery: String): [Vehicle] 
-    @paginate(scopes: ["search"])
-  vehicle(id: ID @eq): Vehicle @findOrFail
-
-  # Car Make
-  carMakes: [CarMake] @all
-  carMake(id: ID @eq): CarMake @find
-
-  # Car Model
-  carModels: [CarModel] @all
-  carModel(id: ID @eq): CarModel @find
-  carMakeModels(make_id: ID @eq): [CarModel] @all
-
-  # Car Type
-  carType(id: ID @eq): CarType @find
-
   # Ondemand Request
   ondemandRequests(status: String, period: String, searchFor: String, searchQuery: String): [OndemandRequest]
     @paginate(scopes: ["filter", "search"])
   ondemandRequestsStats(status: String period: String): OndemandRequestStats
     @field(resolver: "OndemandRequestResolver@stats")
 
-  # Document
-  documents(documentable_id: ID!, documentable_type: String!): [Document]
-    @field(resolver: "DocumentResolver")
-
-  # Driver Vehicle
-  driverNotAssignedVehicles(driver_id: ID!): [Vehicle] 
-    @paginate(scopes: ["notAssigned"])
-
   # Partner
-  partners(type: String! @eq): [Partner] @all
+  partners(type: String): [Partner] @all(scopes: ["ofType"])
 
   # Partner Driver
   partnerNotAssignedDrivers(partner_id: ID!, searchFor: String, searchQuery: String): [Driver] 
@@ -526,11 +511,30 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Partner Driver 
   partnerAssignedDrivers(partner_id: ID!): [Driver] 
-    @field(resolver: "PartnerResolver@partnerAssignedDrivers")
+    @all(scopes: ["assigned"])
 
   # Driver Vehicle
   driverAssignedVehicles(driver_id: ID!): [Vehicle] 
-    @field(resolver: "VehicleResolver@driverAssignedVehicles")
+    @all(scopes: ["assigned"])
+  driverNotAssignedVehicles(partner_id: ID, driver_id: ID!): [Vehicle] 
+    @paginate(scopes: ["notAssigned", "partner"])
+
+  # Vehicle
+  vehicles(partner_id: ID, searchFor: String, searchQuery: String): [Vehicle] 
+    @paginate(scopes: ["search", "partner"])
+  vehicle(id: ID @eq): Vehicle @findOrFail
+
+  # Car Make
+  carMakes: [CarMake] @all
+  carMake(id: ID @eq): CarMake @find
+
+  # Car Model
+  carModels: [CarModel] @all
+  carModel(id: ID @eq): CarModel @find
+  carMakeModels(make_id: ID @eq): [CarModel] @all
+
+  # Car Type
+  carType(id: ID @eq): CarType @find
 
   # Business Trip
   businessTrips(type: String, partner_id: ID, searchFor: String, searchQuery: String): [BusinessTrip] 
@@ -582,6 +586,14 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # Seats Trip Booking
   seatsTripBookings(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String, status: String): [SeatsTripBooking]
     @paginate(scopes: ["partner", "trip", "period", "status", "search"])
+
+  # Document
+  documents(documentable_id: ID!, documentable_type: String!): [Document]
+    @field(resolver: "DocumentResolver")
+
+  # Terminal
+  terminals: [Terminal] @all
+  partnerTerminals(partner_id: ID! @eq): [Terminal] @all
 }
 
 # Admin|User Guard
@@ -589,13 +601,6 @@ extend type Query @guard(with: ["admin", "user"]) {
   # Promo Code
   promoCodes(type: String, is_valid: Boolean): [PromoCode] @all(scopes: ["ofType", "isValid"])
   promoCode(name: String! @eq): PromoCode @find
-
-  # Car Type
-  carTypes(is_public: Boolean): [CarType] @all(scopes: ["isPublic"])
-
-  # Vehicle Model
-  vehicleTypeModels(type_id: ID!, is_public: Boolean): [CarModel]
-    @field(resolver: "VehicleResolver@typeModels")
 
   # Ondemand Request
   userOndemandRequests(user_id: ID! @eq): [OndemandRequest] @all
@@ -625,6 +630,13 @@ extend type Query @guard(with: ["admin", "user"]) {
 
 # Admin|Partner|User Guard
 extend type Query @guard(with: ["admin", "partner", "user"]) {
+  # Car Type
+  carTypes(is_public: Boolean): [CarType] @all(scopes: ["isPublic"])
+
+  # Vehicle Model
+  vehicleTypeModels(type_id: ID!, is_public: Boolean): [CarModel]
+    @field(resolver: "VehicleResolver@typeModels")
+
   # User
   userLiveBusinessTrips(user_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userLiveTrips")
@@ -666,6 +678,7 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
   driverBusinessTripSchedule(driver_id: ID!, day: String!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverTrips")
   driverBusinessTrips(driver_id: ID! @eq): [BusinessTrip] @all
+  driverSeatsTrips(driver_id: ID! @eq): [SeatsTrip] @all
   driverLiveSeatsTrips(driver_id: ID!): [SeatsTrip]
     @field(resolver: "SeatsTripResolver@driverLiveTrips")
   driverSeatsTripSchedule(driver_id: ID!, day: String!): [SeatsTrip]
@@ -695,7 +708,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   singleSeatsTripTransactions(trip_id: ID! @eq, trip_time: String! @eq): [SeatsTripTransaction] @all
 
   # Communication
-  businessTripChatMessages(log_id: String!, user_id: ID, is_direct: Boolean, is_private: Boolean): [BusinessTripChat] 
+  businessTripChatMessages(log_id: String!, user_id: ID, is_private: Boolean): [BusinessTripChat] 
     @field(resolver: "CommunicationResolver@businessTripChatMessages")
 }
 
@@ -736,3 +749,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import tripEvent.graphql
 #import businessTripEvent.graphql
 #import seatsTripEvent.graphql
+#import terminal.graphql

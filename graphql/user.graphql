@@ -31,7 +31,6 @@ input UpdateUserInput @validator {
   id: ID
   name: String
   email: String
-  partner_id: ID
   phone: String
   emergency_no: String
   secondary_no: String
