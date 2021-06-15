@@ -24,6 +24,7 @@ class CreateVehiclesTable extends Migration
             $table->unsignedSmallInteger('seats');
             $table->string('photo')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
+            $table->unsignedBigInteger('terminal_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

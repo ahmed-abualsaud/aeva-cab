@@ -9,6 +9,7 @@ input CreatePartnerInput {
   type: String! @rules(apply: ["in:PLAYGROUND,TOSCHOOL,TOWORK,SEATS"])
   license_expires_on: Date
   max_no_of_trips: Int
+  paymob_id: ID
 }
 
 input UpdatePartnerInput @validator {
@@ -22,6 +23,7 @@ input UpdatePartnerInput @validator {
   logo: Upload
   license_expires_on: Date
   max_no_of_trips: Int
+  paymob_id: ID
 }
 
 input PartnerDriverInput {
@@ -53,6 +55,7 @@ type Partner {
   updated_at: DateTime
   max_no_of_trips: Int
   type: String
+  paymob_id: ID
   users: [User] @hasMany
   drivers: [Driver] @belongsToMany
   trips: [BusinessTrip] @hasMany

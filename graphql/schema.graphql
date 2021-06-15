@@ -147,6 +147,11 @@ extend type Mutation @guard(with: ["admin"]) {
   # Reorder
   reorder(input: UpdateOrderInput! @spread): Boolean 
     @field(resolver: "ReorderResolver")
+
+  # Terminal
+  createTerminal(input: CreateTerminalInput! @spread): Terminal @create
+  updateTerminal(input: UpdateTerminalInput! @spread): Terminal @update
+  deleteTerminal(id: ID!): Terminal @delete
 } 
 
 # Admin|Partner Guard
@@ -446,7 +451,7 @@ type Query @guard(with: ["admin"]) {
     @field(resolver: "OndemandRequestResolver@stats")
 
   # Partner
-  partners(type: String! @eq): [Partner] @all
+  partners(type: String): [Partner] @all(scopes: ["ofType"])
 
   # Partner Driver
   partnerNotAssignedDrivers(partner_id: ID!, searchFor: String, searchQuery: String): [Driver] 
@@ -585,6 +590,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # Document
   documents(documentable_id: ID!, documentable_type: String!): [Document]
     @field(resolver: "DocumentResolver")
+
+  # Terminal
+  terminals: [Terminal] @all
+  partnerTerminals(partner_id: ID! @eq): [Terminal] @all
 }
 
 # Admin|User Guard
@@ -740,3 +749,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import tripEvent.graphql
 #import businessTripEvent.graphql
 #import seatsTripEvent.graphql
+#import terminal.graphql

@@ -1,0 +1,20 @@
+input CreateTerminalInput {
+  partner_id: ID @rules(apply: ["required"])
+  terminal_id: ID! @rules(apply: ["required", "unique:terminals,terminal_id"])
+  description: String
+}
+
+input UpdateTerminalInput @validator {
+  id: ID!
+  terminal_id: ID!
+  partner_id: ID!
+  description: String
+}
+
+type Terminal {
+  id: ID
+  partner: Partner @belongsTo
+  terminal_id: ID
+  description: String
+  created_at: DateTime
+}

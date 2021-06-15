@@ -71,4 +71,13 @@ class Partner extends Authenticatable implements JWTSubject
     {
         $this->attributes['name'] = ucwords($value);
     }
+    
+    public function scopeOfType($query, $args) 
+    {
+        if (array_key_exists('type', $args) && $args['type']) {
+            return $query->where('type', $args['type']);
+        }
+ 
+        return $query;
+    }
 }
