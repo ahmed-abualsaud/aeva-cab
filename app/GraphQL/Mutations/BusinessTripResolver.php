@@ -261,6 +261,7 @@ class BusinessTripResolver
             ->toArray();
 
         $originalTrip['name'] = $args['name'];
+        $originalTrip['name_ar'] = $args['name_ar'];
         
         return $this->createBusinessTrip($originalTrip);
     }
@@ -268,7 +269,7 @@ class BusinessTripResolver
     protected function createStationsCopy($oldTripId, $newTripId)
     {
         $originalStations = BusinessTripStation::select(
-            'name', 'latitude', 'longitude', 'duration', 'distance', 'state', 'accepted_at', 'order'
+            'name', 'name_ar', 'latitude', 'longitude', 'duration', 'distance', 'state', 'accepted_at', 'order'
             )
             ->where('trip_id', $oldTripId)
             ->get();

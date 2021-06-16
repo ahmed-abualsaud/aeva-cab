@@ -1,5 +1,6 @@
 input CreateDriverInput {
   name: String! @rules(apply: ["required"])
+  name_ar: String
   fleet_id: ID
   email: String @rules(apply: ["email", "unique:drivers,email"])
   phone: String @rules(apply: ["unique:drivers,phone"])
@@ -15,6 +16,7 @@ input CreateDriverInput {
 input UpdateDriverInput @validator {
   id: ID
   name: String
+  name_ar: String
   email: String
   phone: String
   fleet_id: ID
@@ -38,6 +40,7 @@ type DriverAuthPayload {
 type Driver {
   id: ID
   name: String
+  name_ar: String
   email: String
   phone: String
   license_expires_on: Date

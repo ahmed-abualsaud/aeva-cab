@@ -17,6 +17,7 @@ class CreateSeatsLinesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('partner_id');
             $table->string('name');
+            $table->string('name_ar')->nullable();
             $table->string('code');
             $table->integer('duration')->nullable();
             $table->integer('distance')->nullable();

@@ -1,5 +1,6 @@
 input CreateSeatsTripInput {
   name: String! @rules(apply: ["required"])
+  name_ar: String! @rules(apply: ["required"])
   line_id: ID! @rules(apply: ["required"])
   partner_id: ID! @rules(apply: ["required"])
   driver_id: ID! @rules(apply: ["required"])
@@ -14,6 +15,7 @@ input CreateSeatsTripInput {
 input UpdateSeatsTripInput {
   id: ID! @rules(apply: ["required"])
   name: String
+  name_ar: String
   driver_id: ID
   vehicle_id: ID
   start_date: Date
@@ -26,11 +28,13 @@ input UpdateSeatsTripInput {
 input CopySeatsTripInput {
   id: ID! @rules(apply: ["required"])
   name: String! @rules(apply: ["required"])
+  name_ar: String! @rules(apply: ["required"])
 }
 
 type SeatsTrip {
   id: ID
   name: String
+  name_ar: String
   log_id: String
   name: String
   start_date: Date
