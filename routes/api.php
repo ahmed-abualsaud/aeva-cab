@@ -20,3 +20,5 @@ Route::group(['middleware' => ['auth:user']], function () {
 Route::group(['middleware' => ['auth:driver']], function () {
     Route::post('/driver/avatar/update', 'DriverController@handleAvatar');
 });
+
+Route::post('/seats/trip/terminal/transaction', 'SeatsTripTerminalTransactionController@create');
