@@ -2,9 +2,9 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\SeatsTripTransaction;
+use App\SeatsTripAppTransaction;
 
-class SeatsTripTransactionResolver
+class SeatsTripAppTransactionResolver
 {
     /**
      * @param  null  $_
@@ -13,11 +13,11 @@ class SeatsTripTransactionResolver
     public function create($_, array $args)
     {
         $input = collect($args)->except(['directive'])->toArray();
-        return SeatsTripTransaction::create($input);
+        return SeatsTripAppTransaction::create($input);
     }
 
     public function destroy($_, array $args)
     {
-        return SeatsTripTransaction::whereIn('id', $args['id'])->delete();
+        return SeatsTripAppTransaction::whereIn('id', $args['id'])->delete();
     }
 }

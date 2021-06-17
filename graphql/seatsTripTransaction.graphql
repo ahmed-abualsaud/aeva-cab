@@ -1,28 +1,38 @@
-input CreateSeatsTripTransactionInput {
+input CreateSeatsTripAppTransactionInput {
   trx_id: ID
   booking_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
-  paid: Float! @rules(apply: ["required"])
+  amount: Float! @rules(apply: ["required"])
   payment_method: String! @rules(apply: ["required","in:CASH,CARD,FAWRY"])
   notes: String
 }
 
-type SeatsTripTransaction {
+type SeatsTripAppTransaction {
   id: ID
   trx_id: ID
   booking_id: ID
   trip: SeatsTrip @belongsTo
   trip_time: String
   user: User @belongsTo
-  paid: Float
+  amount: Float
   payment_method: String
   notes: String
   created_by: String
-  created_at: String
+  created_at: DateTime
 }
 
-type SeatsTripTransactionStats {
+type SeatsTripTerminalTransaction {
+  id: ID
+  trx_id: ID
+  terminal_id: ID
+  amount: Float
+  source: String
+  status: String
+  created_at: DateTime
+}
+
+type SeatsTripAppTransactionStats {
   count: Int
   sum: Float
   avg: Float

@@ -7,7 +7,7 @@ use App\SeatsTrip;
 use Carbon\Carbon;
 use App\SeatsTripBooking;
 use Illuminate\Support\Str;
-use App\SeatsTripTransaction;
+use App\SeatsTripAppTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -119,7 +119,7 @@ class SeatsTripBookingResolver
 
     protected function cancelTransaction($booking)
     {
-        SeatsTripTransaction::where('booking_id', $booking->id)
+        SeatsTripAppTransaction::where('booking_id', $booking->id)
             ->delete();
     }
 
@@ -190,15 +190,16 @@ class SeatsTripBookingResolver
     {
         try {
             $input = collect($args)
-                ->only(['trx_id', 'user_id', 'trip_id', 'trip_time', 'payment_method', 'paid'])
+                ->only(['trx_id', 'user_id', 'trip_id', 'trip_time', 'payment_method'])
                 ->toArray();
 
             $input['booking_id'] = $booking->id;
             $input['created_by'] = 'USER';
+            $input['amount'] = $args['paid'];
 
-            User::updateBalance($input['user_id'], $input['paid']);
+            User::updateBalance($input['user_id'], $input['amount']);
 
-            return SeatsTripTransaction::create($input);
+            return SeatsTripAppTransaction::create($input);
         } catch (\Exception $e) {
             throw new CustomException($e->getMessage());
         }

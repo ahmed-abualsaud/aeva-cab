@@ -6,20 +6,20 @@ use App\Traits\Filterable;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
-class BusinessTripTransaction extends Model
+class SeatsTripAppTransaction extends Model
 {
     use Searchable, Filterable;
 
     protected $guarded = [];
 
-    public function subscription()
+    public function booking()
     {
-        return $this->belongsTo(BusinessTripSubscription::class);
+        return $this->belongsTo(SeatsTripBooking::class);
     }
 
     public function trip()
     {
-        return $this->belongsTo(BusinessTrip::class);
+        return $this->belongsTo(SeatsTrip::class);
     }
 
     public function user()
@@ -61,15 +61,6 @@ class BusinessTripTransaction extends Model
     {
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
             return $query->where('trip_id', $args['trip_id']);
-        }
- 
-        return $query;
-    }
-
-    public function scopeOfType($query, $args) 
-    {
-        if (array_key_exists('type', $args) && $args['type']) {
-            return $query->where('type', $args['type']);
         }
  
         return $query;

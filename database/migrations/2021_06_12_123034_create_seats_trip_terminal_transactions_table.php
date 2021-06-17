@@ -15,14 +15,13 @@ class CreateSeatsTripTerminalTransactionsTable extends Migration
     {
         Schema::create('seats_trip_terminal_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('trnx_id');
+            $table->unsignedBigInteger('trx_id');
             $table->unsignedBigInteger('partner_id');
             $table->unsignedBigInteger('terminal_id')->nullable();
             $table->string('source');
-            $table->float('amount');
+            $table->float('amount', 8, 2);
             $table->enum('status', ['SUCCESS', 'PENDING', 'DECLINED']);
             $table->dateTime('created_at');
-
 
             $table->index('partner_id');
             $table->index('terminal_id');

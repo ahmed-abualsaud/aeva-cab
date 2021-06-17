@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBusinessTripTransactionsTable extends Migration
+class CreateBusinessTripAppTransactionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateBusinessTripTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('business_trip_transactions', function (Blueprint $table) {
+        Schema::create('business_trip_app_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('trx_id')->nullable();
             $table->unsignedBigInteger('subscription_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('trip_id');
             $table->date('due_date');
-            $table->float('paid', 8, 2);
+            $table->float('amount', 8, 2);
             $table->enum('payment_method', ['CASH', 'CARD', 'FAWRY'])->default('CASH');
             $table->string('notes')->nullable();
             $table->enum('type', ['TOSCHOOL','TOWORK','PLAYGROUND']);

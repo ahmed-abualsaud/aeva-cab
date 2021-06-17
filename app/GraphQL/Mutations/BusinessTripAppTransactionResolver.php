@@ -4,11 +4,11 @@ namespace App\GraphQL\Mutations;
 
 use App\BusinessTripSubscription;
 use Illuminate\Support\Carbon;
-use App\BusinessTripTransaction;
+use App\BusinessTripAppTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 
-class BusinessTripTransactionResolver
+class BusinessTripAppTransactionResolver
 {
     /**
      * @param  null  $_
@@ -24,7 +24,7 @@ class BusinessTripTransactionResolver
                 ->where('user_id', $args['user_id'])
                 ->update(['due_date' => Carbon::parse($args['due_date'])->addMonth()]);
     
-            BusinessTripTransaction::create($input);
+            BusinessTripAppTransaction::create($input);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -38,6 +38,6 @@ class BusinessTripTransactionResolver
 
     public function destroy($_, array $args)
     {
-        return BusinessTripTransaction::whereIn('id', $args['id'])->delete();
+        return BusinessTripAppTransaction::whereIn('id', $args['id'])->delete();
     }
 }
