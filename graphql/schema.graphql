@@ -594,8 +594,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "DocumentResolver")
 
   # Terminal
-  terminals: [Terminal] @all
-  partnerTerminals(partner_id: ID! @eq): [Terminal] @all
+  terminals(partner_id: ID): [Terminal] @all(scopes: ["partner"])
 }
 
 # Admin|User Guard
