@@ -24,7 +24,7 @@ class SeatsTripResolver
 
     public function driverTrips($_, array $args)
     {
-        $driverTrips = SeatsTrip::select('id', 'name', 'days')
+        $driverTrips = SeatsTrip::select('id', 'name', 'name_ar', 'days')
             ->where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
@@ -37,7 +37,7 @@ class SeatsTripResolver
 
     public function driverLiveTrips($_, array $args)
     {
-        $liveTrips = SeatsTrip::select('id', 'name')
+        $liveTrips = SeatsTrip::select('id', 'name', 'name_ar')
             ->where('driver_id', $args['driver_id'])
             ->whereNotNull('log_id')
             ->get();

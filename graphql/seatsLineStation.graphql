@@ -34,10 +34,12 @@ type SeatsNearbyStation {
   bookable: Boolean
   pickup_id: ID
   pickup_name: String
+  pickup_name_ar: String
   pickup_time: String
   pickup_distance: Float
   dropoff_id: ID
   dropoff_name: String
+  dropoff_name_ar: String
   dropoff_time: String
   dropoff_distance: Float
 }
