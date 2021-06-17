@@ -12,9 +12,7 @@
 */
 
 Route::group(['middleware' => ['auth:user']], function () {
-    Route::group(['prefix' => 'user'], function () {
-        Route::post('/update/avatar', 'UserController@handleAvatar');
-    });
+    Route::post('/user/avatar/update', 'UserController@handleAvatar');
 });
 
 Route::group(['middleware' => ['auth:driver']], function () {
