@@ -80,4 +80,11 @@ class Partner extends Authenticatable implements JWTSubject
  
         return $query;
     }
+
+    public function scopeGetPaymobID($query, $id)
+    {
+        return $query->select('paymob_id')
+            ->find($id)
+            ->paymob_id;
+    }
 }

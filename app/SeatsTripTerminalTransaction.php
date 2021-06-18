@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Partner;
 use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,7 +26,7 @@ class SeatsTripTerminalTransaction extends Model
     public function scopePartner($query, $args) 
     {
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
-            return $query->where('partner_id', $args['partner_id']);
+            return $query->where('partner_id', Partner::getPaymobID($args['partner_id']));
         }
  
         return $query;
