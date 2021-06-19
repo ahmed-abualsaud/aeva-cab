@@ -386,6 +386,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
   # Business Trip Schedule
   rescheduleUserBusinessTrip(input: BusinessTripScheduleInput! @spread): Boolean
     @field(resolver: "BusinessTripScheduleResolver@reschedule")
+
+  # Wallet Transaction
+  createWalletTransaction(input: CreateWalletTransactionInput! @spread): WalletTransaction
+    @field(resolver: "WalletTransactionResolver@create")
 }
 
 # Admin|Partner|Driver Guard
@@ -751,3 +755,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import businessTripEvent.graphql
 #import seatsTripEvent.graphql
 #import terminal.graphql
+#import walletTransaction.graphql
