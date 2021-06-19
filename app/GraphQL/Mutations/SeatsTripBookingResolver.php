@@ -10,7 +10,6 @@ use Illuminate\Support\Str;
 use App\SeatsTripAppTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SeatsTripBookingResolver
 {
@@ -171,19 +170,13 @@ class SeatsTripBookingResolver
 
     protected function confirmBooking($args)
     {
-        // try {
-        //     SeatsTripBooking::where('user_id', $args['user_id'])
-        //         ->where('pickup_time', $args['pickup_time'])
-        //         ->where('status', 'CONFIRMED')
-        //         ->firstOrFail();
-
-        //         throw new \Exception('You have already booked this trip!');
-
-        // } catch (ModelNotFoundException $e) {
+        try {
             $input = collect($args)->except(['directive', 'bookable', 'wallet', 'trx_id'])->toArray();
             $input['boarding_pass'] = $this->createBoardingPass($input);
             return SeatsTripBooking::create($input);
-        // }
+        } catch (\Exception $e) {
+            throw new CustomException('Could not create this booking!');
+        }
     }
 
     protected function createTransaction(array $args, $booking)

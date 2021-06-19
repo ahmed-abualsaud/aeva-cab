@@ -4,6 +4,7 @@ namespace App;
 
 use App\PartnerUser;
 use App\Traits\Searchable;
+use Illuminate\Support\Facades\Cache;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
@@ -115,6 +116,8 @@ class User extends Authenticatable implements JWTSubject
 
     public function scopeUpdateBalance($query, $user_id, $balance)
     {
+        Cache::forget('user.'.$user_id);
+
         return $query->where('id', $user_id)
             ->decrement('wallet_balance', $balance);
     }
