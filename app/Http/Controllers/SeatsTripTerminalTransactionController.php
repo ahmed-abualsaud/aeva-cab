@@ -18,7 +18,7 @@ class SeatsTripTerminalTransactionController extends Controller
                 'partner_id' => $obj->profile_id,
                 'terminal_id' => $obj->terminal_id,
                 'source' => $obj->api_source,
-                'amount' => $obj->amount_cents,
+                'amount' => $obj->amount_cents/100,
                 'status' => $this->status($obj),
                 'created_at' => $obj->created_at,
             ];
