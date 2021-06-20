@@ -32,7 +32,7 @@ type SeatsTripTerminalTransaction {
   created_at: DateTime
 }
 
-type SeatsTripAppTransactionStats {
+type SeatsTripTransactionStats {
   count: Int
   sum: Float
   avg: Float

@@ -586,8 +586,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @paginate(scopes: ["partner", "trip", "period", "search"])
   seatsTripTerminalTransactions(partner_id: ID, terminal_id: ID, period: String): [SeatsTripTerminalTransaction]
     @paginate(scopes: ["partner", "terminal", "period"])
-  seatsTripAppTransactionsStats(period: String): SeatsTripAppTransactionStats
+  seatsTripAppTransactionsStats(partner_id: ID, period: String): SeatsTripTransactionStats
     @field(resolver: "SeatsTripAppTransactionResolver@stats")
+  seatsTripTerminalTransactionsStats(partner_id: ID, terminal_id: ID, period: String): SeatsTripTransactionStats
+    @field(resolver: "SeatsTripTerminalTransactionResolver@stats")
 
   # Seats Trip Booking
   seatsTripBookings(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String, status: String): [SeatsTripBooking]

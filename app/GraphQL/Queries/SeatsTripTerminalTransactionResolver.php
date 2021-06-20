@@ -2,10 +2,11 @@
 
 namespace App\GraphQL\Queries;
 
+use App\Partner;
 use App\Traits\Filterable;
-use App\SeatsTripAppTransaction;
+use App\SeatsTripTerminalTransaction;
 
-class SeatsTripAppTransactionResolver
+class SeatsTripTerminalTransactionResolver
 {
     use Filterable;
     /**
@@ -14,20 +15,22 @@ class SeatsTripAppTransactionResolver
      */
     public function stats($_, array $args)
     {
-        $transactions = SeatsTripAppTransaction::query();
+        $transactions = SeatsTripTerminalTransaction::query();
 
-        $transactionGroup = SeatsTripAppTransaction::selectRaw('
+        $transactionGroup = SeatsTripTerminalTransaction::selectRaw('
             DATE_FORMAT(created_at, "%a, %b %d, %Y") as date,
             sum(amount) as sum
         ');
 
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
-            $transactions = $transactions->whereHas('trip', function($query) use ($args) {
-                $query->where('partner_id', $args['partner_id']);
-            });
-            $transactionGroup = $transactionGroup->whereHas('trip', function($query) use ($args) {
-                $query->where('partner_id', $args['partner_id']);
-            });
+            $paymobID = Partner::getPaymobID($args['partner_id']);
+            $transactions = $transactions->where('partner_id', $paymobID);
+            $transactionGroup = $transactionGroup->where('partner_id', $paymobID);
+        }
+
+        if (array_key_exists('terminal_id', $args) && $args['terminal_id']) {
+            $transactions = $transactions->where('terminal_id', $args['terminal_id']);
+            $transactionGroup = $transactionGroup->where('terminal_id', $args['terminal_id']);
         }
 
         if (array_key_exists('period', $args) && $args['period']) {
