@@ -72,6 +72,7 @@ class SeatsTripResolver
             ->toArray();
 
         $originalTrip['name'] = $args['name'];
+        $originalTrip['name_ar'] = $args['name_ar'];
         
         return $this->createTrip($originalTrip);
     }

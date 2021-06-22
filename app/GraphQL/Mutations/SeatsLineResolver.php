@@ -74,12 +74,13 @@ class SeatsLineResolver
     protected function createLineCopy(array $args)
     {
         $originalLine = SeatsLine::select(
-            'partner_id', 'name', 'code', 'distance', 'duration', 'price', 'route'
+            'partner_id', 'code', 'distance', 'duration', 'price', 'route'
             )
             ->findOrFail($args['id'])
             ->toArray();
 
         $originalLine['name'] = $args['name'];
+        $originalLine['name_ar'] = $args['name_ar'];
         
         return SeatsLine::create($originalLine);
     }
@@ -87,7 +88,7 @@ class SeatsLineResolver
     protected function createStationsCopy($oldLineId, $newLineId)
     {
         $originalStations = SeatsLineStation::select(
-            'name', 'latitude', 'longitude', 'duration', 'distance', 'state', 'order'
+            'name', 'name_ar', 'latitude', 'longitude', 'duration', 'distance', 'state', 'order'
             )
             ->where('line_id', $oldLineId)
             ->get();

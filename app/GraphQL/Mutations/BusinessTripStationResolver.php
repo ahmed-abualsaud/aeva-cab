@@ -62,6 +62,7 @@ class BusinessTripStationResolver
             $station = BusinessTripStation::where('id', $args['station_id'])->firstOrFail();
             $station->update([
                 'name' => $args['station_name'],
+                'name_ar' => $args['station_name_ar'],
                 'state' => 'PICKABLE', 
                 'accepted_at' => now()
             ]);
@@ -71,6 +72,7 @@ class BusinessTripStationResolver
                 'station_id' => $args['station_id'],
                 'user_id' => $station['request_id'],
                 'subscription_verified_at' => now(),
+                'due_date' => date('Y-m-d'),
                 'created_at' => now(), 
                 'updated_at' => now()
             ];

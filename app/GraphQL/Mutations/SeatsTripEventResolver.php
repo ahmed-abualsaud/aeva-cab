@@ -10,7 +10,7 @@ use App\SeatsTripEvent;
 use App\SeatsTripBooking;
 use Illuminate\Support\Str;
 use App\Helpers\StaticMapUrl;
-use App\SeatsTripTransaction;
+use App\SeatsTripAppTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use App\Events\SeatsTripStatusChanged;
@@ -194,7 +194,7 @@ class SeatsTripEventResolver
         try {
             $input = collect($args)->except(['directive', 'payable', 'log_id'])->toArray();
 
-            return SeatsTripTransaction::create($input);
+            return SeatsTripAppTransaction::create($input);
         } catch (\Exception $e) {
             throw new CustomException('Could not create transaction!');
         }

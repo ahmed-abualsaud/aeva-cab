@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSeatsTripTransactionsTable extends Migration
+class CreateSeatsTripAppTransactionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,14 @@ class CreateSeatsTripTransactionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('seats_trip_transactions', function (Blueprint $table) {
+        Schema::create('seats_trip_app_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('trx_id')->nullable();
             $table->unsignedBigInteger('booking_id');
             $table->unsignedBigInteger('trip_id');
             $table->dateTime('trip_time');
             $table->unsignedBigInteger('user_id');
-            $table->float('paid', 8, 2);
+            $table->float('amount', 8, 2);
             $table->enum('payment_method', ['CASH', 'CARD', 'FAWRY'])->default('CASH');
             $table->string('notes')->nullable();
             $table->enum('created_by', ['USER', 'DRIVER'])->default('DRIVER');
@@ -55,6 +55,6 @@ class CreateSeatsTripTransactionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('seats_trip_transactions');
+        Schema::dropIfExists('seats_trip_app_transactions');
     }
 }

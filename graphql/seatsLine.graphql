@@ -1,6 +1,7 @@
 input CreateSeatsLineInput {
   partner_id: ID! @rules(apply: ["required"])
   name: String! @rules(apply: ["required"])
+  name_ar: String! @rules(apply: ["required"])
   code: String! @rules(apply: ["required"])
   price: Float! @rules(apply: ["required"])
 }
@@ -8,6 +9,7 @@ input CreateSeatsLineInput {
 input UpdateSeatsLineInput {
   id: ID! @rules(apply: ["required"])
   name: String
+  name_ar: String
   code: String
   price: Float
 }
@@ -15,6 +17,7 @@ input UpdateSeatsLineInput {
 type SeatsLine {
   id: ID
   name: String
+  name_ar: String
   code: String
   distance: Int
   duration: Int

@@ -26,7 +26,7 @@ class BusinessTripResolver
         $date = date('Y-m-d', strtotime($args['day']));
 
         $userTrips = BusinessTrip::selectRaw(
-            'business_trips.id, business_trips.name, business_trips.days,
+            'business_trips.id, business_trips.name, business_trips.name_ar, business_trips.days,
             business_trip_attendance.date AS absence_date,
             business_trip_users.due_date'
         )
@@ -60,7 +60,7 @@ class BusinessTripResolver
     {
         $today = strtolower(date('l'));
 
-        return BusinessTrip::selectRaw('business_trips.id, business_trips.name')
+        return BusinessTrip::selectRaw('business_trips.id, business_trips.name, business_trips.name_ar')
             ->join('business_trip_users', 'business_trips.id', '=', 'business_trip_users.trip_id')
             ->where('business_trip_users.user_id', $args['user_id'])
             ->whereNotNull('log_id')
@@ -78,7 +78,7 @@ class BusinessTripResolver
 
     public function driverTrips($_, array $args)
     {
-        $driverTrips = BusinessTrip::select('id', 'name', 'days')
+        $driverTrips = BusinessTrip::select('id', 'name', 'name_ar', 'days')
             ->where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
@@ -91,7 +91,7 @@ class BusinessTripResolver
 
     public function driverLiveTrips($_, array $args)
     {
-        $liveTrips = BusinessTrip::select('id', 'name')
+        $liveTrips = BusinessTrip::select('id', 'name', 'name_ar')
             ->where('driver_id', $args['driver_id'])
             ->whereNotNull('log_id')
             ->get();

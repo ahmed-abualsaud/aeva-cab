@@ -7,10 +7,9 @@ use App\SeatsTrip;
 use Carbon\Carbon;
 use App\SeatsTripBooking;
 use Illuminate\Support\Str;
-use App\SeatsTripTransaction;
+use App\SeatsTripAppTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SeatsTripBookingResolver
 {
@@ -31,7 +30,7 @@ class SeatsTripBookingResolver
         } catch (\Exception $e) {
             DB::rollback();
             if ($args['payment_method'] === 'CARD')
-                User::updateBalance($args['user_id'], -abs($args['payable']));
+                $this->updateWallet($args['user_id'], -abs($args['payable']));
             throw new CustomException($e->getMessage());
         }
 
@@ -75,7 +74,7 @@ class SeatsTripBookingResolver
         if ($booking->paid)
             $this->userDidPayAndMissed($booking);
         else
-            User::updateBalance($booking->user_id, $booking->payable);
+            $this->updateWallet($booking->user_id, $booking->payable);
     }
 
     protected function userCancelled($booking)
@@ -86,21 +85,21 @@ class SeatsTripBookingResolver
             $this->userDidPayAndCancelled($booking, $timeout);
         else 
             if ($timeout)
-                User::updateBalance($booking->user_id, $booking->payable);
+                $this->updateWallet($booking->user_id, $booking->payable);
     }
 
     protected function userDidPayAndCancelled($booking, $timeout)
     {
         if ($booking->paid == $booking->payable) {
             if (!$timeout) {
-                User::updateBalance($booking->user_id, -abs($booking->paid));
+                $this->updateWallet($booking->user_id, -abs($booking->paid));
                 $this->cancelTransaction($booking);
             }
             
         } else if ($booking->paid < $booking->payable) {
             if ($timeout) {
                 $diff = $booking->payable - $booking->paid;
-                User::updateBalance($booking->user_id, $diff); 
+                $this->updateWallet($booking->user_id, $diff);
             } else {
                 User::updateBalance($booking->user_id, -abs($booking->paid));
                 $this->cancelTransaction($booking);
@@ -113,13 +112,13 @@ class SeatsTripBookingResolver
     {
         if ($booking->paid < $booking->payable) {
             $diff = $booking->payable - $booking->paid;
-            User::updateBalance($booking->user_id, $diff); 
+            $this->updateWallet($booking->user_id, $diff);
         } 
     }
 
     protected function cancelTransaction($booking)
     {
-        SeatsTripTransaction::where('booking_id', $booking->id)
+        SeatsTripAppTransaction::where('booking_id', $booking->id)
             ->delete();
     }
 
@@ -151,38 +150,30 @@ class SeatsTripBookingResolver
     {
         switch($args['payment_method']) {
             case 'CASH':
-                if ($args['paid'])
-                    return $this->confirmBookingAndCreateTransaction($args);
-            break;
-            
-            case 'CARD':
-                return $this->confirmBookingAndCreateTransaction($args);
-        }
+                return $this->cashPay($args);
 
-        return $this->confirmBooking($args);
+            case 'CARD':
+                return $this->cardPay($args);
+        }
     }
 
     protected function confirmBookingAndCreateTransaction($args)
     {
         $booking = $this->confirmBooking($args);
+
         $this->createTransaction($args, $booking);
+
         return $booking;
     }
 
     protected function confirmBooking($args)
     {
         try {
-            SeatsTripBooking::where('trip_id', $args['trip_id'])
-                ->where('trip_time', $args['trip_time'])
-                ->where('status', 'CONFIRMED')
-                ->firstOrFail();
-
-                throw new \Exception('You have already booked this trip!');
-
-        } catch (ModelNotFoundException $e) {
             $input = collect($args)->except(['directive', 'bookable', 'wallet', 'trx_id'])->toArray();
             $input['boarding_pass'] = $this->createBoardingPass($input);
             return SeatsTripBooking::create($input);
+        } catch (\Exception $e) {
+            throw new CustomException('Could not create this booking!');
         }
     }
 
@@ -190,17 +181,16 @@ class SeatsTripBookingResolver
     {
         try {
             $input = collect($args)
-                ->only(['trx_id', 'user_id', 'trip_id', 'trip_time', 'payment_method', 'paid'])
+                ->only(['trx_id', 'user_id', 'trip_id', 'trip_time', 'payment_method'])
                 ->toArray();
 
             $input['booking_id'] = $booking->id;
             $input['created_by'] = 'USER';
+            $input['amount'] = $args['paid'];
 
-            User::updateBalance($input['user_id'], $input['paid']);
-
-            return SeatsTripTransaction::create($input);
+            return SeatsTripAppTransaction::create($input);
         } catch (\Exception $e) {
-            throw new CustomException($e->getMessage());
+            throw new CustomException('Could not create this transaction!');
         }
     }
 
@@ -209,5 +199,37 @@ class SeatsTripBookingResolver
         return SeatsTripBooking::where('trip_id', $input['trip_id'])
             ->where('trip_time', $input['trip_time'])
             ->max('boarding_pass') + 1;
+    }
+
+    protected function cashPay($args)
+    {        
+        if ($args['paid']) {
+
+            $this->updateWallet($args['user_id'], $args['paid']);
+
+            return $this->confirmBookingAndCreateTransaction($args);
+        } else {
+            return $this->confirmBooking($args);
+        }
+
+    }
+
+    protected function cardPay($args)
+    {
+        $extra = $args['payable'] - $args['paid'];
+        
+        if ($extra)
+            $this->updateWallet($args['user_id'], $extra);
+
+        return $this->confirmBookingAndCreateTransaction($args);
+    }
+
+    protected function updateWallet($user_id, $amount)
+    {
+        try {
+            User::updateBalance($user_id, $amount);
+        } catch (\Exception $e) {
+            throw new CustomException('Could not update the wallet!');
+        }
     }
 }

@@ -3,9 +3,9 @@
 namespace App\GraphQL\Queries;
 
 use App\Traits\Filterable;
-use App\SeatsTripTransaction;
+use App\SeatsTripAppTransaction;
 
-class SeatsTripTransactionResolver
+class SeatsTripAppTransactionResolver
 {
     use Filterable;
     /**
@@ -14,12 +14,21 @@ class SeatsTripTransactionResolver
      */
     public function stats($_, array $args)
     {
-        $transactions = SeatsTripTransaction::query();
+        $transactions = SeatsTripAppTransaction::query();
 
-        $transactionGroup = SeatsTripTransaction::selectRaw('
+        $transactionGroup = SeatsTripAppTransaction::selectRaw('
             DATE_FORMAT(created_at, "%a, %b %d, %Y") as date,
-            sum(paid) as sum
+            sum(amount) as sum
         ');
+
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            $transactions = $transactions->whereHas('trip', function($query) use ($args) {
+                $query->where('partner_id', $args['partner_id']);
+            });
+            $transactionGroup = $transactionGroup->whereHas('trip', function($query) use ($args) {
+                $query->where('partner_id', $args['partner_id']);
+            });
+        }
 
         if (array_key_exists('period', $args) && $args['period']) {
             $transactions = $this->dateFilter($args['period'], $transactions, 'created_at');
@@ -27,8 +36,8 @@ class SeatsTripTransactionResolver
         }
 
         $transactionCount = $transactions->count();
-        $transactionSum = $transactions->sum('paid');
-        $transactionAvg = $transactions->avg('paid');
+        $transactionSum = $transactions->sum('amount');
+        $transactionAvg = $transactions->avg('amount');
         $transactionGroup = $transactionGroup->groupBy('date')->get();
 
         $response = [

@@ -33,11 +33,11 @@ class SeatsTripTerminalTransactionController extends Controller
     protected function status($obj)
     {
         if(!($obj->pending) && !($obj->success))
-            return 'DECLINED';
-        
+    		return 'DECLINED';
+    	
         if (!($obj->pending) && ($obj->success))
-            return 'SUCCESS';
-        
+    		return 'SUCCESS';
+    	
         return 'PENDING';
     }
 }

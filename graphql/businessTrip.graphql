@@ -1,5 +1,6 @@
 input CreateBusinessTripInput {
   name: String! @rules(apply: ["required"])
+  name_ar: String! @rules(apply: ["required"])
   partner_id: ID! @rules(apply: ["required"])
   driver_id: ID! @rules(apply: ["required"])
   vehicle_id: ID! @rules(apply: ["required"])
@@ -15,6 +16,7 @@ input CreateBusinessTripInput {
 input CopyBusinessTripInput {
   id: ID! @rules(apply: ["required"])
   name: String! @rules(apply: ["required"])
+  name_ar: String! @rules(apply: ["required"])
   include_stations: Boolean! @rules(apply: ["required"])
   include_subscriptions: Boolean! @rules(apply: ["required"])
 }
@@ -22,6 +24,7 @@ input CopyBusinessTripInput {
 input UpdateBusinessTripInput {
   id: ID! @rules(apply: ["required"])
   name: String
+  name_ar: String
   driver_id: ID
   vehicle_id: ID
   return_time: String
@@ -29,12 +32,13 @@ input UpdateBusinessTripInput {
   end_date: Date
   days: TripDaysInput
   group_chat: Boolean
-  price: Float! @rules(apply: ["required"])
+  price: Float
 }
 
 type BusinessTrip {
   id: ID
   name: String
+  name_ar: String
   log_id: String
   starts_at: String
   return_time: String

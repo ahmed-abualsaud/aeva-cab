@@ -16,6 +16,7 @@ class CreateSeatsLineStationsTable extends Migration
         Schema::create('seats_line_stations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
+            $table->string('name_ar')->nullable();
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8); 
             $table->unsignedBigInteger('line_id');

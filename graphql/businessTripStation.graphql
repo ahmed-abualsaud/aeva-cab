@@ -1,5 +1,6 @@
 input CreateBusinessTripStationInput {
   name: String
+  name_ar: String
   latitude: Float! @rules(apply: ["required"])
   longitude: Float! @rules(apply: ["required"])
   trip_id: ID
@@ -13,6 +14,7 @@ input UpdateBusinessTripStationInput {
   id: ID! @rules(apply: ["required"])
   trip_id: ID
   name: String
+  name_ar: String
   latitude: Float
   longitude: Float
   state: String
@@ -23,11 +25,13 @@ input AcceptBusinessTripStationInput {
   trip_id: ID! @rules(apply: ["required"])
   station_id: ID! @rules(apply: ["required"])
   station_name: String! @rules(apply: ["required"])
+  station_name_ar: String! @rules(apply: ["required"])
 }
 
 type BusinessTripStation {
   id: ID
   name: String
+  name_ar: String
   latitude: Float
   longitude: Float
   created_at: DateTime

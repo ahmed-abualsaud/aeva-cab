@@ -28,8 +28,10 @@ class SeatsLineStation extends Model
                 seats_trips.bookable,
                 pickup.id as pickup_id,
                 pickup.name as pickup_name,
+                pickup.name_ar as pickup_name_ar,
                 dropoff.id as dropoff_id,
                 dropoff.name as dropoff_name,
+                dropoff.name_ar as dropoff_name_ar,
                 CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))) as trip_time,
                 ADDDATE(
                     CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))), 

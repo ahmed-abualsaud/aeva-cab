@@ -16,6 +16,7 @@ class CreateSeatsTripsTable extends Migration
         Schema::create('seats_trips', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('name_ar')->nullable();
             $table->uuid('log_id')->nullable();
             $table->dateTime('starts_at')->nullable();
             $table->unsignedBigInteger('line_id');

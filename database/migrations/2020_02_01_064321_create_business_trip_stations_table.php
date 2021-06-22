@@ -16,6 +16,7 @@ class CreateBusinessTripStationsTable extends Migration
         Schema::create('business_trip_stations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
+            $table->string('name_ar')->nullable();
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8); 
             $table->unsignedBigInteger('trip_id');

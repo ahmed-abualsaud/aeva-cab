@@ -16,6 +16,7 @@ class CreateBusinessTripsTable extends Migration
         Schema::create('business_trips', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('name_ar')->nullable();
             $table->uuid('log_id')->nullable();
             $table->dateTime('starts_at')->nullable();
             $table->unsignedBigInteger('partner_id');
