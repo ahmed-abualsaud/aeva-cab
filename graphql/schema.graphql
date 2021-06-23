@@ -705,7 +705,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "BusinessTripSubscriptionResolver@businessTripUserStatus")
   businessTripUsersStatus(trip_id: ID, station_id: ID): [User]
     @field(resolver: "BusinessTripSubscriptionResolver@businessTripUsersStatus")
-  businessTripSubscribers(trip_id: ID, station_id: ID, status: String!): [User]
+  businessTripSubscribers(trip_id: ID!, status: String!, station_id: ID): [User]
     @field(resolver: "BusinessTripSubscriptionResolver@businessTripSubscribers")
 
   # Seats Trip

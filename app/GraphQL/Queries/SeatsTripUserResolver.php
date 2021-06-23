@@ -12,7 +12,7 @@ class SeatsTripUserResolver
      */
     public function __invoke($_, array $args)
     {
-        $bookings = User::select(
+        $users = User::select(
             'users.id', 'users.name', 'users.phone', 'users.wallet_balance', 
             'booking.id as booking_id', 'booking.payable', 'booking.paid', 'booking.boarding_pass', 'booking.seats'
             )
@@ -21,22 +21,29 @@ class SeatsTripUserResolver
             ->where('trip_time', $args['trip_time'])
             ->where('status', 'CONFIRMED');
 
-            switch($args['status']) {
-                case 'PICK_UP':
-                    $bookings = $bookings->where('booking.is_picked_up', false);
-                    if (array_key_exists('station_id', $args) && $args['station_id'])
-                        $bookings = $bookings->where('booking.pickup_id', $args['station_id']);
+        $users = $this->usersByStatus($args, $users);
 
-                break;
-                case 'DROP_OFF':
-                    $bookings = $bookings->where('booking.is_picked_up', true);
-                    if (array_key_exists('station_id', $args) && $args['station_id'])
-                        $bookings = $bookings->where('booking.dropoff_id', $args['station_id']);
-                break;
-                default:
-                    $bookings = $bookings;
-            }
+        return $users->get();
+    }
 
-            return $bookings->get();
+    protected function usersByStatus($args, $users)
+    {
+        switch($args['status']) {
+            case 'PICK_UP':
+                $users = $users->where('booking.is_picked_up', false);
+                if (array_key_exists('station_id', $args) && $args['station_id'])
+                    $users = $users->where('booking.pickup_id', $args['station_id']);
+
+            break;
+            case 'DROP_OFF':
+                $users = $users->where('booking.is_picked_up', true);
+                if (array_key_exists('station_id', $args) && $args['station_id'])
+                    $users = $users->where('booking.dropoff_id', $args['station_id']);
+            break;
+            default:
+                $users = $users;
+        }
+
+        return $users;
     }
 }

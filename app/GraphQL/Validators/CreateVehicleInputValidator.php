@@ -5,7 +5,7 @@ namespace App\GraphQL\Validators;
 use Illuminate\Validation\Rule;
 use Nuwave\Lighthouse\Validation\Validator;
 
-class UpdateVehicleInputValidator extends Validator
+class CreateVehicleInputValidator extends Validator
 {
   /**
    * @return mixed[]
@@ -13,8 +13,7 @@ class UpdateVehicleInputValidator extends Validator
   public function rules(): array
   {
     return [
-      'id' => ['required'],
-      'license_plate' => ['sometimes', Rule::unique('vehicles', 'license_plate')->ignore($this->arg('id'), 'id')],
+      'license_plate' => ['required', Rule::unique('vehicles', 'license_plate')]
     ];
   }
 
