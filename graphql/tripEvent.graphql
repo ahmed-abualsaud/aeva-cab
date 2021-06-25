@@ -1,6 +1,6 @@
 input StartTripInput {
   trip_id: ID! @rules(apply: ["required"])
-  trip_time: String! @rules(apply: ["required"])
+  trip_time: DateTime! @rules(apply: ["required"])
   latitude: Float! @rules(apply: ["required"])
   longitude: Float! @rules(apply: ["required"])
 }

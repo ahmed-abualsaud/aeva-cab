@@ -95,7 +95,7 @@ class BusinessTripEventResolver
     public function changeBusinessTripAttendanceStatus($_, array $args)
     {
         BusinessTripAttendance::updateOrCreate(
-            ['date' => date('Y-m-d'), 'trip_id' => $args['trip_id'], 'user_id' => $args['user_id']], 
+            ['date' => $args['date'], 'trip_id' => $args['trip_id'], 'user_id' => $args['user_id']], 
             ['is_absent' => $args['is_absent']]
         );
 
@@ -285,11 +285,11 @@ class BusinessTripEventResolver
             switch($args['by']) {
                 case 'user':
                     $token = $this->driverToken($args['driver_id']);
-                    $msg = $args['user_name'] . ' has changed his attendance status to '.$status_text;
+                    $msg = $args['user_name'] . ' has changed the attendance status to '.$status_text;
                     break;
                 default:
                     $token = $this->userToken($args['user_id']);
-                    $msg = 'The trip captain has changed your attendance status to '.$status_text.', If this isn\'t the case, you could revert it back from inside the trip.';
+                    $msg = 'Trip captain has changed your attendance status to '.$status_text.', If this isn\'t the case, you could revert it back from inside the trip.';
             }
 
             SendPushNotification::dispatch(
