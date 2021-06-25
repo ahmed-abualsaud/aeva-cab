@@ -20,19 +20,10 @@ class ConfigureAppLanguage
     public function handle(Request $request, Closure $next)
     {   
         try {
-            $session = $request->getSession();
+            // getPreferredLanguage default value = LOCALES[0] = en;
 
-            if (!$session->has('locale')) {
-                $session->put('locale', $request->getPreferredLanguage(self::LOCALES));
-            }
-
-            if ($request->has('lang')) {
-                $lang = $request->get('lang');
-                if (in_array($lang, self::LOCALES)) {
-                    $session->put('locale', $lang);
-                }
-            }
-            app()->setLocale($session->get('locale'));
+            $locale = $request->getPreferredLanguage(self::LOCALES));
+            app()->setLocale($locale);
 
             return $next($request);
 
