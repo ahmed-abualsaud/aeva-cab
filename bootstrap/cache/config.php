@@ -622,6 +622,7 @@
       array (
         0 => 'Nuwave\\Lighthouse\\Support\\Http\\Middleware\\AcceptJson',
         1 => 'Nuwave\\Lighthouse\\Support\\Http\\Middleware\\AttemptAuthentication',
+        2 => 'App\\Http\\Middleware\\ConfigureAppLanguage',
       ),
     ),
     'guard' => NULL,

@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use App\Exceptions\CustomException;
-use Illuminate\Contracts\Session\Session;
 use Illuminate\Http\Request;
 class ConfigureAppLanguage
 {
@@ -20,8 +19,7 @@ class ConfigureAppLanguage
     public function handle(Request $request, Closure $next)
     {   
         try {
-            // getPreferredLanguage default value = LOCALES[0] = en;
-
+            
             $locale = $request->getPreferredLanguage(self::LOCALES);
             app()->setLocale($locale);
 

@@ -1,5 +1,5 @@
-input CreateVehicleInput {
-  license_plate: String! @rules(apply: ["required", "unique:vehicles,license_plate"])
+input CreateVehicleInput @validator {
+  license_plate: String!
   license_expires_on: Date! @rules(apply: ["required"])
   car_type_id: ID! @rules(apply: ["required"])
   car_make_id: ID! @rules(apply: ["required"])

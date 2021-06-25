@@ -95,7 +95,7 @@ class BusinessTripEventResolver
     public function changeBusinessTripAttendanceStatus($_, array $args)
     {
         BusinessTripAttendance::updateOrCreate(
-            ['date' => date('Y-m-d'), 'trip_id' => $args['trip_id'], 'user_id' => $args['user_id']], 
+            ['date' => $args['date'], 'trip_id' => $args['trip_id'], 'user_id' => $args['user_id']], 
             ['is_absent' => $args['is_absent']]
         );
 
@@ -293,7 +293,7 @@ class BusinessTripEventResolver
                     break;
                 default:
                     $token = $this->userToken($args['user_id']);
-                    $msg = __('lang.CaptainChangedAttendance' 
+                    $msg = __('lang.CaptainChangedAttendance', 
                         ['status' => $status_text]);
             }
 

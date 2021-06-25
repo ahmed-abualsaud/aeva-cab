@@ -41,10 +41,10 @@ class SeatsTripAppTransactionResolver
         $transactionGroup = $transactionGroup->groupBy('date')->get();
 
         $response = [
-            "count" => $transactionCount,
-            "sum" => $transactionSum,
-            "avg" => $transactionAvg,
-            "transactions" => $transactionGroup
+            'count' => $transactionCount,
+            'sum' => round($transactionSum, 2),
+            'avg' => round($transactionAvg, 2),
+            'transactions' => $transactionGroup
         ];
 
         return $response;
