@@ -20,7 +20,7 @@ class PromoCodeResolver
                 ->where('expires_on', '>', date('Y-m-d'))
                 ->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw new CustomException('Invalid or expired promo code!');
+            throw new CustomException(__('lang.InvalidPromoCode'));
         }
 
         try {
@@ -30,7 +30,7 @@ class PromoCodeResolver
                 == $promoCode->usage;
 
             if ($exceeded) 
-                throw new \Exception('You have exceeded the permitted usage times!');
+                throw new \Exception(__('lang.PermittedUsageExceeded'));
 
             PromoCodeUsage::create(['promo_code_id' => $promoCode->id, 'user_id' => $args['user_id']]);
         } catch (\Exception $e) {

@@ -41,7 +41,7 @@ class VehicleResolver
         try {
             $vehicle = Vehicle::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided vehicle ID is not found.');
+            throw new \Exception(__('lang.VehicleNotFound'));
         }
 
         if (array_key_exists('photo', $args) && $args['photo']) {

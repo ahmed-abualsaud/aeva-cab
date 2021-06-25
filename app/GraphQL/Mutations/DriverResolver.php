@@ -43,7 +43,7 @@ class DriverResolver
         try {
             $driver = Driver::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException('The provided driver ID is not found.');
+            throw new CustomException(__('lang.DriverNotFound'));
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -78,7 +78,7 @@ class DriverResolver
         $credentials["password"] = $args['password'];
 
         if (!$token = auth('driver')->attempt($credentials)) {
-            throw new CustomException('The provided authentication credentials are invalid.');
+            throw new CustomException(__('lang.InvalidAuthCredentials'));
         }
 
         $driver = auth('driver')->user();
@@ -104,21 +104,21 @@ class DriverResolver
         } catch (ModelNotFoundException $e) {
             return [
                 'status' => false, 
-                'message' => 'The provided driver ID is not found.'
+                'message' => __('lang.DriverNotFound')
             ];
         }
 
         if (!(Hash::check($args['current_password'], $driver->password))) {
             return [
                 'status' => false,
-                'message' => 'Your current password does not matches with the password you provided.'
+                'message' => __('lang.PasswordMissmatch')
             ];
         }
 
         if (strcmp($args['current_password'], $args['new_password']) == 0) {
             return [
                 'status' => false,
-                'message' => 'New Password cannot be same as your current password. Please choose a different password.'
+                'message' => __('lang.TypeNewPassword')
             ];
         }
 
@@ -127,7 +127,7 @@ class DriverResolver
 
         return [
             'status' => true,
-            'message' => 'Password changed successfully.'
+            'message' => __('lang.PasswordChanged')
         ];
 
     }
@@ -146,12 +146,12 @@ class DriverResolver
         try {
             DriverVehicle::insert($data);
         } catch (\Exception $e) {
-            throw new CustomException('Assignment faild.');
+            throw new CustomException(__('lang.AssignmentFailed'));
         }
  
         return [
             "status" => true,
-            "message" => "Selected vehicles have been assigned successfully."
+            "message" => __('lang.AssignVehicle')
         ];
     }
 
@@ -162,12 +162,12 @@ class DriverResolver
                 ->whereIn('vehicle_id', $args['vehicle_id'])
                 ->delete();
         } catch (\Exception $e) {
-            throw new CustomException('Assignment cancellation faild.' . $e->getMessage());
+            throw new CustomException(__('lang.AssignCancelFailed') . $e->getMessage());
         }
 
         return [
             "status" => true,
-            "message" => "Selected vehicles have been unassigned successfully."
+            "message" => __('lang.UnassignVehicle')
         ];
     }
 

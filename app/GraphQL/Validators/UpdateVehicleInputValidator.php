@@ -24,7 +24,7 @@ class UpdateVehicleInputValidator extends Validator
   public function messages(): array
   {
     return [
-      'license_plate.unique' => 'You can not add the same license plate to multiple vehicles',
+      'license_plate.unique' => __('lang.NotAvailableLicense'),
     ];
   }
 

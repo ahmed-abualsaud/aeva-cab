@@ -103,7 +103,7 @@ class BusinessTripSubscriptionResolver
                 ->where('user_id', $args['user_id'])
                 ->firstOrFail();
         } catch (\Exception $e) {
-            throw new CustomException('Could not get the user status!');
+            throw new CustomException(__('lang.GetUserStatusFailed'));
         }
 
         return $status;

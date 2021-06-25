@@ -32,7 +32,7 @@ class BusinessTripAttendanceResolver
            return BusinessTripAttendance::updateOrCreate($firstArgs, $secondArgs);
 
         } catch(\Exception $e) {
-            throw new CustomException('We could not able to create or update an attendance record!');
+            throw new CustomException(__('lang.CreateAttendanceFailed'));
         }
     }
 

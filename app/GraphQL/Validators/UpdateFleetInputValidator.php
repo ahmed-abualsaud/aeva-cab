@@ -25,8 +25,8 @@ class UpdateFleetInputValidator extends Validator
   public function messages(): array
   {
     return [
-      'phone.unique' => 'The chosen phone is not available',
-      'email.unique' => 'The chosen email is not available',
+      'phone.unique' => __('lang.NotAvailablePhone'),
+      'email.unique' => __('lang.NotAvailableEmail'),
     ];
   }
 

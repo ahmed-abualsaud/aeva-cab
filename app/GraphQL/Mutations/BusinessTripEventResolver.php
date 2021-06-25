@@ -27,7 +27,7 @@ class BusinessTripEventResolver
         $trip = $this->getTripById($args['trip_id']);
 
         if ($trip->log_id) 
-            throw new CustomException('This Trip has already been started!');
+            throw new CustomException(__('lang.TripAlreadyStarted'));
 
         $logId = (string) Str::uuid();
 
@@ -51,7 +51,7 @@ class BusinessTripEventResolver
         try { 
             SendPushNotification::dispatch(
                 $this->stationUsersToken($args['station_id']), 
-                'Qruz captain has arrived at your station and will leave after 1 min',
+                __('lang.CaptainArrived'),
                 $args['trip_name'],
                 ['view' => 'BusinessTrip', 'id' => $args['trip_id']]
             );
@@ -69,7 +69,7 @@ class BusinessTripEventResolver
             return $this->updateEventPayload($args['log_id'], $payload);
 
         } catch (\Exception $e) {
-            throw new CustomException("We could not able to notify selected station's users!");
+            throw new CustomException(__('lang.NotifyStationFailed'));
         }
     }
 
@@ -120,14 +120,14 @@ class BusinessTripEventResolver
 
     public function pickUsers($_, array $args)
     {
-        $msg = 'Welcome! May you be happy and safe throughout this trip.';
+        $msg = __('lang.WelcomeTrip');
 
         return $this->pickOrDropUsers($args, true, $msg);
     }
 
     public function dropUsers($_, array $args)
     {
-        $msg = 'Bye! We can\'t wait to see you next time.';
+        $msg = __('lang.ByeTrip');
         
         return $this->pickOrDropUsers($args, false, $msg);
     }
@@ -152,7 +152,7 @@ class BusinessTripEventResolver
         $trip = $this->getTripById($args['trip_id']);
 
         if (!$trip->log_id) 
-            throw new CustomException('This trip has already been ended!');
+            throw new CustomException(__('lang.TripEnded'));
 
         $logId = $trip->log_id;
 
@@ -221,7 +221,7 @@ class BusinessTripEventResolver
             return $this->updateEventPayload($args['log_id'], $data);
 
         } catch (\Exception $e) {
-            throw new CustomException('Could not change selected users status!');
+            throw new CustomException(__('lang.ChangeUserStatusFailed'));
         }
     }
 
@@ -285,11 +285,16 @@ class BusinessTripEventResolver
             switch($args['by']) {
                 case 'user':
                     $token = $this->driverToken($args['driver_id']);
-                    $msg = $args['user_name'] . ' has changed the attendance status to '.$status_text;
+
+                    $msg = __('lang.AttendenceChanged', [
+                            'user' => $args['user_name'],
+                            'status' => $status_text,
+                        ]);
                     break;
                 default:
                     $token = $this->userToken($args['user_id']);
-                    $msg = 'Trip captain has changed your attendance status to '.$status_text.', If this isn\'t the case, you could revert it back from inside the trip.';
+                    $msg = __('lang.CaptainChangedAttendance', 
+                        ['status' => $status_text]);
             }
 
             SendPushNotification::dispatch(
