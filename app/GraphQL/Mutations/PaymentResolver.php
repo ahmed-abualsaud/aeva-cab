@@ -26,7 +26,7 @@ class PaymentResolver
             $output = $this->output($postData, 'addCard');
             $res = json_decode($output);
         } catch (\Exception $e) {
-            throw new \Exception('We could not able to add this card.'.$e->getMessage());
+            throw new \Exception(__('lang.AddCardFailed').$e->getMessage());
         }
 
         try {
@@ -40,12 +40,12 @@ class PaymentResolver
                 'card_id' => $res->cardId,
             ]);
         } catch (\Exception $e) {
-            throw new \Exception('We could not able to add this card.'.$e->getMessage());
+            throw new \Exception(__('lang.AddCardFailed').$e->getMessage());
         }
 
         return [
             "status" => true,
-            "message" => "Payment card added successfully."
+            "message" => __('lang.CardAdded')
         ];
 
     }
@@ -61,12 +61,12 @@ class PaymentResolver
             ];
             $output = $this->output($postData, 'resendCode');
         } catch (\Exception $e) {
-            throw new \Exception('We could not able to resend the code.'.$e->getMessage());
+            throw new \Exception(__('lang.ResendCodeFailed').$e->getMessage());
         }
 
         return [
             "status" => true,
-            "message" => "Validation code resent successfully."
+            "message" => __('lang.CodeResent')
         ];
 
     }
@@ -83,12 +83,12 @@ class PaymentResolver
             ];
             $output = $this->output($postData, 'validateOTP');
         } catch (\Exception $e) {
-            throw new \Exception('We could not able to validate the OTP.'.$e->getMessage());
+            throw new \Exception(__('lang.ValidateOTPFailed').$e->getMessage());
         }
 
         return [
             "status" => true,
-            "message" => "OTP validated successfully."
+            "message" => __('lang.OTPValidated')
         ];
 
     }
@@ -106,7 +106,7 @@ class PaymentResolver
             
             $output = $this->output($postData, 'makePayment');
         } catch (\Exception $e) {
-            throw new \Exception('We could not able to process this payment.'.$e->getMessage());
+            throw new \Exception(__('lang.ProcessPaymentFailed').$e->getMessage());
         }
 
         return [
@@ -122,7 +122,7 @@ class PaymentResolver
             $postData = ['sessionId' => $args['session_id']];
             $output = $this->output($postData, 'session/retrieve');
         } catch (\Exception $e) {
-            throw new \Exception('We could not able to process this payment.'.$e->getMessage());
+            throw new \Exception(__('lang.ProcessPaymentFailed').$e->getMessage());
         }
 
         return [
@@ -139,7 +139,7 @@ class PaymentResolver
         } catch (ModelNotFoundException $e) {
             return [
                 "status" => false,
-                "message" => "Card not found."
+                "message" => __('lang.CardNotFound')
             ];
         }
 

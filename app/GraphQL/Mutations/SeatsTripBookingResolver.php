@@ -58,7 +58,7 @@ class SeatsTripBookingResolver
             $booking->update($input);
 
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to update this booking!');
+            throw new CustomException(__('lang.UpdateBookingFailed'));
         }
 
         return $booking;
@@ -138,12 +138,13 @@ class SeatsTripBookingResolver
         $availableSeats = $totalSeats - $bookedSeats;
 
         if (!$availableSeats)
-            throw new \Exception('No available seats');
+            throw new \Exception(__('lang.NoSeats'));
             
         else if ($availableSeats < $args['seats'])
-            throw new \Exception(
-                'Only '.$availableSeats.' '.Str::plural('seat', $availableSeats).' available'
-            );
+            throw new \Exception( __('lang.AvailableSeats', [
+                'availableSeats' => $availableSeats,
+                'pluralSeats' => Str::plural('seat', $availableSeats)
+            ]));
     }
 
     protected function saveBooking(array $args)
@@ -173,7 +174,7 @@ class SeatsTripBookingResolver
             $input['boarding_pass'] = $this->createBoardingPass($input);
             return SeatsTripBooking::create($input);
         } catch (\Exception $e) {
-            throw new CustomException('Could not create this booking!');
+            throw new CustomException(__('lang.CreateBookingFailed'));
         }
     }
 
@@ -190,7 +191,7 @@ class SeatsTripBookingResolver
 
             return SeatsTripAppTransaction::create($input);
         } catch (\Exception $e) {
-            throw new CustomException('Could not create this transaction!');
+            throw new CustomException(__('lang.CreateTrnxFailed'));
         }
     }
 
@@ -229,7 +230,7 @@ class SeatsTripBookingResolver
         try {
             User::updateBalance($user_id, $amount);
         } catch (\Exception $e) {
-            throw new CustomException('Could not update the wallet!');
+            throw new CustomException(__('lang.UpadateWalletFailed'));
         }
     }
 }

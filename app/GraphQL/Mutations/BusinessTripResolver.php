@@ -30,7 +30,7 @@ class BusinessTripResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException('We could not able to create this trip!');
+            throw new CustomException(__('lang.CreateTripFailed'));
         }
 
         return $businessTrip;
@@ -43,7 +43,7 @@ class BusinessTripResolver
             $trip = BusinessTrip::findOrFail($args['id']);
             $trip->update($tripInput);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException('Trip with the provided ID is not found.');
+            throw new CustomException(__('lang.TripNotFound'));
         }
 
         return $trip;
@@ -86,7 +86,7 @@ class BusinessTripResolver
             return ['distance' => $total['distance'], 'duration' => $total['duration']];
             
         } catch (\Exception $e) {
-            throw new CustomException('Could not update route');
+            throw new CustomException(__('lang.UpdateRouteFailed'));
         }
     }
 
@@ -105,7 +105,7 @@ class BusinessTripResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException('We could not able to copy this trip!');
+            throw new CustomException(__('lang.CopyTripFailed'));
         }
 
         return $trip;
@@ -127,12 +127,12 @@ class BusinessTripResolver
 
             BusinessTripSubscription::insert($data);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to invite selected users!');
+            throw new CustomException(__('lang.InviteUserFailed'));
         }
 
         $this->notifyUserViaSms($args);
 
-        return 'Selected users have been invited but still not verified';
+        return __('lang.UserInvitedNotVerified');
     }
 
     public function createSubscription($_, array $args)
@@ -156,10 +156,10 @@ class BusinessTripResolver
 
             BusinessTripSubscription::upsert($data, ['station_id', 'destination_id', 'payable', 'updated_at']);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to subscribe selected users!');
+            throw new CustomException(__('lang.SubscribeUserFailed'));
         }
 
-        return 'Selected users have been subscribed';
+        return __('lang.SubscribeUser');
     }
 
     public function confirmSubscription($_, array $args) 
@@ -176,7 +176,7 @@ class BusinessTripResolver
                 ->where('user_id', $args['user_id'])
                 ->firstOrFail();
             if ($tripUser->subscription_verified_at) {
-                throw new CustomException('You have already subscribed to this trip.');
+                throw new CustomException(__('lang.AlreadySubscribed'));
             } else {
                 $tripUser->update([
                     'subscription_verified_at' => now(),
@@ -210,7 +210,7 @@ class BusinessTripResolver
                 ->delete();
 
         } catch (\Exception $e) {
-            throw new CustomException('Subscription cancellation failed.');
+            throw new CustomException(__('lang.CancelSubscribeFailed'));
         }
     }
 
@@ -221,7 +221,7 @@ class BusinessTripResolver
                 ->where('user_id', $args['user_id'])
                 ->update(['subscription_verified_at' => $args['subscription_verified_at']]);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to toggle this subscription!');
+            throw new CustomException(__('lang.ToggleSubscribeFailed'));
         }
     }
 
@@ -233,9 +233,11 @@ class BusinessTripResolver
                 ->pluck('phone')
                 ->toArray();
 
-            $message = 'Dear valued user, kindly use this code to confirm your subscription for '
-            . $args['trip_name'] .' trip: ' 
-            . $args['subscription_code'];
+            $message = __('lang.SubscriptionCode', 
+                [
+                    'trip_name' => $args['trip_name'],
+                    'subscription_code' => $args['subscription_code'],
+                ]);
             
             SendOtp::dispatch(implode(",", $phones), $message); 
         } catch (\Exception $e) {

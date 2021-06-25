@@ -34,7 +34,7 @@ class CarModelResolver
         try {
             $carModel = CarModel::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided carModel ID is not found.');
+            throw new \Exception(__('lang.CarModelNotFound'));
         }
 
         if (array_key_exists('photo', $args) && $args['photo']) {

@@ -30,7 +30,7 @@ class CommunicationResolver
             
             return $messages->get();
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to find this chat messages!');
+            throw new CustomException(__('lang.NoChatMessages'));
         }
     }
 }

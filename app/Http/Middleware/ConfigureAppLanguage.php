@@ -20,7 +20,6 @@ class ConfigureAppLanguage
     public function handle(Request $request, Closure $next)
     {   
         try {
-            $request->session()->forget('locale');
             $session = $request->getSession();
 
             if (!$session->has('locale')) {
@@ -38,7 +37,7 @@ class ConfigureAppLanguage
             return $next($request);
 
         } catch (Exception $e) {
-            throw new CustomException('Could not configure App language!');
+            throw new CustomException(__('lang.SetLanguageFailed'));
         }
     }
 }

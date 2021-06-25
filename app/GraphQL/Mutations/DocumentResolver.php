@@ -38,12 +38,12 @@ class DocumentResolver
         try {
             $document = Document::findOrFail($args['id']);
         } catch(ModelNotFoundException $e) {
-            throw new \Exception('Document with the provided ID is not found. ' . $e->getMessage());
+            throw new \Exception(__('lang.DocumentNotFound') . $e->getMessage());
         }
 
         $this->deleteOneFile($document->url, 'documents');
         $document->delete();
 
-        return "Document has been deleted.";
+        return __('lang.DocumentDeleted');
     }
 }

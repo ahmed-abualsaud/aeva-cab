@@ -35,7 +35,7 @@ class OndemandRequestResolver
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            throw new CustomException('We could not able to create this request!');
+            throw new CustomException(__('lang.CreateRequestFailed'));
         }
 
         $this->smsRequest($request->id);
@@ -80,7 +80,7 @@ class OndemandRequestResolver
             $input = collect($args)->except(['id', 'directive', 'notify'])->toArray();
             $request = OndemandRequest::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException('The provided request ID is not found.');
+            throw new CustomException(__('lang.RequestNotFound'));
         }
 
         if (array_key_exists('status', $args) && $args['status']) 
@@ -94,10 +94,10 @@ class OndemandRequestResolver
     protected function updateStatus($request, $args)
     {
         if ($request->status === 'CANCELLED' || $request->status === 'REJECTED')
-            throw new CustomException('Request status can not be changed.');
+            throw new CustomException(__('lang.ChangeRequestFailed'));
         
         if ($args['status'] === 'CANCELLED' && $request->status !== 'PENDING') 
-            throw new CustomException('This request can not be cancelled.');
+            throw new CustomException(__('lang.CancelRequestFailed'));
 
         if (array_key_exists('notify', $args) && $args['notify']) {
             $responseMsg = 'Your ondemand request # ' 
@@ -140,7 +140,7 @@ class OndemandRequestResolver
     protected function mailRequest($request_id)
     {
         $title = 'Qruz On Demand';
-        $msg = 'New On-Demand request has been submitted';
+        $msg = __('lang.RequestSubmitted');
         $view = 'emails.requests.default';
         $url = config('custom.app_url')."/ondemand/".$request_id;
         
@@ -151,7 +151,7 @@ class OndemandRequestResolver
     protected function smsRequest($request_id)
     {
         $phones = config('custom.otp_to_number');
-        $msg = 'New On-Demand request # '.$request_id.' has been submitted';
+        $msg = __('lang.RequestIDSubmitted', ['request_id' = $request_id]);
 
         SendOtp::dispatch($phones, $msg);
     }

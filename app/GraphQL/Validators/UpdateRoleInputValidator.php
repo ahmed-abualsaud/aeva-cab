@@ -24,7 +24,7 @@ class UpdateRoleInputValidator extends Validator
   public function messages(): array
   {
     return [
-      'name.unique' => 'The chosen name is not available',
+      'name.unique' => __('lang.NotAvailableName'),
     ];
   }
 

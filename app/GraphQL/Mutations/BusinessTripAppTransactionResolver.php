@@ -29,7 +29,7 @@ class BusinessTripAppTransactionResolver
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            throw new CustomException('Could not create transaction');
+            throw new CustomException(__('lang.CreateTrnxFailed'));
         }
 
         return true;

@@ -21,7 +21,7 @@ class DriverController extends Controller
         try {
             $driver = Driver::findOrFail($request->id);
         } catch (ModelNotFoundException $e) {
-            return response()->json('The provided driver ID is not found.', 404);
+            return response()->json(__('lang.DriverNotFound'), 404);
         }
 
         if ($driver->avatar) $this->deleteOneFile($driver->avatar, 'avatars');
