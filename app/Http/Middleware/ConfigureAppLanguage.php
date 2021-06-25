@@ -22,7 +22,7 @@ class ConfigureAppLanguage
         try {
             // getPreferredLanguage default value = LOCALES[0] = en;
 
-            $locale = $request->getPreferredLanguage(self::LOCALES));
+            $locale = $request->getPreferredLanguage(self::LOCALES);
             app()->setLocale($locale);
 
             return $next($request);
