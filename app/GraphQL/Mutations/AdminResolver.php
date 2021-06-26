@@ -37,7 +37,7 @@ class AdminResolver
         try {
             $admin = Admin::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided admin ID is not found.');
+            throw new \Exception(__('lang.AdminNotFound') );
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -58,23 +58,19 @@ class AdminResolver
 
     public function login($_, array $args)
     {
-        $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
+        $isEmail = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
         $credentials = [];
 
-        if ($emailOrPhone) {
+        if ($isEmail)
             $credentials["email"] = $args['emailOrPhone'];
-        } else {
+        else
             $credentials["phone"] = $args['emailOrPhone'];
-        } 
 
         $credentials["password"] = $args['password'];
 
-        if (! $token = auth('admin')->attempt($credentials)) {
-            throw new CustomException(
-                'The provided authentication credentials are invalid.',
-                'customValidation'
-            );
-        }
+        if (!$token = auth('admin')->attempt($credentials))
+            throw new CustomException(__('res.InvalidAuthCredentials'), 'customValidation');
+    
 
         $admin = auth('admin')->user();
 
@@ -91,19 +87,19 @@ class AdminResolver
         try {
             $admin = Admin::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided admin ID is not found.');
+            throw new \Exception(__('lang.AdminNotFound'));
         }
 
         if (!(Hash::check($args['current_password'], $admin->password))) {
             throw new CustomException(
-                'Your current password does not matches with the password you provided.',
+                __('lang.PasswordMissmatch'),
                 'customValidation'
             );
         }
 
         if (strcmp($args['current_password'], $args['new_password']) == 0) {
             throw new CustomException(
-                'New Password cannot be same as your current password. Please choose a different password.',
+                __('lang.TypeNewPassword'),
                 'customValidation'
             );
         }
@@ -111,7 +107,7 @@ class AdminResolver
         $admin->password = Hash::make($args['new_password']);
         $admin->save();
 
-        return 'Password changed successfully.';
+        return __('lang.PasswordChanged');
     }
 
     protected function invalidateToken($admin)
