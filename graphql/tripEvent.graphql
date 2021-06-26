@@ -41,8 +41,8 @@ type EventObj {
   station_id: ID
   station_name: String
   status: String
-  at: DateTime
-  eta: DateTime
+  at: String
+  eta: String
   by: String
   lat: Float
   lng: Float
