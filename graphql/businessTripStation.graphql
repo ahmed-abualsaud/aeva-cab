@@ -34,8 +34,8 @@ type BusinessTripStation {
   name_ar: String
   latitude: Float
   longitude: Float
-  created_at: DateTime
-  accepted_at: DateTime
+  created_at: String
+  accepted_at: String
   state: String
   distance: Int
   duration: Int

@@ -19,7 +19,7 @@ type SeatsTripAppTransaction {
   payment_method: String
   notes: String
   created_by: String
-  created_at: DateTime
+  created_at: String
 }
 
 type SeatsTripTerminalTransaction {
@@ -29,7 +29,7 @@ type SeatsTripTerminalTransaction {
   amount: Float
   source: String
   status: String
-  created_at: DateTime
+  created_at: String
 }
 
 type SeatsTripTransactionStats {

@@ -52,8 +52,8 @@ type Driver {
   city: String
   vehicle: String
   partner_id: ID
-  created_at: DateTime
-  updated_at: DateTime
+  created_at: String
+  updated_at: String
   fleet: Fleet @belongsTo
   trips: [BusinessTrip] @hasMany
   vehicles: [Vehicle] @hasMany

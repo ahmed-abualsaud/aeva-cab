@@ -18,8 +18,8 @@ type SeatsTripEvent {
   trip_time: String
   map_url: String
   content: TripEventContent
-  created_at: DateTime
-  updated_at: DateTime
+  created_at: String
+  updated_at: String
   trip: SeatsTrip @belongsTo
   driver: Driver @belongsTo
 }

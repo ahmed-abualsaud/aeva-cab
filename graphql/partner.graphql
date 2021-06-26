@@ -51,8 +51,8 @@ type Partner {
   logo: String
   size: String 
   license_expires_on: Date
-  created_at: DateTime
-  updated_at: DateTime
+  created_at: String
+  updated_at: String
   max_no_of_trips: Int
   type: String
   paymob_id: ID
