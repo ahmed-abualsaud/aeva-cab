@@ -1,12 +1,12 @@
 input StartTripInput {
   trip_id: ID! @rules(apply: ["required"])
-  trip_time: String! @rules(apply: ["required"])
+  trip_time: DateTime! @rules(apply: ["required"])
   latitude: Float! @rules(apply: ["required"])
   longitude: Float! @rules(apply: ["required"])
 }
 
 input AtTripStationInput {
-  eta: String! @rules(apply: ["required"])
+  eta: DateTime! @rules(apply: ["required"])
   station_id: ID! @rules(apply: ["required"])
   station_name: String! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])

@@ -40,7 +40,7 @@ type BusinessTrip {
   name: String
   name_ar: String
   log_id: String
-  starts_at: String
+  starts_at: DateTime
   return_time: String
   start_date: Date
   end_date: Date

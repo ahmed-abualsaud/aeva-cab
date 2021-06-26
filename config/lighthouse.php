@@ -37,6 +37,9 @@ return [
 
             // Logs every incoming GraphQL query.
             // \Nuwave\Lighthouse\Support\Http\Middleware\LogGraphQLQueries::class,
+
+            // Custom middlewares
+            \App\Http\Middleware\ConfigureAppLanguage::class,
         ],
 
         /*
