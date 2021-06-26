@@ -17,7 +17,7 @@ class CreateSeatsTripTerminalTransactionsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('trx_id');
             $table->unsignedBigInteger('partner_id');
-            $table->unsignedBigInteger('terminal_id')->nullable();
+            $table->unsignedBigInteger('terminal_id');
             $table->string('source');
             $table->float('amount', 8, 2);
             $table->enum('status', ['SUCCESS', 'PENDING', 'DECLINED']);

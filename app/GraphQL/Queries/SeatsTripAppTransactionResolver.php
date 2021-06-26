@@ -18,7 +18,7 @@ class SeatsTripAppTransactionResolver
 
         $transactionGroup = SeatsTripAppTransaction::selectRaw('
             DATE_FORMAT(created_at, "%a, %b %d, %Y") as date,
-            sum(amount) as sum
+            ROUND(SUM(amount), 2) as sum
         ');
 
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
