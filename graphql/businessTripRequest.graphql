@@ -2,8 +2,8 @@ input CreateBusinessTripFromRequestInput {
   name: String! @rules(apply: ["required"])
   name_ar: String! @rules(apply: ["required"])
   partner_id: ID! @rules(apply: ["required"])
-  driver_id: ID! @rules(apply: ["required"])
-  vehicle_id: ID! @rules(apply: ["required"])
+  driver_id: ID
+  vehicle_id: ID
   start_date: Date! @rules(apply: ["required"])
   end_date: Date! @rules(apply: ["required"])
   days: TripDaysInput! @rules(apply: ["required"])
