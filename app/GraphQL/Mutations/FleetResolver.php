@@ -37,7 +37,7 @@ class FleetResolver
         try {
             $fleet = Fleet::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.FleetNotFound'));
+            throw new \Exception(__('lang.fleet_not_found'));
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {

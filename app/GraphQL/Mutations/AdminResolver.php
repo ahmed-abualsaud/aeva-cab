@@ -37,7 +37,7 @@ class AdminResolver
         try {
             $admin = Admin::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.AdminNotFound') );
+            throw new \Exception(__('lang.admin_not_found') );
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -71,7 +71,7 @@ class AdminResolver
 
         if (! $token = auth('admin')->attempt($credentials)) {
             throw new CustomException(
-                __('lang.InvalidAuthCredentials'),
+                __('lang.invalid_auth_credentials'),
                 'customValidation'
             );
         }
@@ -91,19 +91,19 @@ class AdminResolver
         try {
             $admin = Admin::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.AdminNotFound'));
+            throw new \Exception(__('lang.admin_not_found'));
         }
 
         if (!(Hash::check($args['current_password'], $admin->password))) {
             throw new CustomException(
-                __('lang.PasswordMissmatch'),
+                __('lang.password_missmatch'),
                 'customValidation'
             );
         }
 
         if (strcmp($args['current_password'], $args['new_password']) == 0) {
             throw new CustomException(
-                __('lang.TypeNewPassword'),
+                __('lang.type_new_password'),
                 'customValidation'
             );
         }
@@ -111,7 +111,7 @@ class AdminResolver
         $admin->password = Hash::make($args['new_password']);
         $admin->save();
 
-        return __('lang.PasswordChanged');
+        return __('lang.password_changed');
     }
 
     protected function invalidateToken($admin)

@@ -39,7 +39,7 @@ class PartnerResolver
         try {
             $partner = Partner::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.PartnerNotFound'));
+            throw new \Exception(__('lang.partner_not_found'));
         }
 
         if (array_key_exists('logo', $args) && $args['logo']) { 
@@ -68,7 +68,7 @@ class PartnerResolver
 
         if (! $token = auth('partner')->attempt($credentials)) {
             throw new CustomException(
-                __('lang.InvalidAuthCredentials'),
+                __('lang.invalid_auth_credentials'),
                 'customValidation'
             ); 
         }
@@ -96,14 +96,14 @@ class PartnerResolver
             PartnerDriver::insert($data);
         } catch (\Exception $e) {
             throw new CustomException(
-              __('lang.DriverAssignFailed'),
+              __('lang.driver_assign_failed'),
               'customValidation'
             );
         }
  
         return [
             "status" => true,
-            "message" => __('lang.DriverAssigned')
+            "message" => __('lang.driver_assigned')
         ];
     }
 
@@ -115,14 +115,14 @@ class PartnerResolver
                 ->delete();
         } catch (\Exception $e) {
             throw new CustomException(
-                __('lang.AssignCancelFailed'),
+                __('lang.assign_cancel_failed'),
                 'customValidation'
             );
         }
 
         return [
             "status" => true,
-            "message" => __('lang.DriverUnassigned')
+            "message" => __('lang.driver_unassigned')
         ];
     }
 
@@ -140,14 +140,14 @@ class PartnerResolver
             PartnerUser::insert($data);
         } catch (\Exception $e) {
             throw new CustomException(
-              __('lang.UserAssignFailed'),
+              __('lang.user_assign_failed'),
               'customValidation'
             );
         }
  
         return [
             "status" => true,
-            "message" => __('lang.UserAssigned')
+            "message" => __('lang.user_assigned')
         ];
     }
 
@@ -159,14 +159,14 @@ class PartnerResolver
                 ->delete();
         } catch (\Exception $e) {
             throw new CustomException(
-                __('lang.AssignCancelFailed'),
+                __('lang.assign_cancel_failed'),
                 'customValidation'
             );
         }
 
         return [
             "status" => true,
-            "message" => __('lang.UserUnassigned')
+            "message" => __('lang.user_unassigned')
         ];
     }
 
@@ -175,19 +175,19 @@ class PartnerResolver
         try {
             $partner = Partner::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.PartnerNotFound'));
+            throw new \Exception(__('lang.partner_not_found'));
         }
 
         if (!(Hash::check($args['current_password'], $partner->password))) {
             throw new CustomException(
-                __('lang.PasswordMissmatch'),
+                __('lang.password_missmatch'),
                 'customValidation'
             );
         }
 
         if (strcmp($args['current_password'], $args['new_password']) == 0) {
             throw new CustomException(
-                __('lang.TypeNewPassword'),
+                __('lang.type_new_password'),
                 'customValidation'
             );
         }
@@ -195,7 +195,7 @@ class PartnerResolver
         $partner->password = Hash::make($args['new_password']);
         $partner->save();
 
-        return __('lang.PasswordChanged');
+        return __('lang.password_changed');
 
     }
 }

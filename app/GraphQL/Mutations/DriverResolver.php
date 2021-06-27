@@ -43,7 +43,7 @@ class DriverResolver
         try {
             $driver = Driver::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException(__('lang.DriverNotFound'));
+            throw new CustomException(__('lang.driver_not_found'));
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -78,7 +78,7 @@ class DriverResolver
         $credentials["password"] = $args['password'];
 
         if (!$token = auth('driver')->attempt($credentials)) {
-            throw new CustomException(__('lang.InvalidAuthCredentials'));
+            throw new CustomException(__('lang.invalid_auth_credentials'));
         }
 
         $driver = auth('driver')->user();
@@ -104,21 +104,21 @@ class DriverResolver
         } catch (ModelNotFoundException $e) {
             return [
                 'status' => false, 
-                'message' => __('lang.DriverNotFound')
+                'message' => __('lang.driver_not_found')
             ];
         }
 
         if (!(Hash::check($args['current_password'], $driver->password))) {
             return [
                 'status' => false,
-                'message' => __('lang.PasswordMissmatch')
+                'message' => __('lang.password_missmatch')
             ];
         }
 
         if (strcmp($args['current_password'], $args['new_password']) == 0) {
             return [
                 'status' => false,
-                'message' => __('lang.TypeNewPassword')
+                'message' => __('lang.type_new_password')
             ];
         }
 
@@ -127,12 +127,12 @@ class DriverResolver
 
         return [
             'status' => true,
-            'message' => __('lang.PasswordChanged')
+            'message' => __('lang.password_changed')
         ];
 
     }
 
-    public function assignVehicle($_, array $args)
+    public function assign_vehicle($_, array $args)
     {
         $data = [];
         $arr = [];
@@ -146,28 +146,28 @@ class DriverResolver
         try {
             DriverVehicle::insert($data);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.AssignmentFailed'));
+            throw new CustomException(__('lang.assignment_failed'));
         }
  
         return [
             "status" => true,
-            "message" => __('lang.AssignVehicle')
+            "message" => __('lang.assign_vehicle')
         ];
     }
 
-    public function unassignVehicle($_, array $args)
+    public function unassign_vehicle($_, array $args)
     {
         try {
             DriverVehicle::where('driver_id', $args['driver_id'])
                 ->whereIn('vehicle_id', $args['vehicle_id'])
                 ->delete();
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.AssignCancelFailed') . $e->getMessage());
+            throw new CustomException(__('lang.assign_cancel_failed') . $e->getMessage());
         }
 
         return [
             "status" => true,
-            "message" => __('lang.UnassignVehicle')
+            "message" => __('lang.unassign_vehicle')
         ];
     }
 

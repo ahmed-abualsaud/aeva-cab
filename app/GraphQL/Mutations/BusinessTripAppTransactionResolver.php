@@ -29,7 +29,7 @@ class BusinessTripAppTransactionResolver
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.CreateTrnxFailed'));
+            throw new CustomException(__('lang.create_trnx_failed'));
         }
 
         return true;

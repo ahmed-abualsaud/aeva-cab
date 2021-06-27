@@ -24,7 +24,7 @@ class UpdateVehicleInputValidator extends Validator
   public function messages(): array
   {
     return [
-      'license_plate.unique' => __('lang.NotAvailableLicense'),
+      'license_plate.unique' => __('lang.not_available_license'),
     ];
   }
 

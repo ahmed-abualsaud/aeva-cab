@@ -43,7 +43,7 @@ class UserResolver
             $password = $input['phone'];
             $input['phone_verified_at'] = now();
         } else {
-            throw new CustomException(__('lang.PasswordPhoneNotProvided'));
+            throw new CustomException(__('lang.password_phone_not_provided'));
         }
         $input['password'] = Hash::make($password);
 
@@ -104,7 +104,7 @@ class UserResolver
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.CreateUserFailed'));
+            throw new CustomException(__('lang.create_user_failed'));
         }
     }
 
@@ -124,7 +124,7 @@ class UserResolver
             }
             User::insertOrIgnore($data); 
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.CreateUserFailed'));
+            throw new CustomException(__('lang.create_user_failed'));
         }
     }
 
@@ -135,7 +135,7 @@ class UserResolver
         try {
             $user = User::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException(__('lang.UserNotFound'));
+            throw new CustomException(__('lang.user_not_found'));
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -168,7 +168,7 @@ class UserResolver
         $credentials["password"] = $args['password'];  
 
         if (! $token = auth('user')->attempt($credentials)) {
-            throw new CustomException(__('lang.InvalidAuthCredentials'));
+            throw new CustomException(__('lang.invalid_auth_credentials'));
         }
 
         $user = auth('user')->user();
@@ -217,7 +217,7 @@ class UserResolver
                 $input['avatar'] = $userData->getAvatar();
             }
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.InvalidToken'));
+            throw new CustomException(__('lang.invalid_token'));
         }
 
         $updateData = [];
@@ -275,21 +275,21 @@ class UserResolver
         } catch (ModelNotFoundException $e) {
             return [
                 'status' => false, 
-                'message' => __('lang.UserNotFound')
+                'message' => __('lang.user_not_found')
             ];
         }
 
         if (!(Hash::check($args['current_password'], $user->password))) {
             return [
                 'status' => false,
-                'message' => __('lang.PasswordMissmatch')
+                'message' => __('lang.password_missmatch')
             ];
         }
 
         if (strcmp($args['current_password'], $args['new_password']) == 0) {
             return [
                 'status' => false,
-                'message' => __('lang.TypeNewPassword')
+                'message' => __('lang.type_new_password')
             ];
         }
 
@@ -298,7 +298,7 @@ class UserResolver
 
         return [
             'status' => true,
-            'message' => __('lang.PasswordChanged')
+            'message' => __('lang.password_changed')
         ];
 
     }

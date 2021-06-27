@@ -25,8 +25,8 @@ class UpdateUserInputValidator extends Validator
   public function messages(): array
   {
     return [
-      'phone.unique' => __('lang.NotAvailablePhone'),
-      'email.unique' => __('lang.NotAvailableEmail'),
+      'phone.unique' => __('lang.not_available_phone'),
+      'email.unique' => __('lang.not_available_email'),
     ];
   }
 

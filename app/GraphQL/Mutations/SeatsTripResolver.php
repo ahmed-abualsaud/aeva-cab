@@ -23,7 +23,7 @@ class SeatsTripResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.CreateTripFailed'));
+            throw new CustomException(__('lang.create_trip_failed'));
         }
 
         return $trip;
@@ -36,7 +36,7 @@ class SeatsTripResolver
             $trip = SeatsTrip::findOrFail($args['id']);
             $trip->update($tripInput);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException(__('lang.TripNotFound'));
+            throw new CustomException(__('lang.trip_not_found'));
         }
 
         return $trip;
@@ -51,7 +51,7 @@ class SeatsTripResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.CopyTripFailed'));
+            throw new CustomException(__('lang.copy_trip_failed'));
         }
 
         return $trip;

@@ -24,7 +24,7 @@ class SeatsLineResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.CopyLineFailed'));
+            throw new CustomException(__('lang.copy_line_failed'));
         }
 
         return $line;
@@ -67,7 +67,7 @@ class SeatsLineResolver
             return ['distance' => $total['distance'], 'duration' => $total['duration']];
             
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.UpdateRouteFailed'));
+            throw new CustomException(__('lang.update_route_failed'));
         }
     }
 

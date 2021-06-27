@@ -24,7 +24,7 @@ class UpdateStatementInputValidator extends Validator
   public function messages(): array
   {
     return [
-      'type.unique' => __('lang.NotAvailableType'),
+      'type.unique' => __('lang.not_available_type'),
     ];
   }
 

@@ -19,7 +19,7 @@ class RoleResolver
         try {
             $role = Role::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.RoleNotFound'));
+            throw new \Exception(__('lang.role_not_found'));
         }
 
         $this->invalidateTokens($args['id']);

@@ -30,7 +30,7 @@ class BusinessTripResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.CreateTripFailed'));
+            throw new CustomException(__('lang.create_trip_failed'));
         }
 
         return $businessTrip;
@@ -43,7 +43,7 @@ class BusinessTripResolver
             $trip = BusinessTrip::findOrFail($args['id']);
             $trip->update($tripInput);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException(__('lang.TripNotFound'));
+            throw new CustomException(__('lang.trip_not_found'));
         }
 
         return $trip;
@@ -86,7 +86,7 @@ class BusinessTripResolver
             return ['distance' => $total['distance'], 'duration' => $total['duration']];
             
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.UpdateRouteFailed'));
+            throw new CustomException(__('lang.update_route_failed'));
         }
     }
 
@@ -105,7 +105,7 @@ class BusinessTripResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.CopyTripFailed'));
+            throw new CustomException(__('lang.copy_trip_failed'));
         }
 
         return $trip;
@@ -127,12 +127,12 @@ class BusinessTripResolver
 
             BusinessTripSubscription::insert($data);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.InviteUserFailed'));
+            throw new CustomException(__('lang.invite_user_failed'));
         }
 
         $this->notifyUserViaSms($args);
 
-        return __('lang.UserInvitedNotVerified');
+        return __('lang.user_invited_not_verified');
     }
 
     public function createSubscription($_, array $args)
@@ -156,10 +156,10 @@ class BusinessTripResolver
 
             BusinessTripSubscription::upsert($data, ['station_id', 'destination_id', 'payable', 'updated_at']);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.SubscribeUserFailed'));
+            throw new CustomException(__('lang.subscribe_user_failed'));
         }
 
-        return __('lang.SubscribeUser');
+        return __('lang.subscribe_user');
     }
 
     public function confirmSubscription($_, array $args) 
@@ -176,7 +176,7 @@ class BusinessTripResolver
                 ->where('user_id', $args['user_id'])
                 ->firstOrFail();
             if ($tripUser->subscription_verified_at) {
-                throw new CustomException(__('lang.AlreadySubscribed'));
+                throw new CustomException(__('lang.already_subscribed'));
             } else {
                 $tripUser->update([
                     'subscription_verified_at' => now(),
@@ -210,7 +210,7 @@ class BusinessTripResolver
                 ->delete();
 
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.CancelSubscribeFailed'));
+            throw new CustomException(__('lang.cancel_subscribe_failed'));
         }
     }
 
@@ -221,7 +221,7 @@ class BusinessTripResolver
                 ->where('user_id', $args['user_id'])
                 ->update(['subscription_verified_at' => $args['subscription_verified_at']]);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.ToggleSubscribeFailed'));
+            throw new CustomException(__('lang.toggle_subscribe_failed'));
         }
     }
 
@@ -233,7 +233,7 @@ class BusinessTripResolver
                 ->pluck('phone')
                 ->toArray();
 
-            $message = __('lang.SubscriptionCode', 
+            $message = __('lang.subscription_code', 
                 [
                     'trip_name' => $args['trip_name'],
                     'subscription_code' => $args['subscription_code'],

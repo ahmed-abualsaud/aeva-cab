@@ -24,7 +24,7 @@ class CreateTerminalInputValidator extends Validator
   public function messages(): array
   {
     return [
-      'terminal_id.unique' => __('lang.TerminalExist'),
+      'terminal_id.unique' => __('lang.terminal_exist'),
     ];
   }
 

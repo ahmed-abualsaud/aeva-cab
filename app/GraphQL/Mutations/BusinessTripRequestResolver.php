@@ -31,7 +31,7 @@ class BusinessTripRequestResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.CreateTripFailed'));
+            throw new CustomException(__('lang.create_trip_failed'));
         }
     }
 
@@ -61,7 +61,7 @@ class BusinessTripRequestResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.AddRequestFailed'));
+            throw new CustomException(__('lang.add_request_failed'));
         }
     }
 
@@ -76,7 +76,7 @@ class BusinessTripRequestResolver
             );
 
         } catch(\Exception $e) {
-            throw new CustomException(__('lang.AssignUserStationFailed'));
+            throw new CustomException(__('lang.assign_user_station_failed'));
         }
     }
 
@@ -91,7 +91,7 @@ class BusinessTripRequestResolver
             );
 
         } catch(\Exception $e) {
-            throw new CustomException(__('lang.AssignUserStationFailed'));
+            throw new CustomException(__('lang.assign_user_station_failed'));
         }
     }
 
@@ -106,7 +106,7 @@ class BusinessTripRequestResolver
             );
 
         } catch(\Exception $e) {
-            throw new CustomException(__('lang.AssignUserStationFailed'));
+            throw new CustomException(__('lang.assign_user_station_failed'));
         }
     }
 

@@ -22,7 +22,7 @@ class SeatsTripEventResolver
         $trip = $this->getTripById($args['trip_id']);
 
         if ($trip->log_id) 
-            throw new CustomException(__('lang.TripAlreadyStarted'));
+            throw new CustomException(__('lang.trip_already_started'));
 
         $logId = (string) Str::uuid();
 
@@ -89,7 +89,7 @@ class SeatsTripEventResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.DropUserFailed'));
+            throw new CustomException(__('lang.drop_user_failed'));
         }
 
         return true;
@@ -100,7 +100,7 @@ class SeatsTripEventResolver
         $trip = $this->getTripById($args['trip_id']);
 
         if (!$trip->log_id) 
-            throw new CustomException(__('lang.TripEnded'));
+            throw new CustomException(__('lang.trip_ended'));
 
         $logId = $trip->log_id;
 
@@ -196,7 +196,7 @@ class SeatsTripEventResolver
             $input['amount'] = $args['payable'] - $args['paid'];
             return SeatsTripAppTransaction::create($input);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.CreateTrnxFailed'));
+            throw new CustomException(__('lang.create_trnx_failed'));
         }
     }
 
@@ -206,7 +206,7 @@ class SeatsTripEventResolver
             return SeatsTripBooking::where('id', $args['booking_id'])
                 ->update($data);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.UpdateBookingFailed'));
+            throw new CustomException(__('lang.update_booking_failed'));
         }
     }
 
@@ -222,7 +222,7 @@ class SeatsTripEventResolver
             ->join('partners', 'partners.id', '=', 'seats_trips.partner_id')
             ->findOrFail($id);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.TripNotFound'));
+            throw new CustomException(__('lang.trip_not_found'));
         }
     }
 

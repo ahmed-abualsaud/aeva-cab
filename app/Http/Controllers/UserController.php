@@ -21,7 +21,7 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($request->id);
         } catch (ModelNotFoundException $e) {
-            return response()->json(__('lang.UserNotFound'), 500);
+            return response()->json(__('lang.user_not_found'), 500);
         }
 
         if ($user->avatar) $this->deleteOneFile($user->avatar, 'avatars');

@@ -15,7 +15,7 @@ trait HandleUpload
             $uploadedFile = Storage::disk('azure')->putFileAs($folder, $file, $fileName);
             $url = config('custom.azure_storage_url') . '/' . $uploadedFile;
         } catch(\Exception $e) {
-            throw new \Exception(__('lang.UploadFileFailed') . $e->getMessage());
+            throw new \Exception(__('lang.upload_file_failed') . $e->getMessage());
         }
 
         return $url;

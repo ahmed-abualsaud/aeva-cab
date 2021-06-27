@@ -27,7 +27,7 @@ class WorkRequestResolver
 
             $workRequest = WorkRequest::create($input);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.CreateWorkplaceFailed'));
+            throw new CustomException(__('lang.create_workplace_failed'));
         }
 
         return $workRequest;
@@ -44,7 +44,7 @@ class WorkRequestResolver
     
             $workRequest->update($input);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.UpdateWorkplaceFailed'));
+            throw new CustomException(__('lang.update_workplace_failed'));
         }
 
         return $workRequest;
@@ -68,10 +68,10 @@ class WorkRequestResolver
             }
             
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.ChangeRequestsFailed'));
+            throw new CustomException(__('lang.change_requests_failed'));
         }
 
-        return __('lang.RequestChanged');
+        return __('lang.request_changed');
     }
 
     protected function notifyUsers(array $args)
@@ -104,9 +104,9 @@ class WorkRequestResolver
         try {
             WorkRequest::whereIn('id', $args['id'])->delete();
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.DeleteRequestFailed'));
+            throw new CustomException(__('lang.delete_request_failed'));
         }
 
-        return __('lang.RequestDeleted');
+        return __('lang.request_deleted');
     }
 }

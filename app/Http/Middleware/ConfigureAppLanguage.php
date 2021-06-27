@@ -26,7 +26,7 @@ class ConfigureAppLanguage
             return $next($request);
 
         } catch (Exception $e) {
-            throw new CustomException(__('lang.SetLanguageFailed'));
+            throw new CustomException(__('lang.set_language_failed'));
         }
     }
 }

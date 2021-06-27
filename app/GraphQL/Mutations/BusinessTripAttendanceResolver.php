@@ -32,7 +32,7 @@ class BusinessTripAttendanceResolver
            return BusinessTripAttendance::updateOrCreate($firstArgs, $secondArgs);
 
         } catch(\Exception $e) {
-            throw new CustomException(__('lang.CreateAttendanceFailed'));
+            throw new CustomException(__('lang.create_attendance_failed'));
         }
     }
 

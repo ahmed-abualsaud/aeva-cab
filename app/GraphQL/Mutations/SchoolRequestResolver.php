@@ -26,7 +26,7 @@ class SchoolRequestResolver
 
             $schoolRequest = SchoolRequest::create($input);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.CreateSchoolRequestFailed'));
+            throw new CustomException(__('lang.create_school_request_failed'));
         }
 
         return $schoolRequest;
@@ -43,7 +43,7 @@ class SchoolRequestResolver
     
             $schoolRequest->update($input);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.UpdateSchoolRequestFailed'));
+            throw new CustomException(__('lang.update_school_request_failed'));
         }
 
         return $schoolRequest;
@@ -66,10 +66,10 @@ class SchoolRequestResolver
             }
             
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.ChangeRequestFailed'));
+            throw new CustomException(__('lang.change_request_failed'));
         }
 
-        return __('lang.RequestChanged');
+        return __('lang.request_changed');
     }
 
     protected function notifyUsers(array $args)
@@ -102,9 +102,9 @@ class SchoolRequestResolver
         try {
             SchoolRequest::whereIn('id', $args['id'])->delete();
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.DeleteRequestFailed'));
+            throw new CustomException(__('lang.delete_request_failed'));
         }
 
-        return __('lang.RequestDeleted');
+        return __('lang.request_deleted');
     }
 }

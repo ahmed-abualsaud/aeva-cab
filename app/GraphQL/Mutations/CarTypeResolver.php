@@ -41,7 +41,7 @@ class CarTypeResolver
         try {
             $carType = CarType::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.CarTypeNotFound'));
+            throw new \Exception(__('lang.car_type_not_found'));
         }
 
         if (array_key_exists('photo', $args) && $args['photo']) {

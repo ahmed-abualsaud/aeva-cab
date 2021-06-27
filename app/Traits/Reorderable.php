@@ -30,7 +30,7 @@ trait Reorderable
                 WHERE `id` in ({$ids})", $params);
 
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.UpdateFailed'));
+            throw new CustomException(__('lang.update_failed'));
         }
     }
 

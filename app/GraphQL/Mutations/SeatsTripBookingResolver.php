@@ -58,7 +58,7 @@ class SeatsTripBookingResolver
             $booking->update($input);
 
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.UpdateBookingFailed'));
+            throw new CustomException(__('lang.update_booking_failed'));
         }
 
         return $booking;
@@ -135,15 +135,15 @@ class SeatsTripBookingResolver
             ->first()
             ->seats;
 
-        $availableSeats = $totalSeats - $bookedSeats;
+        $available_seats = $totalSeats - $bookedSeats;
 
-        if (!$availableSeats)
-            throw new \Exception(__('lang.NoSeats'));
+        if (!$available_seats)
+            throw new \Exception(__('lang.no_seats'));
             
-        else if ($availableSeats < $args['seats'])
-            throw new \Exception( __('lang.AvailableSeats', [
-                'availableSeats' => $availableSeats,
-                'pluralSeats' => Str::plural('seat', $availableSeats)
+        else if ($available_seats < $args['seats'])
+            throw new \Exception( __('lang.available_seats', [
+                'available_seats' => $available_seats,
+                'pluralSeats' => Str::plural('seat', $available_seats)
             ]));
     }
 
@@ -174,7 +174,7 @@ class SeatsTripBookingResolver
             $input['boarding_pass'] = $this->createBoardingPass($input);
             return SeatsTripBooking::create($input);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.CreateBookingFailed'));
+            throw new CustomException(__('lang.create_booking_failed'));
         }
     }
 
@@ -191,7 +191,7 @@ class SeatsTripBookingResolver
 
             return SeatsTripAppTransaction::create($input);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.CreateTrnxFailed'));
+            throw new CustomException(__('lang.create_trnx_failed'));
         }
     }
 
@@ -230,7 +230,7 @@ class SeatsTripBookingResolver
         try {
             User::updateBalance($user_id, $amount);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.UpadateWalletFailed'));
+            throw new CustomException(__('lang.upadate_wallet_failed'));
         }
     }
 }

@@ -21,7 +21,7 @@ class BusinessTripStationResolver
         try {
             $station = BusinessTripStation::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException(__('lang.StationNotFound'));
+            throw new CustomException(__('lang.station_not_found'));
         }
 
         if (array_key_exists('state', $args) && $args['state'] && $args['state'] != $station->state) {
@@ -51,7 +51,7 @@ class BusinessTripStationResolver
             ];
             return BusinessTripSubscription::upsert($data, ['station_id', 'destination_id', 'updated_at']);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.SomethingWentWrong'));
+            throw new CustomException(__('lang.something_went_wrong'));
         }
     }
 
@@ -81,7 +81,7 @@ class BusinessTripStationResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.AcceptStationFailed'));
+            throw new CustomException(__('lang.accept_station_failed'));
         }
 
         return $station;
@@ -92,7 +92,7 @@ class BusinessTripStationResolver
         try {
             $station = BusinessTripStation::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException(__('lang.StationNotFound'));
+            throw new CustomException(__('lang.station_not_found'));
         }
 
         /*

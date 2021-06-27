@@ -19,7 +19,7 @@ class BusinessTripScheduleResolver
                 ->where('user_id', $args['user_id'])
                 ->firstOrFail();
         } catch(\Exception $e) {
-            throw new CustomException(__('lang.NoSchedule'));
+            throw new CustomException(__('lang.no_schedule'));
         }
     }
 }
