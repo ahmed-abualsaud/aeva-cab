@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\SeatsTripTerminalTransaction;
+use App\Exports\SeatsTripTerminalTransactionExport;
 
 class SeatsTripTerminalTransactionController extends Controller
 {
@@ -49,4 +51,16 @@ class SeatsTripTerminalTransactionController extends Controller
             return $obj->api_source;
         }
     }
+
+    public function export(Request $req) 
+    {
+        $filename = preg_replace('/-|:|\s+/', '_', now()).'_transactions.csv';
+        $partner = $req->query('partner');
+        $terminal = $req->query('terminal');
+        $period = $req->query('period');
+
+        return (new SeatsTripTerminalTransactionExport($partner, $terminal, $period))
+            ->download($filename);
+    }
+
 }
