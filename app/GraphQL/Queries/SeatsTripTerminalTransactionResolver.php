@@ -40,13 +40,11 @@ class SeatsTripTerminalTransactionResolver
 
         $transactionCount = $transactions->count();
         $transactionSum = $transactions->sum('amount');
-        $transactionAvg = $transactions->avg('amount');
         $transactionGroup = $transactionGroup->groupBy('date')->get();
 
         $response = [
             'count' => $transactionCount,
             'sum' => round($transactionSum, 2),
-            'avg' => round($transactionAvg, 2),
             'transactions' => $transactionGroup
         ];
 

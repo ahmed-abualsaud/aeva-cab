@@ -78,6 +78,17 @@
       0 => 'Laravel\\Vapor\\VaporServiceProvider',
     ),
   ),
+  'maatwebsite/excel' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Maatwebsite\\Excel\\ExcelServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
+    ),
+  ),
   'matthewbdaly/laravel-azure-storage' => 
   array (
     'providers' => 

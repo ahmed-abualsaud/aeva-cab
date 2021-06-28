@@ -20,3 +20,6 @@ Route::group(['middleware' => ['auth:driver']], function () {
 });
 
 Route::post('/seats/trip/terminal/transaction', 'SeatsTripTerminalTransactionController@create');
+
+Route::get('/seats/trip/terminal/transactions/export', 'SeatsTripTerminalTransactionController@export')
+    ->middleware('auth:admin,partner');
