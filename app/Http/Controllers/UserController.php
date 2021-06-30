@@ -21,7 +21,7 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($request->id);
         } catch (ModelNotFoundException $e) {
-            return response()->json('The provided user ID is not found.', 500);
+            return response()->json(__('lang.user_not_found'), 500);
         }
 
         if ($user->avatar) $this->deleteOneFile($user->avatar, 'avatars');
@@ -30,6 +30,12 @@ class UserController extends Controller
         $user->update(['avatar' => $url]);
 
         return response()->json($user);
+    }
+
+    public function getLanguage(Request $request) {
+
+        $request->session()->forget('locale');
+        return __('auth.failed');
     }
 
 }

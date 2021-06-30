@@ -28,7 +28,7 @@ class UpdateSchoolInputValidator extends Validator
   public function messages(): array
   {
     return [
-      'name.unique' => 'The chosen name is not available',
+      'name.unique' => __('lang.not_available_name'),
     ];
   }
 

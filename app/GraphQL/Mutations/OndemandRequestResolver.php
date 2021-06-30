@@ -7,7 +7,7 @@ use App\OndemandRequest;
 use App\Mail\DefaultMail;
 use App\OndemandRequestLine;
 use App\OndemandRequestVehicle;
-use App\Events\RequestSubmitted;
+use App\Events\request_submitted;
 use App\Jobs\SendPushNotification;
 use App\Traits\HandleDeviceTokens;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +35,7 @@ class OndemandRequestResolver
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            throw new CustomException('We could not able to create this request!');
+            throw new CustomException(__('lang.create_request_failed'));
         }
 
         $this->smsRequest($request->id);
@@ -80,7 +80,7 @@ class OndemandRequestResolver
             $input = collect($args)->except(['id', 'directive', 'notify'])->toArray();
             $request = OndemandRequest::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException('The provided request ID is not found.');
+            throw new CustomException(__('lang.request_not_found'));
         }
 
         if (array_key_exists('status', $args) && $args['status']) 
@@ -94,10 +94,10 @@ class OndemandRequestResolver
     protected function updateStatus($request, $args)
     {
         if ($request->status === 'CANCELLED' || $request->status === 'REJECTED')
-            throw new CustomException('Request status can not be changed.');
+            throw new CustomException(__('lang.change_request_failed'));
         
         if ($args['status'] === 'CANCELLED' && $request->status !== 'PENDING') 
-            throw new CustomException('This request can not be cancelled.');
+            throw new CustomException(__('lang.cancel_request_failed'));
 
         if (array_key_exists('notify', $args) && $args['notify']) {
             $responseMsg = 'Your ondemand request # ' 
@@ -134,13 +134,13 @@ class OndemandRequestResolver
             '__typename' => 'OndemandRequest'
         ];
         
-        broadcast(new RequestSubmitted('App.Admin', 'ondemand.request', $req));
+        broadcast(new request_submitted('App.Admin', 'ondemand.request', $req));
     }
 
     protected function mailRequest($request_id)
     {
         $title = 'Qruz On Demand';
-        $msg = 'New On-Demand request has been submitted';
+        $msg = __('lang.request_submitted');
         $view = 'emails.requests.default';
         $url = config('custom.app_url')."/ondemand/".$request_id;
         
@@ -151,7 +151,7 @@ class OndemandRequestResolver
     protected function smsRequest($request_id)
     {
         $phones = config('custom.otp_to_number');
-        $msg = 'New On-Demand request # '.$request_id.' has been submitted';
+        $msg = __('lang.request_ID_submitted', ['request_id' => $request_id]);
 
         SendOtp::dispatch($phones, $msg);
     }

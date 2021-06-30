@@ -39,7 +39,7 @@ class PartnerResolver
         try {
             $partner = Partner::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided partner ID is not found.');
+            throw new \Exception(__('lang.partner_not_found'));
         }
 
         if (array_key_exists('logo', $args) && $args['logo']) { 
@@ -68,7 +68,7 @@ class PartnerResolver
 
         if (! $token = auth('partner')->attempt($credentials)) {
             throw new CustomException(
-                'The provided authentication credentials are invalid.',
+                __('lang.invalid_auth_credentials'),
                 'customValidation'
             ); 
         }
@@ -96,14 +96,14 @@ class PartnerResolver
             PartnerDriver::insert($data);
         } catch (\Exception $e) {
             throw new CustomException(
-              'Driver can not be assigned to the same partner more than once.',
+              __('lang.driver_assign_failed'),
               'customValidation'
             );
         }
  
         return [
             "status" => true,
-            "message" => "Selected drivers have been assigned successfully."
+            "message" => __('lang.driver_assigned')
         ];
     }
 
@@ -115,14 +115,14 @@ class PartnerResolver
                 ->delete();
         } catch (\Exception $e) {
             throw new CustomException(
-                'Assignment cancellation faild.',
+                __('lang.assign_cancel_failed'),
                 'customValidation'
             );
         }
 
         return [
             "status" => true,
-            "message" => "Selected drivers have been unassigned successfully."
+            "message" => __('lang.driver_unassigned')
         ];
     }
 
@@ -140,14 +140,14 @@ class PartnerResolver
             PartnerUser::insert($data);
         } catch (\Exception $e) {
             throw new CustomException(
-              'User can not be assigned to the same partner more than once.',
+              __('lang.user_assign_failed'),
               'customValidation'
             );
         }
  
         return [
             "status" => true,
-            "message" => "Selected users have been assigned successfully."
+            "message" => __('lang.user_assigned')
         ];
     }
 
@@ -159,14 +159,14 @@ class PartnerResolver
                 ->delete();
         } catch (\Exception $e) {
             throw new CustomException(
-                'Assignment cancellation faild.',
+                __('lang.assign_cancel_failed'),
                 'customValidation'
             );
         }
 
         return [
             "status" => true,
-            "message" => "Selected users have been unassigned successfully."
+            "message" => __('lang.user_unassigned')
         ];
     }
 
@@ -175,19 +175,19 @@ class PartnerResolver
         try {
             $partner = Partner::findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('The provided partner ID is not found.');
+            throw new \Exception(__('lang.partner_not_found'));
         }
 
         if (!(Hash::check($args['current_password'], $partner->password))) {
             throw new CustomException(
-                'Your current password does not matches with the password you provided.',
+                __('lang.password_missmatch'),
                 'customValidation'
             );
         }
 
         if (strcmp($args['current_password'], $args['new_password']) == 0) {
             throw new CustomException(
-                'New Password cannot be same as your current password. Please choose a different password.',
+                __('lang.type_new_password'),
                 'customValidation'
             );
         }
@@ -195,7 +195,7 @@ class PartnerResolver
         $partner->password = Hash::make($args['new_password']);
         $partner->save();
 
-        return 'Password changed successfully.';
+        return __('lang.password_changed');
 
     }
 }
