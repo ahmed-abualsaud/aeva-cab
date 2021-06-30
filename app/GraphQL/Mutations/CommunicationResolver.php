@@ -66,7 +66,7 @@ class CommunicationResolver
                     SendPushNotification::dispatch($tokens, $args['message'], $args['title']);
             }
     
-            return 'Message has been sent';
+            return __('lang.message_sent');
         } catch(\Exception $e) {
             throw new CustomException(__('lang.send_message_failed'));
         }
