@@ -32,8 +32,8 @@ class UpdateCityInputValidator extends Validator
   public function messages(): array
   {
     return [
-      'name.unique' => 'The chosen name is not available',
-      'name_ar.unique' => 'The chosen arabic name is not available',
+      'name.unique' => __('lang.not_available_name'),
+      'name_ar.unique' => __('lang.not_available_arabic_name'),
     ];
   }
 

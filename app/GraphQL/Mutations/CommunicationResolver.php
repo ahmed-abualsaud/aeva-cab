@@ -68,7 +68,7 @@ class CommunicationResolver
     
             return 'Message has been sent';
         } catch(\Exception $e) {
-            throw new CustomException('We could not able to send message to selected recipients!');
+            throw new CustomException(__('lang.send_message_failed'));
         }
     }
 
@@ -100,7 +100,7 @@ class CommunicationResolver
             $msg->time = date('h:i a');
             return $msg;
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to save this message!');
+            throw new CustomException(__('lang.save_message_failed'));
         }
     }
 

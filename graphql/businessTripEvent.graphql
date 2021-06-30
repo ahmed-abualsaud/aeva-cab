@@ -40,7 +40,7 @@ input UserObj {
 
 type BusinessTripEvent {
   log_id: String
-  trip_time: String
+  trip_time: DateTime
   trip_id: ID
   trip_name: String
   partner_id: ID

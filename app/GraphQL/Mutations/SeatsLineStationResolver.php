@@ -48,7 +48,7 @@ class SeatsLineStationResolver
             return ['distance' => $total['distance'], 'duration' => $total['duration']];
             
         } catch (\Exception $e) {
-            throw new CustomException('Could not update route');
+            throw new CustomException(__('lang.update_route_failed'));
         }
     }
 }

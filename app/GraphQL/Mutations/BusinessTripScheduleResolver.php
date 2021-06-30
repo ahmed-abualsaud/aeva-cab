@@ -20,7 +20,7 @@ class BusinessTripScheduleResolver
             
             return BusinessTripSchedule::upsert($input, ['days']);
         } catch(\Exception $e) {
-            throw new CustomException('We could not able to update or even create this schedule!');
+            throw new CustomException(__('lang.create_schedule_failed'));
         }
     }
 }

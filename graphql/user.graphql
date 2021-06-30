@@ -70,8 +70,8 @@ type User {
   wallet_balance: Float
   rating: Float
   ref_code: String
-  created_at: String
-  updated_at: String
+  created_at: DateTime
+  updated_at: DateTime
   device_id: String
   partner: Partner @belongsTo
   phone_verified_at: String

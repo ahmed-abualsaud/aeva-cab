@@ -24,7 +24,7 @@ class PricePackageResolver
             
             $pricePackage = PricePackage::create($input);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('We could not able to create this price package!');
+            throw new \Exception(__('lang.create_price_failed'));
         }
 
         return $pricePackage;
@@ -44,7 +44,7 @@ class PricePackageResolver
     
             $pricePackage->update($input);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception('We could not able to update this price package!');
+            throw new \Exception(__('lang.update_price_failed'));
         }
 
         return $pricePackage;

@@ -27,7 +27,7 @@ class WorkRequestResolver
 
             $workRequest = WorkRequest::create($input);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to create this workplace request!');
+            throw new CustomException(__('lang.create_workplace_failed'));
         }
 
         return $workRequest;
@@ -44,7 +44,7 @@ class WorkRequestResolver
     
             $workRequest->update($input);
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to update this workplace request!');
+            throw new CustomException(__('lang.update_workplace_failed'));
         }
 
         return $workRequest;
@@ -68,10 +68,10 @@ class WorkRequestResolver
             }
             
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to change selected requests status!');
+            throw new CustomException(__('lang.change_requests_failed'));
         }
 
-        return "selected requests status has been changed";
+        return __('lang.request_changed');
     }
 
     protected function notifyUsers(array $args)
@@ -104,9 +104,9 @@ class WorkRequestResolver
         try {
             WorkRequest::whereIn('id', $args['id'])->delete();
         } catch (\Exception $e) {
-            throw new CustomException('We could not able to delete selected requests!');
+            throw new CustomException(__('lang.delete_request_failed'));
         }
 
-        return "Selected requests have been deleted";
+        return __('lang.request_deleted');
     }
 }
