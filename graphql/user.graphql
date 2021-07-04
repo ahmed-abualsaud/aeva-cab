@@ -68,6 +68,7 @@ type User {
   latitude: Float
   longitude: Float
   wallet_balance: Float
+  insurance_balance: Float
   rating: Float
   ref_code: String
   created_at: DateTime
