@@ -114,12 +114,20 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
-    public function scopeUpdateBalance($query, $user_id, $balance)
+    public function scopeUpdateWallet($query, $user_id, $balance)
     {
         Cache::forget('user.'.$user_id);
 
         return $query->where('id', $user_id)
             ->decrement('wallet_balance', $balance);
+    }
+
+    public function scopeUpdateInsurance($query, $user_id, $balance)
+    {
+        Cache::forget('user.'.$user_id);
+
+        return $query->where('id', $user_id)
+            ->decrement('insurance_balance', $balance);
     }
 }
  

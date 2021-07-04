@@ -42,6 +42,7 @@
       25 => 'App\\Providers\\EventServiceProvider',
       26 => 'App\\Providers\\HorizonServiceProvider',
       27 => 'App\\Providers\\RouteServiceProvider',
+      28 => 'App\\Providers\\RepositoryServiceProvider',
     ),
     'aliases' => 
     array (

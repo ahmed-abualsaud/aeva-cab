@@ -1,0 +1,25 @@
+input CreateUserTransactionInput {
+  trx_id: ID
+  user_id: ID! @rules(apply: ["required"])
+  amount: Float! @rules(apply: ["required"])
+  source: String
+  type: String! @rules(apply: [
+    "required","in:WALLET_DEPOSIT,WALLET_WITHDRAW,INSURANCE_DEPOSIT,INSURANCE_WITHDRAW"
+  ])
+  service: String @rules(apply: ["in:RENT,TOSCHOOL,TOWORK"])
+  admin_id: ID
+  notes: String
+}
+
+type UserTransaction {
+  id: ID
+  trx_id: ID
+  user: User @belongsTo
+  admin: Admin @belongsTo
+  amount: Float
+  source: String
+  type: String
+  service: String
+  created_at: String
+  notes: String
+}

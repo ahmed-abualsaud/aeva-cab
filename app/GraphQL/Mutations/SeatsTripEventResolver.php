@@ -83,7 +83,7 @@ class SeatsTripEventResolver
 
             if ($args['payable'] != $args['paid']) {
                 $balance = $args['payable'] - $args['paid'];
-                User::updateBalance($args['user_id'], $balance);
+                User::updateWallet($args['user_id'], $balance);
             }
 
             DB::commit();
