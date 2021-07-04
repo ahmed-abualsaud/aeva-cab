@@ -2,20 +2,23 @@
 
 namespace App\GraphQL\Queries;
 
-use App\Document;
+use App\Repository\Queries\MainRepositoryInterface;
 
 class DocumentResolver
 {
+    private $documentRepository;
+  
+    public function __construct(MainRepositoryInterface $documentRepository)
+    {
+        $this->documentRepository = $documentRepository;
+    }
+
     /**
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
     public function __invoke($_, array $args)
     {
-        $documents = Document::where('documentable_id', $args['documentable_id'])
-            ->where('documentable_type', $args['documentable_type'])
-            ->get();
-
-        return $documents;
+        return $this->documentRepository->invoke($args);
     }
 }

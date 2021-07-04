@@ -1,8 +1,8 @@
 <?php   
 
-namespace App\Repository\Eloquent;   
+namespace App\Repository\Eloquent\Queries;   
 
-use App\Repository\EloquentRepositoryInterface; 
+use App\Repository\Queries\EloquentRepositoryInterface; 
 use Illuminate\Database\Eloquent\Model;   
 
 class BaseRepository implements EloquentRepositoryInterface 
@@ -20,24 +20,5 @@ class BaseRepository implements EloquentRepositoryInterface
     public function __construct(Model $model)     
     {         
         $this->model = $model;
-    }
- 
-    /**
-    * @param array $attributes
-    *
-    * @return Model
-    */
-    public function create(array $attributes): Model
-    {
-        return $this->model->create($attributes);
-    }
- 
-    /**
-    * @param $id
-    * @return Model
-    */
-    public function find($id): ?Model
-    {
-        return $this->model->find($id);
     }
 }

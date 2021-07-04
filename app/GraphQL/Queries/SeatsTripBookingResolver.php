@@ -2,28 +2,22 @@
 
 namespace App\GraphQL\Queries;
 
-use App\SeatsLineStation;
+use App\Repository\Queries\SeatsTripBookingRepositoryInterface;
 
 class SeatsTripBookingResolver
 {
+    private $seatsTripBookingRepository;
+
+    public function __construct(SeatsTripBookingRepositoryInterface $seatsTripBookingRepository)
+    {
+        $this->seatsTripBookingRepository = $seatsTripBookingRepository;
+    }
     /**
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
     public function pre($_, array $args)
     {
-        $wallet = auth('user')->user()->wallet_balance;
-
-        $pickup = SeatsLineStation::select('latitude', 'longitude')
-            ->find($args['pickup_id']);
-
-        $dropoff = SeatsLineStation::select('latitude', 'longitude')
-            ->find($args['dropoff_id']);
-
-        return [
-            'wallet' => $wallet,
-            'pickup' => $pickup,
-            'dropoff' => $dropoff
-        ];
+        return $this->seatsTripBookingRepository->pre($args);
     }
 }
