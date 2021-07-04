@@ -101,7 +101,7 @@ class SeatsTripBookingResolver
                 $diff = $booking->payable - $booking->paid;
                 $this->updateWallet($booking->user_id, $diff);
             } else {
-                User::updateBalance($booking->user_id, -abs($booking->paid));
+                $this->updateWallet($booking->user_id, -abs($booking->paid));
                 $this->cancelTransaction($booking);
             }
             
@@ -228,7 +228,7 @@ class SeatsTripBookingResolver
     protected function updateWallet($user_id, $amount)
     {
         try {
-            User::updateBalance($user_id, $amount);
+            User::updateWallet($user_id, $amount);
         } catch (\Exception $e) {
             throw new CustomException(__('lang.upadate_wallet_failed'));
         }
