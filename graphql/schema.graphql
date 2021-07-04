@@ -670,6 +670,9 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
     @paginate(scopes: ["pickupTime"] type: SIMPLE, defaultCount: 10)
   preSeatsTripBooking(pickup_id: ID!, dropoff_id: ID!): PreSeatsTripBooking
     @field(resolver: "SeatsTripBookingResolver@pre")
+
+  # User Transaction
+  userTransactions(user_id: ID! @eq): [UserTransaction] @all
 }
 
 # Admin|Partner|Driver Guard
