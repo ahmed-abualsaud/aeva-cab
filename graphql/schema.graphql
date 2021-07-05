@@ -278,7 +278,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "BusinessTripEventResolver@changeBusinessTripPickupStatus")
 
   # Business Trip Transaction
-  createBusinessTripAppTransaction(input: CreateBusinessTripAppTransactionInput! @spread): Boolean
+  createBusinessTripAppTransaction(input: CreateBusinessTripAppTransactionInput! @spread): BusinessTripAppTransaction
     @field(resolver: "BusinessTripAppTransactionResolver@create")
 
   # Promo codes

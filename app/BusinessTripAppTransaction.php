@@ -28,6 +28,12 @@ class BusinessTripAppTransaction extends Model
             ->select('id', 'name', 'phone', 'avatar');
     }
 
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class)
+            ->select('id', 'name');
+    }
+
     public function scopeSearch($query, $args) 
     {
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {

@@ -230,7 +230,7 @@ class SeatsTripBookingResolver
         try {
             User::updateWallet($user_id, $amount);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.upadate_wallet_failed'));
+            throw new CustomException(__('lang.update_wallet_failed'));
         }
     }
 }
