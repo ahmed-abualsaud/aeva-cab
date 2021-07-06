@@ -125,14 +125,12 @@ class BusinessTripResolver
                 $data[] = $arr;
             } 
 
-            BusinessTripSubscription::insert($data);
+            $this->notifyUserViaSms($args);
+
+            return BusinessTripSubscription::insert($data);
         } catch (\Exception $e) {
             throw new CustomException(__('lang.invite_user_failed'));
         }
-
-        $this->notifyUserViaSms($args);
-
-        return __('lang.user_invited_not_verified');
     }
 
     public function createSubscription($_, array $args)
@@ -145,21 +143,24 @@ class BusinessTripResolver
                 'created_at' => now(), 
                 'updated_at' => now(),
                 'subscription_verified_at' => now(),
-                'payable' => $args['payable'],
-                'due_date' => date('Y-m-d')
+                'payable' => $args['payable']
             ];
+
+            if (array_key_exists('due_date', $args) && $args['due_date']) {
+                $arr['due_date'] = $args['due_date'];
+            } else {
+                $arr['due_date'] = date('Y-m-d');
+            }
 
             foreach($args['user_id'] as $val) {
                 $arr['user_id'] = $val;
                 $data[] = $arr;
             } 
 
-            BusinessTripSubscription::upsert($data, ['station_id', 'destination_id', 'payable', 'updated_at']);
+            return BusinessTripSubscription::upsert($data, ['station_id', 'destination_id', 'payable', 'due_date', 'updated_at']);
         } catch (\Exception $e) {
             throw new CustomException(__('lang.subscribe_user_failed'));
         }
-
-        return __('lang.subscribe_user');
     }
 
     public function confirmSubscription($_, array $args) 
