@@ -17,8 +17,8 @@ class BusinessTripResolver
             ->whereNotNull('business_trip_users.subscription_verified_at')
             ->selectRaw(
                 'business_trips.id, business_trips.name, business_trips.name_ar,
-                business_trip_users.due_date, business_trip_users.payable, 
-                business_trip_users.id as subscription_id'
+                business_trips.type, business_trip_users.due_date, 
+                business_trip_users.payable, business_trip_users.id as subscription_id'
             )
             ->get();
 
