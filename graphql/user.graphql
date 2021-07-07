@@ -93,7 +93,7 @@ type BusinessTripSubbedUser {
   station_type: String
   subscription_verified_at: String
   payable: Float
-  due_date: Date
+  due_date: String
 }
 
 type SeatsTripBookedUser {

@@ -37,8 +37,8 @@ type SeatsTrip {
   name_ar: String
   log_id: String
   name: String
-  start_date: Date
-  end_date: Date
+  start_date: String
+  end_date: String
   starts_at: String
   days: TripDays
   bookable: Boolean

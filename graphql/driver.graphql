@@ -43,7 +43,7 @@ type Driver {
   name_ar: String
   email: String
   phone: String
-  license_expires_on: Date
+  license_expires_on: String
   avatar: String
   latitude: Float
   longitude: Float

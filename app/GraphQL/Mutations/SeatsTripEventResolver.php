@@ -193,7 +193,7 @@ class SeatsTripEventResolver
     {
         try {
             $input = collect($args)->except(['directive', 'payable', 'paid', 'log_id'])->toArray();
-            $input['amount'] = $args['payable'] - $args['paid'];
+            $input['amount'] = $args['paid'];
             return SeatsTripAppTransaction::create($input);
         } catch (\Exception $e) {
             throw new CustomException(__('lang.create_trnx_failed'));
