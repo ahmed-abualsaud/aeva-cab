@@ -40,17 +40,13 @@ input UserObj {
 
 type BusinessTripEvent {
   log_id: String
+  trip_time: DateTime
   trip_id: ID
   trip_name: String
-  trip_time: String
-  trip_duration: Int
-  trip_distance: Int
   partner_id: ID
   partner_name: String
   driver_id: ID
   driver_name: String
   map_url: String
   content: TripEventContent
-  created_at: String
-  updated_at: String
 }
