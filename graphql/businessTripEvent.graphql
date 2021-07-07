@@ -48,7 +48,5 @@ type BusinessTripEvent {
   driver_id: ID
   driver_name: String
   map_url: String
-  created_at: String
-  updated_at: String
   content: TripEventContent
 }
