@@ -107,5 +107,5 @@ return [
     'set_language_failed' => 'تعذر تكوين لغة التطبيق',
     'upload_file_failed' => 'لم نتمكن من تحميل هذا الملف',
     'update_failed' => 'لم نتمكن من التحديث',
-    
+    'message_sent' => 'تم ارسال الرسالة بنجاح'
 ];

@@ -1,3 +1,4 @@
+
 scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
 scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
 scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
@@ -209,9 +210,9 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripStationResolver@acceptStation") 
 
   # Business Trip Subscription
-  inviteBusinessTripUser(input: InviteBusinessTripUserInput! @spread): String 
+  inviteBusinessTripUser(input: InviteBusinessTripUserInput! @spread): Boolean 
     @field(resolver: "BusinessTripResolver@inviteUser")
-  createBusinessTripSubscription(input: CreateBusinessTripSubscriptionInput! @spread): String 
+  createBusinessTripSubscription(input: CreateBusinessTripSubscriptionInput! @spread): Boolean 
     @field(resolver: "BusinessTripResolver@createSubscription")
 
   # Business Trip Event
@@ -278,7 +279,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "BusinessTripEventResolver@changeBusinessTripPickupStatus")
 
   # Business Trip Transaction
-  createBusinessTripAppTransaction(input: CreateBusinessTripAppTransactionInput! @spread): Boolean
+  createBusinessTripAppTransaction(input: CreateBusinessTripAppTransactionInput! @spread): BusinessTripAppTransaction
     @field(resolver: "BusinessTripAppTransactionResolver@create")
 
   # Promo codes
@@ -670,6 +671,9 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
     @paginate(scopes: ["pickupTime"] type: SIMPLE, defaultCount: 10)
   preSeatsTripBooking(pickup_id: ID!, dropoff_id: ID!): PreSeatsTripBooking
     @field(resolver: "SeatsTripBookingResolver@pre")
+
+  # User Transaction
+  userTransactions(user_id: ID! @eq): [UserTransaction] @all
 }
 
 # Admin|Partner|Driver Guard
