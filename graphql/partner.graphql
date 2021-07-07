@@ -50,7 +50,7 @@ type Partner {
   phone2: String
   logo: String
   size: String 
-  license_expires_on: Date
+  license_expires_on: String
   created_at: String
   updated_at: String
   max_no_of_trips: Int

@@ -71,8 +71,8 @@ type User {
   insurance_balance: Float
   rating: Float
   ref_code: String
-  created_at: DateTime
-  updated_at: DateTime
+  created_at: String
+  updated_at: String
   device_id: String
   partner: Partner @belongsTo
   phone_verified_at: String
@@ -93,7 +93,7 @@ type BusinessTripSubbedUser {
   station_type: String
   subscription_verified_at: String
   payable: Float
-  due_date: Date
+  due_date: String
 }
 
 type SeatsTripBookedUser {

@@ -18,7 +18,7 @@ type BusinessTripAppTransaction {
   trip: BusinessTrip @belongsTo
   user: User @belongsTo
   admin: Admin @belongsTo
-  due_date: Date
+  due_date: String
   amount: Float
   payment_method: String
   notes: String

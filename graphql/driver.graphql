@@ -43,7 +43,7 @@ type Driver {
   name_ar: String
   email: String
   phone: String
-  license_expires_on: Date
+  license_expires_on: String
   avatar: String
   latitude: Float
   longitude: Float
@@ -52,8 +52,8 @@ type Driver {
   city: String
   vehicle: String
   partner_id: ID
-  created_at: DateTime
-  updated_at: DateTime
+  created_at: String
+  updated_at: String
   fleet: Fleet @belongsTo
   trips: [BusinessTrip] @hasMany
   vehicles: [Vehicle] @hasMany
