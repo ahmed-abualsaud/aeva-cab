@@ -45,10 +45,12 @@ type BusinessTripEvent {
   trip_time: String
   trip_duration: Int
   trip_distance: Int
+  partner_id: ID
+  partner_name: String
   driver_id: ID
   driver_name: String
   map_url: String
+  content: TripEventContent
   created_at: String
   updated_at: String
-  content: TripEventContent
 }
