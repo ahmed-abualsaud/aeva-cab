@@ -4,10 +4,12 @@ namespace App;
 
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BusinessTrip extends Model
 {
     use Searchable;
+    use SoftDeletes;
     
     protected $guarded = [];
 

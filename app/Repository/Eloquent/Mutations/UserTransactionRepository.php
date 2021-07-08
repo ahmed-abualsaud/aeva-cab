@@ -17,11 +17,21 @@ class UserTransactionRepository extends BaseRepository
 
     public function create(array $args)
     {
-        $input = collect($args)->except(['directive'])->toArray();
+        DB::beginTransaction();
+        try {
+            $input = collect($args)->except(['directive'])->toArray();
 
             $this->updateBalance($args);
 
             $transaction = $this->model->create($input);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw new CustomException($e->getMessage());
+        }
+
+        $transaction->created_at = date('Y-m-d H:i:s');
 
         return $transaction;
     }

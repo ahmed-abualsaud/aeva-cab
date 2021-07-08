@@ -21,7 +21,7 @@ class CreateUserTransactionsTable extends Migration
             $table->string('source')->nullable();
             $table->float('amount', 8, 2);
             $table->enum('type', ['WALLET_DEPOSIT','WALLET_WITHDRAW','INSURANCE_DEPOSIT','INSURANCE_WITHDRAW']);
-            $table->enum('service', ['RENT','TOSCHOOL','TOWORK'])->nullable();
+            $table->enum('service', ['RENT','TOSCHOOL','TOWORK','OTHER']);
             $table->string('notes')->nullable();
             $table->dateTime('created_at')->useCurrent();
 

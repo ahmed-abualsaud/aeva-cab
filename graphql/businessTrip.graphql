@@ -45,9 +45,9 @@ type BusinessTrip {
   start_date: String
   end_date: String
   subscription_code: String
+  subscription_id: ID
   due_date: String
   payable: Float
-  subscription_id: ID
   distance: Int
   duration: Int
   is_absent: Boolean
@@ -58,6 +58,7 @@ type BusinessTrip {
   days: TripDays
   price: Float
   type: String
+  deleted_at: String
   stations: [BusinessTripStation] @hasMany
   userStation: BusinessTripStation @hasOne
   userDestination: BusinessTripStation @hasOne
