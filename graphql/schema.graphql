@@ -450,7 +450,7 @@ type Query @guard(with: ["admin"]) {
 
   # Ondemand Request
   ondemandRequests(status: String, period: String, searchFor: String, searchQuery: String): [OndemandRequest]
-    @paginate(scopes: ["filter", "search"])
+    @paginate(scopes: ["filter", "search"]) @softDeletes
   ondemandRequestsStats(status: String period: String): OndemandRequestStats
     @field(resolver: "OndemandRequestResolver@stats")
 
