@@ -22,6 +22,6 @@ type PromoCode {
   amount: Float
   description: String
   usage: Int
-  expires_on: Date
+  expires_on: String
   type: String
 }

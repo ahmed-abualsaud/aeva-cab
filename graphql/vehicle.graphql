@@ -28,7 +28,7 @@ input UpdateVehicleInput @validator {
 type Vehicle {
   id: ID
   license_plate: String
-  license_expires_on: Date
+  license_expires_on: String
   type: CarType @belongsTo
   make: CarMake @belongsTo
   model: CarModel @belongsTo

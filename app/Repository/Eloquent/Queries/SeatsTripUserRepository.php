@@ -16,7 +16,7 @@ class SeatsTripUserRepository extends BaseRepository implements MainRepositoryIn
     public function invoke(array $args)
     {
         $users = $this->model->select(
-            'users.id', 'users.name', 'users.phone', 'users.wallet_balance', 
+            'users.id', 'users.name', 'users.phone', 'users.avatar', 'users.wallet_balance', 
             'booking.id as booking_id', 'booking.payable', 'booking.paid', 'booking.boarding_pass', 'booking.seats'
             )
             ->join('seats_trip_bookings as booking', 'users.id', '=', 'booking.user_id')
