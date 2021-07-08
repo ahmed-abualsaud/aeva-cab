@@ -100,6 +100,7 @@ type SeatsTripBookedUser {
   id: ID
   name: String
   phone: String
+  avatar: String
   wallet_balance: Float
   payable: Float
   paid: Float
