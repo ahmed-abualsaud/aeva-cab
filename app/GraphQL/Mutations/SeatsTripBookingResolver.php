@@ -90,13 +90,7 @@ class SeatsTripBookingResolver
 
     protected function userDidPayAndCancelled($booking, $timeout)
     {
-        if ($booking->paid == $booking->payable) {
-            if (!$timeout) {
-                $this->updateWallet($booking->user_id, -abs($booking->paid));
-                $this->cancelTransaction($booking);
-            }
-            
-        } else if ($booking->paid < $booking->payable) {
+        if ($booking->paid < $booking->payable) {
             if ($timeout) {
                 $diff = $booking->payable - $booking->paid;
                 $this->updateWallet($booking->user_id, $diff);
@@ -104,8 +98,21 @@ class SeatsTripBookingResolver
                 $this->updateWallet($booking->user_id, -abs($booking->paid));
                 $this->cancelTransaction($booking);
             }
+        
+        } else if ($booking->paid > $booking->payable) {
+            if (!$timeout) {
+                $amount = $booking->paid - $booking->payable;
+                $this->updateWallet($booking->user_id, -abs($booking->payable));
+                $this->updateTransaction($booking, $amount);
+            }
             
-        } 
+        } else {
+            if (!$timeout) {
+                $this->updateWallet($booking->user_id, -abs($booking->paid));
+                $this->cancelTransaction($booking);
+            }
+            
+        }
     }
 
     protected function userDidPayAndMissed($booking)
@@ -120,6 +127,12 @@ class SeatsTripBookingResolver
     {
         SeatsTripAppTransaction::where('booking_id', $booking->id)
             ->delete();
+    }
+
+    protected function updateTransaction($booking, $amount)
+    {
+        SeatsTripAppTransaction::where('booking_id', $booking->id)
+            ->update(['amount' => $amount]);
     }
 
     protected function checkSeats(array $args)

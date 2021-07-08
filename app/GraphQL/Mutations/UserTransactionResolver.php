@@ -26,9 +26,10 @@ class UserTransactionResolver
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            $this->updateBalance($args);
-            throw new CustomException(__('lang.update_failed'));
+            throw new CustomException($e->getMessage());
         }
+
+        $transaction->created_at = date('Y-m-d H:i:s');
 
         return $transaction;
     }

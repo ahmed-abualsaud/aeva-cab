@@ -6,7 +6,7 @@ input CreateUserTransactionInput {
   type: String! @rules(apply: [
     "required","in:WALLET_DEPOSIT,WALLET_WITHDRAW,INSURANCE_DEPOSIT,INSURANCE_WITHDRAW"
   ])
-  service: String @rules(apply: ["in:RENT,TOSCHOOL,TOWORK"])
+  service: String! @rules(apply: ["required","in:RENT,TOSCHOOL,TOWORK,OTHER"])
   admin_id: ID
   notes: String
 }

@@ -542,7 +542,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Business Trip
   businessTrips(type: String, partner_id: ID, searchFor: String, searchQuery: String): [BusinessTrip] 
-    @paginate(scopes: ["partner", "search"])
+    @paginate(scopes: ["partner", "search"]) @softDeletes
   partnerBusinessTrips(partner_id: ID! @eq): [BusinessTrip] @all
   liveBusinessTrips(type: String, partner_id: ID): [BusinessTrip] 
     @all(scopes: ["live", "partner"])
