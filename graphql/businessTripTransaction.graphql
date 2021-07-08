@@ -5,9 +5,10 @@ input CreateBusinessTripAppTransactionInput {
   user_id: ID! @rules(apply: ["required"])
   due_date: Date! @rules(apply: ["required"])
   amount: Float! @rules(apply: ["required"])
-  payment_method: String! @rules(apply: ["required","in:CASH,CARD,FAWRY"])
+  payment_method: String! @rules(apply: ["required","in:CASH,CARD,FAWRY,MANUAL"])
   type: String! @rules(apply: ["in:TOSCHOOL,TOWORK,PLAYGROUND"])
   notes: String
+  admin_id: ID
 }
 
 type BusinessTripAppTransaction {
@@ -16,6 +17,7 @@ type BusinessTripAppTransaction {
   subscription_id: ID
   trip: BusinessTrip @belongsTo
   user: User @belongsTo
+  admin: Admin @belongsTo
   due_date: Date
   amount: Float
   payment_method: String

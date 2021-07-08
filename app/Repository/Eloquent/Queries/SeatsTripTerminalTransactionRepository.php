@@ -6,6 +6,7 @@ use App\Partner;
 use App\Traits\Filterable;
 use App\SeatsTripTerminalTransaction;
 use App\Repository\Queries\SeatsTripTerminalTransactionRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 
 class SeatsTripTerminalTransactionRepository extends BaseRepository implements SeatsTripTerminalTransactionRepositoryInterface
 {

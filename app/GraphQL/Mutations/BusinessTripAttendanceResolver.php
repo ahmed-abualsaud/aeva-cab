@@ -2,15 +2,16 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\BusinessTripAttendance;
-use App\Traits\HandleDeviceTokens;
-use App\Exceptions\CustomException;
-use App\Traits\HandleBusinessTripUserStatus;
+use App\Repository\Eloquent\Mutations\BusinessTripAttendanceRepository;
 
 class BusinessTripAttendanceResolver
 {
-    use HandleBusinessTripUserStatus;
-    use HandleDeviceTokens;
+    private $businessTripAttendanceRepository;
+
+    public function __construct(BusinessTripAttendanceRepository $businessTripAttendanceRepository)
+    {
+        $this->businessTripAttendanceRepository = $businessTripAttendanceRepository;
+    }
 
     /**
      * @param  null  $_
@@ -18,22 +19,7 @@ class BusinessTripAttendanceResolver
      */
     public function create($_, array $args)
     {
-        try {
-            if ($args['date'] === date('Y-m-d'))
-                $this->updateUserStatus(
-                    $args['trip_id'], 
-                    ['is_absent' => $args['is_absent']], 
-                    $args['user_id']
-                );
-            
-            $firstArgs = collect($args)->only(['date', 'trip_id', 'user_id'])->toArray();
-            $secondArgs = collect($args)->only(['is_absent', 'comment'])->toArray();
-            
-           return BusinessTripAttendance::updateOrCreate($firstArgs, $secondArgs);
-
-        } catch(\Exception $e) {
-            throw new CustomException(__('lang.create_attendance_failed'));
-        }
+        return $this->businessTripAttendanceRepository->create($args);
     }
 
 }

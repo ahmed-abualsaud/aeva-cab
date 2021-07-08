@@ -84,7 +84,7 @@ return [
     'no_seats' => 'No available seats',
     'available_seats' => 'Only :available_seats :pluralSeats available',
     'create_booking_failed' => 'Could not create this booking',
-    'upadate_wallet_failed' => 'Could not update the wallet',
+    'update_wallet_failed' => 'Could not update the wallet',
     'drop_user_failed' => 'Could not drop off user',
     'password_phone_not_provided' => 'Password or phone is required but not provided',
     'create_user_failed' => 'We could not able to create users',
@@ -107,5 +107,5 @@ return [
     'set_language_failed' => 'Could not configure App language',
     'upload_file_failed' => 'We could not able to upload this file',
     'update_failed' => 'We could not able to update',
-    'message_sent' => 'Message sent successfully'
+    'insufficient_balance' => 'Your wallet balance is insufficient'
 ];

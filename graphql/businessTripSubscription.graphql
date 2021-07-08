@@ -11,6 +11,7 @@ input CreateBusinessTripSubscriptionInput {
   station_id: ID! @rules(apply: ["required"])
   destination_id: ID! @rules(apply: ["required"])
   payable: Float! @rules(apply: ["required"])
+  due_date: Date
 }
 
 input DeleteBusinessTripSubscriptionInput {

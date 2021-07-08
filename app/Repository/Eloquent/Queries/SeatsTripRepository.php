@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent\Queries;
 
 use App\SeatsTrip;
 use App\Repository\Queries\SeatsTripRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 
 class SeatsTripRepository extends BaseRepository implements SeatsTripRepositoryInterface
 {

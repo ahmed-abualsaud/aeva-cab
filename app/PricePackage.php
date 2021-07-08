@@ -58,7 +58,7 @@ class PricePackage extends Model
     {
         return self::handleReorder(
             (new self())->getTable(),
-            $orders,
+            $orders
         );
     }
 

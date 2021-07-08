@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Queries;   
 
 use App\BusinessTripChat;
+use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Queries\CommunicationRepositoryInterface;
 use App\Exceptions\CustomException;
 

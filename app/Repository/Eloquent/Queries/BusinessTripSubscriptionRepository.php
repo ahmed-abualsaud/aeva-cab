@@ -6,6 +6,7 @@ use App\User;
 use App\BusinessTripSubscription;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
+use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Queries\BusinessTripSubscriptionRepositoryInterface;
 use Illuminate\Support\Collection;
 

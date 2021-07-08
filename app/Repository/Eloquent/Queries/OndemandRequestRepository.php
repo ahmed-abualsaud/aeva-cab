@@ -7,6 +7,7 @@ use App\OndemandRequest;
 use App\Traits\Filterable;
 use App\Exceptions\CustomException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Repository\Eloquent\BaseRepository;
 
 class OndemandRequestRepository extends BaseRepository implements OndemandRequestRepositoryInterface
 {

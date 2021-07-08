@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent\Queries;
 use App\SeatsTrip;
 use Illuminate\Support\Facades\Cache;
 use App\Repository\Queries\SeatsLineStationRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 
 class SeatsLineStationRepository extends BaseRepository implements SeatsLineStationRepositoryInterface
 {

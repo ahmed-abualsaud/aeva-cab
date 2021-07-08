@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent\Queries;
 
 use App\BusinessTripSchedule;
 use App\Exceptions\CustomException;
+use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Queries\MainRepositoryInterface;
 
 class BusinessTripScheduleRepository extends BaseRepository implements MainRepositoryInterface

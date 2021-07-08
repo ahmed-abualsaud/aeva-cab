@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Queries;   
 
 use App\Repository\Queries\MainRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 use App\Document;
 
 class DocumentRepository extends BaseRepository implements MainRepositoryInterface

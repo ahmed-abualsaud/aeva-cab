@@ -2,13 +2,16 @@
 
 namespace App\GraphQL\Mutations;
 
-use \App\Document;
-use \App\Traits\HandleUpload;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Repository\Eloquent\Mutations\DocumentRepository;
 
 class DocumentResolver
 {
-    use HandleUpload;
+    private $documentRepository;
+
+    public function  __construct(DocumentRepository $documentRepository)
+    {
+        $this->documentRepository = $documentRepository;
+    }
 
     /**
      * Upload a file, store it on the server and return the model.
@@ -19,31 +22,11 @@ class DocumentResolver
      */
     public function create($root, array $args)
     {
-        $file = $args['file'];
-        $url = $this->uploadOneFile($file, 'documents');
-        $input = collect($args)->except(['file', 'directive'])->toArray();
-        $input['url'] = $url;
-        
-        if (!$input['name']) {
-            $input['name'] = $file->getClientOriginalName();
-        }
-
-        $document = Document::create($input);
-
-        return $document;
+        return $this->documentRepository->create($args);
     }
 
     public function delete($root, array $args)
     {
-        try {
-            $document = Document::findOrFail($args['id']);
-        } catch(ModelNotFoundException $e) {
-            throw new \Exception(__('lang.document_not_found') . $e->getMessage());
-        }
-
-        $this->deleteOneFile($document->url, 'documents');
-        $document->delete();
-
-        return __('lang.document_deleted');
+        return $this->documentRepository->destroy($args);
     }
 }

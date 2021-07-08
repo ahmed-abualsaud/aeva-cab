@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent\Queries;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
 use App\Repository\Queries\NotificationRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 use Illuminate\Database\Eloquent\Model;   
 
 class NotificationRepository implements NotificationRepositoryInterface

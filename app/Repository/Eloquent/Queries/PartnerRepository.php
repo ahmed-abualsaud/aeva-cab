@@ -6,6 +6,7 @@ use App\User;
 use App\Driver;
 use App\PartnerDriver;
 use App\Repository\Queries\PartnerRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 
 class PartnerRepository extends BaseRepository implements PartnerRepositoryInterface
 {

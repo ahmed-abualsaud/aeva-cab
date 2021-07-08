@@ -2,15 +2,16 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\User;
-use App\WorkRequest;
-use App\Jobs\SendPushNotification;
-use App\Traits\HandleDeviceTokens;
-use App\Exceptions\CustomException;
+use App\Repository\Eloquent\Mutations\WorkRequestRepository;
 
 class WorkRequestResolver
 {
-    use HandleDeviceTokens;
+    private $workRequestRepository;
+
+    public function __construct(WorkRequestRepository $workRequestRepository)
+    {
+        $this->workRequestRepository = $workRequestRepository;
+    }
 
     /**
      * @param  null  $_
@@ -19,94 +20,21 @@ class WorkRequestResolver
 
     public function create($_, array $args)
     {
-        try {
-            $input = collect($args)->except(['directive'])->toArray();
-
-            if (array_key_exists('contact_phone', $args) && $args['contact_phone'])
-                User::updateSecondaryNumber($args['contact_phone']);
-
-            $workRequest = WorkRequest::create($input);
-        } catch (\Exception $e) {
-            throw new CustomException(__('lang.create_workplace_failed'));
-        }
-
-        return $workRequest;
+        return $this->workRequestRepository->create($args);
     }
 
     public function update($_, array $args)
     {
-        try {
-            $input = collect($args)->except(['id', 'directive'])->toArray();
-            $workRequest = WorkRequest::findOrFail($args['id']);
-
-            if (array_key_exists('contact_phone', $args) && $args['contact_phone'])
-                User::updateSecondaryNumber($args['contact_phone']);
-    
-            $workRequest->update($input);
-        } catch (\Exception $e) {
-            throw new CustomException(__('lang.update_workplace_failed'));
-        }
-
-        return $workRequest;
+        return $this->workRequestRepository->update($args);
     }
 
     public function changeStatus($_, array $args)
     {
-        try {
-            $updateInput = collect($args)->only(['status', 'response'])->toArray();
-
-            switch($args['status']) {
-                case 'PENDING':
-                    WorkRequest::restore($args['requestIds']);
-                    break;
-
-                default:
-                    WorkRequest::exclude($args['requestIds'], $updateInput);
-                    if (array_key_exists('notify', $args) && $args['notify'])
-                        $this->notifyUsers($args);
-                    break;
-            }
-            
-        } catch (\Exception $e) {
-            throw new CustomException(__('lang.change_requests_failed'));
-        }
-
-        return __('lang.request_changed');
-    }
-
-    protected function notifyUsers(array $args)
-    {
-        try {
-               
-            foreach($args['users'] as $user) {
-
-                $responseMsg = 'Your workplace request # ' 
-                    . $user['requestId'] . ' has been ' 
-                    . strtolower($args['status']);
-    
-                if (array_key_exists('response', $args) && $args['response']) 
-                    $responseMsg .= '. '. $args['response'];
-
-                SendPushNotification::dispatch(
-                    $this->userToken($user['userId']), 
-                    $responseMsg, 
-                    'Qruz to Work',
-                    ['view' => 'WorkRequest', 'id' => $user['requestId']]
-                );
-            }
-        } catch (\Exception $e) {
-            //
-        }
+        return $this->workRequestRepository->changeStatus($args);
     }
     
     public function destroy($_, array $args)
     {
-        try {
-            WorkRequest::whereIn('id', $args['id'])->delete();
-        } catch (\Exception $e) {
-            throw new CustomException(__('lang.delete_request_failed'));
-        }
-
-        return __('lang.request_deleted');
+        return $this->workRequestRepository->destroy($args);
     }
 }

@@ -2,15 +2,16 @@
 
 namespace App\GraphQL\Mutations;
 
-use \App\Fleet;
-use \App\Traits\HandleUpload;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use GraphQL\Type\Definition\ResolveInfo;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use App\Repository\Eloquent\Mutations\FleetRepository;
 
 class FleetResolver
 { 
-    use HandleUpload;
+    private $fleetRepository;
+
+    public function  __construct(FleetRepository $fleetRepository)
+    {
+        $this->fleetRepository = $fleetRepository;
+    }
 
     /**
      * @param  null  $_
@@ -18,36 +19,11 @@ class FleetResolver
      */
     public function create($_, array $args)
     {
-        $fleetInput = collect($args)->except(['directive', 'avatar'])->toArray();
-
-        if (array_key_exists('avatar', $args) && $args['avatar']) {
-            $url = $this->uploadOneFile($args['avatar'], 'avatars');
-            $fleetInput['avatar'] = $driverInput['avatar'] = $url;
-        }
-        
-        $fleet = Fleet::create($fleetInput);
-
-        return $fleet;
+        return $this->fleetRepository->create($args);
     }
 
     public function update($_, array $args)
     {
-        $input = collect($args)->except(['id', 'directive', 'avatar'])->toArray();
-
-        try {
-            $fleet = Fleet::findOrFail($args['id']);
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.fleet_not_found'));
-        }
-
-        if (array_key_exists('avatar', $args) && $args['avatar']) {
-            if ($fleet->avatar) $this->deleteOneFile($fleet->avatar, 'avatars');
-            $url = $this->uploadOneFile($args['avatar'], 'avatars');
-            $input['avatar'] = $url;
-        }
-
-        $fleet->update($input);
-
-        return $fleet;
+        return $this->fleetRepository->update($args);
     }
 }

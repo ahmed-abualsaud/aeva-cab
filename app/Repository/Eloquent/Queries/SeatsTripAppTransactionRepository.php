@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent\Queries;
 use App\Traits\Filterable;
 use App\SeatsTripAppTransaction;
 use App\Repository\Queries\SeatsTripAppTransactionRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 
 class SeatsTripAppTransactionRepository extends BaseRepository implements SeatsTripAppTransactionRepositoryInterface
 {

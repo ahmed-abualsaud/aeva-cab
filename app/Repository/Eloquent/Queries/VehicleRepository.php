@@ -3,8 +3,8 @@
 namespace App\Repository\Eloquent\Queries;
 
 use App\CarModel;
-
 use App\Repository\Queries\VehicleRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 
 class VehicleRepository extends BaseRepository implements VehicleRepositoryInterface
 {

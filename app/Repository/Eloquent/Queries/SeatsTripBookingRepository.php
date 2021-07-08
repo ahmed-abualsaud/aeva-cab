@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent\Queries;
 
 use App\SeatsLineStation;
 use App\Repository\Queries\SeatsTripBookingRepositoryInterface;
+use App\Repository\Eloquent\BaseRepository;
 
 class SeatsTripBookingRepository extends BaseRepository implements SeatsTripBookingRepositoryInterface
 {

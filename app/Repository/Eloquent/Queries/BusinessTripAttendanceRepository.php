@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Queries;   
 
 use App\User;
+use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Queries\MainRepositoryInterface;
 
 class BusinessTripAttendanceRepository extends BaseRepository implements MainRepositoryInterface

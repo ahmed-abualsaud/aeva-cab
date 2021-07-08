@@ -2,51 +2,28 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\PricePackage;
-use App\Traits\HandleUpload;
+use App\Repository\Eloquent\Mutations\PricePackageRepository;
 
 class PricePackageResolver
 {
-    use HandleUpload;
+    private $pricePackageRepository;
+
+    public function __construct(PricePackageRepository $pricePackageRepository)
+    {
+        $this->pricePackageRepository = $pricePackageRepository;
+    }
+
     /**
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
     public function create($_, array $args)
     {
-        try {
-            $input = collect($args)->except(['directive', 'photo'])->toArray();
-    
-            if (array_key_exists('photo', $args) && $args['photo']) {
-              $url = $this->uploadOneFile($args['photo'], 'images');
-              $input['photo'] = $url;
-            }
-            
-            $pricePackage = PricePackage::create($input);
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.create_price_failed'));
-        }
-
-        return $pricePackage;
+        return $this->pricePackageRepository->create($args);
     }
 
     public function update($_, array $args)
     {
-        try {
-            $input = collect($args)->except(['id', 'directive', 'photo'])->toArray();
-            $pricePackage = PricePackage::findOrFail($args['id']);
-
-            if (array_key_exists('photo', $args) && $args['photo']) {
-                if ($pricePackage->photo) $this->deleteOneFile($pricePackage->photo, 'images');
-                $url = $this->uploadOneFile($args['photo'], 'images');
-                $input['photo'] = $url;
-            }
-    
-            $pricePackage->update($input);
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.update_price_failed'));
-        }
-
-        return $pricePackage;
+        return $this->pricePackageRepository->update($args);
     }
 }

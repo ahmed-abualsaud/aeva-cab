@@ -45,7 +45,9 @@ type BusinessTrip {
   start_date: Date
   end_date: Date
   subscription_code: String
-  due_date: Date
+  due_date: String
+  payable: Float
+  subscription_id: ID
   distance: Int
   duration: Int
   is_absent: Boolean

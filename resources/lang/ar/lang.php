@@ -84,7 +84,7 @@ return [
     'no_seats' => 'لا توجد مقاعد متاحة',
     'available_seats' => 'فقط :available_seats :pluralSeats متوفرة',
     'create_booking_failed' => 'تعذر إنشاء هذا الحجز',
-    'upadate_wallet_failed' => 'لا يمكن تحديث المحفظة',
+    'update_wallet_failed' => 'لا يمكن تحديث المحفظة',
     'drop_user_failed' => 'لا يمكن انزال المستخدم',
     'password_phone_not_provided' => 'كلمة المرور أو الهاتف مطلوب ولكن لم يتم توفيرهما',
     'create_user_failed' => 'لم نتمكن من إنشاء المستخدمين',
@@ -107,5 +107,5 @@ return [
     'set_language_failed' => 'تعذر تكوين لغة التطبيق',
     'upload_file_failed' => 'لم نتمكن من تحميل هذا الملف',
     'update_failed' => 'لم نتمكن من التحديث',
-    'message_sent' => 'تم ارسال الرسالة بنجاح'
+    'insufficient_balance' => 'رصيد المحفظة لا يكفي لاتمام هذه العمليه'
 ];
