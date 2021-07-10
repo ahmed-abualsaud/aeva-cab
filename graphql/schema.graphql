@@ -520,8 +520,8 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # Driver Vehicle
   driverAssignedVehicles(driver_id: ID!): [Vehicle] 
     @all(scopes: ["assigned"])
-  driverNotAssignedVehicles(partner_id: ID, driver_id: ID!): [Vehicle] 
-    @paginate(scopes: ["notAssigned", "partner"])
+  driverNotAssignedVehicles(partner_id: ID, driver_id: ID!, searchFor: String, searchQuery: String): [Vehicle] 
+    @paginate(scopes: ["notAssigned", "partner", "search"])
 
   # Vehicle
   vehicles(partner_id: ID, searchFor: String, searchQuery: String): [Vehicle] 
