@@ -4,7 +4,7 @@ input CreateFleetInput {
   email: String @rules(apply: ["email", "unique:fleets,email"])
   avatar: Upload
   status: Boolean
-  expires_on: Date
+  expires_on: String
   max_no_of_cars: Int
 }
 
@@ -15,7 +15,7 @@ input UpdateFleetInput @validator {
   phone: String
   avatar: Upload
   status: Boolean
-  expires_on: Date
+  expires_on: String
   max_no_of_cars: Int
 }
 

@@ -11,7 +11,7 @@ input ChangeBusinessTripPickupStatusInput {
 }
 
 input ChangeBusinessTripAttendanceStatusInput {
-  date: Date! @rules(apply: ["required"])
+  date: String! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
   trip_name: String! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])

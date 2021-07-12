@@ -7,7 +7,7 @@ input CreatePartnerInput {
   size: String
   logo: Upload
   type: String! @rules(apply: ["in:PLAYGROUND,TOSCHOOL,TOWORK,SEATS"])
-  license_expires_on: Date
+  license_expires_on: String
   max_no_of_trips: Int
   paymob_id: ID
 }
@@ -21,7 +21,7 @@ input UpdatePartnerInput @validator {
   phone1: String
   phone2: String
   logo: Upload
-  license_expires_on: Date
+  license_expires_on: String
   max_no_of_trips: Int
   paymob_id: ID
 }

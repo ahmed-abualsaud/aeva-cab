@@ -3,7 +3,7 @@ input CreateBusinessTripAppTransactionInput {
   subscription_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
-  due_date: Date! @rules(apply: ["required"])
+  due_date: String! @rules(apply: ["required"])
   amount: Float! @rules(apply: ["required"])
   payment_method: String! @rules(apply: ["required","in:CASH,CARD,FAWRY,MANUAL"])
   type: String! @rules(apply: ["in:TOSCHOOL,TOWORK,PLAYGROUND"])

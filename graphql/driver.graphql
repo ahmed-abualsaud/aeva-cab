@@ -5,7 +5,7 @@ input CreateDriverInput {
   email: String @rules(apply: ["email", "unique:drivers,email"])
   phone: String @rules(apply: ["unique:drivers,phone"])
   password: String
-  license_expires_on: Date
+  license_expires_on: String
   avatar: Upload
   city: String
   vehicle: String
@@ -20,7 +20,7 @@ input UpdateDriverInput @validator {
   email: String
   phone: String
   fleet_id: ID
-  license_expires_on: Date
+  license_expires_on: String
   avatar: Upload
   status: Boolean
   device_id: String

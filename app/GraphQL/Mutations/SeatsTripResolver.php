@@ -23,7 +23,7 @@ class SeatsTripResolver
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.create_trip_failed'));
+            throw new CustomException($e->getMessage());
         }
 
         return $trip;

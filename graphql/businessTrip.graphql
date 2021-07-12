@@ -4,8 +4,8 @@ input CreateBusinessTripInput {
   partner_id: ID! @rules(apply: ["required"])
   driver_id: ID
   vehicle_id: ID
-  start_date: Date! @rules(apply: ["required"])
-  end_date: Date! @rules(apply: ["required"])
+  start_date: String! @rules(apply: ["required"])
+  end_date: String! @rules(apply: ["required"])
   days: TripDaysInput! @rules(apply: ["required"])
   return_time: String
   group_chat: Boolean
@@ -28,8 +28,8 @@ input UpdateBusinessTripInput {
   driver_id: ID
   vehicle_id: ID
   return_time: String
-  start_date: Date
-  end_date: Date
+  start_date: String
+  end_date: String
   days: TripDaysInput
   group_chat: Boolean
   price: Float
