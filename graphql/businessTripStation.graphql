@@ -7,7 +7,7 @@ input CreateBusinessTripStationInput {
   state: String @rules(apply: ["in:START,END,PICKABLE,PENDING,DESTINATION"])
   request_type: String
   request_id: ID
-  accepted_at: DateTime
+  accepted_at: String
 }
 
 input UpdateBusinessTripStationInput {
@@ -18,7 +18,7 @@ input UpdateBusinessTripStationInput {
   latitude: Float
   longitude: Float
   state: String
-  accepted_at: DateTime
+  accepted_at: String
 }
 
 input AcceptBusinessTripStationInput {

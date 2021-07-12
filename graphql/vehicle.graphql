@@ -1,6 +1,6 @@
 input CreateVehicleInput @validator {
   license_plate: String!
-  license_expires_on: Date! @rules(apply: ["required"])
+  license_expires_on: String! @rules(apply: ["required"])
   car_type_id: ID! @rules(apply: ["required"])
   car_make_id: ID! @rules(apply: ["required"])
   car_model_id: ID! @rules(apply: ["required"])
@@ -14,7 +14,7 @@ input CreateVehicleInput @validator {
 input UpdateVehicleInput @validator {
   id: ID
   license_plate: String
-  license_expires_on: Date
+  license_expires_on: String
   car_type_id: ID
   car_make_id: ID
   car_model_id: ID

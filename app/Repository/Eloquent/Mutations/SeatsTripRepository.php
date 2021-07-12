@@ -15,6 +15,10 @@ class SeatsTripRepository extends BaseRepository
         parent::__construct($model);
     }
 
+    /**
+     * @param  null  $_
+     * @param  array<string, mixed>  $args
+     */
     public function create(array $args)
     {
         DB::beginTransaction();
@@ -25,7 +29,7 @@ class SeatsTripRepository extends BaseRepository
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.create_trip_failed'));
+            throw new CustomException($e->getMessage());
         }
 
         return $trip;

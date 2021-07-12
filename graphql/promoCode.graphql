@@ -3,7 +3,7 @@ input CreatePromoCodeInput {
   amount: Float! @rules(apply: ["required"])
   description: String
   usage: Int! @rules(apply: ["required"])
-  expires_on: Date! @rules(apply: ["required"])
+  expires_on: String! @rules(apply: ["required"])
   type: String! @rules(apply: ["required", "in:TOSCHOOL,TOWORK,SEATS,ONDEMAND"])
 }
 
@@ -13,7 +13,7 @@ input UpdatePromoCodeInput @validator {
   amount: Float
   description: String
   usage: Int
-  expires_on: Date
+  expires_on: String
 }
 
 type PromoCode {

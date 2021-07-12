@@ -21,8 +21,8 @@ class CreateSeatsTripsTable extends Migration
             $table->dateTime('starts_at')->nullable();
             $table->unsignedBigInteger('line_id');
             $table->unsignedBigInteger('partner_id');
-            $table->unsignedBigInteger('driver_id');
-            $table->unsignedBigInteger('vehicle_id');
+            $table->unsignedBigInteger('driver_id')->nullable();
+            $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->date('start_date');
             $table->json('days');
             $table->date('end_date');
