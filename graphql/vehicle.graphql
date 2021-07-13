@@ -9,6 +9,7 @@ input CreateVehicleInput @validator {
   photo: Upload
   partner_id: ID
   terminal_id: ID
+  code: String
 }
 
 input UpdateVehicleInput @validator {
@@ -23,6 +24,7 @@ input UpdateVehicleInput @validator {
   photo: Upload
   partner_id: ID
   terminal_id: ID
+  code: String
 }
 
 type Vehicle {
@@ -37,4 +39,5 @@ type Vehicle {
   photo: String
   partner_id: ID
   terminal_id: ID
+  code: String
 }
