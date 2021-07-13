@@ -22,7 +22,7 @@ class SeatsLineStationRepository extends BaseRepository implements SeatsLineStat
         $date = date('Y-m-d', strtotime($args['day']));
 
         return $this->cache->tags('seatsNearbyStations')
-            ->remember(md5(implode(',', $args)), 900, fn() =>
+            ->remember(md5(implode(',', $args)), 900, function() {
               $this->model->selectRaw('
                 seats_trips.id as trip_id,
                 seats_trips.price,
@@ -60,7 +60,8 @@ class SeatsLineStationRepository extends BaseRepository implements SeatsLineStat
             ', [4500, 4500, date("Y-m-d H:i:s")])
             ->orderBy('pickup_time')
             ->limit(10)
-            ->get()
+            ->get();
+            }
         );
     }
 
