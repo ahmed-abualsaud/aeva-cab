@@ -11,6 +11,7 @@ input CreateDriverInput {
   vehicle: String
   status: Boolean
   partner_id: ID
+  code: String
 }
 
 input UpdateDriverInput @validator {
@@ -25,6 +26,7 @@ input UpdateDriverInput @validator {
   status: Boolean
   device_id: String
   partner_id: ID
+  code: String
 }
 
 input DriverVehicleInput {
@@ -52,6 +54,7 @@ type Driver {
   city: String
   vehicle: String
   partner_id: ID
+  code: String
   created_at: String
   updated_at: String
   fleet: Fleet @belongsTo

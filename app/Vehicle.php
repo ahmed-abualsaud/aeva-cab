@@ -46,6 +46,12 @@ class Vehicle extends Model
         return $query;
     }
 
+    public function scopeHaveTerminal($query) 
+    {
+        return $query->select('terminal_id', 'license_plate', 'code')
+            ->whereNotNull('terminal_id');
+    }
+
     public function scopeSearch($query, $args) 
     {
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {

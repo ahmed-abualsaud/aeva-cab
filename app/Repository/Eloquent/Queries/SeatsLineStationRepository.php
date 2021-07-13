@@ -22,7 +22,7 @@ class SeatsLineStationRepository extends BaseRepository implements SeatsLineStat
         $date = date('Y-m-d', strtotime($args['day']));
 
         return $this->cache->tags('seatsNearbyStations')
-            ->remember(md5(implode(',', $args)), 900, function() {
+            ->remember(md5(implode(',', $args)), 900, function() use ($date, $args) {
               $this->model->selectRaw('
                 seats_trips.id as trip_id,
                 seats_trips.price,
