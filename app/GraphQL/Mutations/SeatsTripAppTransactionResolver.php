@@ -2,22 +2,29 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\SeatsTripAppTransaction;
+use App\Repository\Eloquent\Mutations\SeatsTripAppTransactionRepository;
 
 class SeatsTripAppTransactionResolver
 {
+    private $seatsTripAppTransactionRepository;
+
+    public function __construct(SeatsTripAppTransactionRepository $seatsTripAppTransactionRepository)
+    {
+        $this->seatsTripAppTransactionRepository = $seatsTripAppTransactionRepository;
+    }
+
     /**
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
     public function create($_, array $args)
     {
-        $input = collect($args)->except(['directive'])->toArray();
-        return SeatsTripAppTransaction::create($input);
+        //$args['trip_time'] = '2021-7-8 10:10:10';
+        return $this->seatsTripAppTransactionRepository->create($args);
     }
 
     public function destroy($_, array $args)
     {
-        return SeatsTripAppTransaction::whereIn('id', $args['id'])->delete();
+        return $this->seatsTripAppTransactionRepository->destroy($args);
     }
 }

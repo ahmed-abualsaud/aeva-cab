@@ -2,41 +2,23 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\PromoCode;
-use App\PromoCodeUsage;
-use App\Exceptions\CustomException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Repository\Mutations\PromoCodeRepositoryInterface;
 
 class PromoCodeResolver
 {
+    private $promoCodeRepository;
+
+    public function __construct(PromoCodeRepositoryInterface $promoCodeRepository)
+    {
+        $this->promoCodeRepository = $promoCodeRepository;
+    }
+
     /**
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
     public function apply($_, array $args)
     {
-        try {
-            $promoCode = PromoCode::where('name', $args['name'])
-                ->where('expires_on', '>', date('Y-m-d'))
-                ->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            throw new CustomException(__('lang.invalid_promo_code'));
-        }
-
-        try {
-            $exceeded = PromoCodeUsage::where('promo_code_id', $promoCode->id)
-                ->where('user_id', $args['user_id'])
-                ->count() 
-                == $promoCode->usage;
-
-            if ($exceeded) 
-                throw new \Exception(__('lang.permitted_usage_exceeded'));
-
-            PromoCodeUsage::create(['promo_code_id' => $promoCode->id, 'user_id' => $args['user_id']]);
-        } catch (\Exception $e) {
-            throw new CustomException($e->getMessage());
-        }
-
-        return $promoCode;
+        return $this->promoCodeRepository->apply($args);
     }
 }

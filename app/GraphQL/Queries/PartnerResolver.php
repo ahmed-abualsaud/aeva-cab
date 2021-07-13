@@ -2,22 +2,22 @@
 
 namespace App\GraphQL\Queries;
 
-use App\User;
-use App\Driver;
-use App\PartnerDriver;
+use App\Repository\Queries\PartnerRepositoryInterface;
 
 class PartnerResolver
 {
+    private $partnerRepository;
+
+    public function __construct(PartnerRepositoryInterface $partnerRepository)
+    {
+        $this->partnerRepository = $partnerRepository;
+    }
     /**
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
     public function users($_, array $args)
     {
-        $partnerUsers = User::Join('partner_users', 'partner_users.user_id', '=', 'users.id')
-            ->where('partner_users.partner_id', $args['partner_id'])
-            ->get();
-
-        return $partnerUsers;
+        return $this->partnerRepository->users($args);
     }
 }

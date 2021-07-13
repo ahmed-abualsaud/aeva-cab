@@ -1,28 +1,19 @@
 <?php
 
-namespace App\Repository\Eloquent;
+namespace App\Repository\Eloquent\Queries;   
 
 use App\User;
-use App\Repository\BusinessTripAttendanceRepositoryInterface;
-use Illuminate\Support\Collection;
+use App\Repository\Eloquent\BaseRepository;
+use App\Repository\Queries\MainRepositoryInterface;
 
-class BusinessTripAttendanceRepository extends BaseRepository implements BusinessTripAttendanceRepositoryInterface
+class BusinessTripAttendanceRepository extends BaseRepository implements MainRepositoryInterface
 {
-
-   /**
-    * BusinessTripAttendanceRepository constructor.
-    *
-    * @param User $model
-    */
    public function __construct(User $model)
    {
         parent::__construct($model);
    }
 
-   /**
-    * @return Collection
-    */
-   public function get(array $args): Collection
+   public function invoke(array $args)
    {
         $users = $this->model->select('users.id', 'users.name', 'users.phone', 'users.secondary_no', 'users.avatar')
         ->join('business_trip_users', 'users.id', '=', 'business_trip_users.user_id')

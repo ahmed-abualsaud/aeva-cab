@@ -21,23 +21,45 @@ class BaseRepository implements EloquentRepositoryInterface
     {         
         $this->model = $model;
     }
- 
-    /**
-    * @param array $attributes
-    *
-    * @return Model
-    */
-    public function create(array $attributes): Model
+
+
+    public function create(array $args)
     {
-        return $this->model->create($attributes);
+        //do nothing 
     }
- 
-    /**
-    * @param $id
-    * @return Model
-    */
-    public function find($id): ?Model
+
+    public function update(array $args)
     {
-        return $this->model->find($id);
+        //do nothing 
+    }
+
+    public function login(array $args)
+    {
+        //do nothing 
+    }
+
+    public function updatePassword(array $args)
+    {
+        //do nothing
+    }
+
+    public function destroy(array $args)
+    {
+        //do nothing
+    }
+
+    public function invoke(array $args)
+    {
+        //do nothing
+    }
+
+    public function updateRoute(array $args)
+    {
+        //do nothing
+    }
+
+    public function changeStatus(array $args)
+    {
+        //do nothing
     }
 }

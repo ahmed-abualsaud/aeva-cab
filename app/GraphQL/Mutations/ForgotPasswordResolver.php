@@ -4,13 +4,17 @@ namespace App\GraphQL\Mutations;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
-use Illuminate\Support\Facades\Password;
+use App\Repository\Eloquent\Mutations\ForgotPasswordRepository;
 
 class ForgotPasswordResolver
 {
-    use SendsPasswordResetEmails;
 
+    private $forgotPasswordRepository;
+
+    public function  __construct(ForgotPasswordRepository $forgotPasswordRepository)
+    {
+        $this->forgotPasswordRepository = $forgotPasswordRepository;
+    }
     /**
      * Return a value for the field.
      *
@@ -23,17 +27,6 @@ class ForgotPasswordResolver
 
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $response = Password::broker($args['type'])->sendResetLink(['email' => $args['email']]);
-        if ($response == Password::RESET_LINK_SENT) {
-            return [
-                'status'  => true,
-                'message' => trans($response),
-            ];
-        }
- 
-        return [
-            'status'  => false,
-            'message' => trans($response),
-        ];
+        return $this->forgotPasswordRepository->invoke($args);
     }
 }

@@ -2,15 +2,19 @@
 
 namespace App\GraphQL\Mutations;
 
-use App\CarType;
-use App\Traits\HandleUpload;
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Repository\Eloquent\Mutations\CarTypeRepository;
 
 class CarTypeResolver 
 {
-    use HandleUpload;
+    private $carTypeRepository;
+
+    public function  __construct(CarTypeRepository $carTypeRepository)
+    {
+        $this->carTypeRepository = $carTypeRepository;
+    }
+
     /**
      * Return a value for the field.
      *
@@ -22,36 +26,11 @@ class CarTypeResolver
      */
     public function create($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $input = collect($args)->except(['directive', 'photo'])->toArray();
-
-        if (array_key_exists('photo', $args) && $args['photo']) {
-          $url = $this->uploadOneFile($args['photo'], 'images');
-          $input['photo'] = $url;
-        }
-        
-        $carType = CarType::create($input);
-
-        return $carType;
+        return $this->carTypeRepository->create($args);
     }
 
     public function update($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $input = collect($args)->except(['id', 'directive', 'photo'])->toArray();
-
-        try {
-            $carType = CarType::findOrFail($args['id']);
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.car_type_not_found'));
-        }
-
-        if (array_key_exists('photo', $args) && $args['photo']) {
-            if ($carType->photo) $this->deleteOneFile($carType->photo, 'images');
-            $url = $this->uploadOneFile($args['photo'], 'images');
-            $input['photo'] = $url;
-        }
-
-        $carType->update($input);
-
-        return $carType;
+        return $this->carTypeRepository->update($args);
     }
 }

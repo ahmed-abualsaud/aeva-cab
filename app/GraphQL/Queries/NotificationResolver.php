@@ -4,9 +4,17 @@ namespace App\GraphQL\Queries;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use App\Repository\Queries\NotificationRepositoryInterface;
 
 class NotificationResolver
 {
+    private $notifiacationRepository;
+
+    public function __construct(NotificationRepositoryInterface $notifiacationRepository)
+    {
+            $this->notifiacationRepository = $notifiacationRepository;
+    }
+
     /**
      * Return a value for the field.
      *
@@ -19,21 +27,11 @@ class NotificationResolver
 
     public function notifications($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $notifications = auth('partner')->user()
-            ->notifications()
-            ->select('id', 'data', 'read_at', 'created_at')
-            ->get();
-
-        return $notifications;
+        return $this->notifiacationRepository->notifications($rootValue, $args, $context, $resolveInfo);
     }
 
     public function unreadNotifications($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $unreadNotifications = tap(auth('partner')->user()
-            ->unreadNotifications()
-            ->select('id', 'data', 'created_at')
-            ->get())->markAsRead();
-
-        return $unreadNotifications;
+        return $this->notifiacationRepository->unreadNotifications($rootValue, $args, $context, $resolveInfo);
     }
 }

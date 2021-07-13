@@ -3,16 +3,17 @@
 namespace App\GraphQL\Mutations;
 
 use GraphQL\Type\Definition\ResolveInfo;
-use Illuminate\Foundation\Auth\ResetsPasswords;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
+use App\Repository\Eloquent\Mutations\ResetPasswordRepository;
 
 class ResetPasswordResolver
 {
-    use ResetsPasswords;
-    use ValidatesRequests;
+    private $resetPasswordRepository;
+
+    public function __construct(ResetPasswordRepository $resetPasswordRepository)
+    {
+        $this->resetPasswordRepository = $resetPasswordRepository;
+    }
 
     /**
      * Return a value for the field.
@@ -25,22 +26,6 @@ class ResetPasswordResolver
      */
     public function __invoke($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
     {
-        $input = collect($args)->except(['directive', 'type'])->toArray();
-        $response = Password::broker($args['type'])->reset($input, function ($user, $password) {
-            $user->password = Hash::make($password);
-            $user->save();
-        }); 
-
-        if ($response === Password::PASSWORD_RESET) {
-            return [
-                'status'  => true,
-                'message' => trans($response),
-            ];
-        }
-
-        return [
-            'status'  => false,
-            'message' => trans($response),
-        ];
+        return $this->resetPasswordRepository->invoke($args);
     }
 }
