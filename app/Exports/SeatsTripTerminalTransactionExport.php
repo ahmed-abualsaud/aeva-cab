@@ -27,13 +27,13 @@ class SeatsTripTerminalTransactionExport implements FromQuery, WithHeadings
         $query = SeatsTripTerminalTransaction::query();
 
         if ($this->partner)
-            $query = $query->where('partner_id', Partner::getPaymobID($this->partner));
+            $query = $query->where('seats_trip_terminal_transactions.partner_id', Partner::getPaymobID($this->partner));
 
         if ($this->terminal)
-            $query = $query->where('terminal_id', $this->terminal);
+            $query = $query->where('seats_trip_terminal_transactions.terminal_id', $this->terminal);
 
         if ($this->period)
-            $query = $this->dateFilter($this->period, $query, 'created_at');
+            $query = $this->dateFilter($this->period, $query, 'seats_trip_terminal_transactions.created_at');
 
         return $query
             ->leftJoin('vehicles', 'vehicles.terminal_id', '=', 'seats_trip_terminal_transactions.terminal_id')
