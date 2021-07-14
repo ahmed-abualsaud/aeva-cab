@@ -36,12 +36,13 @@ class SeatsTripTerminalTransactionExport implements FromQuery, WithHeadings
             $query = $this->dateFilter($this->period, $query, 'created_at');
 
         return $query
-            ->select('created_at', 'trx_id', 'terminal_id', 'source', 'amount', 'status')
+            ->leftJoin('vehicles', 'vehicles.terminal_id', '=', 'seats_trip_terminal_transactions.terminal_id')
+            ->select('seats_trip_terminal_transactions.created_at', 'seats_trip_terminal_transactions.trx_id', 'seats_trip_terminal_transactions.terminal_id', 'vehicles.license_plate', 'vehicles.code', 'seats_trip_terminal_transactions.source', 'seats_trip_terminal_transactions.amount', 'seats_trip_terminal_transactions.status')
             ->latest();
     }
 
     public function headings() :array
     {
-        return ['Transaction Date', 'Transaction ID', 'Terminal ID', 'Method', 'Amount', 'Status'];
+        return ['Transaction Date', 'Transaction ID', 'Terminal ID', 'Vehicle Number', 'Vehicle Code', 'Method', 'Amount', 'Status'];
     }
 }

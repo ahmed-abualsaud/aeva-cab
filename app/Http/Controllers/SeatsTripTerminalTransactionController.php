@@ -53,7 +53,7 @@ class SeatsTripTerminalTransactionController extends Controller
 
     public function export(Request $req) 
     {
-        $filename = preg_replace('/-|:|\s+/', '_', now()).'_transactions.csv';
+        $filename = preg_replace('/-|:|\s+/', '_', now()).'_transactions.xlsx';
         $partner = $req->query('partner');
         $terminal = $req->query('terminal');
         $period = $req->query('period');
