@@ -4,6 +4,7 @@ namespace App\Exports;
 
 use App\Partner;
 use App\Traits\Filterable;
+use App\Traits\Searchable;
 use App\SeatsTripTerminalTransaction;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
@@ -13,12 +14,15 @@ class SeatsTripTerminalTransactionExport implements FromQuery, WithHeadings
 {
     use Exportable;
     use Filterable;
+    use Searchable;
 
-    public function __construct($partner = null, $terminal = null, $period = null)
+    public function __construct($partner = null, $terminal = null, $period = null, $searchFor = null, $searchQuery = null)
     {
         $this->partner = $partner;
         $this->terminal = $terminal;
         $this->period = $period;
+        $this->searchFor = $searchFor;
+        $this->searchQuery = $searchQuery;
     }
 
 
@@ -34,6 +38,9 @@ class SeatsTripTerminalTransactionExport implements FromQuery, WithHeadings
 
         if ($this->period)
             $query = $this->dateFilter($this->period, $query, 'seats_trip_terminal_transactions.created_at');
+        
+        if ($this->searchFor && $this->searchQuery)
+            $query = $this->search($this->searchFor, $this->searchQuery, $query);
 
         return $query
             ->leftJoin('vehicles', 'vehicles.terminal_id', '=', 'seats_trip_terminal_transactions.terminal_id')

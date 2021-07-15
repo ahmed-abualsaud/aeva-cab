@@ -57,8 +57,10 @@ class SeatsTripTerminalTransactionController extends Controller
         $partner = $req->query('partner');
         $terminal = $req->query('terminal');
         $period = $req->query('period');
+        $searchFor = $req->query('searchFor');
+        $searchQuery = $req->query('searchQuery');
 
-        return (new SeatsTripTerminalTransactionExport($partner, $terminal, $period))
+        return (new SeatsTripTerminalTransactionExport($partner, $terminal, $period, $searchFor, $searchQuery))
             ->download($filename);
     }
 

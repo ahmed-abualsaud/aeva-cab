@@ -4,15 +4,26 @@ namespace App;
 
 use App\Partner;
 use App\Traits\Filterable;
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
 class SeatsTripTerminalTransaction extends Model
 {
     use Filterable;
+    use Searchable;
 
     protected $guarded = [];
     
 	public $timestamps = false;
+
+    public function scopeSearch($query, $args) 
+    {
+        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+            $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
+        }
+
+        return $query;
+    }
 
     public function scopePeriod($query, $args)
     {
