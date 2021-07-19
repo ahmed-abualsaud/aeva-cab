@@ -589,6 +589,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "SeatsTripAppTransactionResolver@stats")
   seatsTripTerminalTransactionsStats(partner_id: ID, terminal_id: ID, period: String): SeatsTripTransactionStats
     @field(resolver: "SeatsTripTerminalTransactionResolver@stats")
+  seatsTripTerminalTransactionsVehiclesStats(partner_id: ID, period: String): [SeatsTripTransactionVehiclesStats]
+    @field(resolver: "SeatsTripTerminalTransactionResolver@vehiclesStats")
+  seatsTripTerminalTransactionsTimeStats(partner_id: ID, terminal_id: ID, period: String): [SeatsTripTransactionTimeStats]
+    @field(resolver: "SeatsTripTerminalTransactionResolver@timeStats")
 
   # Seats Trip Booking
   seatsTripBookings(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String, status: String): [SeatsTripBooking]

@@ -73,11 +73,8 @@ class SeatsTripBooking extends Model
 
         switch($args['time']) {
             case 'PAST':
-                $query = $query->join('seats_trips', function ($join) {
-                    $join->on('seats_trip_bookings.trip_id', '=', 'seats_trips.id')
-                         ->whereNull('log_id');
-                })->where('pickup_time', '<', $now)
-                ->orWhere('status', '<>', 'CONFIRMED');
+                $query = $query->where('pickup_time', '<', $now)
+                    ->orWhere('status', '<>', 'CONFIRMED');
             break;
             default:
                 $query = $query->where('pickup_time', '>=', $now)

@@ -30,6 +30,7 @@ class CreateVehiclesTable extends Migration
             $table->softDeletes();
 
             $table->index('partner_id');
+            $table->index('terminal_id');
             
             $table->foreign('car_make_id')->references('id')->on('car_makes')->onDelete('cascade');
             $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('cascade');

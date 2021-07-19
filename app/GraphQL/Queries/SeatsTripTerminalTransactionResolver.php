@@ -20,4 +20,14 @@ class SeatsTripTerminalTransactionResolver
     {
         return $this->seatsTripTerminalTransaction->stats($args);
     }
+
+    public function vehiclesStats($_, array $args)
+    {
+        return $this->seatsTripTerminalTransaction->vehiclesStats($args);
+    }
+
+    public function timeStats($_, array $args)
+    {
+        return $this->seatsTripTerminalTransaction->timeStats($args);
+    }
 }

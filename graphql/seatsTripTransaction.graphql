@@ -36,10 +36,24 @@ type SeatsTripTransactionStats {
   count: Int
   sum: Float
   avg: Float
-  transactions: [TransactionGroup]
+  transactions: [TransactionsGroup]
 }
 
-type TransactionGroup {
+type SeatsTripTransactionVehiclesStats {
+  license_plate: String
+  code: String
+  terminal_id: Int
+  count: Int
+  sum: Float
+}
+
+type SeatsTripTransactionTimeStats {
+  time: String
+  count: Int
+  sum: Float
+}
+
+type TransactionsGroup {
   date: String
   sum: Float
 }
