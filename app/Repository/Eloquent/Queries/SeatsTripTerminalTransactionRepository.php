@@ -69,7 +69,7 @@ class SeatsTripTerminalTransactionRepository extends BaseRepository implements S
 
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $paymobID = $this->partner->getPaymobID($args['partner_id']);
-            $vehicles = $vehicles->where('partner_id', $paymobID);
+            $vehicles = $vehicles->where('seats_trip_terminal_transactions.partner_id', $paymobID);
         }
 
         if (array_key_exists('period', $args) && $args['period']) {
