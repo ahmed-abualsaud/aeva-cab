@@ -24,7 +24,7 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
         parent::__construct($model);
     }
 
-    public function changeSeatsTripDriverStatus(array $args)
+    public function changeDriverStatus(array $args)
     {
         $trip = $this->getTripById($args['trip_id']);
 

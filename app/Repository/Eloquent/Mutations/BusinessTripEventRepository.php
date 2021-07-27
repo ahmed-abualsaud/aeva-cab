@@ -29,7 +29,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         parent::__construct($model);
     }
 
-    public function changeBusinessTripDriverStatus(array $args)
+    public function changeDriverStatus(array $args)
     {
         $trip = $this->getTripById($args['trip_id']);
 

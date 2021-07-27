@@ -13,9 +13,9 @@ class BusinessTripEventResolver
         $this->businessTripEventRepository = $businessTripEventRepository;
     }
 
-    public function changeBusinessTripDriverStatus($_, array $args)
+    public function changeDriverStatus($_, array $args)
     {
-        return $this->businessTripEventRepository->changeBusinessTripDriverStatus($args);
+        return $this->businessTripEventRepository->changeDriverStatus($args);
     }
 
     public function startTrip($_, array $args)

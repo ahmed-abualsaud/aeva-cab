@@ -4,7 +4,7 @@ namespace App\Repository\Mutations;
 
 interface BusinessTripEventRepositoryInterface
 {
-    public function changeBusinessTripDriverStatus(array $args);
+    public function changeDriverStatus(array $args);
     public function startTrip(array $args);
     public function atStation(array $args);
     public function changeBusinessTripPickupStatus(array $args);

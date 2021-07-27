@@ -332,7 +332,7 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
 
   # Business Trip Event
   changeBusinessTripDriverStatus(input: TripDriverStatusInput! @spread): BusinessTrip
-    @field(resolver: "BusinessTripEventResolver@changeBusinessTripDriverStatus")
+    @field(resolver: "BusinessTripEventResolver@changeDriverStatus")
   startBusinessTrip(input: StartTripInput! @spread): BusinessTrip 
     @field(resolver: "BusinessTripEventResolver@startTrip")
   endBusinessTrip(input: EndTripInput! @spread): Boolean
@@ -348,7 +348,7 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
 
   # Seats Trip Event
   changeSeatsTripDriverStatus(input: TripDriverStatusInput! @spread): BusinessTrip
-    @field(resolver: "SeatsTripEventResolver@changeSeatsTripDriverStatus")
+    @field(resolver: "SeatsTripEventResolver@changeDriverStatus")
   startSeatsTrip(input: StartTripInput! @spread): SeatsTrip 
     @field(resolver: "SeatsTripEventResolver@startTrip")
   endSeatsTrip(input: EndTripInput! @spread): Boolean
@@ -559,6 +559,8 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripSubscriptionResolver@businessTripSubscribedUsers")
   businessTripUnsubscribedUsers(trip_id: ID!, partner_id: ID, searchFor: String, searchQuery: String): 
     [User] @paginate(scopes: ["unsubscribed", "search"])
+  getUserBusinessTripHistory(user_id: ID!, trip_id: ID): [UserBusinessTripHistory]
+    @field(resolver: "BusinessTripResolver@getUserHistory")
 
   # Business Trip Event
   businessTripEvents(type: String, searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]

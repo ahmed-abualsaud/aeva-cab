@@ -13,9 +13,9 @@ class SeatsTripEventResolver
         $this->seatsTripEventRepository = $seatsTripEventRepository;
     }
 
-    public function changeSeatsTripDriverStatus($_, array $args)
+    public function changeDriverStatus($_, array $args)
     {
-        return $this->seatsTripEventRepository->changeSeatsTripDriverStatus($args);
+        return $this->seatsTripEventRepository->changeDriverStatus($args);
     }
 
     public function startTrip($_, array $args)
