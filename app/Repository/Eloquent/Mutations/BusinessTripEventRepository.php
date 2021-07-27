@@ -29,7 +29,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         parent::__construct($model);
     }
 
-    public function startTrip(array $args)
+    public function changeBusinessTripDriverStatus(array $args)
     {
         $trip = $this->getTripById($args['trip_id']);
 
@@ -40,15 +40,36 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
 
         $this->initTripEvent($args, $logId, $trip->driver_id);
 
+        $trip->update(['log_id' => $logId, 'ready_at' => date("Y-m-d H:i:s")]);
+
+        return $trip;
+    }
+
+    public function startTrip(array $args)
+    {
+        $trip = $this->getTripById($args['trip_id']);
+
+        $payload = [
+            'started' => [
+                'at' => date("Y-m-d H:i:s"),
+                'lat' => $args['latitude'],
+                'lng' => $args['longitude']
+            ]
+        ];
+
+        $event = $this->model->select('content', 'log_id')->findOrFail($trip['log_id']);
+
+        $event->update(['content' => array_merge($event->content, $payload)]);
+
+        $trip->update(['starts_at' => $args['trip_time']]);
+
         $this->checkAbsence($args['trip_id']);
 
         $this->checkSchedule($args['trip_id']);
 
         Driver::updateLocation($args['latitude'], $args['longitude']);
 
-        $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $logId]);
-
-        $trip->update(['log_id' => $logId, 'starts_at' => $args['trip_time']]);
+        //$this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $trip['log_id']]);
 
         return $trip;
     }
@@ -163,7 +184,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
 
         $logId = $trip->log_id;
 
-        $trip->update(['log_id' => null, 'starts_at' => null]);
+        $trip->update(['log_id' => null, 'starts_at' => null, 'ready_at' => null]);
 
         $this->updateUserStatus(
             $args['trip_id'],
@@ -345,11 +366,11 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         try {
             $input = [
                 'trip_id' => $args['trip_id'],
-                'driver_id' => $driverId,
                 'trip_time' => $args['trip_time'],
+                'driver_id' => $driverId,
                 'log_id' => $logId,
                 'content' => [ 
-                    'started' => [
+                    'ready' => [
                         'at' => date("Y-m-d H:i:s"),
                         'lat' => $args['latitude'],
                         'lng' => $args['longitude']

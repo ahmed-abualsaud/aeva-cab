@@ -41,6 +41,7 @@ type BusinessTrip {
   name_ar: String
   log_id: String
   starts_at: String
+  ready_at: String
   return_time: String
   start_date: String
   end_date: String

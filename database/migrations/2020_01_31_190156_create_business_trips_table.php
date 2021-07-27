@@ -19,6 +19,7 @@ class CreateBusinessTripsTable extends Migration
             $table->string('name_ar')->nullable();
             $table->uuid('log_id')->nullable();
             $table->dateTime('starts_at')->nullable();
+            $table->dateTime('ready_at')->nullable();
             $table->unsignedBigInteger('partner_id');
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('vehicle_id')->nullable();

@@ -325,12 +325,14 @@ extend type Mutation @guard(with: ["admin", "user"]) {
 }
 
 # Admin|Driver Guard
-extend type Mutation @guard(with: ["admin", "driver"]) {
+extend type Mutation  {
   # Driver
   changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "DriverResolver@updatePassword")
 
   # Business Trip Event
+  changeBusinessTripDriverStatus(input: TripDriverStatusInput! @spread): BusinessTrip
+    @field(resolver: "BusinessTripEventResolver@changeBusinessTripDriverStatus")
   startBusinessTrip(input: StartTripInput! @spread): BusinessTrip 
     @field(resolver: "BusinessTripEventResolver@startTrip")
   endBusinessTrip(input: EndTripInput! @spread): Boolean
@@ -345,6 +347,8 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "BusinessTripEventResolver@dropUsers")
 
   # Seats Trip Event
+  changeSeatsTripDriverStatus(input: TripDriverStatusInput! @spread): BusinessTrip
+    @field(resolver: "SeatsTripEventResolver@changeSeatsTripDriverStatus")
   startSeatsTrip(input: StartTripInput! @spread): SeatsTrip 
     @field(resolver: "SeatsTripEventResolver@startTrip")
   endSeatsTrip(input: EndTripInput! @spread): Boolean
@@ -541,10 +545,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Business Trip
   businessTrips(type: String, partner_id: ID, searchFor: String, searchQuery: String): [BusinessTrip] 
-    @paginate(scopes: ["partner", "search"]) @softDeletes
+    @paginate(scopes: ["partner", "ofType", "search"]) @softDeletes
   partnerBusinessTrips(partner_id: ID! @eq): [BusinessTrip] @all
   liveBusinessTrips(type: String, partner_id: ID): [BusinessTrip] 
-    @all(scopes: ["live", "partner"])
+    @all(scopes: ["live", "partner", "ofType"])
 
   # Business Trip Station User
   businessTripStationUsers(trip_id: ID!, station_id: ID!, status: String!): [User] 
@@ -696,6 +700,10 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
     @field(resolver: "SeatsTripResolver@driverLiveTrips")
   driverSeatsTripSchedule(driver_id: ID!, day: String!): [SeatsTrip]
     @field(resolver: "SeatsTripResolver@driverTrips")
+  BusinessTripDriverStatus(is_ready: Boolean!): [BusinessTrip] 
+    @all(scopes: ["driverIsReady", "ofType"] model: "BusinessTrip")
+  SeatsTripDriverStatus(is_ready: Boolean!): [SeatsTrip] 
+    @all(scopes: ["driverIsReady"] model: "SeatsTrip")
 }
 
 # Admin|Partner|User|Driver Guard

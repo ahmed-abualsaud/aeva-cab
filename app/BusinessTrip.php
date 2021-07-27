@@ -87,11 +87,32 @@ class BusinessTrip extends Model
     {
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $query->where('partner_id', $args['partner_id']);
-        } else if (array_key_exists('type', $args) && $args['type']) {
-            $query->where('type', $args['type']);
         }
  
         return $query;
+    }
+
+    public function scopeOfType($query, $args) 
+    {
+        if (array_key_exists('type', $args) && $args['type']) {
+            return $query->where('type', $args['type']);
+        }
+
+        return $query;
+    }
+
+    public function scopeDriverIsReady($query, $args) 
+    {
+        if($args['is_ready']) {
+            return $query->whereNotNull('ready_at');
+        }
+
+        $day = strtolower(date('l'));
+        return $query->whereNull('ready_at')
+        ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
+        ->whereRaw('days->"$.'.$day.'" <> CAST("null" AS JSON)')
+        ->whereRaw('TIME_TO_SEC(?) between TIME_TO_SEC(days->"$.'.$day.'") - 60*30 
+                    and TIME_TO_SEC(days->"$.'.$day.'")', [date('H:i:s')]);
     }
 
     public function scopeSearch($query, $args) 
