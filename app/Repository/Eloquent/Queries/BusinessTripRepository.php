@@ -3,6 +3,8 @@
 namespace App\Repository\Eloquent\Queries;   
 
 use App\BusinessTrip;
+use App\BusinessTripSubscription;
+use App\BusinessTripEvent;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Queries\BusinessTripRepositoryInterface;
 
@@ -109,6 +111,21 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
             ->get();
 
         return $liveTrips;
+    }
+
+    public function getUserHistory(array $args)
+    {
+        $history = BusinessTripSubscription::join('business_trip_events', function ($join) {
+            $join->on('business_trip_users.trip_id', '=', 'business_trip_events.trip_id');
+        })
+        ->where('user_id', $args['user_id'])
+        ->get()->toArray();
+    
+        array_walk($history, function(&$value, $key) {
+            $value['content'] = json_decode($value['content']);
+        });
+        
+        return BusinessTripSubscription::hydrate($history);
     }
 
     protected function schedule($trips, $day) 

@@ -42,4 +42,9 @@ class BusinessTripResolver
     {
         return $this->businessTripRepository->driverLiveTrips($args);
     }
+
+    public function getUserHistory($_, array $args)
+    {
+        return $this->businessTripRepository->getUserHistory($args);
+    }
 }
