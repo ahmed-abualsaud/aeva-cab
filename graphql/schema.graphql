@@ -560,7 +560,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
   businessTripUnsubscribedUsers(trip_id: ID!, partner_id: ID, searchFor: String, searchQuery: String): 
     [User] @paginate(scopes: ["unsubscribed", "search"])
   getUserBusinessTripHistory(user_id: ID!): [UserBusinessTripHistory]
-    @field(resolver: "BusinessTripResolver@getUserHistory")
+    @paginate(builder: "App\\GraphQL\\Queries\\BusinessTripResolver@getUserHistory", type: SIMPLE, defaultCount: 10)
 
   # Business Trip Event
   businessTripEvents(type: String, searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
