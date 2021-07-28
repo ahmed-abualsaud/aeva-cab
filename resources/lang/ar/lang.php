@@ -107,5 +107,6 @@ return [
     'set_language_failed' => 'تعذر تكوين لغة التطبيق',
     'upload_file_failed' => 'لم نتمكن من تحميل هذا الملف',
     'update_failed' => 'لم نتمكن من التحديث',
-    'insufficient_balance' => 'رصيد المحفظة لا يكفي لاتمام هذه العمليه'
+    'insufficient_balance' => 'رصيد المحفظة لا يكفي لاتمام هذه العمليه',
+    'supervisor_not_found' => 'هذا المشرف غير موجود'
 ];

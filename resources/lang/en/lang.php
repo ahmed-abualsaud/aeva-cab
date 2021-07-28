@@ -107,5 +107,6 @@ return [
     'set_language_failed' => 'Could not configure App language',
     'upload_file_failed' => 'We could not able to upload this file',
     'update_failed' => 'We could not able to update',
-    'insufficient_balance' => 'Your wallet balance is insufficient'
+    'insufficient_balance' => 'Your wallet balance is insufficient',
+    'supervisor_not_found' => 'Supervisor not found'
 ];
