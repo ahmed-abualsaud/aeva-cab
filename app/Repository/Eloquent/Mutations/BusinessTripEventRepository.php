@@ -38,7 +38,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
 
         $logId = (string) Str::uuid();
 
-        $this->initTripEvent($args, $logId, $trip->driver_id);
+        $this->initTripEvent($args, $logId, $trip->driver_id, $trip->vehicle_id);
 
         $trip->update(['log_id' => $logId, 'ready_at' => date("Y-m-d H:i:s")]);
 
@@ -69,7 +69,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
 
         Driver::updateLocation($args['latitude'], $args['longitude']);
 
-        //$this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $trip['log_id']]);
+        $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $trip['log_id']]);
 
         return $trip;
     }
@@ -206,10 +206,12 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
                 'business_trips.id', 'business_trips.name', 
                 'business_trips.log_id', 'business_trips.type',
                 'drivers.id as driver_id', 'drivers.name as driver_name',
-                'partners.id as partner_id', 'partners.name as partner_name'
+                'partners.id as partner_id', 'partners.name as partner_name',
+                'vehicles.id as vehicle_id'
             )
             ->join('drivers', 'drivers.id', '=', 'business_trips.driver_id')
             ->join('partners', 'partners.id', '=', 'business_trips.partner_id')
+            ->join('vehicles', 'vehicles.id', '=', 'business_trips.vehicle_id')
             ->findOrFail($id);
         } catch (\Exception $e) {
             throw new CustomException('Could not find this trip!');
@@ -361,13 +363,14 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         }
     }
 
-    protected function initTripEvent($args, $logId, $driverId)
+    protected function initTripEvent($args, $logId, $driverId, $vehicleId)
     {
         try {
             $input = [
                 'trip_id' => $args['trip_id'],
                 'trip_time' => $args['trip_time'],
                 'driver_id' => $driverId,
+                'vehicle_id' => $vehicleId,
                 'log_id' => $logId,
                 'content' => [ 
                     'ready' => [
