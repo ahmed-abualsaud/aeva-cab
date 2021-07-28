@@ -115,7 +115,8 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
 
     public function getUserHistory(array $args)
     {
-        return $history = BusinessTripSubscription::join('business_trip_events', function ($join) {
+        return $history = BusinessTripSubscription::latest('business_trip_events.created_at')
+        ->join('business_trip_events', function ($join) {
             $join->on('business_trip_users.trip_id', '=', 'business_trip_events.trip_id');
         })
         ->where('user_id', $args['user_id'])
