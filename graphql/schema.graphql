@@ -420,6 +420,16 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "SeatsTripBookingResolver@update")
 }
 
+# Admin Guard
+extend type Mutation @guard(with: ["admin"]) {
+  createSupervisor(input: CreateSupervisorInput! @spread): Supervisor
+    @field(resolver: "SupervisorResolver@create")
+  updateSupervisor(input: UpdateSupervisorInput! @spread): Supervisor
+    @field(resolver: "SupervisorResolver@update")
+  deleteSupervisor(id: [ID!]!): Boolean
+    @field(resolver: "SupervisorResolver@destroy")
+}
+
 # -- QUERIES --
 
 # Admin Guard
@@ -486,6 +496,10 @@ type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["status", "period", "search"])
   workRequestsArchive(searchFor: String, searchQuery: String, period: String): [WorkRequest] 
     @paginate(scopes: ["archived", "period", "search"])
+
+  # Supervisor
+  supervisors: [Supervisor] @all
+  supervisor(id: ID @eq): Supervisor @find 
 }
 
 # Partner Guard
@@ -774,3 +788,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import seatsTripEvent.graphql
 #import terminal.graphql
 #import userTransaction.graphql
+#import supervisor.graphql
