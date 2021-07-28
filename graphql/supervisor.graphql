@@ -1,8 +1,8 @@
 input CreateSupervisorInput {
   name: String! @rules(apply: ["required"])
   phone: String @rules(apply: ["unique:supervisors,phone"])
-  national_id: String @rules(apply: ["unique:supervisors,national_id"])
-  avatar: String
+  national_id: Upload
+  avatar: Upload
 
 }
 
@@ -10,14 +10,14 @@ input UpdateSupervisorInput {
   id: ID! @rules(apply: ["required"])
   name: String
   phone: String @rules(apply: ["unique:supervisors,phone"])
-  national_id: String @rules(apply: ["unique:supervisors,national_id"])
-  avatar: String
+  national_id: Upload
+  avatar: Upload
 }
 
 type Supervisor {
   id: ID
   name: String
   phone: String
-  national_id: String
-  avatar: String
+  national_id: Upload
+  avatar: Upload
 }
