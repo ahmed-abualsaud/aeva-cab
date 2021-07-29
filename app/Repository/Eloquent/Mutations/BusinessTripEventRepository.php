@@ -67,6 +67,13 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
 
         $this->checkSchedule($args['trip_id']);
 
+        SendPushNotification::dispatch(
+            $this->tripUsersToken($trip->id), 
+            'has been started', 
+            $trip->name,
+            ['view' => 'BusinessTrip', 'id' => $args['trip_id']]
+        );
+
         Driver::updateLocation($args['latitude'], $args['longitude']);
 
         $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $trip['log_id']]);
