@@ -42,4 +42,8 @@ class BusinessTripSubscription extends Model
             $update
         );
     }
+    
+    public function getContentAttribute($value) {
+        return json_decode($value);
+    }
 } 

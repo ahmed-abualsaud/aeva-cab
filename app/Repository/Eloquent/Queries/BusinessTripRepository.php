@@ -119,10 +119,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
         ->join('business_trip_events', function ($join) {
             $join->on('business_trip_users.trip_id', '=', 'business_trip_events.trip_id');
         })
-        ->where('user_id', $args['user_id'])
-        ->get()->each(function ($item, $key) {
-            $item->content = json_decode(($item->content));
-        });        
+        ->where('user_id', $args['user_id']);        
     }
 
     protected function schedule($trips, $day) 
