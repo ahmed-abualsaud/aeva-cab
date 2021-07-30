@@ -716,9 +716,9 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
     @field(resolver: "SeatsTripResolver@driverLiveTrips")
   driverSeatsTripSchedule(driver_id: ID!, day: String!): [SeatsTrip]
     @field(resolver: "SeatsTripResolver@driverTrips")
-  BusinessTripDriverStatus(type: String, is_ready: Boolean!): [BusinessTrip] 
+  businessTripDriverStatus(type: String, is_ready: Boolean!): [BusinessTrip] 
     @all(scopes: ["driverIsReady", "ofType"] model: "BusinessTrip")
-  SeatsTripDriverStatus(is_ready: Boolean!): [SeatsTrip] 
+  seatsTripDriverStatus(is_ready: Boolean!): [SeatsTrip] 
     @all(scopes: ["driverIsReady"] model: "SeatsTrip")
 }
 
