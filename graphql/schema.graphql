@@ -261,6 +261,13 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   deleteDocument(id: ID!): String
     @field(resolver: "DocumentResolver@delete")
   updateDocument(input: UpdateDocumentInput! @spread): Document @update
+
+  # Supervisor
+  createSupervisor(input: CreateSupervisorInput! @spread): Supervisor
+    @field(resolver: "SupervisorResolver@create")
+  updateSupervisor(input: UpdateSupervisorInput! @spread): Supervisor
+    @field(resolver: "SupervisorResolver@update")
+  deleteSupervisor(id: ID!): Supervisor @delete
 }
 
 # Admin|User Guard
@@ -420,16 +427,6 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "SeatsTripBookingResolver@update")
 }
 
-# Admin Guard
-extend type Mutation @guard(with: ["admin"]) {
-  createSupervisor(input: CreateSupervisorInput! @spread): Supervisor
-    @field(resolver: "SupervisorResolver@create")
-  updateSupervisor(input: UpdateSupervisorInput! @spread): Supervisor
-    @field(resolver: "SupervisorResolver@update")
-  deleteSupervisor(id: [ID!]!): Boolean
-    @field(resolver: "SupervisorResolver@destroy")
-}
-
 # -- QUERIES --
 
 # Admin Guard
@@ -496,10 +493,6 @@ type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["status", "period", "search"])
   workRequestsArchive(searchFor: String, searchQuery: String, period: String): [WorkRequest] 
     @paginate(scopes: ["archived", "period", "search"])
-
-  # Supervisor
-  supervisors: [Supervisor] @all
-  supervisor(id: ID @eq): Supervisor @find 
 }
 
 # Partner Guard
@@ -624,6 +617,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Terminal
   terminals(partner_id: ID): [Terminal] @all(scopes: ["partner"])
+
+  # Supervisor
+  supervisors(partner_id: ID): [Supervisor] @all(scopes: ["partner"])
+  supervisor(id: ID @eq): Supervisor @find 
 }
 
 # Admin|User Guard
@@ -716,9 +713,9 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
     @field(resolver: "SeatsTripResolver@driverLiveTrips")
   driverSeatsTripSchedule(driver_id: ID!, day: String!): [SeatsTrip]
     @field(resolver: "SeatsTripResolver@driverTrips")
-  businessTripDriverStatus(type: String, is_ready: Boolean!): [BusinessTrip] 
+  BusinessTripDriverStatus(type: String, is_ready: Boolean!): [BusinessTrip] 
     @all(scopes: ["driverIsReady", "ofType"] model: "BusinessTrip")
-  seatsTripDriverStatus(is_ready: Boolean!): [SeatsTrip] 
+  SeatsTripDriverStatus(is_ready: Boolean!): [SeatsTrip] 
     @all(scopes: ["driverIsReady"] model: "SeatsTrip")
 }
 

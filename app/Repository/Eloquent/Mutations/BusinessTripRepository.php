@@ -261,7 +261,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
     protected function createTripCopy(array $args)
     {
         $originalTrip = $this->model->select(
-            'partner_id', 'driver_id', 'vehicle_id', 'start_date', 'end_date', 'return_time', 
+            'partner_id', 'driver_id', 'supervisor_id', 'vehicle_id', 'start_date', 'end_date', 'return_time', 
             'days', 'duration', 'distance', 'group_chat', 'route', 'price', 'type'
             )
             ->findOrFail($args['id'])

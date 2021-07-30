@@ -18,11 +18,12 @@ class CreateBusinessTripsTable extends Migration
             $table->string('name');
             $table->string('name_ar')->nullable();
             $table->uuid('log_id')->nullable();
-            $table->dateTime('starts_at')->nullable();
             $table->dateTime('ready_at')->nullable();
+            $table->dateTime('starts_at')->nullable();
             $table->unsignedBigInteger('partner_id');
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('vehicle_id')->nullable();
+            $table->unsignedBigInteger('supervisor_id')->nullable();
             $table->string('subscription_code')->nullable();
             $table->date('start_date');
             $table->json('days');
@@ -47,6 +48,7 @@ class CreateBusinessTripsTable extends Migration
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('set null');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('set null');
+            $table->foreign('supervisor_id')->references('id')->on('supervisors')->onDelete('set null');
         });
     }
 

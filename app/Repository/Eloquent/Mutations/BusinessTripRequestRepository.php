@@ -261,7 +261,6 @@ class BusinessTripRequestRepository implements BusinessTripRequestRepositoryInte
             'request_type' => $args['request_type'],
             'trip_id' => $args['trip_id'],
             'subscription_verified_at' => now(),
-            'payable' => $args['price'],
             'due_date' => date('Y-m-d'),
             'created_at' => now(), 
             'updated_at' => now()
@@ -290,7 +289,6 @@ class BusinessTripRequestRepository implements BusinessTripRequestRepositoryInte
             'request_type' => $args['request_type'],
             'trip_id' => $trip_id,
             'subscription_verified_at' => now(),
-            'payable' => $args['price'],
             'due_date' => date('Y-m-d'),
             'created_at' => now(), 
             'updated_at' => now()

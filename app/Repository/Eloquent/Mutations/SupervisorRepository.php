@@ -18,16 +18,11 @@ class SupervisorRepository extends BaseRepository
 
     public function create(array $args)
     {
-        $input = collect($args)->except(['directive', 'avatar', 'national_id'])->toArray();
+        $input = collect($args)->except(['directive', 'avatar'])->toArray();
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $input['avatar'] = $url;
-        }
-
-        if (array_key_exists('national_id', $args) && $args['national_id']) {
-            $url = $this->uploadOneFile($args['national_id'], 'documents');
-            $input['national_id'] = $url;
         }
         
         $supervisor = $this->model->create($input);
@@ -37,7 +32,7 @@ class SupervisorRepository extends BaseRepository
 
     public function update(array $args)
     {
-        $input = collect($args)->except(['id', 'directive', 'avatar', 'national_id'])->toArray();
+        $input = collect($args)->except(['id', 'directive', 'avatar'])->toArray();
 
         try {
             $supervisor = $this->model->findOrFail($args['id']);
@@ -51,19 +46,8 @@ class SupervisorRepository extends BaseRepository
             $input['avatar'] = $url;
         }
 
-        if (array_key_exists('national_id', $args) && $args['national_id']) {
-            if ($supervisor->national_id) $this->deleteOneFile($supervisor->national_id, 'documents');
-            $url = $this->uploadOneFile($args['national_id'], 'documents');
-            $input['national_id'] = $url;
-        }
-
         $supervisor->update($input);
 
         return $supervisor;
-    }
-
-    public function destroy(array $args)
-    {
-        return $this->model->whereIn('id', $args['id'])->delete();
     }
 }

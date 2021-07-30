@@ -27,6 +27,11 @@ class BusinessTrip extends Model
         return $this->belongsTo(Driver::class);
     }
 
+    public function supervisor()
+    {
+        return $this->belongsTo(Supervisor::class);
+    }
+
     public function vehicle()
     {
         return $this->belongsTo(Vehicle::class);

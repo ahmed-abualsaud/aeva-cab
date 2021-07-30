@@ -15,11 +15,14 @@ class CreateSupervisorsTable extends Migration
     {
         Schema::create('supervisors', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('partner_id');
             $table->string('name');
-            $table->string('phone');
+            $table->string('name_ar');
+            $table->string('phone')->unique();
             $table->string('avatar')->nullable();
-            $table->string('national_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
         });
     }
 

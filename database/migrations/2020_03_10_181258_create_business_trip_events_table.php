@@ -40,7 +40,7 @@ class CreateBusinessTripEventsTable extends Migration
             $table->foreign('vehicle_id')
                 ->references('id')
                 ->on('vehicles')
-                ->onDelete('cascade');
+                ->onDelete('set null');
         });
     }
 

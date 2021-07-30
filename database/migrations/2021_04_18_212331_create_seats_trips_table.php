@@ -18,8 +18,8 @@ class CreateSeatsTripsTable extends Migration
             $table->string('name');
             $table->string('name_ar')->nullable();
             $table->uuid('log_id')->nullable();
-            $table->dateTime('starts_at')->nullable();
             $table->dateTime('ready_at')->nullable();
+            $table->dateTime('starts_at')->nullable();
             $table->unsignedBigInteger('line_id');
             $table->unsignedBigInteger('partner_id');
             $table->unsignedBigInteger('driver_id')->nullable();
