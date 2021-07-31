@@ -280,7 +280,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
 
   # Business Trip Event
   changeBusinessTripPickupStatus(input: ChangeBusinessTripPickupStatusInput! @spread): Boolean
-    @field(resolver: "BusinessTripEventResolver@changeBusinessTripPickupStatus")
+    @field(resolver: "BusinessTripEventResolver@changePickupStatus")
 
   # Business Trip Transaction
   createBusinessTripAppTransaction(input: CreateBusinessTripAppTransactionInput! @spread): BusinessTripAppTransaction
@@ -338,12 +338,12 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "DriverResolver@updatePassword")
 
   # Business Trip Event
-  changeBusinessTripDriverStatus(input: TripDriverStatusInput! @spread): BusinessTrip
-    @field(resolver: "BusinessTripEventResolver@changeDriverStatus")
+  readyBusinessTrip(input: ReadyTripInput! @spread): BusinessTrip
+    @field(resolver: "BusinessTripEventResolver@ready")
   startBusinessTrip(input: StartTripInput! @spread): BusinessTrip 
-    @field(resolver: "BusinessTripEventResolver@startTrip")
+    @field(resolver: "BusinessTripEventResolver@start")
   endBusinessTrip(input: EndTripInput! @spread): Boolean
-    @field(resolver: "BusinessTripEventResolver@endTrip")
+    @field(resolver: "BusinessTripEventResolver@end")
   updateBusinessTripDriverLocation(input: UpdateTripDriverLocationInput! @spread): Boolean 
     @field(resolver: "BusinessTripEventResolver@updateDriverLocation")
   atBusinessTripStation(input: AtTripStationInput! @spread): Boolean
@@ -354,12 +354,12 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "BusinessTripEventResolver@dropUsers")
 
   # Seats Trip Event
-  changeSeatsTripDriverStatus(input: TripDriverStatusInput! @spread): BusinessTrip
-    @field(resolver: "SeatsTripEventResolver@changeDriverStatus")
+  readySeatsTrip(input: ReadyTripInput! @spread): SeatsTrip
+    @field(resolver: "SeatsTripEventResolver@ready")
   startSeatsTrip(input: StartTripInput! @spread): SeatsTrip 
-    @field(resolver: "SeatsTripEventResolver@startTrip")
+    @field(resolver: "SeatsTripEventResolver@start")
   endSeatsTrip(input: EndTripInput! @spread): Boolean
-    @field(resolver: "SeatsTripEventResolver@endTrip")
+    @field(resolver: "SeatsTripEventResolver@end")
   updateSeatsTripDriverLocation(input: UpdateTripDriverLocationInput! @spread): Boolean 
     @field(resolver: "SeatsTripEventResolver@updateDriverLocation")
   atSeatsTripStation(input: AtTripStationInput! @spread): Boolean 
@@ -420,7 +420,7 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Business Trip Event
   changeBusinessTripAttendanceStatus(input: ChangeBusinessTripAttendanceStatusInput! @spread): Boolean
-    @field(resolver: "BusinessTripEventResolver@changeBusinessTripAttendanceStatus")
+    @field(resolver: "BusinessTripEventResolver@changeAttendanceStatus")
   
   # Seats
   updateSeatsTripBooking(input: UpdateSeatsTripBookingInput! @spread): SeatsTripBooking

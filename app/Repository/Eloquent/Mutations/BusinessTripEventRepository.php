@@ -29,7 +29,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         parent::__construct($model);
     }
 
-    public function changeDriverStatus(array $args)
+    public function ready(array $args)
     {
         $trip = $this->getTripById($args['trip_id']);
 
@@ -45,9 +45,12 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         return $trip;
     }
 
-    public function startTrip(array $args)
+    public function start(array $args)
     {
         $trip = $this->getTripById($args['trip_id']);
+
+        if (!$trip->log_id) 
+            throw new CustomException(__('lang.driver_not_ready'));
 
         $payload = [
             'started' => [
@@ -57,26 +60,26 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
             ]
         ];
 
-        $event = $this->model->select('content', 'log_id')->findOrFail($trip['log_id']);
+        $event = $this->model->select('content', 'log_id')->findOrFail($trip->log_id);
 
         $event->update(['content' => array_merge($event->content, $payload)]);
-
-        $trip->update(['starts_at' => $args['trip_time']]);
 
         $this->checkAbsence($args['trip_id']);
 
         $this->checkSchedule($args['trip_id']);
 
         SendPushNotification::dispatch(
-            $this->tripUsersToken($trip->id), 
-            'has been started', 
+            $this->tripUsersToken($trip->id),
+            __('lang.trip_started'),
             $trip->name,
             ['view' => 'BusinessTrip', 'id' => $args['trip_id']]
         );
 
         Driver::updateLocation($args['latitude'], $args['longitude']);
 
-        $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $trip['log_id']]);
+        $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $trip->log_id]);
+
+        $trip->update(['starts_at' => $args['trip_time']]);
 
         return $trip;
     }
@@ -108,7 +111,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         }
     }
 
-    public function changeBusinessTripPickupStatus(array $args)
+    public function changePickupStatus(array $args)
     {
         $this->updateUserStatus(
             $args['trip_id'], ['is_picked_up' => $args['is_picked_up']], $args['user_id']
@@ -127,7 +130,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         return $this->updateEventPayload($args['log_id'], $data);
     }
 
-    public function changeBusinessTripAttendanceStatus(array $args)
+    public function changeAttendanceStatus(array $args)
     {
         BusinessTripAttendance::updateOrCreate(
             ['date' => $args['date'], 'trip_id' => $args['trip_id'], 'user_id' => $args['user_id']], 
@@ -182,7 +185,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         }
     }
 
-    public function endTrip(array $args)
+    public function end(array $args)
     {
         $trip = $this->getTripById($args['trip_id']);
 

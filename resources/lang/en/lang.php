@@ -10,6 +10,8 @@ return [
     'create_trnx_failed' => 'Could not create transaction',
     'create_attendance_failed' => 'We could not able to create or update an attendance record',
     'trip_already_started' => 'This Trip has already been started',
+    'trip_started' => 'has been started',
+    'driver_not_ready' => 'Driver is not ready',
     'captain_arrived' => 'Qruz captain has arrived at your station and will leave after 1 min',
     'notify_station_failed' => 'We could not able to notify selected station\'s users',
     'welcome_trip' => 'Welcome! May you be happy and safe throughout this trip',

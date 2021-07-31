@@ -10,6 +10,8 @@ return [
     'create_trnx_failed' => 'تعذر إنشاء المعاملة',
     'create_attendance_failed' => 'لم نتمكن من إنشاء أو تحديث سجل حضور',
     'trip_already_started' => 'هذه الرحلة بدأت بالفعل',
+    'driver_not_ready' => 'السائق غير جاهر',
+    'trip_started' => 'الرحلة بدأت',
     'captain_arrived' => 'وصل كابتن قروز إلى محطتك وسيغادر بعد دقيقة واحدة',
     'notify_station_failed' => 'لم نتمكن من إخطار مستخدمي المحطة المحددة',
     'welcome_trip' => 'مرحبا! أتمنى أن تكون سعيدًا وآمنًا طوال هذه الرحلة',

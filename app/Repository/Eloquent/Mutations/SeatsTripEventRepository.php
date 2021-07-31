@@ -24,7 +24,7 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
         parent::__construct($model);
     }
 
-    public function changeDriverStatus(array $args)
+    public function ready(array $args)
     {
         $trip = $this->getTripById($args['trip_id']);
 
@@ -40,7 +40,7 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
         return $trip;
     }
 
-    public function startTrip(array $args)
+    public function start(array $args)
     {
         $trip = $this->getTripById($args['trip_id']);
 
@@ -56,11 +56,11 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
 
         $event->update(['content' => array_merge($event->content, $payload)]);
 
-        $trip->update(['starts_at' => $args['trip_time']]);
-
         Driver::updateLocation($args['latitude'], $args['longitude']);
-
+        
         $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $trip['log_id']]);
+        
+        $trip->update(['starts_at' => $args['trip_time']]);
 
         return $trip;
     }
@@ -123,7 +123,7 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
         return true;
     }
 
-    public function endTrip(array $args)
+    public function end(array $args)
     {
         $trip = $this->getTripById($args['trip_id']);
 

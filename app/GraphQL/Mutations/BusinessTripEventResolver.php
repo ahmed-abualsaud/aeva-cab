@@ -13,14 +13,14 @@ class BusinessTripEventResolver
         $this->businessTripEventRepository = $businessTripEventRepository;
     }
 
-    public function changeDriverStatus($_, array $args)
+    public function ready($_, array $args)
     {
-        return $this->businessTripEventRepository->changeDriverStatus($args);
+        return $this->businessTripEventRepository->ready($args);
     }
 
-    public function startTrip($_, array $args)
+    public function start($_, array $args)
     {
-        return $this->businessTripEventRepository->startTrip($args);
+        return $this->businessTripEventRepository->start($args);
     }
 
     public function atStation($_, array $args)
@@ -28,14 +28,14 @@ class BusinessTripEventResolver
         return $this->businessTripEventRepository->atStation($args);
     }
 
-    public function changeBusinessTripPickupStatus($_, array $args)
+    public function changePickupStatus($_, array $args)
     {
-        return $this->businessTripEventRepository->changeBusinessTripPickupStatus($args);
+        return $this->businessTripEventRepository->changePickupStatus($args);
     }
 
-    public function changeBusinessTripAttendanceStatus($_, array $args)
+    public function changeAttendanceStatus($_, array $args)
     {
-        return $this->businessTripEventRepository->changeBusinessTripAttendanceStatus($args);
+        return $this->businessTripEventRepository->changeAttendanceStatus($args);
     }
 
     public function pickUsers($_, array $args)
@@ -53,9 +53,9 @@ class BusinessTripEventResolver
         return $this->businessTripEventRepository->updateDriverLocation($args);
     }
 
-    public function endTrip($_, array $args)
+    public function end($_, array $args)
     {
-        return $this->businessTripEventRepository->endTrip($args);
+        return $this->businessTripEventRepository->end($args);
     }
 
     public function destroy($_, array $args)

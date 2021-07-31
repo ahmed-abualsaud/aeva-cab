@@ -13,14 +13,14 @@ class SeatsTripEventResolver
         $this->seatsTripEventRepository = $seatsTripEventRepository;
     }
 
-    public function changeDriverStatus($_, array $args)
+    public function ready($_, array $args)
     {
-        return $this->seatsTripEventRepository->changeDriverStatus($args);
+        return $this->seatsTripEventRepository->ready($args);
     }
 
-    public function startTrip($_, array $args)
+    public function start($_, array $args)
     {
-        return $this->seatsTripEventRepository->startTrip($args);
+        return $this->seatsTripEventRepository->start($args);
     }
 
     public function updateDriverLocation($_, array $args)
@@ -43,9 +43,9 @@ class SeatsTripEventResolver
         return $this->seatsTripEventRepository->dropUser($args);
     }
 
-    public function endTrip($_, array $args)
+    public function end($_, array $args)
     {
-        return $this->seatsTripEventRepository->endTrip($args);
+        return $this->seatsTripEventRepository->end($args);
     }
 
     public function destroy($_, array $args)
