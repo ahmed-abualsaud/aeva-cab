@@ -3,7 +3,6 @@
 namespace App\Repository\Eloquent\Queries;   
 
 use App\BusinessTrip;
-use App\BusinessTripSubscription;
 use App\BusinessTripEvent;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Queries\BusinessTripRepositoryInterface;
@@ -113,13 +112,16 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
         return $liveTrips;
     }
 
-    public function getUserHistory(array $args)
+    public function userHistory(array $args)
     {
-        return $history = BusinessTripSubscription::latest('business_trip_events.created_at')
-        ->join('business_trip_events', function ($join) {
-            $join->on('business_trip_users.trip_id', '=', 'business_trip_events.trip_id');
-        })
-        ->where('user_id', $args['user_id']);        
+        return BusinessTripEvent::selectRaw('
+            business_trips.name AS trip_name,
+            business_trip_events.*
+        ')
+        ->join('business_trip_users', 'business_trip_users.trip_id', '=', 'business_trip_events.trip_id')
+        ->join('business_trips', 'business_trips.id', '=', 'business_trip_events.trip_id')
+        ->where('user_id', $args['user_id'])
+        ->latest('business_trip_events.created_at');        
     }
 
     protected function schedule($trips, $day) 

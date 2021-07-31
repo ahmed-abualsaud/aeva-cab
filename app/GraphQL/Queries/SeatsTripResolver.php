@@ -2,7 +2,6 @@
 
 namespace App\GraphQL\Queries;
 
-use App\SeatsTrip;
 use App\Repository\Queries\SeatsTripRepositoryInterface;
 
 class SeatsTripResolver

@@ -8,5 +8,5 @@ interface BusinessTripRepositoryInterface
     public function userLiveTrips(array $args);
     public function driverTrips(array $args);
     public function driverLiveTrips(array $args);
-    public function getUserHistory(array $args);
+    public function userHistory(array $args);
 }

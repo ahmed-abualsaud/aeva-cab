@@ -2,7 +2,6 @@
 
 namespace App\GraphQL\Queries;
 
-use App\BusinessTrip;
 use App\Repository\Queries\BusinessTripRepositoryInterface;
 
 class BusinessTripResolver
@@ -43,8 +42,8 @@ class BusinessTripResolver
         return $this->businessTripRepository->driverLiveTrips($args);
     }
 
-    public function getUserHistory($_, array $args)
+    public function userHistory($_, array $args)
     {
-        return $this->businessTripRepository->getUserHistory($args);
+        return $this->businessTripRepository->userHistory($args);
     }
 }

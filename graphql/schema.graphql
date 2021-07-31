@@ -556,6 +556,8 @@ extend type Query @guard(with: ["admin", "partner"]) {
   partnerBusinessTrips(partner_id: ID! @eq): [BusinessTrip] @all
   liveBusinessTrips(type: String, partner_id: ID): [BusinessTrip] 
     @all(scopes: ["live", "partner", "ofType"])
+  unreadyBusinessTrips(type: String, partner_id: ID): [BusinessTrip] 
+    @all(scopes: ["unReady", "partner", "ofType"])
 
   # Business Trip Station User
   businessTripStationUsers(trip_id: ID!, station_id: ID!, status: String!): [User] 
@@ -566,8 +568,6 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "BusinessTripSubscriptionResolver@businessTripSubscribedUsers")
   businessTripUnsubscribedUsers(trip_id: ID!, partner_id: ID, searchFor: String, searchQuery: String): 
     [User] @paginate(scopes: ["unsubscribed", "search"])
-  getUserBusinessTripHistory(user_id: ID!): [UserBusinessTripHistory]
-    @paginate(builder: "App\\GraphQL\\Queries\\BusinessTripResolver@getUserHistory", type: SIMPLE, defaultCount: 10)
 
   # Business Trip Event
   businessTripEvents(type: String, searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
@@ -582,6 +582,8 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @paginate(scopes: ["partner", "search"])
   liveSeatsTrips(partner_id: ID): [SeatsTrip] 
     @all(scopes: ["live", "partner"])
+  unreadySeatsTrips(partner_id: ID): [SeatsTrip] 
+    @all(scopes: ["unReady", "partner"])
   
   # Seats Trip Event
   seatsTripEvents(searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [SeatsTripEvent] @paginate(scopes: ["trip", "partner", "search", "filter"])
@@ -665,6 +667,8 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "VehicleResolver@typeModels")
 
   # User
+  userBusinessTripHistory(user_id: ID!): [BusinessTripEvent]
+    @paginate(builder: "App\\GraphQL\\Queries\\BusinessTripResolver@userHistory", type: SIMPLE, defaultCount: 10)
   userLiveBusinessTrips(user_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@userLiveTrips")
   userBusinessTripSubscriptions(user_id: ID!): [BusinessTrip]
@@ -683,7 +687,7 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   # Seats Trip
   seatsNearbyStations(plat: String!, plng: String!, dlat: String!, dlng: String!, day: String!): 
     [SeatsNearbyStation] 
-    @paginate(builder: "App\\SeatsLineStation@nearby", type: SIMPLE, defaultCount: 10)
+    @paginate(builder: "App\\GraphQL\\Queries\\SeatsLineStationResolver@nearby", type: SIMPLE, defaultCount: 10)
     @cache(maxAge: 300)
   seatsTripBooking(id: ID! @eq): SeatsTripBooking @find
   userSeatsTripBookings(user_id: ID! @eq, time: String!): [SeatsTripBooking] 
@@ -713,10 +717,6 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
     @field(resolver: "SeatsTripResolver@driverLiveTrips")
   driverSeatsTripSchedule(driver_id: ID!, day: String!): [SeatsTrip]
     @field(resolver: "SeatsTripResolver@driverTrips")
-  BusinessTripDriverStatus(type: String, is_ready: Boolean!): [BusinessTrip] 
-    @all(scopes: ["driverIsReady", "ofType"] model: "BusinessTrip")
-  SeatsTripDriverStatus(is_ready: Boolean!): [SeatsTrip] 
-    @all(scopes: ["driverIsReady"] model: "SeatsTrip")
 }
 
 # Admin|Partner|User|Driver Guard

@@ -108,22 +108,3 @@ type SeatsTripBookedUser {
   boarding_pass: Int
   seats: Int
 }
-
-type UserBusinessTripHistory {
-  id:	ID
-  user: User @belongsTo
-  trip: BusinessTrip @belongsTo
-  pickup: BusinessTripStation @belongsTo
-  dropoff: BusinessTripStation @belongsTo
-  is_scheduled:	Boolean
-  is_absent:	Boolean
-  is_picked_up:	Boolean
-  subscription_verified_at:	String
-  payable:	Float
-  due_date:	String
-  log_id:	String
-  driver_id:	ID
-  trip_time:	String
-  content:	TripEventContent
-  map_url:	String
-}

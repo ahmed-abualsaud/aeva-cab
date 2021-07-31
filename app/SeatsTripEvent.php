@@ -32,6 +32,11 @@ class SeatsTripEvent extends Model
         return $this->belongsTo(Driver::class)->select('id', 'name');
     }
 
+    public function vehicle()
+    {
+        return $this->belongsTo(Vehicle::class)->select('id', 'license_plate');
+    }
+
     public function scopeSearch($query, $args) 
     {
         if (array_key_exists('searchQuery', $args) && $args['searchQuery'])
