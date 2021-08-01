@@ -217,11 +217,10 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
                 'business_trips.log_id', 'business_trips.type',
                 'drivers.id as driver_id', 'drivers.name as driver_name',
                 'partners.id as partner_id', 'partners.name as partner_name',
-                'vehicles.id as vehicle_id'
+                'vehicle_id'
             )
             ->join('drivers', 'drivers.id', '=', 'business_trips.driver_id')
             ->join('partners', 'partners.id', '=', 'business_trips.partner_id')
-            ->join('vehicles', 'vehicles.id', '=', 'business_trips.vehicle_id')
             ->findOrFail($id);
         } catch (\Exception $e) {
             throw new CustomException('Could not find this trip!');

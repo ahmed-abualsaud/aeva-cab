@@ -85,7 +85,7 @@ class BusinessTrip extends Model
 
     public function scopeLive($query) 
     {
-        return $query->whereNotNull('log_id');
+        return $query->whereNotNull('log_id')->whereNotNull('starts_at');
     }
 
     public function scopePartner($query, $args) 
