@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Rating extends Model
+class SeatsTripRating extends Model
 {
     /**
      * The attributes that are mass assignable.
@@ -12,15 +12,6 @@ class Rating extends Model
      * @var array
      */
     protected $guarded = [];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'created_at', 'updated_at'
-    ];
 
     /**
      * The user who created the request.
@@ -39,10 +30,23 @@ class Rating extends Model
     }
 
     /**
-     * Get the owning ratingable model.
+     * The trip assigned to the request.
      */
-    public function ratingable()
+    public function trip()
     {
-        return $this->morphTo();
+        return $this->belongsTo(SeatsTrip::class);
+    }
+
+    public function scopeUnrated($query, $args) 
+    {
+        return $query->join('seats_trips', function($join) use($args) {
+
+            $join->on('seats_trip_ratings.trip_id', 'seats_trips.id')
+
+            ->where('user_id', $args['user_id'])
+
+            ->whereNull('rating');
+
+        })->select('seats_trips.id', 'name', 'starts_at');
     }
 }

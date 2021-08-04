@@ -7,6 +7,7 @@ use App\Driver;
 use App\SeatsTrip;
 use App\SeatsTripEntry;
 use App\SeatsTripEvent;
+use App\SeatsTripRating;
 use App\SeatsTripBooking;
 use Illuminate\Support\Str;
 use App\Helpers\StaticMapUrl;
@@ -97,6 +98,8 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
 
     public function pickUser(array $args)
     {
+        $this->createUserRating($args);
+
         return $this->updateBooking($args, ['is_picked_up' => true]);
     }
 
@@ -277,5 +280,21 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
         ];
 
         broadcast(new SeatsTripStatusChanged($data));
+    }
+
+    protected function createUserRating($args)
+    {
+        $data = SeatsTripBooking::join('seats_trips', function($join) use($args) {
+
+                $join->on('seats_trip_bookings.trip_id', 'seats_trips.id')
+
+                ->where('seats_trip_bookings.id', $args['booking_id'])
+
+                ->whereNotNull('seats_trips.log_id');
+            })
+            ->get(['trip_id', 'user_id', 'driver_id', 'log_id', 'trip_time'])[0]
+            ->toArray();
+
+        SeatsTripRating::create($data);
     }
 }

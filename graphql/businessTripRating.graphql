@@ -1,0 +1,18 @@
+input UpdateBusinessTripRatingInput {
+  id: ID
+  log_id: String
+  trip_id: ID
+  user_id: ID
+  driver_id: ID
+  rating: Float
+}
+
+type BusinessTripRating {
+  id: ID
+  log_id: String
+  trip_id: ID
+  user_id: ID
+  driver_id: ID
+  rating: Float
+  comment: String
+}

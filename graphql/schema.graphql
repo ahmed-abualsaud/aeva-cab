@@ -427,6 +427,17 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "SeatsTripBookingResolver@update")
 }
 
+extend type Mutation @guard(with: ["user"]) {
+
+  # Business Trip Rating
+  updateBusinessTripRating(input: UpdateBusinessTripRatingInput! @spread): BusinessTripRating
+    @field(resolver: "BusinessTripRatingResolver@update")
+
+  # Seats Trip Rating
+  updateSeatsTripRating(input: UpdateSeatsTripRatingInput! @spread): SeatsTripRating
+    @field(resolver: "SeatsTripRatingResolver@update")
+}
+
 # -- QUERIES --
 
 # Admin Guard
@@ -697,6 +708,16 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
 
   # User Transaction
   userTransactions(user_id: ID! @eq): [UserTransaction] @all
+
+  # Business Trip Rating
+  businessTripRatings(log_id: String! @eq): [BusinessTripRating] @all
+  businessTripRating(trip_id: ID @eq, user_id: ID @eq): [BusinessTripRating] @all
+  unratedBusinessTrips(user_id: ID): [BusinessTrip] @all(scopes: ["unrated"], model: "BusinessTripRating")
+
+  # Seats Trip Rating
+  seatsTripRatings(log_id: String! @eq): [SeatsTripRating] @all
+  seatsTripRating(trip_id: ID @eq, user_id: ID @eq): [SeatsTripRating] @all
+  unratedSeatsTrips(user_id: ID): [SeatsTrip] @all(scopes: ["unrated"], model: "SeatsTripRating")
 }
 
 # Admin|Partner|Driver Guard
@@ -786,3 +807,5 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import terminal.graphql
 #import userTransaction.graphql
 #import supervisor.graphql
+#import businessTripRating.graphql
+#import seatsTripRating.graphql

@@ -110,5 +110,6 @@ return [
     'upload_file_failed' => 'We could not able to upload this file',
     'update_failed' => 'We could not able to update',
     'insufficient_balance' => 'Your wallet balance is insufficient',
-    'supervisor_not_found' => 'Supervisor not found'
+    'supervisor_not_found' => 'Supervisor not found',
+    'rating_not_found' => "Rating not found"
 ];

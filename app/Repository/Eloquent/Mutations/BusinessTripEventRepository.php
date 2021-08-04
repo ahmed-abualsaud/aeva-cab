@@ -6,6 +6,8 @@ use App\Driver;
 use App\BusinessTrip;
 use App\BusinessTripEntry;
 use App\BusinessTripEvent;
+use App\BusinessTripRating;
+use App\BusinessTripSubscription;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use App\BusinessTripSchedule;
@@ -159,6 +161,8 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     public function pickUsers(array $args)
     {
         $msg = __('lang.welcome_trip');
+
+        $this->createUsersRatings($args);
 
         return $this->pickOrDropUsers($args, true, $msg);
     }
@@ -416,6 +420,26 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
             '__typename' => 'BusinessTrip'
         ];
         broadcast(new BusinessTripStatusChanged($data));
+    }
+
+    protected function createUsersRatings($args)
+    {
+        $user_ids = Arr::pluck($args['users'], 'id');
+
+        $data = BusinessTripSubscription::join('business_trip_events', function($join) use($args, $user_ids) {
+
+                $join->on('business_trip_users.trip_id', 'business_trip_events.trip_id')
+
+                ->whereIn('business_trip_users.user_id', $user_ids)
+
+                ->where('business_trip_events.log_id', $args['log_id'])
+
+                ->where('business_trip_events.trip_id', $args['trip_id']);
+            })
+            ->get(['business_trip_users.trip_id', 'user_id', 'driver_id', 'log_id', 'trip_time'])
+            ->toArray();
+
+        BusinessTripRating::insert($data);
     }
 }
 
