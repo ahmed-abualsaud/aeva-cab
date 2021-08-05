@@ -2,10 +2,19 @@
 
 namespace App\Http\Controllers;
 
-class WelcomeController extends Controller
+use App\Repository\Eloquent\Controllers\WelcomeRepository;
+
+class WelcomeController
 {
+    private $welcomeRepository;
+
+    public function __construct(WelcomeRepository $welcomeRepository)
+    {
+        $this->welcomeRepository = $welcomeRepository;
+    }
+
     public function index()
     {
-        return view('welcome');
+        return $this->welcomeRepository->index();
     }
 }

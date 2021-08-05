@@ -3,39 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use App\Traits\HandleUpload;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Repository\Eloquent\Controllers\UserRepository;
 
-class UserController extends Controller
+class UserController
 {
-    use HandleUpload;
+    private $userRepository;
+
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
 
     public function handleAvatar(Request $request)
     {
-        $this->validate($request, [
-            'id' => 'required|numeric',
-            'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
-
-        try {
-            $user = User::findOrFail($request->id);
-        } catch (ModelNotFoundException $e) {
-            return response()->json(__('lang.user_not_found'), 500);
-        }
-
-        if ($user->avatar) $this->deleteOneFile($user->avatar, 'avatars');
-        $url = $this->uploadOneFile($request->avatar, 'avatars');
-
-        $user->update(['avatar' => $url]);
-
-        return response()->json($user);
+        return $this->userRepository->handleAvatar($request);
     }
 
-    public function getLanguage(Request $request) {
-
-        $request->session()->forget('locale');
-        return __('auth.failed');
+    public function getLanguage(Request $request) 
+    {
+        return $this->userRepository->getLanguage($request);
     }
 
 }

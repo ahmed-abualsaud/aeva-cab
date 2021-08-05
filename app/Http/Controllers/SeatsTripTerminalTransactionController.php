@@ -3,65 +3,26 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\SeatsTripTerminalTransaction;
-use App\Exports\SeatsTripTerminalTransactionExport;
+use App\Repository\Eloquent\Controllers\SeatsTripTerminalTransactionRepository;
 
-class SeatsTripTerminalTransactionController extends Controller
+class SeatsTripTerminalTransactionController
 {
-    public function create(Request $req) {
+    private $seatsTripTerminalTransactionRepository;
 
-        try {
-
-            $obj = json_decode(json_encode($req->obj));
-    
-            $data = [
-                'trx_id' => $obj->id,
-                'partner_id' => $obj->profile_id,
-                'terminal_id' => $obj->terminal_id,
-                'source' => $this->getSource($obj),
-                'amount' => $obj->amount_cents/100,
-                'status' => $this->getStatus($obj),
-                'created_at' => $obj->created_at,
-            ];
-    
-            return SeatsTripTerminalTransaction::create($data);
-            
-        } catch (\Exception $e) {
-            //
-        }
+    public function __construct(SeatsTripTerminalTransactionRepository $seatsTripTerminalTransactionRepository)
+    {
+        $this->seatsTripTerminalTransactionRepository = $seatsTripTerminalTransactionRepository;
     }
 
-    protected function getStatus($obj)
+    public function create(Request $req) 
     {
-        if(!($obj->pending) && !($obj->success))
-    		return 'DECLINED';
-    	
-        if (!($obj->pending) && ($obj->success))
-    		return 'SUCCESS';
-    	
-        return 'PENDING';
-    }
 
-    protected function getSource($obj)
-    {
-        try {
-            return $obj->source_data->type;
-        } catch (\Exception $e) {
-            return $obj->api_source;
-        }
+        return $this->seatsTripTerminalTransactionRepository->create($req);
     }
 
     public function export(Request $req) 
     {
-        $filename = preg_replace('/-|:|\s+/', '_', now()).'_transactions.xlsx';
-        $partner = $req->query('partner');
-        $terminal = $req->query('terminal');
-        $period = $req->query('period');
-        $searchFor = $req->query('searchFor');
-        $searchQuery = $req->query('searchQuery');
-
-        return (new SeatsTripTerminalTransactionExport($partner, $terminal, $period, $searchFor, $searchQuery))
-            ->download($filename);
+        return $this->seatsTripTerminalTransactionRepository->export($req);
     }
 
 }
