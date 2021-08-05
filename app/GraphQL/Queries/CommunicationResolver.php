@@ -21,4 +21,14 @@ class CommunicationResolver
     {
         return $this->communicationRepository->businessTripChatMessages($args);
     }
+
+    public function privateChatUsers($_, array $args)
+    {
+        return $this->communicationRepository->privateChatUsers($args);
+    }
+
+    public function userPrivateChatMessages($_, array $args)
+    {
+        return $this->communicationRepository->userPrivateChatMessages($args);
+    }
 }
