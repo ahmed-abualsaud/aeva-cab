@@ -7,7 +7,6 @@ use App\BusinessTrip;
 use App\BusinessTripEntry;
 use App\BusinessTripEvent;
 use App\BusinessTripRating;
-use App\BusinessTripSubscription;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use App\BusinessTripSchedule;
@@ -425,19 +424,18 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     protected function createUsersRatings($args)
     {
         $user_ids = Arr::pluck($args['users'], 'id');
+        $length = count($user_ids);
+        $event = BusinessTripEvent::where('log_id', $args['log_id'])->first();
+        $data = [];
 
-        $data = BusinessTripSubscription::join('business_trip_events', function($join) use($args, $user_ids) {
-
-                $join->on('business_trip_users.trip_id', 'business_trip_events.trip_id')
-
-                ->whereIn('business_trip_users.user_id', $user_ids)
-
-                ->where('business_trip_events.log_id', $args['log_id'])
-
-                ->where('business_trip_events.trip_id', $args['trip_id']);
-            })
-            ->get(['business_trip_users.trip_id', 'user_id', 'driver_id', 'log_id', 'trip_time'])
-            ->toArray();
+        for ($i=0; $i < $length; $i++) { 
+            
+            $data[$i]['trip_id'] = $args['trip_id'];
+            $data[$i]['log_id'] = $args['log_id'];
+            $data[$i]['user_id'] = $user_ids[$i];
+            $data[$i]['driver_id'] = $event->driver_id;
+            $data[$i]['trip_time'] = $event->trip_time;
+        }
 
         BusinessTripRating::insert($data);
     }
