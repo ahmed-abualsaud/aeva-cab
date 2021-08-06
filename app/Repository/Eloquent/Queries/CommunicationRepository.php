@@ -2,6 +2,7 @@
 
 namespace App\Repository\Eloquent\Queries;   
 
+use App\User;
 use App\BusinessTripChat;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Queries\CommunicationRepositoryInterface;
@@ -40,4 +41,36 @@ class CommunicationRepository extends BaseRepository implements CommunicationRep
             throw new CustomException(__('lang.no_chat_messages'));
         }
     }
+
+
+    public function privateChatUsers(array $args)
+    {
+        return $this->model->with('sender:id,name,avatar')
+
+            ->whereHasMorph('sender', [User::class])
+
+            ->where('log_id', $args['log_id'])
+
+            ->where('is_private', true)
+            
+            ->get()->pluck('sender');
+    }
+
+    public function userPrivateChatMessages(array $args)
+    {
+        return $this->model->select('id', 'message', 'created_at', 'sender_type', 'sender_id')
+
+            ->with('sender:id,name')
+
+            ->whereHasMorph('sender', [User::class])
+
+            ->where('sender_id', $args['user_id'])
+
+            ->where('log_id', $args['log_id'])
+
+            ->where('is_private', true)
+        
+            ->get();
+    }
+
 }

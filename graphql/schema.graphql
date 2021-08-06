@@ -765,6 +765,10 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   # Communication
   businessTripChatMessages(log_id: String!, user_id: ID, is_private: Boolean): [BusinessTripChat] 
     @field(resolver: "CommunicationResolver@businessTripChatMessages")
+  businessTripPrivateChatUsers(log_id: String!): [User]
+    @field(resolver: "CommunicationResolver@privateChatUsers")
+  userBusinessTripPrivateChatMessages(user_id: ID!, log_id: String!): [BusinessTripChat]
+    @field(resolver: "CommunicationResolver@userPrivateChatMessages")
 }
 
 #import auth.graphql
