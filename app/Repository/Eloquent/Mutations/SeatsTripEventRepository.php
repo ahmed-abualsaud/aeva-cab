@@ -106,7 +106,7 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
         DB::beginTransaction();
         try {
 
-            // $this->createUserRating($args);
+            $this->createUserRating($args);
             
             $this->updateBooking($args, ['is_picked_up' => false, 'status' => 'COMPLETED']);
 
