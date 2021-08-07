@@ -6,32 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class SeatsTripRating extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
+
     protected $guarded = [];
 
-    /**
-     * The user who created the request.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * The driver assigned to the request.
-     */
     public function driver()
     {
         return $this->belongsTo(Driver::class);
     }
 
-    /**
-     * The trip assigned to the request.
-     */
     public function trip()
     {
         return $this->belongsTo(SeatsTrip::class);
@@ -39,14 +26,13 @@ class SeatsTripRating extends Model
 
     public function scopeUnrated($query, $args) 
     {
-        return $query->join('seats_trips', function($join) use($args) {
-
-            $join->on('seats_trip_ratings.trip_id', 'seats_trips.id')
-
+        return $query->select(
+            'seats_trip_ratings.id', 
+            'seats_trips.name', 
+            'seats_trip_ratings.trip_time as starts_at'
+            )
+            ->join('seats_trips', 'seats_trip_ratings.trip_id', '=', 'seats_trips.id')
             ->where('user_id', $args['user_id'])
-
             ->whereNull('rating');
-
-        })->select('seats_trips.id', 'name', 'starts_at');
     }
 }

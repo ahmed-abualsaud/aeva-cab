@@ -427,8 +427,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "SeatsTripBookingResolver@update")
 }
 
+# User Guard
 extend type Mutation @guard(with: ["user"]) {
-
   # Business Trip Rating
   updateBusinessTripRating(input: UpdateBusinessTripRatingInput! @spread): BusinessTripRating
     @field(resolver: "BusinessTripRatingResolver@update")
@@ -711,13 +711,13 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
 
   # Business Trip Rating
   businessTripRatings(log_id: String! @eq): [BusinessTripRating] @all
-  businessTripRating(trip_id: ID @eq, user_id: ID @eq): [BusinessTripRating] @all
-  unratedBusinessTrips(user_id: ID): [BusinessTrip] @all(scopes: ["unrated"], model: "BusinessTripRating")
+  unratedBusinessTrips(user_id: ID!): [BusinessTrip] 
+    @all(scopes: ["unrated"], model: "BusinessTripRating")
 
   # Seats Trip Rating
   seatsTripRatings(log_id: String! @eq): [SeatsTripRating] @all
-  seatsTripRating(trip_id: ID @eq, user_id: ID @eq): [SeatsTripRating] @all
-  unratedSeatsTrips(user_id: ID): [SeatsTrip] @all(scopes: ["unrated"], model: "SeatsTripRating")
+  unratedSeatsTrips(user_id: ID!): [SeatsTrip] 
+    @all(scopes: ["unrated"], model: "SeatsTripRating")
 }
 
 # Admin|Partner|Driver Guard
@@ -766,9 +766,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   businessTripChatMessages(log_id: String!, user_id: ID, is_private: Boolean): [BusinessTripChat] 
     @field(resolver: "CommunicationResolver@businessTripChatMessages")
   businessTripPrivateChatUsers(log_id: String!): [User]
-    @field(resolver: "CommunicationResolver@privateChatUsers")
-  userBusinessTripPrivateChatMessages(user_id: ID!, log_id: String!): [BusinessTripChat]
-    @field(resolver: "CommunicationResolver@userPrivateChatMessages")
+    @field(resolver: "CommunicationResolver@businessTripPrivateChatUsers")
 }
 
 #import auth.graphql

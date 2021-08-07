@@ -39,6 +39,10 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
 
         $logId = (string) Str::uuid();
 
+        $this->checkAbsence($args['trip_id']);
+
+        $this->checkSchedule($args['trip_id']);
+
         $this->initTripEvent($args, $logId, $trip->driver_id, $trip->vehicle_id);
 
         $trip->update(['log_id' => $logId, 'ready_at' => date("Y-m-d H:i:s")]);
@@ -64,10 +68,6 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         $event = $this->model->select('content', 'log_id')->findOrFail($trip->log_id);
 
         $event->update(['content' => array_merge($event->content, $payload)]);
-
-        $this->checkAbsence($args['trip_id']);
-
-        $this->checkSchedule($args['trip_id']);
 
         SendPushNotification::dispatch(
             $this->tripUsersToken($trip->id),
@@ -161,14 +161,14 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     {
         $msg = __('lang.welcome_trip');
 
-        $this->createUsersRatings($args);
-
         return $this->pickOrDropUsers($args, true, $msg);
     }
 
     public function dropUsers(array $args)
     {
         $msg = __('lang.bye_trip');
+
+        // $this->createUsersRatings($args);
         
         return $this->pickOrDropUsers($args, false, $msg);
     }
@@ -219,6 +219,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
                 'business_trips.id', 'business_trips.name', 
                 'business_trips.log_id', 'business_trips.type',
                 'drivers.id as driver_id', 'drivers.name as driver_name',
+                'drivers.latitude as driver_lat', 'drivers.longitude as driver_lng',
                 'partners.id as partner_id', 'partners.name as partner_name',
                 'vehicle_id'
             )
@@ -414,6 +415,8 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
             'driver' => [
                 'id' => $trip->driver_id,
                 'name' => $trip->driver_name,
+                'latitude' => $trip->driver_lat,
+                'longitude' => $trip->driver_lng,
                 '__typename' => 'Driver'
             ],
             '__typename' => 'BusinessTrip'
@@ -424,17 +427,19 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     protected function createUsersRatings($args)
     {
         $user_ids = Arr::pluck($args['users'], 'id');
-        $length = count($user_ids);
-        $event = BusinessTripEvent::where('log_id', $args['log_id'])->first();
-        $data = [];
 
-        for ($i=0; $i < $length; $i++) { 
-            
-            $data[$i]['trip_id'] = $args['trip_id'];
-            $data[$i]['log_id'] = $args['log_id'];
-            $data[$i]['user_id'] = $user_ids[$i];
-            $data[$i]['driver_id'] = $event->driver_id;
-            $data[$i]['trip_time'] = $event->trip_time;
+        $arr = [
+            'trip_id' => $args['trip_id'],
+            'log_id' => $args['log_id'],
+            'trip_time' => $args['trip_time'],
+            'driver_id' => $args['driver_id'],
+            'created_at' => now(), 
+            'updated_at' => now()
+        ];
+
+        foreach($user_ids as $user_id) {
+            $arr['user_id'] = $user_id;
+            $data[] = $arr;
         }
 
         BusinessTripRating::insert($data);

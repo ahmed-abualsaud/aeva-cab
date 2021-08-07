@@ -43,34 +43,16 @@ class CommunicationRepository extends BaseRepository implements CommunicationRep
     }
 
 
-    public function privateChatUsers(array $args)
+    public function businessTripPrivateChatUsers(array $args)
     {
-        return $this->model->with('sender:id,name,avatar')
-
-            ->whereHasMorph('sender', [User::class])
-
+        return $this->model->select('users.id', 'users.name', 'users.avatar')
             ->where('log_id', $args['log_id'])
-
             ->where('is_private', true)
-            
-            ->get()->pluck('sender');
-    }
-
-    public function userPrivateChatMessages(array $args)
-    {
-        return $this->model->select('id', 'message', 'created_at', 'sender_type', 'sender_id')
-
-            ->with('sender:id,name')
-
-            ->whereHasMorph('sender', [User::class])
-
-            ->where('sender_id', $args['user_id'])
-
-            ->where('log_id', $args['log_id'])
-
-            ->where('is_private', true)
-        
+            ->join('users', function ($join) {
+                $join->on('users.id', '=', 'business_trip_chat.sender_id')
+                    ->orOn('users.id', '=', 'business_trip_chat.recipient_id');
+            })
+            ->groupBy('users.id')
             ->get();
     }
-
 }

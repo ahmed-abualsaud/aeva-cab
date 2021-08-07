@@ -98,8 +98,6 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
 
     public function pickUser(array $args)
     {
-        $this->createUserRating($args);
-
         return $this->updateBooking($args, ['is_picked_up' => true]);
     }
 
@@ -107,6 +105,8 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
     {
         DB::beginTransaction();
         try {
+
+            // $this->createUserRating($args);
             
             $this->updateBooking($args, ['is_picked_up' => false, 'status' => 'COMPLETED']);
 
@@ -248,6 +248,7 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
             return SeatsTrip::select(
                 'seats_trips.id', 'seats_trips.name', 'seats_trips.log_id',
                 'drivers.id as driver_id', 'drivers.name as driver_name',
+                'drivers.latitude as driver_lat', 'drivers.longitude as driver_lng',
                 'partners.id as partner_id', 'partners.name as partner_name',
                 'vehicle_id'
             )
@@ -274,6 +275,8 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
             'driver' => [
                 'id' => $trip->driver_id,
                 'name' => $trip->driver_name,
+                'latitude' => $trip->driver_lat,
+                'longitude' => $trip->driver_lng,
                 '__typename' => 'Driver'
             ],
             '__typename' => 'SeatsTrip'
@@ -284,17 +287,10 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
 
     protected function createUserRating($args)
     {
-        $data = SeatsTripBooking::join('seats_trips', function($join) use($args) {
-
-                $join->on('seats_trip_bookings.trip_id', 'seats_trips.id')
-
-                ->where('seats_trip_bookings.id', $args['booking_id'])
-
-                ->whereNotNull('seats_trips.log_id');
-            })
-            ->get(['trip_id', 'user_id', 'driver_id', 'log_id', 'trip_time'])[0]
+        $input = collect($args)
+            ->only(['log_id', 'trip_id', 'trip_time', 'user_id', 'driver_id'])
             ->toArray();
 
-        SeatsTripRating::create($data);
+        SeatsTripRating::create($input);
     }
 }

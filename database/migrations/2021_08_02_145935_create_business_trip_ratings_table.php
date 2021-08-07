@@ -23,6 +23,9 @@ class CreateBusinessTripRatingsTable extends Migration
             $table->decimal('rating', 4, 2)->nullable();
             $table->string('comment')->nullable();
             $table->timestamps();
+
+            $table->index('log_id');
+            $table->index(['user_id', 'trip_id']);
             
             $table->foreign('trip_id')->references('id')->on('business_trips')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

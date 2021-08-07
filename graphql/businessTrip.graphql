@@ -64,7 +64,5 @@ type BusinessTrip {
   type: String
   deleted_at: String
   stations: [BusinessTripStation] @hasMany
-  userStation: BusinessTripStation @hasOne
-  userDestination: BusinessTripStation @hasOne
   users: [User] @hasMany
 }

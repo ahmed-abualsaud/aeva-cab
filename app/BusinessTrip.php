@@ -49,32 +49,15 @@ class BusinessTrip extends Model
             ')
             ->leftJoin('business_trip_users as station', function ($join) {
                 $join->on('station.station_id', '=', 'business_trip_stations.id')
-                    ->where('station.user_id', auth('user')->user()->id);
+                    ->where('station.user_id', auth('user')->id());
             })
             ->leftJoin('business_trip_users as destination', function ($join) {
                 $join->on('destination.destination_id', '=', 'business_trip_stations.id')
-                    ->where('destination.user_id', auth('user')->user()->id);
+                    ->where('destination.user_id', auth('user')->id());
             });
         }
 
         return $stations->whereNotNull('accepted_at');
-    }
-
-    public function userStation() 
-    {        
-        return $this->hasOne(BusinessTripStation::class, 'trip_id')
-            ->join('business_trip_users', 'business_trip_users.station_id', '=', 'business_trip_stations.id')
-            ->where('business_trip_users.user_id', auth('user')->user()->id)
-            ->selectRaw('business_trip_stations.*');
-
-    }
-
-    public function userDestination() 
-    {        
-        return $this->hasOne(BusinessTripStation::class, 'trip_id')
-            ->join('business_trip_users', 'business_trip_users.destination_id', '=', 'business_trip_stations.id')
-            ->where('business_trip_users.user_id', auth('user')->user()->id)
-            ->selectRaw('business_trip_stations.*');
     }
 
     public function users()
@@ -85,7 +68,8 @@ class BusinessTrip extends Model
 
     public function scopeLive($query) 
     {
-        return $query->whereNotNull('log_id')->whereNotNull('starts_at');
+        return $query->whereNotNull('log_id')
+            ->whereNotNull('starts_at');
     }
 
     public function scopePartner($query, $args) 

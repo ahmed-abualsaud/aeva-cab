@@ -22,9 +22,9 @@ class CommunicationResolver
         return $this->communicationRepository->businessTripChatMessages($args);
     }
 
-    public function privateChatUsers($_, array $args)
+    public function businessTripPrivateChatUsers($_, array $args)
     {
-        return $this->communicationRepository->privateChatUsers($args);
+        return $this->communicationRepository->businessTripPrivateChatUsers($args);
     }
 
     public function userPrivateChatMessages($_, array $args)
