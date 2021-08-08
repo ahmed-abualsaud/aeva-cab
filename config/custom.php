@@ -11,5 +11,6 @@ return [
     'otp_username' => env('OTP_USERNAME'),
     'otp_password' => env('OTP_PASSWORD'),
     'otp_sender_id' => env('OTP_SENDER_ID'),
+    'seats_search_radius' => env('SEATS_SEARCH_RADIUS'),
 
 ];

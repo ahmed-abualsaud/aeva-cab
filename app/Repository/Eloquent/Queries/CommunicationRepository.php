@@ -50,7 +50,9 @@ class CommunicationRepository extends BaseRepository implements CommunicationRep
             ->where('is_private', true)
             ->join('users', function ($join) {
                 $join->on('users.id', '=', 'business_trip_chat.sender_id')
-                    ->orOn('users.id', '=', 'business_trip_chat.recipient_id');
+                    ->where('sender_type', 'App\User');
+                $join->orOn('users.id', '=', 'business_trip_chat.recipient_id')
+                    ->where('sender_type', 'App\Driver');
             })
             ->groupBy('users.id')
             ->get();

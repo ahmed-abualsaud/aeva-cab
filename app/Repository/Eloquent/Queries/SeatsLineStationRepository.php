@@ -17,6 +17,7 @@ class SeatsLineStationRepository extends BaseRepository implements SeatsLineStat
     public function nearby(array $args)
     {
         $date = date('Y-m-d', strtotime($args['day']));
+        $radius = config('custom.seats_search_radius');
 
         return $this->model->selectRaw('
             seats_trips.id as trip_id,
@@ -53,7 +54,7 @@ class SeatsLineStationRepository extends BaseRepository implements SeatsLineStat
             pickup_distance < ? and
             dropoff_distance < ? and
             pickup_time > ?
-        ', [6500, 6500, date("Y-m-d H:i:s")])
+        ', [$radius, $radius, date("Y-m-d H:i:s")])
         ->oldest('pickup_time');
     }
 }
