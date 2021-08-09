@@ -4,6 +4,7 @@ return [
 
     'admin_not_found'   => 'The provided admin ID is not found',
     'invalid_auth_credentials' => 'The provided authentication credentials are invalid',
+    'verification_code' => 'Your Qruz code is: :verification_code %0a EcypWXxmHK9',
     'password_missmatch' => 'Your current password does not matches with the password you provided',
     'type_new_password' => 'New Password cannot be same as your current password. Please choose a different password',
     'password_changed' => 'Password changed successfully',

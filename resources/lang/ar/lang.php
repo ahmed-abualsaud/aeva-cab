@@ -4,6 +4,7 @@ return [
 
     'admin_not_found'   => 'لم يتم العثور على معرف المسؤول المقدم',
     'invalid_auth_credentials' => 'بيانات اعتماد المصادقة المقدمة غير صالحة',
+    'verification_code' => 'Your Qruz code is: :verification_code %0a EcypWXxmHK9',
     'password_missmatch' => 'كلمة المرور الحالية لا تتطابق مع كلمة المرور التي قدمتها',
     'type_new_password' => 'لا يمكن أن تكون كلمة المرور الجديدة هي نفسها كلمة مرورك الحالية. الرجاء اختيار كلمة مرور مختلفة',
     'password_changed' => 'تم تغيير الرقم السري بنجاح',

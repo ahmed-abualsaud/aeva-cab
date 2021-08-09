@@ -225,7 +225,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         $verification_code = mt_rand(1000, 9999);
 
-        $message = "Your Qruz code is: ".$verification_code;
+        $message = __('lang.verification_code', [
+            'verification_code' => $verification_code
+        ]);
 
         SendOtp::dispatch($args['phone'], $message);
 
