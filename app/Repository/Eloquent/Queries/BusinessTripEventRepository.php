@@ -16,7 +16,7 @@ class BusinessTripEventRepository extends BaseRepository
         parent::__construct($model);
     }
 
-    public function trip(array $args)
+    public function index(array $args)
     {
         if (array_key_exists('trip_id', $args) && $args['trip_id']) {
             $events = $this->model->selectRaw('

@@ -582,7 +582,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Business Trip Event
   businessTripEvents(type: String, searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
-    @paginate(builder: "App\\GraphQL\\Queries\\BusinessTripEventResolver@trip", type: SIMPLE, defaultCount: 10)
+    @paginate(builder: "App\\GraphQL\\Queries\\BusinessTripEventResolver@index")
 
   # Business Trip Transaction
   businessTripAppTransactions(type: String, partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [BusinessTripAppTransaction]

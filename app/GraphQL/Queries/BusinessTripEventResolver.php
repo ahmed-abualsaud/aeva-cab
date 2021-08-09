@@ -14,8 +14,8 @@ class BusinessTripEventResolver
         $this->businessTripEventRepository = $businessTripEventRepository;
     }
 
-    public function trip($_, array $args)
+    public function index($_, array $args)
     {
-        return $this->businessTripEventRepository->trip($args);
+        return $this->businessTripEventRepository->index($args);
     }
 }
