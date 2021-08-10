@@ -224,7 +224,9 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
     protected function createTransaction(array $args)
     {
         try {
-            $input = collect($args)->except(['directive', 'payable', 'paid', 'log_id'])->toArray();
+            $input = collect($args)
+                ->except(['directive', 'payable', 'paid', 'log_id', 'driver_id'])
+                ->toArray();
             $input['amount'] = $args['paid'];
             return SeatsTripAppTransaction::create($input);
         } catch (\Exception $e) {

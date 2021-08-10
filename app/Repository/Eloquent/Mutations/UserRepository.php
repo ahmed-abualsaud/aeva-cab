@@ -226,10 +226,13 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $verification_code = mt_rand(1000, 9999);
 
         $message = __('lang.verification_code', [
-            'verification_code' => $verification_code
+            'verification_code' => $verification_code,
+            'signature' => config('custom.otp_signature'),
         ]);
 
-        SendOtp::dispatch($args['phone'], $message);
+        \Log::info(config('custom.otp_signature'));
+
+        // SendOtp::dispatch($args['phone'], $message);
 
         return [
             "verificationCode" => $verification_code
