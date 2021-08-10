@@ -78,11 +78,6 @@ extend type Mutation @guard(with: ["admin"]) {
     @field(resolver: "CarTypeResolver@update")
   deleteCarType(id: ID!): CarType @delete
 
-  # Promo Code
-  createPromoCode(input: CreatePromoCodeInput! @spread): PromoCode @create
-  updatePromoCode(input: UpdatePromoCodeInput! @spread): PromoCode @update
-  deletePromoCode(id: ID!): PromoCode @delete
-
   # Partner
   createPartner(input: CreatePartnerInput! @spread): Partner
     @field(resolver: "PartnerResolver@create")
@@ -129,13 +124,6 @@ extend type Mutation @guard(with: ["admin"]) {
   updateSchoolGrade(input: UpdateSchoolGradeInput! @spread): SchoolGrade 
     @update
   deleteSchoolGrade(id: ID!): SchoolGrade @delete
-
-  # Price Package
-  createPricePackage(input: CreatePricePackageInput! @spread): PricePackage 
-    @field(resolver: "PricePackageResolver@create")
-  updatePricePackage(input: UpdatePricePackageInput! @spread): PricePackage 
-    @field(resolver: "PricePackageResolver@update")
-  deletePricePackage(id: ID!): PricePackage @delete
 
   # City
   createCity(input: CreateCityInput! @spread): City @create
@@ -268,6 +256,18 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   updateSupervisor(input: UpdateSupervisorInput! @spread): Supervisor
     @field(resolver: "SupervisorResolver@update")
   deleteSupervisor(id: ID!): Supervisor @delete
+
+  # Promo Code
+  createPromoCode(input: CreatePromoCodeInput! @spread): PromoCode @create
+  updatePromoCode(input: UpdatePromoCodeInput! @spread): PromoCode @update
+  deletePromoCode(id: ID!): PromoCode @delete
+
+  # Price Package
+  createPricePackage(input: CreatePricePackageInput! @spread): PricePackage 
+    @field(resolver: "PricePackageResolver@create")
+  updatePricePackage(input: UpdatePricePackageInput! @spread): PricePackage 
+    @field(resolver: "PricePackageResolver@update")
+  deletePricePackage(id: ID!): PricePackage @delete
 }
 
 # Admin|User Guard
@@ -285,10 +285,6 @@ extend type Mutation @guard(with: ["admin", "user"]) {
   # Business Trip Transaction
   createBusinessTripAppTransaction(input: CreateBusinessTripAppTransactionInput! @spread): BusinessTripAppTransaction
     @field(resolver: "BusinessTripAppTransactionResolver@create")
-
-  # Promo codes
-  applyPromoCode(name: String!, user_id: ID!): PromoCode
-    @field(resolver: "PromoCodeResolver@apply")
 
   # Ondemand Request 
   createOndemandRequest(input: CreateOndemandRequestInput! @spread): OndemandRequest 
@@ -399,6 +395,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
   # User Transaction
   createUserTransaction(input: CreateUserTransactionInput! @spread): UserTransaction
     @field(resolver: "UserTransactionResolver@create")
+  
+  # Promo codes
+  applyPromoCode(name: String!, user_id: ID!): PromoCode
+    @field(resolver: "PromoCodeResolver@apply")
 }
 
 # Admin|Partner|Driver Guard
@@ -638,10 +638,6 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
 # Admin|User Guard
 extend type Query @guard(with: ["admin", "user"]) {
-  # Promo Code
-  promoCodes(type: String, is_valid: Boolean): [PromoCode] @all(scopes: ["ofType", "isValid"])
-  promoCode(name: String! @eq): PromoCode @find
-
   # Ondemand Request
   userOndemandRequests(user_id: ID! @eq): [OndemandRequest] @all
   ondemandRequest(id: ID, nav: Boolean): OndemandRequest 
@@ -657,10 +653,6 @@ extend type Query @guard(with: ["admin", "user"]) {
   workRequest(id: ID! @eq): WorkRequest @find
   userWorkRequests(user_id: ID! @eq): [WorkRequest] @all
 
-  # Price Package
-  pricePackages(city_id: ID, type: String, is_public: Boolean): [PricePackage] 
-    @all(scopes: ["city", "ofType", "isPublic"])
-
   # City
   cities: [City] @all
 
@@ -670,6 +662,14 @@ extend type Query @guard(with: ["admin", "user"]) {
 
 # Admin|Partner|User Guard
 extend type Query @guard(with: ["admin", "partner", "user"]) {
+  # Promo Code
+  promoCodes(type: String, is_valid: Boolean): [PromoCode] @all(scopes: ["ofType", "isValid"])
+  promoCode(name: String! @eq): PromoCode @find
+
+  # Price Package
+  pricePackages(city_id: ID, type: String, is_public: Boolean): [PricePackage] 
+    @all(scopes: ["city", "ofType", "isPublic"])
+
   # Car Type
   carTypes(is_public: Boolean): [CarType] @all(scopes: ["isPublic"])
 
