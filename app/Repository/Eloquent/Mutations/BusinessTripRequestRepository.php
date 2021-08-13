@@ -228,6 +228,7 @@ class BusinessTripRequestRepository implements BusinessTripRequestRepositoryInte
         foreach($args['users'] as $user) {
             $pickable['request_id'] = $user['request_id'];
             $pickable['name'] = $user['address'];
+            $pickable['name_ar'] = $user['address'];
             $pickable['latitude'] = $user['lat'];
             $pickable['longitude'] = $user['lng'];
             $data[] = $pickable;
@@ -247,6 +248,7 @@ class BusinessTripRequestRepository implements BusinessTripRequestRepositoryInte
         ];
         foreach($destinations as $destination) {
             $arr['name'] = $destination['name'];
+            $arr['name_ar'] = $destination['name'];
             $arr['latitude'] = $destination['lat'];
             $arr['longitude'] = $destination['lng'];
             $data[] = $arr;
