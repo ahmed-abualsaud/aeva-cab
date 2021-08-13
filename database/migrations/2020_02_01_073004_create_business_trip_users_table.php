@@ -25,7 +25,7 @@ class CreateBusinessTripUsersTable extends Migration
             $table->string('request_type')->nullable();
             $table->unsignedBigInteger('request_id')->nullable();
             $table->timestamp('subscription_verified_at')->nullable();
-            $table->float('payable', 8, 2)->nullable();
+            $table->float('payable', 8, 2)->default(0.00);
             $table->date('due_date');
             $table->timestamps();
 
