@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Mutations;
 
 use App\BusinessTripRating;
+use App\Driver;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repository\Eloquent\BaseRepository;
 
@@ -25,6 +26,11 @@ class BusinessTripRatingRepository extends BaseRepository
         }
 
         $rating->update($input);
+
+        $avg = $this->model->where('driver_id', $args['driver_id'])
+        ->whereNotNull('rating')->avg('rating');
+
+        Driver::where('id', $args['driver_id'])->update(['rating' => $avg]);
 
         return $rating;
     }
