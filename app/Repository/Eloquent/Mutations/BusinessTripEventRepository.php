@@ -89,7 +89,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     {
         try { 
             SendPushNotification::dispatch(
-                $this->stationUsersToken($args['station_id']), 
+                $this->stationUsersToken($args['station_id'], $args['trip_id']), 
                 __('lang.captain_arrived'),
                 $args['trip_name'],
                 ['view' => 'BusinessTrip', 'id' => $args['trip_id']]
@@ -241,7 +241,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
             );
 
             SendPushNotification::dispatch(
-                $this->usersToken($user_ids), 
+                $this->usersToken($args['trip_id'], $user_ids), 
                 $msg, 
                 $args['trip_name'],
                 ['view' => 'BusinessTripUserStatus', 'id' => $args['trip_id']]
@@ -335,7 +335,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
                         ]);
                     break;
                 default:
-                    $token = $this->userToken($args['user_id']);
+                    $token = $this->userToken($args['trip_id'], $args['user_id']);
                     $msg = __('lang.captain_changed_attendance', 
                         ['status' => $status_text]);
             }
