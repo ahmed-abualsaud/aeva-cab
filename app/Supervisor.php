@@ -14,6 +14,11 @@ class Supervisor extends Model
             ->select('id', 'name');
     }
 
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
+
     public function scopePartner($query, $args) 
     {
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {

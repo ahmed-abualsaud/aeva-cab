@@ -28,6 +28,7 @@ input CreateWorkRequestInput {
   exit_time: String! @rules(apply: ["required"])
   contact_phone: String
   comment: String
+  status: String @rules(apply: ["in:ACCEPTED,PENDING,INCOMPLETE"])
 }
 
 input UpdateWorkRequestInput {
@@ -41,14 +42,14 @@ input UpdateWorkRequestInput {
   days: String
   enter_time: String
   exit_time: String
-  status: String @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING"])
+  status: String @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING,INCOMPLETE"])
   comment: String
   response: String
 }
 
 input ChangeWorkRequestStatusInput {
   requestIds: [ID!]! @rules(apply: ["required"])
-  status: String! @rules(apply: ["in:PENDING,REJECTED,WAITING,APPROVED"])
+  status: String! @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING,INCOMPLETE"])
   users: [WorkRequestStatusUsers]
   notify: Boolean
   response: String

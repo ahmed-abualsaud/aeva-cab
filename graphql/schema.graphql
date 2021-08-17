@@ -268,6 +268,10 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   updatePricePackage(input: UpdatePricePackageInput! @spread): PricePackage 
     @field(resolver: "PricePackageResolver@update")
   deletePricePackage(id: ID!): PricePackage @delete
+
+  # Seats Trip Terminal Transaction
+  updateSeatsTripTerminalTransaction(input: UpdateSeatsTripTerminalTransactionInput! @spread): SeatsTripTerminalTransaction @update
+  deleteSeatsTripTerminalTransaction(id: ID!): SeatsTripTerminalTransaction @delete
 }
 
 # Admin|User Guard
@@ -547,7 +551,6 @@ extend type Query @guard(with: ["admin", "partner"]) {
   vehicles(partner_id: ID, searchFor: String, searchQuery: String): [Vehicle] 
     @paginate(scopes: ["search", "partner"])
   vehiclesHaveTerminals(partner_id: ID): [Vehicle] @all(scopes: ["partner", "haveTerminal"])
-  vehicle(id: ID @eq): Vehicle @findOrFail
 
   # Car Make
   carMakes: [CarMake] @all
@@ -633,7 +636,6 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Supervisor
   supervisors(partner_id: ID): [Supervisor] @all(scopes: ["partner"])
-  supervisor(id: ID @eq): Supervisor @find 
 }
 
 # Admin|User Guard
@@ -727,7 +729,6 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
     @field(resolver: "BusinessTripAttendanceResolver")
 
   # Driver
-  driver(id: ID @eq): Driver @findOrFail
   driverLiveBusinessTrips(driver_id: ID!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverLiveTrips")
   driverBusinessTripSchedule(driver_id: ID!, day: String!): [BusinessTrip]
@@ -767,6 +768,15 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
     @field(resolver: "CommunicationResolver@businessTripChatMessages")
   businessTripPrivateChatUsers(log_id: String!): [User]
     @field(resolver: "CommunicationResolver@businessTripPrivateChatUsers")
+
+  # Driver
+  driver(id: ID @eq): Driver @findOrFail
+
+  # Supervisor
+  supervisor(id: ID @eq): Supervisor @findOrFail
+
+  # Vehicle
+  vehicle(id: ID @eq): Vehicle @findOrFail
 }
 
 #import auth.graphql

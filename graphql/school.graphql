@@ -41,6 +41,7 @@ input CreateSchoolRequestInput {
   enter_time: String! @rules(apply: ["required"])
   exit_time: String! @rules(apply: ["required"])
   comment: String
+  status: String @rules(apply: ["in:ACCEPTED,PENDING,INCOMPLETE"])
 }
 
 input UpdateSchoolRequestInput {
@@ -56,14 +57,14 @@ input UpdateSchoolRequestInput {
   days: String
   enter_time: String
   exit_time: String
-  status: String @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING"])
+  status: String @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING,INCOMPLETE"])
   comment: String
   response: String
 }
 
 input ChangeSchoolRequestStatusInput {
   requestIds: [ID!]! @rules(apply: ["required"])
-  status: String! @rules(apply: ["in:PENDING,REJECTED,WAITING,APPROVED"])
+  status: String! @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING,INCOMPLETE"])
   users: [SchoolRequestStatusUsers]
   notify: Boolean
   response: String

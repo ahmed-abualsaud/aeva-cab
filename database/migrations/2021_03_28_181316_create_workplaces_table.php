@@ -46,7 +46,8 @@ class CreateWorkplacesTable extends Migration
                 'CANCELLED',
                 'PENDING',
                 'WAITING',
-                'APPROVED'
+                'APPROVED',
+                'INCOMPLETE'
             ])->default('PENDING');
             $table->string('comment')->nullable();
             $table->string('response')->nullable();
