@@ -726,6 +726,8 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   
   # Business Trip Followers
   followerBusinessTrips(follower_id: ID!): [BusinessTrip] @all(scopes: ["trip"], model: "App\\Follower")
+  userFollowers(user_id: ID! @eq): [Follower] @all
+
 }
 
 # Admin|Partner|Driver Guard
