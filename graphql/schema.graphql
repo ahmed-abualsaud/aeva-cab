@@ -440,6 +440,16 @@ extend type Mutation @guard(with: ["user"]) {
   # Seats Trip Rating
   updateSeatsTripRating(input: UpdateSeatsTripRatingInput! @spread): SeatsTripRating
     @field(resolver: "SeatsTripRatingResolver@update")
+
+  # Student
+  createStudent(input: CreateStudentInput! @spread): Student @create
+  updateStudent(input: UpdateStudentInput! @spread): Student @update
+  deleteStudent(id: ID!): Student @delete
+
+  # Student Subscription
+  createStudentSubscription(input: CreateStudentSubscriptionInput! @spread): StudentSubscription @create
+  updateStudentSubscription(input: UpdateStudentSubscriptionInput! @spread): StudentSubscription @update
+  deleteStudentSubscription(id: ID!): StudentSubscription @delete
 }
 
 # -- QUERIES --
@@ -520,6 +530,14 @@ extend type Query @guard(with: ["partner"]) {
 extend type Query @guard(with: ["user"]) {
   # Authenticated User
   authUser: User @auth
+
+  # Student
+  students: [Student] @all
+  student(id: ID @eq): Student @findOrFail
+
+  # Student Subscription
+  studentsSubscriptions(user_id: ID! @eq): [StudentSubscription] @all
+  studentSubscriptions(user_id: ID! @eq , student_id: ID! @eq, trip_id: ID @eq): [StudentSubscription] @all
 }
 
 # Driver Guard
@@ -821,3 +839,5 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import supervisor.graphql
 #import businessTripRating.graphql
 #import seatsTripRating.graphql
+#import student.graphql
+#import studentSubscription.graphql

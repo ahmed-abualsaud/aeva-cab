@@ -1,0 +1,40 @@
+input CreateStudentSubscriptionInput {
+  user_id: ID! @rules(apply: ["required"])
+  student_id: ID! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+  subscription_id: ID! @rules(apply: ["required"])
+  is_scheduled: Boolean
+  is_absent: Boolean
+  is_picked_up: Boolean
+  days: UserDays
+  payable: Float! @rules(apply: ["required"])
+  due_date: String
+}
+
+input UpdateStudentSubscriptionInput {
+  id: ID
+  user_id: ID
+  student_id: ID
+  trip_id: ID
+  subscription_id: ID
+  is_scheduled: Boolean
+  is_absent: Boolean
+  is_picked_up: Boolean
+  days: UserDays
+  payable: Float
+  due_date: String
+}
+
+type StudentSubscription {
+  id: ID
+  user_id: ID
+  student_id: ID
+  trip_id: ID
+  subscription_id: ID
+  is_scheduled: Boolean
+  is_absent: Boolean
+  is_picked_up: Boolean
+  days: UserDays
+  payable: Float
+  due_date: String
+}
