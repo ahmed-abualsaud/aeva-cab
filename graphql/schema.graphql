@@ -111,12 +111,14 @@ extend type Mutation @guard(with: ["admin"]) {
   # School
   updateSchool(input: UpdateSchoolInput! @spread): School 
     @update
-  deleteSchool(id: ID!): School @delete
+  deleteSchool(id: [ID!]!): Boolean
+    @field(resolver: "SchoolResolver@destroy")
 
   # Workplace
   updateWorkplace(input: UpdateWorkplaceInput! @spread): Workplace 
     @update
-  deleteWorkplace(id: ID!): Workplace @delete
+  deleteWorkplace(id: [ID!]!): Boolean
+    @field(resolver: "WorkplaceResolver@destroy")
 
   # School Grade
   createSchoolGrade(input: CreateSchoolGradeInput! @spread): SchoolGrade 
