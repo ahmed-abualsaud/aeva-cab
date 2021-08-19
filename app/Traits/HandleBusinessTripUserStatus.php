@@ -3,6 +3,7 @@
 namespace App\Traits;
 
 use App\BusinessTripSubscription;
+use App\StudentSubscription;
 
 trait HandleBusinessTripUserStatus
 {
@@ -19,5 +20,18 @@ trait HandleBusinessTripUserStatus
         }
 
         return $usersStatus->update($status);
+    }
+
+    protected function updateUserStudentsStatus($trip_id, $user_id, $students, $status)
+    {
+        $userStudents = StudentSubscription::where('trip_id', $trip_id)
+            ->where('user_id', $user_id);
+
+        $userStudents->whereIn('student_id', $students)->update($status);
+
+        if($userStudents->count() == count($students))
+            return true;
+
+        return false;
     }
 }
