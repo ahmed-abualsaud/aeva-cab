@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Mutations;
 
 use App\School;
+use App\SchoolRequest;
 use App\Repository\Eloquent\BaseRepository;
 
 class SchoolRepository extends BaseRepository
@@ -14,6 +15,9 @@ class SchoolRepository extends BaseRepository
 
     public function destroy(array $args)
     {
-        return $this->model->whereIn('id', $args['id'])->delete();    
+        SchoolRequest::whereIn('school_id', $args['id'])
+            ->update(['status' => 'INCOMPLETE']);
+            
+        return $this->model->whereIn('id', $args['id'])->delete();          
     }
 }

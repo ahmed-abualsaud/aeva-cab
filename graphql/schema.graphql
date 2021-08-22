@@ -498,7 +498,7 @@ type Query @guard(with: ["admin"]) {
   schoolGrades(school_id: ID! @eq): [SchoolGrade] @all
   schoolGrade(id: ID! @eq): SchoolGrade @find
   schoolRequests(searchFor: String, searchQuery: String, zone_id: [ID], period: String, status: String!): [SchoolRequest] 
-    @paginate(scopes: ["status", "period", "search"])
+    @paginate(scopes: ["status", "period", "search", "zone"])
   schoolRequestsArchive(searchFor: String, searchQuery: String, period: String): [SchoolRequest] 
     @paginate(scopes: ["archived", "period", "search"])
 
@@ -507,7 +507,7 @@ type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["search"])
   workplace(id: ID! @eq): Workplace @find
   workRequests(searchFor: String, searchQuery: String, zone_id: [ID], period: String, status: String!): [WorkRequest] 
-    @paginate(scopes: ["status", "period", "search"])
+    @paginate(scopes: ["status", "period", "search", "zone"])
   workRequestsArchive(searchFor: String, searchQuery: String, period: String): [WorkRequest] 
     @paginate(scopes: ["archived", "period", "search"])
 }
