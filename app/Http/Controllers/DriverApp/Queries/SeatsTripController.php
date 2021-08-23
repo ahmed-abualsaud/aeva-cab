@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\DriverApp\Queries;
 
 use App\Repository\Queries\SeatsTripRepositoryInterface;
+use Illuminate\Http\Request;
 
 class SeatsTripController 
 {
@@ -17,14 +18,12 @@ class SeatsTripController
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function driverTrips($driver_id, $day)
+    public function driverTrips(Request $req, $driver_id)
     {
-        return $this->seatsTripRepository->driverTrips(
-            [
-                'driver_id' => $driver_id,
-                'day' => $day
-            ]
-        );
+        $req = $req->all();
+        $req['driver_id'] = $driver_id;
+
+        return $this->seatsTripRepository->driverTrips($req);
     }
 
     public function driverLiveTrips($driver_id)

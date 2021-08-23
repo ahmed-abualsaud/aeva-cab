@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\DriverApp\Queries;
 
 use App\Repository\Eloquent\Queries\SeatsTripUserRepository;
+use Illuminate\Http\Request;
 
 class SeatsTripUserController
 {
@@ -16,16 +17,11 @@ class SeatsTripUserController
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function users($trip_id, $trip_time, $status, $station_id = null)
+    public function users(Request $req, $trip_id)
     {
-        $args = [
-                    'trip_id'    => $trip_id,
-                    'trip_time'  => $trip_time,
-                    'status'     => $status
-                ];
-        if($station_id != null)
-            $args['station_id'] = $station_id;
+        $req = $req->all();
+        $req['trip_id'] = $trip_id;
 
-        return $this->seatsTripUserRepository->invoke($args);
+        return $this->seatsTripUserRepository->invoke($req);
     }
 }

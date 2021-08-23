@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\DriverApp\Queries;
 
 use App\Repository\Queries\CommunicationRepositoryInterface;
+use Illuminate\Http\Request;
 
 class CommunicationController
 {
@@ -17,19 +18,16 @@ class CommunicationController
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function businessTripChatMessages($log_id, $user_id, $is_private)
+    public function businessTripChatMessages(Request $req, $user_id)
     {
-        return $this->communicationRepository->businessTripChatMessages(
-            [
-                'log_id'     => $log_id,
-                'user_id'    => $user_id,
-                'is_private' => $is_private
-            ]
-        );
+        $req = $req->all();
+        $req['user_id'] = $user_id;
+
+        return $this->communicationRepository->businessTripChatMessages($req);
     }
 
-    public function businessTripPrivateChatUsers($log_id)
+    public function businessTripPrivateChatUsers(Request $req)
     {
-        return $this->communicationRepository->businessTripPrivateChatUsers(['log_id' => $log_id]);
+        return $this->communicationRepository->businessTripPrivateChatUsers($req->all());
     }
 }

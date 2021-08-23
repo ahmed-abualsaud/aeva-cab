@@ -9,6 +9,7 @@ use App\SeatsTrip;
 use App\BusinessTrip;
 use App\BusinessTripStation;
 use App\SeatsTripAppTransaction;
+use Illuminate\Http\Request;
 
 class DriverQueriesController 
 {
@@ -47,9 +48,9 @@ class DriverQueriesController
         return BusinessTripStation::where('trip_id', $trip_id)->get();
     }
 
-    public function seatsTripAppTransactionsDetail($trip_time, $trip_id)
+    public function seatsTripAppTransactionsDetail(Request $req, $trip_id)
     {
         return SeatsTripAppTransaction::where('trip_id', $trip_id)
-        ->where('trip_time', $trip_time)->get();
+        ->where('trip_time', $req->trip_time)->get();
     }
 }

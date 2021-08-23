@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\DriverApp\Queries;
 
 use App\Repository\Queries\BusinessTripRepositoryInterface;
+use Illuminate\Http\Request;
 
 class BusinessTripController 
 {
@@ -17,14 +18,12 @@ class BusinessTripController
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function driverTrips($driver_id, $day)
+    public function driverTrips(Request $req, $driver_id)
     {
-        return $this->businessTripRepository->driverTrips(
-            [
-                'driver_id' => $driver_id,
-                'day' => $day
-            ]
-        );
+        $req = $req->all();
+        $req['driver_id'] = $driver_id;
+
+        return $this->businessTripRepository->driverTrips($req);
     }
 
     public function driverLiveTrips($driver_id)
