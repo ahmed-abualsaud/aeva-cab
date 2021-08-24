@@ -39,7 +39,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
 
         $logId = (string) Str::uuid();
 
-        $this->checkAbsence($args['trip_id']);
+        $this->checkAbsence($args);
 
         $this->checkSchedule($args['trip_id']);
 
@@ -352,13 +352,14 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         }
     }
 
-    protected function checkAbsence($trip_id)
+    protected function checkAbsence(array $args)
     {
         try {
-            $absent_users = BusinessTripAttendance::whereAbsent($trip_id);
+            $absent_users = BusinessTripAttendance::whereAbsent($args['trip_id']);
 
             if ($absent_users) 
-                $this->updateUserStatus($trip_id, ['is_absent' => true], $absent_users);
+                $this->updateUserStatusWithStudents($args);
+                //$this->updateUserStatus($trip_id, ['is_absent' => true], $absent_users);
         } catch(\Exception $e) {
             //
         }

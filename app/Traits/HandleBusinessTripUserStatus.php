@@ -24,14 +24,16 @@ trait HandleBusinessTripUserStatus
         return $usersStatus->update($status);
     }
 
-    protected function updateUserStudentsStatus($trip_id, $status, $user_id, $students)
+    protected function updateUserStudentsStatus($trip_id, $status, $users, $students)
     {
-        $userStudents = $this->getUserStudents($trip_id, $user_id);
+        foreach ($users as $key => $user_id) {
+            $userStudents = $this->getUserStudents($trip_id, $user_id);
 
-        $userStudents->whereIn('student_id', $students)->update($status);
+            $userStudents->whereIn('student_id', $students[$key])->update($status);
 
-        if($userStudents->count() == count($args['students']))
-            $this->updateUserStatus($trip_id, $status, $user_id);
+            if($userStudents->count() == count($students[$key]))
+                $this->updateUserStatus($trip_id, $status, $user_id);
+        }
     }
 
     protected function shouldUpdateUserAttendance(array $args)
