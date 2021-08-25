@@ -5,6 +5,8 @@ namespace App\Http\Controllers\DriverApp\Mutations;
 use App\Repository\Mutations\DriverRepositoryInterface;
 use Illuminate\Http\Request;
 use App\Exceptions\CustomException;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class DriverController 
 {
@@ -16,21 +18,48 @@ class DriverController
     }
     /**
      * @param  null  $_
-     * @param  array<string, mixed>  $args
+     * @param  array<string, mixed>  $request
      */
 
-    public function update(Request $args)
+    public function update(Request $request)
     {
-        return $this->driverRepository->update($args->all());
+        $validator = Validator::make($request->all(),[
+            'id' => ['required'],
+            'phone' => ['sometimes', Rule::unique('drivers', 'phone')->ignore($request->id, 'id')],
+            'email' => ['sometimes', Rule::unique('drivers', 'email')->ignore($request->id, 'id')]
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+
+        return $this->driverRepository->update($request->all());
     }
 
-    public function login(Request $args)
+    public function login(Request $request)
     {
-        return $this->driverRepository->login($args->all());
+        $validator = Validator::make($request->all(),[
+            'emailOrPhone' => ['required'],
+            'password' => ['required'],
+            'platform' => [Rule::in(['android', 'ios'])]
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+
+        return $this->driverRepository->login($request->all());
     }
 
-    public function updatePassword(Request $args)
+    public function updatePassword(Request $request)
     {
-        return $this->driverRepository->updatePassword($args->all());
+        $validator = Validator::make($request->all(),[
+            'id' => ['required'],
+            'current_password' => ['required'],
+            'new_password' => ['required', 'confirmed']
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+            
+        return $this->driverRepository->updatePassword($request->all());
     }
 }

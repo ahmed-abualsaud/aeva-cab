@@ -4,6 +4,8 @@ namespace App\Http\Controllers\DriverApp\Mutations;
 
 use App\Repository\Eloquent\Mutations\SeatsTripBookingRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class SeatsTripBookingController 
 {
@@ -19,9 +21,16 @@ class SeatsTripBookingController
      * @param  array<string, mixed>  $args
      */
 
-    public function update($_, array $args)
+    public function update(Request $request)
     {
-        return $this->seatsTripBookingRepository->update($args);
+        $validator = Validator::make($request->all(),[
+            'id' => ['required'],
+            'status' => Rule::in(['CONFIRMED', 'CANCELLED', 'MISSED', 'COMPLETED'])
+        ]);
 
+        if ($validator->fails())
+            return $validator->errors();
+
+        return $this->seatsTripBookingRepository->update($request->all());
     }
 }

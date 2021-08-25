@@ -4,6 +4,7 @@ namespace App\Http\Controllers\DriverApp\Queries;
 
 use App\Repository\Eloquent\Queries\BusinessTripAttendanceRepository; 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class BusinessTripAttendanceController
 {
@@ -15,11 +16,19 @@ class BusinessTripAttendanceController
         $this->businessTripAttendanceRepository = $businessTripAttendanceRepository;
     }
 
-    public function businessTripAttendance(Request $req, $trip_id)
+    public function businessTripAttendance(Request $request, $trip_id)
     {
-        $req = $req->all();
-        $req['trip_id'] = $trip_id;
+        $request = $request->all();
+        $request['trip_id'] = $trip_id;
 
-        return $this->businessTripAttendanceRepository->invoke($req);
+        $validator = Validator::make($request,[
+            'trip_id' => ['required', 'exists:business_trip_attendance,trip_id'],
+            'date' => ['exists:business_trip_attendance,date']
+        ]);
+
+        if ($validator->fails())
+            return response()->json($validator->errors(), 500);
+
+        return $this->businessTripAttendanceRepository->invoke($request);
     }
 }

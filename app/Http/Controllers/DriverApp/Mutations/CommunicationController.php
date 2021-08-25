@@ -4,6 +4,7 @@ namespace App\Http\Controllers\DriverApp\Mutations;
 
 use App\Repository\Mutations\CommunicationRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CommunicationController 
 {
@@ -16,10 +17,22 @@ class CommunicationController
 
      /**
      * @param  null  $_
-     * @param  array<string, mixed>  $args
+     * @param  array<string, mixed>  $request
      */
-    public function sendBusinessTripChatMessage(Request $args)
+    public function sendBusinessTripChatMessage(Request $request)
     {
-        return $this->communicationRepository->sendBusinessTripChatMessage($args->all());
+        $validator = Validator::make($request->all(),[
+            'sender_type' => ['required'],
+            'sender_id' => ['required'],
+            'trip_id' => ['required'],
+            'trip_name' => ['required'],
+            'log_id' => ['required'],
+            'message' => ['required']
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+
+        return $this->communicationRepository->sendBusinessTripChatMessage($request->all());
     }
 }

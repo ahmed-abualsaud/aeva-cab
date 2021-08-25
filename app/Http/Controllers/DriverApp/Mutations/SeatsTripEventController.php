@@ -4,6 +4,7 @@ namespace App\Http\Controllers\DriverApp\Mutations;
 
 use App\Repository\Mutations\SeatsTripEventRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SeatsTripEventController 
 {
@@ -14,38 +15,109 @@ class SeatsTripEventController
         $this->seatsTripEventRepository = $seatsTripEventRepository;
     }
 
-    public function ready(Request $args)
+    public function ready(Request $request)
     {
-        return $this->seatsTripEventRepository->ready($args->all());
+        $validator = Validator::make($request->all(),[
+            'trip_id' => ['required'],
+            'trip_time' => ['required'],
+            'latitude' => ['required'],
+            'longitude' => ['required']
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+
+        return $this->seatsTripEventRepository->ready($request->all());
     }
 
-    public function start(Request $args)
+    public function start(Request $request)
     {
-        return $this->seatsTripEventRepository->start($args->all());
+        $validator = Validator::make($request->all(),[
+            'trip_id' => ['required'],
+            'trip_time' => ['required'],
+            'latitude' => ['required'],
+            'longitude' => ['required']
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+
+        return $this->seatsTripEventRepository->start($request->all());
     }
 
-    public function updateDriverLocation(Request $args)
+    public function updateDriverLocation(Request $request)
     {
-        return $this->seatsTripEventRepository->updateDriverLocation($args->all());
+        $validator = Validator::make($request->all(),[
+            'log_id' => ['required'],
+            'latitude' => ['required'],
+            'longitude' => ['required']
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+
+        return $this->seatsTripEventRepository->updateDriverLocation($request->all());
     }
 
-    public function atStation(Request $args)
+    public function atStation(Request $request)
     {
-        return $this->seatsTripEventRepository->atStation($args->all());
+        $validator = Validator::make($request->all(),[
+            'eta' => ['required'],
+            'station_id' => ['required'],
+            'station_name' => ['required'],
+            'log_id' => ['required'],
+            'trip_id' => ['required'],
+            'trip_time' => ['required'],
+            'latitude' => ['required'],
+            'longitude' => ['required']
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+
+        return $this->seatsTripEventRepository->atStation($request->all());
     }
 
-    public function pickUser(Request $args)
+    public function pickUser(Request $request)
     {
-        return $this->seatsTripEventRepository->pickUser($args->all());
+        $validator = Validator::make($request->all(),[
+            'booking_id' => ['required']
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+
+        return $this->seatsTripEventRepository->pickUser($request->all());
     }
 
-    public function dropUser(Request $args)
+    public function dropUser(Request $request)
     {
-        return $this->seatsTripEventRepository->dropUser($args->all());
+        $validator = Validator::make($request->all(),[
+            'log_id' => ['required'],
+            'booking_id' => ['required'],
+            'user_id' => ['required'],
+            'trip_id' => ['required'],
+            'trip_time' => ['required'],
+            'driver_id' => ['required'],
+            'payable' => ['required'],
+            'paid' => ['required']
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+
+        return $this->seatsTripEventRepository->dropUser($request->all());
     }
 
-    public function end(Request $args)
+    public function end(Request $request)
     {
-        return $this->seatsTripEventRepository->end($args->all());
+        $validator = Validator::make($request->all(),[
+            'trip_id' => ['required']
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+            
+        return $this->seatsTripEventRepository->end($request->all());
     }
 }

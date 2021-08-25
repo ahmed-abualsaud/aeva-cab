@@ -65,19 +65,19 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'DriverApp\Queries
     Route::get('/supervisor/{id}'   , 'DriverQueriesController@supervisor');
     Route::get('/business/trip/{id}', 'DriverQueriesController@businessTrip');
 
-    Route::get('/driver/seats/trips/{driver_id}'        , 'DriverQueriesController@driverSeatsTrips');
-    Route::get('/business/trip/stations/{trip_id}'      , 'DriverQueriesController@businessTripStations');
-    Route::get('/driver/business/trips/{driver_id}'     , 'BusinessTripController@driverTrips');
-    Route::get('/driver/business/trips/live/{driver_id}', 'BusinessTripController@driverLiveTrips');
-    Route::get('/driver/seats/trips/{driver_id}'        , 'SeatsTripController@driverTrips');
-    Route::get('/driver/seats/trips/live/{driver_id}'   , 'SeatsTripController@driverLiveTrips');
+    Route::get('/driver/{driver_id}/seats/trips'         , 'DriverQueriesController@driverSeatsTrips');
+    Route::get('/business/trip/{trip_id}/stations'       , 'DriverQueriesController@businessTripStations');
+    Route::get('/driver/{driver_id}/daily/business/trips', 'BusinessTripController@driverTrips');
+    Route::get('/driver/{driver_id}/live/business/trips' , 'BusinessTripController@driverLiveTrips');
+    Route::get('/driver/{driver_id}/daily/seats/trips'   , 'SeatsTripController@driverTrips');
+    Route::get('/driver/{driver_id}/live/seats/trips'    , 'SeatsTripController@driverLiveTrips');
     
-    Route::get('/seats/trip/users/{trip_id}'                   , 'SeatsTripUserController@users');
-    Route::get('/business/trip/attendance/{trip_id}/'          , 'BusinessTripAttendanceController@businessTripAttendance');
-    Route::get('/seats/trip/app/transactions/detail/{trip_id}' , 'DriverQueriesController@seatsTripAppTransactionsDetail');
-    Route::get('/business/trip/chat/messages/{user_id}'        , 'CommunicationController@businessTripChatMessages');
+    Route::get('/seats/trip/{trip_id}/users'                   , 'SeatsTripUserController@users');
+    Route::get('/business/trip/{trip_id}/attendance'           , 'BusinessTripAttendanceController@businessTripAttendance');
+    Route::get('/seats/trip/{trip_id}/app/transactions/detail' , 'DriverQueriesController@seatsTripAppTransactionsDetail');
+    Route::get('/user/{user_id}/business/trip/chat/messages'   , 'CommunicationController@businessTripChatMessages');
     Route::get('/business/trip/private/chat/users'             , 'CommunicationController@businessTripPrivateChatUsers');
-    Route::get('/business/trip/subscribers/{trip_id}'          , 'BusinessTripSubscriptionController@businessTripSubscribers');
+    Route::get('/business/trip/{trip_id}/subscribers'          , 'BusinessTripSubscriptionController@businessTripSubscribers');
     Route::get('/business/trip/users/status/{trip_id?}'        , 'BusinessTripSubscriptionController@businessTripUsersStatus');
-    Route::get('/business/trip/user/status/{trip_id}/{user_id}', 'BusinessTripSubscriptionController@businessTripUserStatus');
+    Route::get('/business/trip/{trip_id}/user/{user_id}/status', 'BusinessTripSubscriptionController@businessTripUserStatus');
 });

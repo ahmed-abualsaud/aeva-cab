@@ -4,6 +4,8 @@ namespace App\Http\Controllers\DriverApp\Queries;
 
 use App\Repository\Queries\BusinessTripSubscriptionRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class BusinessTripSubscriptionController
 {
@@ -15,32 +17,57 @@ class BusinessTripSubscriptionController
         $this->businessTripSubscriptionRepository = $businessTripSubscriptionRepository;
     }
 
-    public function businessTripSubscribers(Request $req, $trip_id)
+    public function businessTripSubscribers(Request $request, $trip_id)
     {
-        $req = $req->all();
-        $req['trip_id'] = $trip_id;
+        $request = $request->all();
+        $request['trip_id'] = $trip_id;
         
-        return $this->businessTripSubscriptionRepository->businessTripSubscribers($req);
+        $validator = Validator::make($request, [
+            'trip_id' => ['required', 'exists:business_trip_users,trip_id'],
+            'status' => ['required', Rule::in(['PICK_UP', 'DROP_OFF'])],
+            'station_id' => ['exists:business_trip_stations,id']
+        ]);
+
+        if ($validator->fails())
+            return response()->json($validator->errors(), 500);
+        
+        return $this->businessTripSubscriptionRepository->businessTripSubscribers($request);
     }
 
-    public function businessTripUsersStatus(Request $req, $trip_id = null)
+    public function businessTripUsersStatus(Request $request, $trip_id = null)
     {
-        $req = $req->all();
+        $request = $request->all();
 
         if($trip_id != null)
-            $req['trip_id'] = $trip_id;
+            $request['trip_id'] = $trip_id;
+
+        $validator = Validator::make($request, [
+            'trip_id' => ['exists:business_trip_users,trip_id'],
+            'station_id' => ['exists:business_trip_users,station_id']
+        ]);
+
+        if ($validator->fails())
+            return response()->json($validator->errors(), 500);
         
-        return $this->businessTripSubscriptionRepository->businessTripUsersStatus($req);
+        return $this->businessTripSubscriptionRepository->businessTripUsersStatus($request);
     }
 
     public function businessTripUserStatus($trip_id, $user_id)
     {
-        return $this->businessTripSubscriptionRepository->businessTripUserStatus(
-            [
-                'trip_id' => $trip_id,
-                'user_id' => $user_id
-            ]
-        );
+        $request = [
+            'trip_id' => $trip_id,
+            'user_id' => $user_id
+        ];
+
+        $validator = Validator::make($request, [
+            'trip_id' => ['required', 'exists:business_trip_users,trip_id'],
+            'user_id' => ['required', 'exists:business_trip_users,user_id']
+        ]);
+
+        if ($validator->fails())
+            return response()->json($validator->errors(), 500);
+
+        return $this->businessTripSubscriptionRepository->businessTripUserStatus($request);
     }
 
 }

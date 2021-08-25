@@ -4,6 +4,7 @@ namespace App\Http\Controllers\DriverApp\Mutations;
 
 use App\Repository\Eloquent\Mutations\BusinessTripAttendanceRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class BusinessTripAttendanceController 
 {
@@ -18,8 +19,17 @@ class BusinessTripAttendanceController
      * @param  null  $_
      * @param  array<string, mixed>  $args
      */
-    public function create(Request $args)
+    public function create(Request $request)
     {
-        return $this->businessTripAttendanceRepository->create($args->all());
+        $validator = Validator::make($request->all(),[
+            'trip_id' => ['required'],
+            'user_id' => ['required'],
+            'date' => ['required']
+        ]);
+
+        if ($validator->fails())
+            return $validator->errors();
+            
+        return $this->businessTripAttendanceRepository->create($request->all());
     }
 }
