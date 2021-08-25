@@ -401,8 +401,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "PromoCodeResolver@apply")
 
   # Business Trip Followers
-  createBusinessTripFollower(input: CreateBusinessTripFollowerInput! @spread): Follower @create
-  deleteBusinessTripFollower(id: ID!): Follower @delete
+  createBusinessTripFollower(input: CreateBusinessTripFollowerInput! @spread): Boolean
+    @field(resolver: "FollowerResolver@create")
+  deleteBusinessTripFollower(id: ID!): Boolean
+    @field(resolver: "FollowerResolver@destroy")
 }
 
 # Admin|Partner|Driver Guard
@@ -726,7 +728,7 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   
   # Business Trip Followers
   followerBusinessTrips(follower_id: ID!): [BusinessTrip] @all(scopes: ["trip"], model: "App\\Follower")
-  userFollowers(user_id: ID! @eq): [Follower] @all
+  userFollowers(user_id: ID! @eq): [Follower] @all(scopes: ["follower"])
 
 }
 

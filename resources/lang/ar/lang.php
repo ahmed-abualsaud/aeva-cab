@@ -112,5 +112,6 @@ return [
     'update_failed' => 'لم نتمكن من التحديث',
     'insufficient_balance' => 'رصيد المحفظة لا يكفي لاتمام هذه العمليه',
     'supervisor_not_found' => 'هذا المشرف غير موجود',
-    'rating_not_found' => "هذا التقييم غير موجود"
+    'rating_not_found' => 'هذا التقييم غير موجود',
+    'the_following_already_exists' => 'المتابعة موجودة بالفعل'
 ];

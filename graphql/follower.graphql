@@ -6,7 +6,7 @@ input CreateBusinessTripFollowerInput {
 
 type Follower {
   id: ID
-  user: User @belongsTo
-  follower: User @belongsTo(relation: "follower")
+  name: String
+  avatar: String
   trip: BusinessTrip @belongsTo
 }
