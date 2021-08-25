@@ -25,7 +25,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->seatsTripEventRepository->ready($request->all());
     }
@@ -40,7 +40,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->seatsTripEventRepository->start($request->all());
     }
@@ -54,7 +54,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->seatsTripEventRepository->updateDriverLocation($request->all());
     }
@@ -73,7 +73,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->seatsTripEventRepository->atStation($request->all());
     }
@@ -85,7 +85,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->seatsTripEventRepository->pickUser($request->all());
     }
@@ -104,7 +104,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->seatsTripEventRepository->dropUser($request->all());
     }
@@ -116,7 +116,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
             
         return $this->seatsTripEventRepository->end($request->all());
     }

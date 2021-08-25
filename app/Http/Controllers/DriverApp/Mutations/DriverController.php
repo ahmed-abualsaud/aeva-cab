@@ -30,7 +30,7 @@ class DriverController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->driverRepository->update($request->all());
     }
@@ -44,7 +44,7 @@ class DriverController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->driverRepository->login($request->all());
     }
@@ -58,7 +58,7 @@ class DriverController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
             
         return $this->driverRepository->updatePassword($request->all());
     }

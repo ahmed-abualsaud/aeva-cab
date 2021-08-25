@@ -26,7 +26,7 @@ class BusinessTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->businessTripEventRepository->ready($request->all());
     }
@@ -41,7 +41,7 @@ class BusinessTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->businessTripEventRepository->start($request->all());
     }
@@ -60,7 +60,7 @@ class BusinessTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->businessTripEventRepository->atStation($request->all());
     }
@@ -82,7 +82,7 @@ class BusinessTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->businessTripEventRepository->changeAttendanceStatus($request->all());
     }
@@ -101,7 +101,7 @@ class BusinessTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->businessTripEventRepository->pickUsers($request->all());
     }
@@ -120,7 +120,7 @@ class BusinessTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->businessTripEventRepository->dropUsers($request->all());
     }
@@ -134,7 +134,7 @@ class BusinessTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->businessTripEventRepository->updateDriverLocation($request->all());
     }
@@ -146,7 +146,7 @@ class BusinessTripEventController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->businessTripEventRepository->end($request->all());
     }

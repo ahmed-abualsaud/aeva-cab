@@ -31,7 +31,7 @@ class CommunicationController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->communicationRepository->sendBusinessTripChatMessage($request->all());
     }

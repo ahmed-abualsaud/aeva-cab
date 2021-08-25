@@ -28,7 +28,7 @@ class BusinessTripAttendanceController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
             
         return $this->businessTripAttendanceRepository->create($request->all());
     }

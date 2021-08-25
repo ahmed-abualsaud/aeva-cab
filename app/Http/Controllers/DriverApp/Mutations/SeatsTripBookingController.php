@@ -29,7 +29,7 @@ class SeatsTripBookingController
         ]);
 
         if ($validator->fails())
-            return $validator->errors();
+            return response()->json($validator->errors(), 500);
 
         return $this->seatsTripBookingRepository->update($request->all());
     }
