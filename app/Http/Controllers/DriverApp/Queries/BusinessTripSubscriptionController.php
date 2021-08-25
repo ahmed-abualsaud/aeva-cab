@@ -6,9 +6,11 @@ use App\Repository\Queries\BusinessTripSubscriptionRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Traits\HandleValidatorMessages;
 
 class BusinessTripSubscriptionController
 {
+    use HandleValidatorMessages;
 
     private $businessTripSubscriptionRepository;
   
@@ -29,7 +31,7 @@ class BusinessTripSubscriptionController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
         
         return $this->businessTripSubscriptionRepository->businessTripSubscribers($request);
     }
@@ -47,7 +49,7 @@ class BusinessTripSubscriptionController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
         
         return $this->businessTripSubscriptionRepository->businessTripUsersStatus($request);
     }
@@ -65,7 +67,7 @@ class BusinessTripSubscriptionController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->businessTripSubscriptionRepository->businessTripUserStatus($request);
     }

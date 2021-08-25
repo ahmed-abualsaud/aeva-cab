@@ -6,9 +6,12 @@ use App\Repository\Eloquent\Mutations\SeatsTripBookingRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Traits\HandleValidatorMessages;
 
 class SeatsTripBookingController 
 {
+    use HandleValidatorMessages;
+
     private $seatsTripBookingRepository;
 
     public function __construct(SeatsTripBookingRepository $seatsTripBookingRepository)
@@ -29,7 +32,7 @@ class SeatsTripBookingController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->seatsTripBookingRepository->update($request->all());
     }

@@ -5,9 +5,12 @@ namespace App\Http\Controllers\DriverApp\Queries;
 use App\Repository\Queries\SeatsTripRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\HandleValidatorMessages;
 
 class SeatsTripController 
 {
+    use HandleValidatorMessages;
+
     private $seatsTripRepository;
   
     public function __construct(SeatsTripRepositoryInterface $seatsTripRepository)
@@ -30,7 +33,7 @@ class SeatsTripController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->seatsTripRepository->driverTrips($request);
     }
@@ -42,7 +45,7 @@ class SeatsTripController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->seatsTripRepository->driverLiveTrips(['driver_id' => $driver_id]);
     }

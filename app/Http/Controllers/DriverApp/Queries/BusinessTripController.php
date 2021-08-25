@@ -5,9 +5,12 @@ namespace App\Http\Controllers\DriverApp\Queries;
 use App\Repository\Queries\BusinessTripRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\HandleValidatorMessages;
 
 class BusinessTripController 
 {
+    use HandleValidatorMessages;
+
     private $businessTripRepository;
   
     public function __construct(BusinessTripRepositoryInterface $businessTripRepository)
@@ -30,7 +33,7 @@ class BusinessTripController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->businessTripRepository->driverTrips($request);
     }
@@ -42,7 +45,7 @@ class BusinessTripController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->businessTripRepository->driverLiveTrips(['driver_id' => $driver_id]);
     }

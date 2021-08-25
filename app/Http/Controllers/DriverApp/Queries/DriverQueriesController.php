@@ -11,9 +11,12 @@ use App\BusinessTripStation;
 use App\SeatsTripAppTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\HandleValidatorMessages;
 
 class DriverQueriesController 
 {
+    use HandleValidatorMessages;
+
     public function auth()
     {
         return auth('driver')->user();
@@ -26,7 +29,7 @@ class DriverQueriesController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return Driver::findOrFail($id);
     }
@@ -38,7 +41,7 @@ class DriverQueriesController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return Vehicle::findOrFail($id);
     }
@@ -50,7 +53,7 @@ class DriverQueriesController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return Supervisor::findOrFail($id);
     }
@@ -62,7 +65,7 @@ class DriverQueriesController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return BusinessTrip::findOrFail($id);
     }
@@ -74,7 +77,7 @@ class DriverQueriesController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return SeatsTrip::where('driver_id', $driver_id)->get();
     }
@@ -86,7 +89,7 @@ class DriverQueriesController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return BusinessTripStation::where('trip_id', $trip_id)->get();
     }
@@ -99,7 +102,7 @@ class DriverQueriesController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return SeatsTripAppTransaction::where('trip_id', $trip_id)
         ->where('trip_time', $req->trip_time)->get();

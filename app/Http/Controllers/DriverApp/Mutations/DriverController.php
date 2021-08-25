@@ -7,9 +7,12 @@ use Illuminate\Http\Request;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Traits\HandleValidatorMessages;
 
 class DriverController 
 {
+    use HandleValidatorMessages;
+
     private $driverRepository;
 
     public function  __construct(DriverRepositoryInterface $driverRepository)
@@ -30,7 +33,7 @@ class DriverController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->driverRepository->update($request->all());
     }
@@ -44,7 +47,7 @@ class DriverController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->driverRepository->login($request->all());
     }
@@ -58,7 +61,7 @@ class DriverController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
             
         return $this->driverRepository->updatePassword($request->all());
     }

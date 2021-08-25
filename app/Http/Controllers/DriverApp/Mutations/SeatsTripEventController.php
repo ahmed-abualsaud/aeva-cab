@@ -5,9 +5,12 @@ namespace App\Http\Controllers\DriverApp\Mutations;
 use App\Repository\Mutations\SeatsTripEventRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\HandleValidatorMessages;
 
 class SeatsTripEventController 
 {
+    use HandleValidatorMessages;
+
     private $seatsTripEventRepository;
 
     public function __construct(SeatsTripEventRepositoryInterface $seatsTripEventRepository)
@@ -25,7 +28,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->seatsTripEventRepository->ready($request->all());
     }
@@ -40,7 +43,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->seatsTripEventRepository->start($request->all());
     }
@@ -54,7 +57,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->seatsTripEventRepository->updateDriverLocation($request->all());
     }
@@ -73,7 +76,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->seatsTripEventRepository->atStation($request->all());
     }
@@ -85,7 +88,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->seatsTripEventRepository->pickUser($request->all());
     }
@@ -104,7 +107,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->seatsTripEventRepository->dropUser($request->all());
     }
@@ -116,7 +119,7 @@ class SeatsTripEventController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
             
         return $this->seatsTripEventRepository->end($request->all());
     }

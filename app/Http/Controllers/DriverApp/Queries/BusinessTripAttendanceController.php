@@ -5,9 +5,11 @@ namespace App\Http\Controllers\DriverApp\Queries;
 use App\Repository\Eloquent\Queries\BusinessTripAttendanceRepository; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\HandleValidatorMessages;
 
 class BusinessTripAttendanceController
 {
+    use HandleValidatorMessages;
 
     private $businessTripAttendanceRepository;
   
@@ -27,7 +29,7 @@ class BusinessTripAttendanceController
         ]);
 
         if ($validator->fails())
-            return response()->json($validator->errors(), 500);
+            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->businessTripAttendanceRepository->invoke($request);
     }
