@@ -31,7 +31,7 @@ class CreateWorkplacesTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('city_id');
-            $table->unsignedBigInteger('workplace_id');
+            $table->unsignedBigInteger('workplace_id')->nullable();
             $table->unsignedBigInteger('price_package_id');
             $table->string('contact_phone')->nullable();
             $table->double('pickup_lat', 15, 8);
@@ -61,7 +61,7 @@ class CreateWorkplacesTable extends Migration
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
-            $table->foreign('workplace_id')->references('id')->on('workplaces')->onDelete('cascade');
+            $table->foreign('workplace_id')->references('id')->on('workplaces')->onDelete('set null');
             $table->foreign('price_package_id')->references('id')->on('price_packages')->onDelete('cascade');
         });
     }
