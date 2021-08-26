@@ -16,7 +16,17 @@ class BusinessTripAttendanceRepository
     {
         try {            
             if ($args['date'] === date('Y-m-d'))
-                $this->updateUserStatusWithStudents($args);
+            {
+                if(!array_key_exists('students', $args))
+                    $args['students'] = null;
+                    
+                $this->updateUserStatusWithStudents(
+                    $args['trip_id'], 
+                    ['is_absent' => $args['is_absent']], 
+                    $args['user_id'],
+                    $args['students']
+                );
+            }
                 
             return $this->updateUserAttendance($args);
 
