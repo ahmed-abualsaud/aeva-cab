@@ -49,7 +49,7 @@ input UpdateWorkRequestInput {
 
 input ChangeWorkRequestStatusInput {
   requestIds: [ID!]! @rules(apply: ["required"])
-  status: String! @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING,INCOMPLETE"])
+  status: String! @rules(apply: ["in:PENDING,REJECTED,WAITING,APPROVED,INCOMPLETE"])
   users: [WorkRequestStatusUsers]
   notify: Boolean
   response: String

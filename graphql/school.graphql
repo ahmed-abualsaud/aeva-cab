@@ -64,7 +64,7 @@ input UpdateSchoolRequestInput {
 
 input ChangeSchoolRequestStatusInput {
   requestIds: [ID!]! @rules(apply: ["required"])
-  status: String! @rules(apply: ["in:ACCEPTED,REJECTED,CANCELLED,PENDING,INCOMPLETE"])
+  status: String! @rules(apply: ["in:PENDING,REJECTED,WAITING,APPROVED,INCOMPLETE"])
   users: [SchoolRequestStatusUsers]
   notify: Boolean
   response: String
