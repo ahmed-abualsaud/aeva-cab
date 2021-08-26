@@ -27,6 +27,11 @@ class Vehicle extends Model
         return $this->belongsTo(CarType::class, 'car_type_id');
     }
 
+    public function documents()
+    {
+        return $this->morphMany(Document::class, 'documentable');
+    }
+
     public function scopeAssigned($query, $args) 
     {
         return $query->whereIn('id', DriverVehicle::byDriver($args));

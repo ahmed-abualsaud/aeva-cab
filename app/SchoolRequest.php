@@ -52,14 +52,19 @@ class SchoolRequest extends Model
         return $query;
     }
 
-    public function scopeStatus($query, $args) 
+    public function scopeZone($query, $args) 
     {
         if (array_key_exists('zone_id', $args) && $args['zone_id']) {
-            $query = $query->whereHas('school', function($query) use ($args) {
+            return $query->whereHas('school', function($query) use ($args) {
                 $query->whereIn('zone_id', $args['zone_id']);
             });
         }
 
+        return $query;
+    }
+
+    public function scopeStatus($query, $args) 
+    {
         return $query->where('status', $args['status'])
             ->latest();
     }

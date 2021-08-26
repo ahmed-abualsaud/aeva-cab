@@ -40,4 +40,5 @@ type Vehicle {
   partner_id: ID
   terminal_id: ID
   code: String
+  documents: [Document] @morphMany
 }

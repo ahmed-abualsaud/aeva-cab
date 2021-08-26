@@ -22,5 +22,6 @@ type Supervisor {
   name_ar: String
   phone: String
   avatar: String
+  documents: [Document] @morphMany
   created_at: String
 }

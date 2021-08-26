@@ -59,4 +59,5 @@ type Partner {
   users: [User] @hasMany
   drivers: [Driver] @belongsToMany
   trips: [BusinessTrip] @hasMany
+  documents: [Document] @morphMany
 }
