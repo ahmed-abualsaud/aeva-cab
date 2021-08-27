@@ -43,9 +43,10 @@ class CreateSchoolsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('city_id');
             $table->unsignedBigInteger('school_id')->nullable();
-            $table->unsignedBigInteger('grade_id')->nullable();
             $table->unsignedBigInteger('price_package_id');
+            $table->unsignedBigInteger('grade_id')->nullable();
             $table->string('student_name');
+            $table->enum('level', ['KG','G1 to G6','G7 to G9','G10 to G12'])->nullable();
             $table->string('contact_phone');
             $table->double('pickup_lat', 15, 8);
             $table->double('pickup_lng', 15, 8);
