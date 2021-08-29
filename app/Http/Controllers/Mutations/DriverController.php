@@ -71,7 +71,7 @@ class DriverController
                 'success' => false,
                 'message' => $e->getMessage(),
             ];
-            return response()->json($response, 400);
+            return response()->json($response, 401);
         }
 
         $response = [
