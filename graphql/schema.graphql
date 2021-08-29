@@ -449,9 +449,12 @@ extend type Mutation @guard(with: ["user"]) {
   deleteStudent(id: ID!): Student @delete
 
   # Student Subscription
-  createStudentSubscription(input: CreateStudentSubscriptionInput! @spread): StudentSubscription @create
-  updateStudentSubscription(input: UpdateStudentSubscriptionInput! @spread): StudentSubscription @update
-  deleteStudentSubscription(id: ID!): StudentSubscription @delete
+  createStudentSubscription(input: CreateStudentSubscriptionInput! @spread): StudentSubscription
+    @field(resolver: "StudentSubscriptionResolver@create")
+  updateStudentSubscription(input: UpdateStudentSubscriptionInput! @spread): StudentSubscription
+    @field(resolver: "StudentSubscriptionResolver@update")
+  deleteStudentSubscription(id: ID!): StudentSubscription
+    @field(resolver: "StudentSubscriptionResolver@destroy")
 }
 
 # -- QUERIES --
@@ -540,6 +543,7 @@ extend type Query @guard(with: ["user"]) {
   # Student Subscription
   studentsSubscriptions(user_id: ID! @eq): [StudentSubscription] @all
   studentSubscriptions(user_id: ID! @eq , student_id: ID! @eq, trip_id: ID @eq): [StudentSubscription] @all
+  studentsSubscriptions(trip_id: ID! @eq): [StudentSubscription] @all
 }
 
 # Driver Guard

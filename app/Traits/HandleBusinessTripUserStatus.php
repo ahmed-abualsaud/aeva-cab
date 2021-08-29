@@ -24,6 +24,41 @@ trait HandleBusinessTripUserStatus
         return $usersStatus->update($status);
     }
 
+    protected function updateStudentStatus($trip_id, $status, $students)
+    {
+        $studentsStatus = StudentSubscription::where('trip_id', $trip_id);
+
+        if (is_array($students)) {
+            $studentsStatus->whereIn('user_id', $students);
+        } else {
+            $studentsStatus->where('user_id', $students);
+        }
+
+        return $usersStatus->update($status);
+    }
+
+    protected function getStudentsParents($trip_id, $students)
+    {
+        $subscription = StudentSubscription::where('trip_id', $trip_id);
+
+        if (is_array($students)) {
+            $subscription->whereIn('student_id', $students);
+        } else {
+            $subscription->where('student_id', $students);
+        }
+
+        return $subscription->pluck('user_id')->unique();
+    }
+
+    public function updateAllStudentsScheduleStatus($trip_id, $status)
+    {
+        return StudentSubscription::where('trip_id', $trip_id)
+            ->where('days->'.strtolower(date('l')), $status['is_scheduled'])
+            ->update($status);
+    }
+
+    //-----------------------------------------------------------------------------------------
+
     protected function updateUserAndStudentsStatus($trip_id, $status, $users, $students)
     {
         if(!is_array($users)) {

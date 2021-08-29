@@ -6,29 +6,32 @@ use App\BusinessTripAttendance;
 use App\Traits\HandleDeviceTokens;
 use App\Exceptions\CustomException;
 use App\Traits\HandleBusinessTripUserStatus;
+use App\Repository\Eloquent\BaseRepository;
 
-class BusinessTripAttendanceRepository
+class BusinessTripAttendanceRepository extends BaseRepository
 {
     use HandleBusinessTripUserStatus;
     use HandleDeviceTokens;
 
+    public function __construct(BusinessTripAttendance $model)
+    {
+        parent::__construct($model);
+    }
+
     public function create(array $args)
     {
-        try {            
+        try {
             if ($args['date'] === date('Y-m-d'))
-            {
-                if(!array_key_exists('students', $args))
-                    $args['students'] = null;
-                    
-                $this->updateUserStatusWithStudents(
+                $this->updateUserStatus(
                     $args['trip_id'], 
                     ['is_absent' => $args['is_absent']], 
-                    $args['user_id'],
-                    $args['students']
+                    $args['user_id']
                 );
-            }
-                
-            return $this->updateUserAttendance($args);
+            
+            $firstArgs = collect($args)->only(['date', 'trip_id', 'user_id'])->toArray();
+            $secondArgs = collect($args)->only(['is_absent', 'comment'])->toArray();
+            
+           return $this->model->updateOrCreate($firstArgs, $secondArgs);
 
         } catch(\Exception $e) {
             throw new CustomException(__('lang.create_attendance_failed'));
