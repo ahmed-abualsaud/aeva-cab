@@ -194,8 +194,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
                 'trip_id' => $trip->id,
                 'user_id' => $args['user_id'],
                 'subscription_verified_at' => now(),
-                'due_date' => date('Y-m-d'),
-                'payable' => $trip->price
+                'due_date' => date('Y-m-d')
             ]);
 
             PartnerUser::firstOrCreate([

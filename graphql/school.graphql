@@ -31,6 +31,7 @@ input CreateSchoolRequestInput {
   city_id: ID! @rules(apply: ["required"])
   school_id: ID! @rules(apply: ["required"])
   grade_id: ID
+  level: String @rules(apply: ["in:KG,G1 to G6,G7 to G9,G10 to G12"])
   price_package_id: ID! @rules(apply: ["required"])
   student_name: String! @rules(apply: ["required"])
   contact_phone: String! @rules(apply: ["required"])
@@ -48,6 +49,7 @@ input UpdateSchoolRequestInput {
   id: ID! @rules(apply: ["required"])
   school_id: ID
   grade_id: ID
+  level: String @rules(apply: ["in:KG,G1 to G6,G7 to G9,G10 to G12"])
   price_package_id: ID
   student_name: String
   contact_phone: String
@@ -98,6 +100,7 @@ type SchoolRequest {
   school: School @belongsTo
   grade: SchoolGrade @belongsTo
   pricePackage: PricePackage @belongsTo
+  level: String
   student_name: String
   contact_phone: String
   pickup_lat: Float
