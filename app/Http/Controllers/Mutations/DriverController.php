@@ -1,17 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\DriverApp\Mutations;
+namespace App\Http\Controllers\Mutations;
 
 use App\Repository\Mutations\DriverRepositoryInterface;
 use Illuminate\Http\Request;
-use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Traits\HandleValidatorMessages;
 
 class DriverController 
 {
-    use HandleValidatorMessages;
 
     private $driverRepository;
 
@@ -19,10 +16,11 @@ class DriverController
     {
         $this->driverRepository = $driverRepository;
     }
-    /**
-     * @param  null  $_
-     * @param  array<string, mixed>  $request
-     */
+
+    public function handleAvatar(Request $request)
+    {
+        return $this->driverRepository->handleAvatar($request);
+    }
 
     public function update(Request $request)
     {
@@ -32,10 +30,22 @@ class DriverController
             'email' => ['sometimes', Rule::unique('drivers', 'email')->ignore($request->id, 'id')]
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
-        return $this->driverRepository->update($request->all());
+        $data = $this->driverRepository->update($request->all());
+        $response = [
+            'success' => true,
+            'message' => 'Updated successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function login(Request $request)
@@ -46,10 +56,22 @@ class DriverController
             'platform' => [Rule::in(['android', 'ios'])]
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
-        return $this->driverRepository->login($request->all());
+        $data = $this->driverRepository->login($request->all());
+        $response = [
+            'success' => true,
+            'message' => 'Logged in successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function updatePassword(Request $request)
@@ -60,8 +82,13 @@ class DriverController
             'new_password' => ['required', 'confirmed']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
             
         return $this->driverRepository->updatePassword($request->all());
     }

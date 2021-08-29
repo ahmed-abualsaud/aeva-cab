@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\DriverApp\Queries;
+namespace App\Http\Controllers\Queries;
 
 use App\Repository\Queries\CommunicationRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Traits\HandleValidatorMessages;
 
 class CommunicationController
 {
-    use HandleValidatorMessages;
 
     private $communicationRepository;
   
@@ -28,13 +26,17 @@ class CommunicationController
         $request['user_id'] = $user_id;
 
         $validator = Validator::make($request, [
-            'user_id' => ['exists:users,id'],
             'log_id' => ['required'],
             'is_private' => ['boolean']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->communicationRepository->businessTripChatMessages($request);
     }
@@ -45,8 +47,13 @@ class CommunicationController
             'log_id' => ['required']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->communicationRepository->businessTripPrivateChatUsers($request->all());
     }

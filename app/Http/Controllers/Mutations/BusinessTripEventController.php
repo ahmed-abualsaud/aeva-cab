@@ -1,16 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\DriverApp\Mutations;
+namespace App\Http\Controllers\Mutations;
 
 use App\Repository\Mutations\BusinessTripEventRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Traits\HandleValidatorMessages;
 
 class BusinessTripEventController 
 {
-    use HandleValidatorMessages;
 
     private $businessTripEventRepository;
 
@@ -28,8 +26,13 @@ class BusinessTripEventController
             'longitude' => ['required']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->businessTripEventRepository->ready($request->all());
     }
@@ -43,8 +46,13 @@ class BusinessTripEventController
             'longitude' => ['required']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->businessTripEventRepository->start($request->all());
     }
@@ -62,8 +70,13 @@ class BusinessTripEventController
             'longitude' => ['required']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->businessTripEventRepository->atStation($request->all());
     }
@@ -84,8 +97,13 @@ class BusinessTripEventController
             'by' => ['required', Rule::in(['driver', 'user'])]
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->businessTripEventRepository->changeAttendanceStatus($request->all());
     }
@@ -103,8 +121,13 @@ class BusinessTripEventController
             'users' => ['required']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->businessTripEventRepository->pickUsers($request->all());
     }
@@ -122,8 +145,13 @@ class BusinessTripEventController
             'users' => ['required']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->businessTripEventRepository->dropUsers($request->all());
     }
@@ -136,8 +164,13 @@ class BusinessTripEventController
             'longitude' => ['required']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->businessTripEventRepository->updateDriverLocation($request->all());
     }
@@ -148,8 +181,13 @@ class BusinessTripEventController
             'trip_id' => ['required']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->businessTripEventRepository->end($request->all());
     }

@@ -66,7 +66,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
 
         if ($userTrips->isEmpty()) return [];
 
-        return $this->schedule($userTrips, $args['day']);
+        return $this->userSchedule($userTrips, $args['day']);
     }
 
     public function userLiveTrips(array $args)
@@ -99,7 +99,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
 
         if ($driverTrips->isEmpty()) return [];
 
-        return $this->schedule($driverTrips, $args['day']);
+        return $this->driverSchedule($driverTrips, $args['day']);
     }
 
     public function driverLiveTrips(array $args)
@@ -124,7 +124,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
         ->latest('business_trip_events.created_at');        
     }
 
-    protected function schedule($trips, $day) 
+    protected function userSchedule($trips, $day) 
     {
         $dateTime = date('Y-m-d', strtotime($day));
         
@@ -133,6 +133,17 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
             $trip->starts_at = $dateTime.' '.$trip->days[$day];
         }
         
-        return $trips->sortBy('starts_at');;
+        return $trips->sortBy('starts_at')->values();
+    }
+
+    protected function driverSchedule($trips, $day) 
+    {
+        $dateTime = date('Y-m-d', strtotime($day));
+        
+        foreach($trips as $trip) {
+            $trip->starts_at = $dateTime.' '.$trip->days[$day];
+        }
+        
+        return $trips->sortBy('starts_at')->values();
     }
 }

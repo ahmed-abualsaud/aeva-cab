@@ -349,6 +349,8 @@
     'otp_username' => '5NFU1SZf',
     'otp_password' => '3iZFppXQxD',
     'otp_sender_id' => 'Qruz',
+    'seats_search_radius' => '2000',
+    'otp_signature' => 'EcypWXxmHK9',
   ),
   'database' => 
   array (

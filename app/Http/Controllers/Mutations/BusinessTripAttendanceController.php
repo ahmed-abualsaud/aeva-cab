@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\DriverApp\Mutations;
+namespace App\Http\Controllers\Mutations;
 
 use App\Repository\Eloquent\Mutations\BusinessTripAttendanceRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Traits\HandleValidatorMessages;
 
 class BusinessTripAttendanceController 
 {
-    use HandleValidatorMessages;
 
     private $businessTripAttendanceRepository;
 
@@ -30,8 +28,13 @@ class BusinessTripAttendanceController
             'date' => ['required']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
             
         return $this->businessTripAttendanceRepository->create($request->all());
     }

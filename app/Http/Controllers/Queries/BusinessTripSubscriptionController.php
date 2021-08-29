@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\DriverApp\Queries;
+namespace App\Http\Controllers\Queries;
 
 use App\Repository\Queries\BusinessTripSubscriptionRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Traits\HandleValidatorMessages;
 
 class BusinessTripSubscriptionController
 {
-    use HandleValidatorMessages;
-
+    
     private $businessTripSubscriptionRepository;
   
     public function __construct(BusinessTripSubscriptionRepositoryInterface $businessTripSubscriptionRepository)
@@ -25,13 +23,16 @@ class BusinessTripSubscriptionController
         $request['trip_id'] = $trip_id;
         
         $validator = Validator::make($request, [
-            'trip_id' => ['required', 'exists:business_trip_users,trip_id'],
-            'status' => ['required', Rule::in(['PICK_UP', 'DROP_OFF'])],
-            'station_id' => ['exists:business_trip_stations,id']
+            'status' => ['required', Rule::in(['PICK_UP', 'DROP_OFF'])]
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
         
         return $this->businessTripSubscriptionRepository->businessTripSubscribers($request);
     }
@@ -39,17 +40,8 @@ class BusinessTripSubscriptionController
     public function businessTripUsersStatus(Request $request, $trip_id = null)
     {
         $request = $request->all();
-
-        if($trip_id != null)
+        if ($trip_id)
             $request['trip_id'] = $trip_id;
-
-        $validator = Validator::make($request, [
-            'trip_id' => ['exists:business_trip_users,trip_id'],
-            'station_id' => ['exists:business_trip_users,station_id']
-        ]);
-
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
         
         return $this->businessTripSubscriptionRepository->businessTripUsersStatus($request);
     }
@@ -62,12 +54,17 @@ class BusinessTripSubscriptionController
         ];
 
         $validator = Validator::make($request, [
-            'trip_id' => ['required', 'exists:business_trip_users,trip_id'],
-            'user_id' => ['required', 'exists:business_trip_users,user_id']
+            'trip_id' => ['required'],
+            'user_id' => ['required']
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->businessTripSubscriptionRepository->businessTripUserStatus($request);
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Queries;
 
 use Illuminate\Http\Request;
 use App\Repository\Eloquent\Controllers\SeatsTripTerminalTransactionRepository;
@@ -12,12 +12,6 @@ class SeatsTripTerminalTransactionController
     public function __construct(SeatsTripTerminalTransactionRepository $seatsTripTerminalTransactionRepository)
     {
         $this->seatsTripTerminalTransactionRepository = $seatsTripTerminalTransactionRepository;
-    }
-
-    public function create(Request $req) 
-    {
-
-        return $this->seatsTripTerminalTransactionRepository->create($req);
     }
 
     public function export(Request $req) 

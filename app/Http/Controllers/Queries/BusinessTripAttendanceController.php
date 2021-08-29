@@ -1,15 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\DriverApp\Queries;
+namespace App\Http\Controllers\Queries;
 
 use App\Repository\Eloquent\Queries\BusinessTripAttendanceRepository; 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use App\Traits\HandleValidatorMessages;
 
 class BusinessTripAttendanceController
 {
-    use HandleValidatorMessages;
 
     private $businessTripAttendanceRepository;
   
@@ -22,14 +19,6 @@ class BusinessTripAttendanceController
     {
         $request = $request->all();
         $request['trip_id'] = $trip_id;
-
-        $validator = Validator::make($request,[
-            'trip_id' => ['required', 'exists:business_trip_attendance,trip_id'],
-            'date' => ['exists:business_trip_attendance,date']
-        ]);
-
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
 
         return $this->businessTripAttendanceRepository->invoke($request);
     }

@@ -7,6 +7,7 @@ use App\Traits\Filterable;
 use App\SeatsTripTerminalTransaction;
 use App\Repository\Queries\SeatsTripTerminalTransactionRepositoryInterface;
 use App\Repository\Eloquent\BaseRepository;
+use App\Exports\SeatsTripTerminalTransactionExport;
 
 class SeatsTripTerminalTransactionRepository extends BaseRepository implements SeatsTripTerminalTransactionRepositoryInterface
 {
@@ -106,5 +107,18 @@ class SeatsTripTerminalTransactionRepository extends BaseRepository implements S
         return $transactions->groupBy('time')
             ->orderBy('sum', 'desc')
             ->get();
+    }
+
+    public function export(Request $req) 
+    {
+        $filename = preg_replace('/-|:|\s+/', '_', now()).'_transactions.xlsx';
+        $partner = $req->query('partner');
+        $terminal = $req->query('terminal');
+        $period = $req->query('period');
+        $searchFor = $req->query('searchFor');
+        $searchQuery = $req->query('searchQuery');
+
+        return (new SeatsTripTerminalTransactionExport($partner, $terminal, $period, $searchFor, $searchQuery))
+            ->download($filename);
     }
 }

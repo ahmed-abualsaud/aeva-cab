@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Mutations;
 
-use App\User;
 use Illuminate\Http\Request;
 use App\Repository\Eloquent\Controllers\UserRepository;
 

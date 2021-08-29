@@ -1,16 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\DriverApp\Mutations;
+namespace App\Http\Controllers\Mutations;
 
 use App\Repository\Eloquent\Mutations\SeatsTripBookingRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use App\Traits\HandleValidatorMessages;
 
 class SeatsTripBookingController 
 {
-    use HandleValidatorMessages;
 
     private $seatsTripBookingRepository;
 
@@ -31,8 +29,13 @@ class SeatsTripBookingController
             'status' => Rule::in(['CONFIRMED', 'CANCELLED', 'MISSED', 'COMPLETED'])
         ]);
 
-        if ($validator->fails())
-            return response()->json($this->handleValidatorMessages($validator->errors()), 400);
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
 
         return $this->seatsTripBookingRepository->update($request->all());
     }
