@@ -64,7 +64,16 @@ class DriverController
             return response()->json($response, 400);
         }
 
-        $data = $this->driverRepository->login($request->all());
+        try {
+            $data = $this->driverRepository->login($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 400);
+        }
+
         $response = [
             'success' => true,
             'message' => 'Logged in successfully',
