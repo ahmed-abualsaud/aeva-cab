@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Queries;
 
-use App\Repository\Queries\SeatsTripRepositoryInterface;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use App\SeatsTrip;
-use App\SeatsTripAppTransaction;
+use App\SeatsLineStation;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\SeatsTripAppTransaction;
+use Illuminate\Support\Facades\Validator;
+use App\Repository\Queries\SeatsTripRepositoryInterface;
 
 class SeatsTripController 
 {
@@ -87,5 +88,17 @@ class SeatsTripController
             'message' => 'Driver Live Business Trips',
             'data' => $data,
         ];
+    }
+
+    public function seatsTripLineStations($line_id)
+    {
+        $data = SeatsLineStation::where('line_id', $line_id)->get();
+        $response = [
+            'success' => true,
+            'message' => 'Seats Trip Line Stations',
+            'data' => $data
+        ];
+
+        return $response;
     }
 }

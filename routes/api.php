@@ -63,6 +63,7 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Queries'], functi
     Route::get('/business/trip/{id}', 'BusinessTripController@show');
     Route::get('/driver/{driver_id}/seats/trips', 'SeatsTripController@driverSeatsTrips');
     Route::get('/business/trip/{trip_id}/stations', 'BusinessTripController@businessTripStations');
+    Route::get('/seats/trip/line/{line_id}/stations', 'SeatsTripController@seatsTripLineStations');
     Route::get('/driver/{driver_id}/business/trips/schedule','BusinessTripController@driverBusinessTripsSchedule');
     Route::get('/driver/{driver_id}/live/business/trips', 'BusinessTripController@driverLiveBusinessTrips');
     Route::get('/driver/{driver_id}/seats/trips/schedule', 'SeatsTripController@driverSeatsTripsSchedule');

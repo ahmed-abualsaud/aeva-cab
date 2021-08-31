@@ -24,7 +24,7 @@ class SeatsTripRepository extends BaseRepository implements SeatsTripRepositoryI
     }
     public function driverTrips(array $args)
     {
-        $driverTrips = $this->model->select('id', 'name', 'name_ar', 'days')
+        $driverTrips = $this->model->select('id', 'name', 'name_ar', 'days', 'line_id')
             ->where('driver_id', $args['driver_id'])
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('JSON_EXTRACT(days, "$.'.$args['day'].'") <> CAST("null" AS JSON)')
@@ -51,6 +51,6 @@ class SeatsTripRepository extends BaseRepository implements SeatsTripRepositoryI
         foreach($trips as $trip)
             $trip->starts_at = $dateTime.' '.$trip->days[$day];
         
-        return $trips->sortBy('starts_at');
+        return $trips->sortBy('starts_at')->values();
     }
 }

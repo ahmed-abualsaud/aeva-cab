@@ -626,7 +626,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "SeatsTripTerminalTransactionResolver@stats")
   seatsTripTerminalTransactionsVehiclesStats(partner_id: ID, period: String): [SeatsTripTransactionVehiclesStats]
     @field(resolver: "SeatsTripTerminalTransactionResolver@vehiclesStats")
-  seatsTripTerminalTransactionsTimeStats(partner_id: ID, terminal_id: ID, period: String): [SeatsTripTransactionTimeStats]
+  seatsTripTerminalTransactionsTimeStats(partner_id: ID, terminal_id: ID, period: String, scope: String): [SeatsTripTransactionTimeStats]
     @field(resolver: "SeatsTripTerminalTransactionResolver@timeStats")
 
   # Seats Trip Booking
@@ -642,6 +642,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Supervisor
   supervisors(partner_id: ID): [Supervisor] @all(scopes: ["partner"])
+
+  # Fund Transactions
+  fundTransactions(searchFor: String, searchQuery: String, period: String): [UserTransaction]
+    @paginate(scopes: ["period", "search"], defaultCount: 50)
 }
 
 # Admin|User Guard
@@ -715,7 +719,7 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "SeatsTripBookingResolver@pre")
 
   # User Transaction
-  userTransactions(user_id: ID! @eq): [UserTransaction] @all
+  userFundTransactions(user_id: ID! @eq): [UserTransaction] @all
 
   # Business Trip Rating
   businessTripRatings(log_id: String! @eq): [BusinessTripRating] @all

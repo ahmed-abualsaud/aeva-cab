@@ -84,12 +84,12 @@ class SeatsTripTerminalTransactionRepository extends BaseRepository implements S
 
     public function timeStats(array $args)
     {
-
         $transactions = $this->model->selectRaw('
-            DATE_FORMAT(created_at, "%d %b %Y, %h %p") as time,
             ROUND(SUM(amount), 2) as sum,
             COUNT(*) as count
         ');
+
+        $transactions = $this->timeStatsScope($args, $transactions);
 
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $paymobID = $this->partner->getPaymobID($args['partner_id']);
@@ -120,5 +120,15 @@ class SeatsTripTerminalTransactionRepository extends BaseRepository implements S
 
         return (new SeatsTripTerminalTransactionExport($partner, $terminal, $period, $searchFor, $searchQuery))
             ->download($filename);
+    }
+
+    protected function timeStatsScope($args, $transactions)
+    {
+        if (array_key_exists('scope', $args) && $args['scope'] === 'hours')
+            return $transactions
+                ->addSelect(\DB::raw('DATE_FORMAT(created_at, "%d %b %Y, %h %p") as time'));
+
+        return $transactions
+            ->addSelect(\DB::raw('DATE_FORMAT(created_at, "%d %b %Y") as time'));
     }
 }
