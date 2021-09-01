@@ -82,7 +82,7 @@ class BusinessTripSubscriptionRepository extends BaseRepository implements Busin
 
     public function businessTripSubscribers(array $args): Collection
     {
-        $users = $this->user->select('users.id', 'users.name', 'users.phone', 'users.secondary_no')
+        $users = $this->user->select('users.id', 'users.name', 'users.phone', 'users.secondary_no', 'users.title')
             ->join('business_trip_users', 'users.id', '=', 'business_trip_users.user_id')
             ->where('business_trip_users.trip_id', $args['trip_id'])
             ->where('business_trip_users.is_scheduled', true)
