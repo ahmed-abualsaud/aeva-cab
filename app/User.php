@@ -63,26 +63,29 @@ class User extends Authenticatable implements JWTSubject
 
     public function scopeSearch($query, $args) 
     {
-        
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
-
         return $query->latest();
     }
 
     public function scopeAssignedOrNot($query, $args) 
     {
-        $partnerUsers = PartnerUser::select('user_id')
-            ->where('partner_id', $args['partner_id']);
-
         if ($args['assigned']) {
-            $query->whereIn('id', $partnerUsers);
+            return $query->whereIn('id', PartnerUser::getIds($args));
         } else {
-            $query->whereNotIn('id', $partnerUsers);
+            return $query->whereNotIn('id', PartnerUser::getIds($args));
         }
+    }
 
-        return $query;
+    public function scopeAssigned($query, $args) 
+    {
+        return $query->whereIn('id', PartnerUser::getIds($args));
+    }
+
+    public function scopeNotAssigned($query, $args) 
+    {
+        return $query->whereNotIn('id', PartnerUser::getIds($args));
     }
 
     public function scopeUnsubscribed($query, $args) 

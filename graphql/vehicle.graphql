@@ -9,6 +9,7 @@ input CreateVehicleInput @validator {
   photo: Upload
   partner_id: ID
   terminal_id: ID
+  device_id: ID
   code: String
 }
 
@@ -24,6 +25,7 @@ input UpdateVehicleInput @validator {
   photo: Upload
   partner_id: ID
   terminal_id: ID
+  device_id: ID
   code: String
 }
 
@@ -39,6 +41,7 @@ type Vehicle {
   photo: String
   partner_id: ID
   terminal_id: ID
+  device_id: ID
   code: String
   documents: [Document] @morphMany
 }

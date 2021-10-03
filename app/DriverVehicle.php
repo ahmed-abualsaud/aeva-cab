@@ -10,11 +10,10 @@ class DriverVehicle extends Model
 
     public $timestamps = false;
 
-    public function scopeByDriver($query, array $args)
+    public function scopeGetIds($query, array $args)
     {
         return $query->select('vehicle_id')
-            ->where('driver_id', $args['driver_id'])
-            ->pluck('vehicle_id');
+            ->where('driver_id', $args['driver_id']);
     }
 
 }

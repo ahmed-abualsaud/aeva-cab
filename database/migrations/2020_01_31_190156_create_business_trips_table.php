@@ -34,7 +34,7 @@ class CreateBusinessTripsTable extends Migration
             $table->boolean('group_chat')->default(false);
             $table->text('route')->nullable();
             $table->enum('type', ['TOSCHOOL','TOWORK','PLAYGROUND']);
-            $table->float('price', 8, 2)->nullable();
+            $table->float('price', 8, 2)->default(0.00);
             $table->timestamps();
             $table->softDeletes();
 

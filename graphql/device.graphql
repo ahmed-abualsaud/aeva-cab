@@ -1,0 +1,23 @@
+input CreateDeviceInput @validator {
+  name: String!
+  partner_id: ID! 
+  device_id: ID!
+  imei: ID!
+}
+
+input UpdateDeviceInput @validator {
+  id: ID!
+  name: String
+  partner_id: ID! 
+  device_id: ID!
+  imei: ID
+}
+
+type Device {
+  id: ID
+  name: String
+  partner: Partner @belongsTo
+  imei: ID
+  device_id: ID
+  created_at: String
+}
