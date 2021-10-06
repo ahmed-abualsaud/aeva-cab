@@ -140,6 +140,11 @@ extend type Mutation @guard(with: ["admin"]) {
   createTerminal(input: CreateTerminalInput! @spread): Terminal @create
   updateTerminal(input: UpdateTerminalInput! @spread): Terminal @update
   deleteTerminal(id: ID!): Terminal @delete
+
+  # Device
+  createDevice(input: CreateDeviceInput! @spread): Device @create
+  updateDevice(input: UpdateDeviceInput! @spread): Device @update
+  deleteDevice(id: ID!): Device @delete
 } 
 
 # Admin|Partner Guard
@@ -565,7 +570,11 @@ extend type Query @guard(with: ["driver"]) {
 
 # Admin|Partner Guard
 extend type Query @guard(with: ["admin", "partner"]) {
-  # User
+  # Partner User
+  partnerAssignedUsers(partner_id: ID!, searchFor: String, searchQuery: String): [User] 
+    @paginate(scopes: ["assigned", "search"], defaultCount: 50)
+  partnerNotAssignedUsers(partner_id: ID!, searchFor: String, searchQuery: String): [User] 
+    @paginate(scopes: ["notAssigned", "search"], defaultCount: 50)
   partnerUsers(partner_id: ID!, searchFor: String, searchQuery: String, assigned: Boolean): [User] 
     @paginate(scopes: ["assignedOrNot", "search"])
 
@@ -618,6 +627,10 @@ extend type Query @guard(with: ["admin", "partner"]) {
   businessTripUnsubscribedUsers(trip_id: ID!, partner_id: ID, searchFor: String, searchQuery: String): 
     [User] @paginate(scopes: ["unsubscribed", "search"])
 
+  # Business Trip Subscriptions
+  businessTripSubscriptions(type: String, partner_id: ID, searchFor: String, searchQuery: String, shouldRenew: Boolean): [BusinessTripSubscription] 
+    @paginate(scopes: ["search", "partner", "shouldRenew", "ofType"], defaultCount: 50)
+
   # Business Trip Event
   businessTripEvents(type: String, searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [BusinessTripEvent]
     @paginate(builder: "App\\GraphQL\\Queries\\BusinessTripEventResolver@index")
@@ -655,7 +668,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "SeatsTripTerminalTransactionResolver@stats")
   seatsTripTerminalTransactionsVehiclesStats(partner_id: ID, period: String): [SeatsTripTransactionVehiclesStats]
     @field(resolver: "SeatsTripTerminalTransactionResolver@vehiclesStats")
-  seatsTripTerminalTransactionsTimeStats(partner_id: ID, terminal_id: ID, period: String): [SeatsTripTransactionTimeStats]
+  seatsTripTerminalTransactionsTimeStats(partner_id: ID, terminal_id: ID, period: String, scope: String): [SeatsTripTransactionTimeStats]
     @field(resolver: "SeatsTripTerminalTransactionResolver@timeStats")
 
   # Seats Trip Booking
@@ -669,8 +682,15 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # Terminal
   terminals(partner_id: ID): [Terminal] @all(scopes: ["partner"])
 
+  # Device
+  devices(partner_id: ID): [Device] @all(scopes: ["partner"])
+
   # Supervisor
   supervisors(partner_id: ID): [Supervisor] @all(scopes: ["partner"])
+
+  # Fund Transactions
+  fundTransactions(searchFor: String, searchQuery: String, period: String): [UserTransaction]
+    @paginate(scopes: ["period", "search"], defaultCount: 50)
 }
 
 # Admin|User Guard
@@ -744,7 +764,7 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "SeatsTripBookingResolver@pre")
 
   # User Transaction
-  userTransactions(user_id: ID! @eq): [UserTransaction] @all
+  userFundTransactions(user_id: ID! @eq): [UserTransaction] @all
 
   # Business Trip Rating
   businessTripRatings(log_id: String! @eq): [BusinessTripRating] @all
@@ -852,6 +872,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import businessTripEvent.graphql
 #import seatsTripEvent.graphql
 #import terminal.graphql
+#import device.graphql
 #import userTransaction.graphql
 #import supervisor.graphql
 #import businessTripRating.graphql

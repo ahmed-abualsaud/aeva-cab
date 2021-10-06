@@ -4,11 +4,9 @@ input CreatePartnerInput {
   phone1: String! @rules(apply: ["required", "unique:partners,phone1"])
   phone2: String
   classification: String
-  size: String
   logo: Upload
   type: String! @rules(apply: ["in:PLAYGROUND,TOSCHOOL,TOWORK,SEATS"])
   license_expires_on: String
-  max_no_of_trips: Int
   paymob_id: ID
 }
 
@@ -22,8 +20,8 @@ input UpdatePartnerInput @validator {
   phone2: String
   logo: Upload
   license_expires_on: String
-  max_no_of_trips: Int
   paymob_id: ID
+  telescope_id: ID
 }
 
 input PartnerDriverInput {
@@ -49,15 +47,13 @@ type Partner {
   phone1: String
   phone2: String
   logo: String
-  size: String 
   license_expires_on: String
-  created_at: String
-  updated_at: String
-  max_no_of_trips: Int
-  type: String
   paymob_id: ID
+  telescope_id: ID
+  type: String
   users: [User] @hasMany
   drivers: [Driver] @belongsToMany
-  trips: [BusinessTrip] @hasMany
   documents: [Document] @morphMany
+  created_at: String
+  updated_at: String
 }

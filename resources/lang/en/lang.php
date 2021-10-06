@@ -102,6 +102,7 @@ return [
     'no_chat_messages' => 'We could not able to find this chat messages',
     'not_available_name' => 'The chosen name is not available',
     'terminal_exist' => 'This terminal already exists',
+    'device_exist' => 'This device already exists',
     'not_available_phone' => 'The chosen phone is not available',
     'not_available_email' => 'The chosen email is not available',
     'not_available_arabic_name' => 'The chosen arabic name is not available',

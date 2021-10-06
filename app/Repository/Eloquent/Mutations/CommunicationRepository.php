@@ -188,7 +188,7 @@ class CommunicationRepository extends BaseRepository implements CommunicationRep
                     '__typename' => 'Sender'
                 ],
                 'sender_type' => $msg['sender_type'],
-                '__typename' => 'Message'
+                '__typename' => 'BusinessTripChat'
             ];
     
             broadcast(new MessageSent($this->getChannelName($args), $res))->toOthers();
