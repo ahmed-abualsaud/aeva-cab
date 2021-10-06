@@ -6,7 +6,7 @@ input CreateStudentSubscriptionInput {
   is_scheduled: Boolean
   is_absent: Boolean
   is_picked_up: Boolean
-  days: UserDays
+  days: UserDaysInput
   payable: Float! @rules(apply: ["required"])
   due_date: String
 }
@@ -20,9 +20,16 @@ input UpdateStudentSubscriptionInput {
   is_scheduled: Boolean
   is_absent: Boolean
   is_picked_up: Boolean
-  days: UserDays
+  days: UserDaysInput
   payable: Float
   due_date: String
+}
+
+input RescheduleStudentAttendanceInput {
+  user_id: ID! @rules(apply: ["required"])
+  student_id: ID! @rules(apply: ["required"])
+  trip_id: ID! @rules(apply: ["required"])
+  days: UserDaysInput! @rules(apply: ["required"])
 }
 
 type StudentSubscription {

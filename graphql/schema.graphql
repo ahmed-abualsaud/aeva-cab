@@ -448,17 +448,24 @@ extend type Mutation @guard(with: ["user"]) {
     @field(resolver: "SeatsTripRatingResolver@update")
 
   # Student
-  createStudent(input: CreateStudentInput! @spread): Student @create
-  updateStudent(input: UpdateStudentInput! @spread): Student @update
-  deleteStudent(id: ID!): Student @delete
+  createStudent(input: CreateStudentInput! @spread): Student
+    @field(resolver: "StudentResolver@create")
+  updateStudent(input: UpdateStudentInput! @spread): Student
+    @field(resolver: "StudentResolver@update")
+  deleteStudent(id: [ID!]!): Boolean
+    @field(resolver: "StudentResolver@destroy")
+
 
   # Student Subscription
   createStudentSubscription(input: CreateStudentSubscriptionInput! @spread): StudentSubscription
     @field(resolver: "StudentSubscriptionResolver@create")
   updateStudentSubscription(input: UpdateStudentSubscriptionInput! @spread): StudentSubscription
     @field(resolver: "StudentSubscriptionResolver@update")
-  deleteStudentSubscription(id: ID!): StudentSubscription
+  deleteStudentSubscription(id: [ID!]!): Boolean
     @field(resolver: "StudentSubscriptionResolver@destroy")
+
+  rescheduleStudentAttendance(input: RescheduleStudentAttendanceInput! @spread): Boolean
+    @field(resolver: "StudentSubscriptionResolver@reschedule")
 }
 
 # -- QUERIES --

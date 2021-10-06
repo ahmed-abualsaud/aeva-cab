@@ -22,7 +22,7 @@ class CreateBusinessTripStudentsTable extends Migration
             $table->boolean('is_scheduled')->default(true);
             $table->boolean('is_absent')->default(false);
             $table->boolean('is_picked_up')->default(false);
-            $table->json('days')->nullable();
+            $table->json('days');
             $table->float('payable', 8, 2)->default(0.00);
             $table->date('due_date')->nullable();
             $table->timestamps();

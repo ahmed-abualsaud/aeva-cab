@@ -112,5 +112,7 @@ return [
     'update_failed' => 'لم نتمكن من التحديث',
     'insufficient_balance' => 'رصيد المحفظة لا يكفي لاتمام هذه العمليه',
     'supervisor_not_found' => 'هذا المشرف غير موجود',
-    'rating_not_found' => "هذا التقييم غير موجود"
+    'rating_not_found' => 'هذا التقييم غير موجود',
+    'trip_schedule_required' => 'رجاء ادخال جدول للرحلة',
+    'student_not_found' => 'هذا الطالب غير موجود'
 ];

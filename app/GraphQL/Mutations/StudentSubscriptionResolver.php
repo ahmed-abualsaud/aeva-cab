@@ -27,6 +27,11 @@ class StudentSubscriptionResolver
         return $this->studentSubscriptionRepository->update($args);
     }
 
+    public function reschedule($_, array $args)
+    {
+        return $this->studentSubscriptionRepository->reschedule($args);
+    }
+
     public function destroy($_, array $args)
     {
         return $this->studentSubscriptionRepository->destroy($args);

@@ -4,6 +4,7 @@ input CreateBusinessTripAttendanceInput {
   user_id: ID! @rules(apply: ["required"])
   is_absent: Boolean
   comment: String
+  students: [Int]
 }
 
 type BusinessTripAttendance {

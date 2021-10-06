@@ -28,6 +28,7 @@ input UpdateSchoolGradeInput @validator {
 
 input CreateSchoolRequestInput {
   user_id: ID! @rules(apply: ["required"])
+  student_id: ID! @rules(apply: ["required"])
   city_id: ID! @rules(apply: ["required"])
   school_id: ID! @rules(apply: ["required"])
   grade_id: ID

@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Mutations;
 
 use App\Driver;
+use App\Student;
 use App\BusinessTrip;
 use App\BusinessTripEntry;
 use App\BusinessTripEvent;
@@ -115,21 +116,32 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
 
     public function changePickupStatus(array $args)
     {
-        $this->updateUserStatus(
-            $args['trip_id'], ['is_picked_up' => $args['is_picked_up']], $args['user_id']
-        );
-
-        $data = array([
-            'user_id' => $args['user_id'],
-            'user_name' => $args['user_name'],
+        $data = [
             'status' => $args['is_picked_up'] ? 'picked up' : 'dropped off',
             'at' => date("Y-m-d H:i:s"),
             'lat' => $args['latitude'],
             'lng' => $args['longitude'],
             'by' => 'user'
-        ]);
-        
-        return $this->updateEventPayload($args['log_id'], $data);
+        ];
+
+        if(BusinessTrip::find($args['trip_id'])['type'] == 'TOSCHOOL') {
+            $this->updateStudentStatus(
+                $args['trip_id'], ['is_picked_up' => $args['is_picked_up']], $args['user_id']
+            );
+
+            $data['student_id'] = $args['user_id'];
+            $data['student_name'] = $args['user_name'];
+        }
+        else {
+            $this->updateUserStatus(
+                $args['trip_id'], ['is_picked_up' => $args['is_picked_up']], $args['user_id']
+            );
+
+            $data['user_id'] = $args['user_id'];
+            $data['user_name'] = $args['user_name'];
+        }
+
+        return $this->updateEventPayload($args['log_id'], array($data));
     }
 
     public function changeAttendanceStatus(array $args)
@@ -139,22 +151,42 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
             ['is_absent' => $args['is_absent']]
         );
 
-        $this->updateUserStatus(
-            $args['trip_id'], ['is_absent' => $args['is_absent']], $args['user_id']
-        );
-
-        $this->attendanceNotification($args);
-
-        $payload = array([
-            'user_id' => $args['user_id'],
-            'user_name' => $args['user_name'],
+        $data = [
             'status' => $args['is_absent'] ? 'absent' : 'present',
             'at' => date("Y-m-d H:i:s"),
             'lat' => $args['latitude'],
             'lng' => $args['longitude'],
             'by' => $args['by']
-        ]);
-        
+        ];
+
+        if(BusinessTrip::find($args['trip_id'])['type'] == 'TOSCHOOL') 
+        {
+            $students_ids = BusinessTripAttendance::whereStudents($args);
+            $students = Student::select('id', 'name')->whereIn('id', $students_ids)->get();
+            
+            $this->updateStudentStatus(
+                $args['trip_id'], ['is_absent' => $args['is_absent']], $students_ids
+            );
+
+            foreach($students as $student) {
+                $data['student_id'] = $student['id'];
+                $data['student_name'] = $student['name'];
+                $payload[] = $data;
+            }
+        }
+        else 
+        {
+            $this->updateUserStatus(
+                $args['trip_id'], ['is_absent' => $args['is_absent']], $args['user_id']
+            );
+
+            $data['user_id'] = $args['user_id'];
+            $data['user_name'] = $args['user_name'];
+            $payload[] = $data;
+        }
+
+        $this->attendanceNotification($args);
+
         return $this->updateEventPayload($args['log_id'], $payload);
     }
 
@@ -162,30 +194,26 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     {
         $msg = __('lang.welcome_trip');
 
-        return $this->pickOrDropUsers($args, true, $msg);
+        if(BusinessTrip::find($args['trip_id'])['type'] == 'TOSCHOOL') {
+            return $this->pickOrDropStudents($args, true, $msg);
+        }
+        else {
+            return $this->pickOrDropUsers($args, true, $msg);
+        }
     }
 
     public function dropUsers(array $args)
     {
         $msg = __('lang.bye_trip');
 
-        $this->createUsersRatings($args);
-        
-        return $this->pickOrDropUsers($args, false, $msg);
-    }
-
-    public function pickStudents(array $args)
-    {
-        $msg = __('lang.welcome_trip');
-
-        return $this->pickOrDropStudents($args, true, $msg);
-    }
-
-    public function dropStudents(array $args)
-    {
-        $msg = __('lang.bye_trip');
-        
-        return $this->pickOrDropStudents($args, false, $msg);
+        if(BusinessTrip::find($args['trip_id'])['type'] == 'TOSCHOOL') {
+            return $this->pickOrDropStudents($args, false, $msg);
+        }
+        else
+        {
+            $this->createUsersRatings($args);
+            return $this->pickOrDropUsers($args, false, $msg);
+        }
     }
 
     public function updateDriverLocation(array $args)
@@ -214,10 +242,19 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
 
         $trip->update(['log_id' => null, 'starts_at' => null, 'ready_at' => null]);
 
-        $this->updateUserStatus(
-            $args['trip_id'],
-            ['is_picked_up' => false, 'is_absent' => false, 'is_scheduled' => true]
-        );
+        if(BusinessTrip::find($args['trip_id'])['type'] == 'TOSCHOOL')
+        {
+            $this->updateStudentStatus(
+                $args['trip_id'],
+                ['is_picked_up' => false, 'is_absent' => false, 'is_scheduled' => true]
+            );
+        }
+        else {
+            $this->updateUserStatus(
+                $args['trip_id'],
+                ['is_picked_up' => false, 'is_absent' => false, 'is_scheduled' => true]
+            );
+        }
 
         return $this->closeTripEvent($args, $logId, $trip);
     }
@@ -286,14 +323,14 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     protected function pickOrDropStudents($args, $is_picked_up, $msg)
     {
         try {
-            $student_ids = Arr::pluck($args['students'], 'id');
+            $student_ids = Arr::pluck($args['users'], 'id');
 
             $this->updateStudentStatus(
                 $args['trip_id'], ['is_picked_up' => $is_picked_up], $student_ids
             );
 
             SendPushNotification::dispatch(
-                $this->usersToken($this->getStudentsParents($args['trip_id'], $args['students'])), 
+                $this->usersToken($this->getStudentsParents($args['trip_id'], $student_ids)), 
                 $msg, 
                 $args['trip_name'],
                 ['view' => 'BusinessTripUserStatus', 'id' => $args['trip_id']]
@@ -307,7 +344,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
                 'by' => 'driver'
             ];
 
-            foreach($args['students'] as $student) {
+            foreach($args['users'] as $student) {
                 $payload['student_id'] = $student['id'];
                 $payload['student_name'] = $student['name'];
                 $data[] = $payload;
@@ -407,10 +444,20 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     protected function checkAbsence($trip_id)
     {
         try {
-            $absent_users = BusinessTripAttendance::whereAbsent($trip_id);
+            if(BusinessTrip::find($trip_id)['type'] == 'TOSCHOOL')
+            {
+                $absent_students = BusinessTripAttendance::whereAbsentStudents($trip_id);
 
-            if ($absent_users) 
-                $this->updateUserStatus($trip_id, ['is_absent' => true], $absent_users);
+                if ($absent_students) 
+                    $this->updateStudentStatus($trip_id, ['is_absent' => true], $absent_students);
+            }
+            else
+            {
+                $absent_users = BusinessTripAttendance::whereAbsent($trip_id);
+
+                if ($absent_users) 
+                    $this->updateUserStatus($trip_id, ['is_absent' => true], $absent_users);
+            }
         } catch(\Exception $e) {
             //
         }
@@ -419,8 +466,9 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     protected function checkSchedule($trip_id)
     {
         try {
-            if(BusinessTrip::find($trip_id)['type'] == 'TOSCHOOL') {
-                $this->updateAllStudentsScheduleStatus($trip_id, ['is_scheduled' => false]);
+            if(BusinessTrip::find($trip_id)['type'] == 'TOSCHOOL') 
+            {
+                StudentSubscription::whereNotScheduled($trip_id)->update(['is_scheduled' => false]);
             }
             else {
                 $not_scheduled_users = BusinessTripSchedule::whereNotScheduled($trip_id);

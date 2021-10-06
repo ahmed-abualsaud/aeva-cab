@@ -4,6 +4,8 @@ namespace App\Repository\Eloquent\Mutations;
 
 use App\StudentSubscription;
 use App\BusinessTripSchedule;
+use App\BusinessTripAttendance;
+use App\Exceptions\CustomException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repository\Eloquent\BaseRepository;
 
@@ -18,15 +20,18 @@ class StudentSubscriptionRepository extends BaseRepository
     {
         $input = collect($args)->except(['directive'])->toArray();
 
-        if(!array_key_exists('days', $input))
+        if(array_key_exists('days', $input))
+            $input['days'] = json_encode($args['days']);
+        else 
         {
             $schedule = BusinessTripSchedule::where('trip_id', $args['trip_id'])
                 ->where('user_id', $args['user_id'])->first();
 
             if($schedule != null)
                 $input['days'] = $schedule['days'];
+                
+            else throw new CustomException(__('lang.trip_schedule_required'));
         } 
-        else $input['days'] = json_encode($args['days']);
         
         return $this->model->create($input);
     }
@@ -44,13 +49,15 @@ class StudentSubscriptionRepository extends BaseRepository
             throw new \Exception(__('lang.student_subscription_not_found'));
         }
 
-        return $supervisor->update($input);
+        $subscription->update($input);
+
+        return $subscription;
     }
 
     public function reschedule(array $args)
     {
         return $this->model->where('student_id', $args['student_id'])
-            ->where('trip_id', $trip_id)->where('user_id', $user_id)
+            ->where('trip_id', $args['trip_id'])->where('user_id', $args['user_id'])
             ->update(['days' => json_encode($args['days'])]);        
     }
 

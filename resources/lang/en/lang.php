@@ -112,5 +112,7 @@ return [
     'update_failed' => 'We could not able to update',
     'insufficient_balance' => 'Your wallet balance is insufficient',
     'supervisor_not_found' => 'Supervisor not found',
-    'rating_not_found' => "Rating not found"
+    'rating_not_found' => 'Rating not found',
+    'trip_schedule_required' => 'Trip schedule required',
+    'student_not_found' => 'Student not found'
 ];
