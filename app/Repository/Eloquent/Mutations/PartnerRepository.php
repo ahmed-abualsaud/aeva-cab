@@ -6,8 +6,10 @@ use App\Partner;
 use App\PartnerUser;
 use App\PartnerDriver;
 use App\Traits\HandleUpload;
-use App\Exceptions\CustomException;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use App\Exceptions\CustomException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Mutations\PartnerRepositoryInterface;
@@ -23,7 +25,7 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
 
     public function create(array $args)
     {
-        $input = collect($args)->except(['directive', 'logo'])->toArray();
+        $input = collect($args)->except(['directive', 'logo', 'createTelescopeAccount'])->toArray();
         $input['password'] = Hash::make($input['phone1']);
 
         if (array_key_exists('logo', $args) && $args['logo']) {
@@ -31,6 +33,21 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
             $input['logo'] = $url;
         }
          
+        if (array_key_exists('createTelescopeAccount', $args) && $args['createTelescopeAccount']) {
+            $response = Http::withBasicAuth('qruz', '123456789')
+                ->post('http://localhost:8082/api/partner/register', [
+
+                'name' => $args['name'],
+                'email' => $args['email'],
+                'phone' => $args['phone1'],
+                'password' => $args['phone1'],
+                'deviceLimit' => -1
+
+            ])->throw();
+
+            $input['telescope_id'] = $response['data']['userId'];
+        }
+
         $partner = $this->model->create($input);
 
         return $partner;
@@ -51,6 +68,15 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
             $url = $this->uploadOneFile($args['logo'], 'images');
             $input['logo'] = $url;
         }
+
+        $url = 'http://localhost:8082/api/partner/'.$partner->telescope_id;
+        $params = Arr::only($args, ['name', 'email', 'phone1']);
+
+        if (array_key_exists('phone1', $params)) {
+            $params['phone'] = $params['phone1'];
+            unset($params['phone1']);
+        }        
+        $response = Http::withBasicAuth('qruz', '123456789')->put($url, $params)->throw();
 
         $partner->update($input);
 
@@ -201,5 +227,19 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
 
         return __('lang.password_changed');
 
+    }
+
+    public function destroy(array $args) {
+        try {
+            $partner = $this->model->findOrFail($args['id']);
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception(__('lang.partner_not_found'));
+        }
+
+        $url = 'http://localhost:8082/api/partner/'.$partner->telescope_id;
+        Http::withBasicAuth('qruz', '123456789')->delete($url)->throw();
+        $partner->delete();
+
+        return true;
     }
 }

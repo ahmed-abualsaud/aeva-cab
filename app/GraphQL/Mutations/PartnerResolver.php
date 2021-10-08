@@ -57,4 +57,9 @@ class PartnerResolver
     {
         return $this->partnerRepository->updatePassword($args);
     }
+
+    public function destroy($_, array $args)
+    {
+        return $this->partnerRepository->destroy($args);
+    }
 }
