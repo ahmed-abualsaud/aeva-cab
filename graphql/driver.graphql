@@ -57,7 +57,7 @@ type Driver {
   code: String
   created_at: String
   updated_at: String
-  fleet: Fleet @belongsTo
+  partners: [Partner] @hasMany
   trips: [BusinessTrip] @hasMany
   vehicles: [Vehicle] @hasMany
   documents: [Document] @morphMany

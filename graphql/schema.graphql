@@ -371,6 +371,10 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "SeatsTripEventResolver@pickUser")
   dropSeatsTripUser(input: DropSeatsTripUserInput! @spread): Boolean 
     @field(resolver: "SeatsTripEventResolver@dropUser")
+
+  # Seats Trip Terminal Payment
+  createSeatsTripPosTransaction(input: CreateSeatsTripPosTransactionInput! @spread): Boolean
+    @field(resolver: "SeatsTripPosTransactionResolver@create")
 }
 
 # Admin|Partner|User Guard
@@ -641,6 +645,8 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @field(resolver: "SeatsTripTerminalTransactionResolver@vehiclesStats")
   seatsTripTerminalTransactionsTimeStats(partner_id: ID, terminal_id: ID, period: String, scope: String): [SeatsTripTransactionTimeStats]
     @field(resolver: "SeatsTripTerminalTransactionResolver@timeStats")
+  seatsTripPosTransactions(partner_id: ID, period: String, searchFor: String, searchQuery: String): [SeatsTripPosTransaction]
+    @paginate(scopes: ["partner", "period", "search"], defaultCount: 50)
 
   # Seats Trip Booking
   seatsTripBookings(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String, status: String): [SeatsTripBooking]

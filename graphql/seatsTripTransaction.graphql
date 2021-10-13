@@ -8,6 +8,14 @@ input CreateSeatsTripAppTransactionInput {
   notes: String
 }
 
+input CreateSeatsTripPosTransactionInput {
+  trx_id: ID
+  partner_id: ID! @rules(apply: ["required"])
+  driver_id: ID! @rules(apply: ["required"])
+  vehicle_id: ID! @rules(apply: ["required"])
+  amount: Float! @rules(apply: ["required"])
+}
+
 input UpdateSeatsTripTerminalTransactionInput {
   id: ID! @rules(apply: ["required"])
   amount: Float! @rules(apply: ["required"])
@@ -25,6 +33,16 @@ type SeatsTripAppTransaction {
   notes: String
   created_by: String
   created_at: String
+}
+
+type SeatsTripPosTransaction {
+  id: ID
+  driver: Driver @belongsTo
+  vehicle: Vehicle @belongsTo
+  amount: Float
+  trx_id: ID
+  created_at: String
+  updated_at: String
 }
 
 type SeatsTripTerminalTransaction {
