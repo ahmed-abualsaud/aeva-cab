@@ -279,6 +279,11 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   # Seats Trip Terminal Transaction
   updateSeatsTripTerminalTransaction(input: UpdateSeatsTripTerminalTransactionInput! @spread): SeatsTripTerminalTransaction @update
   deleteSeatsTripTerminalTransaction(id: ID!): SeatsTripTerminalTransaction @delete
+
+  # Seats Trip POS Transaction
+  updateSeatsTripPosTransaction(input: UpdateSeatsTripTerminalTransactionInput! @spread): SeatsTripPosTransaction @update
+  deleteSeatsTripPosTransaction(id: ID!): SeatsTripPosTransaction @delete
+  
 }
 
 # Admin|User Guard
