@@ -10,8 +10,10 @@ class SeatsTripPosTransaction extends Model
 {
     use Filterable;
     use Searchable;
-    
+
     protected $guarded = [];
+
+    public $timestamps = false;
 
     public function partner()
     {
