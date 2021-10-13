@@ -23,6 +23,7 @@ use App\Repository\Queries\SeatsTripAppTransactionRepositoryInterface;
 use App\Repository\Queries\SeatsTripBookingRepositoryInterface;
 use App\Repository\Queries\SeatsTripRepositoryInterface;
 use App\Repository\Queries\SeatsTripTerminalTransactionRepositoryInterface;
+use App\Repository\Queries\SeatsTripPosTransactionRepositoryInterface;
 use App\Repository\Queries\VehicleRepositoryInterface;
 
 # Repositories
@@ -41,6 +42,7 @@ use App\Repository\Eloquent\Queries\SeatsTripAppTransactionRepository;
 use App\Repository\Eloquent\Queries\SeatsTripBookingRepository;
 use App\Repository\Eloquent\Queries\SeatsTripRepository;
 use App\Repository\Eloquent\Queries\SeatsTripTerminalTransactionRepository;
+use App\Repository\Eloquent\Queries\SeatsTripPosTransactionRepository;
 use App\Repository\Eloquent\Queries\SeatsTripUserRepository;
 use App\Repository\Eloquent\Queries\VehicleRepository;
 
@@ -101,6 +103,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(SeatsTripBookingRepositoryInterface::class, SeatsTripBookingRepository::class);
         $this->app->bind(SeatsTripRepositoryInterface::class, SeatsTripRepository::class);
         $this->app->bind(SeatsTripTerminalTransactionRepositoryInterface::class, SeatsTripTerminalTransactionRepository::class);
+        $this->app->bind(SeatsTripPosTransactionRepositoryInterface::class, SeatsTripPosTransactionRepository::class);
         $this->app->bind(VehicleRepositoryInterface::class, VehicleRepository::class);
 
         $this->app->when(BusinessTripAttendanceResolver::class)

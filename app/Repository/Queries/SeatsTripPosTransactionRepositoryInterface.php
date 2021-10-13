@@ -2,7 +2,7 @@
 
 namespace App\Repository\Queries;
 
-interface SeatsTripTerminalTransactionRepositoryInterface
+interface SeatsTripPosTransactionRepositoryInterface
 {
     public function vehiclesStats(array $args);
     public function timeStats(array $args);

@@ -21,44 +21,6 @@ class SeatsTripTerminalTransactionRepository extends BaseRepository implements S
         $this->partner = $partner;
     }
 
-    public function stats(array $args)
-    {
-        $transactions = $this->model->query();
-
-        $transactionsGroup = $this->model->selectRaw('
-            DATE_FORMAT(created_at, "%a, %b %d, %Y") as date,
-            ROUND(SUM(amount), 2) as sum
-        ');
-
-        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
-            $paymobID = $this->partner->getPaymobID($args['partner_id']);
-            $transactions = $transactions->where('partner_id', $paymobID);
-            $transactionsGroup = $transactionsGroup->where('partner_id', $paymobID);
-        }
-
-        if (array_key_exists('terminal_id', $args) && $args['terminal_id']) {
-            $transactions = $transactions->where('terminal_id', $args['terminal_id']);
-            $transactionsGroup = $transactionsGroup->where('terminal_id', $args['terminal_id']);
-        }
-
-        if (array_key_exists('period', $args) && $args['period']) {
-            $transactions = $this->dateFilter($args['period'], $transactions, 'created_at');
-            $transactionsGroup = $this->dateFilter($args['period'], $transactionsGroup, 'created_at');
-        }
-
-        $transactionCount = $transactions->count();
-        $transactionSum = $transactions->sum('amount');
-        $transactionsGroup = $transactionsGroup->groupBy('date')->get();
-
-        $response = [
-            'count' => $transactionCount,
-            'sum' => round($transactionSum, 2),
-            'transactions' => $transactionsGroup
-        ];
-
-        return $response;
-    }
-
     public function vehiclesStats(array $args)
     {
         $vehicles = $this->model->selectRaw('

@@ -642,16 +642,16 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @paginate(scopes: ["partner", "trip", "period", "search"])
   seatsTripTerminalTransactions(partner_id: ID, terminal_id: ID, period: String, searchFor: String, searchQuery: String): [SeatsTripTerminalTransaction]
     @paginate(scopes: ["partner", "terminal", "period", "search"])
-  seatsTripAppTransactionsStats(partner_id: ID, period: String): SeatsTripTransactionStats
-    @field(resolver: "SeatsTripAppTransactionResolver@stats")
-  seatsTripTerminalTransactionsStats(partner_id: ID, terminal_id: ID, period: String): SeatsTripTransactionStats
-    @field(resolver: "SeatsTripTerminalTransactionResolver@stats")
   seatsTripTerminalTransactionsVehiclesStats(partner_id: ID, period: String): [SeatsTripTransactionVehiclesStats]
     @field(resolver: "SeatsTripTerminalTransactionResolver@vehiclesStats")
   seatsTripTerminalTransactionsTimeStats(partner_id: ID, terminal_id: ID, period: String, scope: String): [SeatsTripTransactionTimeStats]
     @field(resolver: "SeatsTripTerminalTransactionResolver@timeStats")
   seatsTripPosTransactions(partner_id: ID, period: String, searchFor: String, searchQuery: String): [SeatsTripPosTransaction]
     @paginate(scopes: ["partner", "period", "search"], defaultCount: 50)
+  seatsTripPosTransactionsVehiclesStats(partner_id: ID, period: String): [SeatsTripTransactionVehiclesStats]
+    @field(resolver: "SeatsTripPosTransactionResolver@vehiclesStats")
+  seatsTripPosTransactionsTimeStats(partner_id: ID, vehicle_id: ID, period: String, scope: String): [SeatsTripTransactionTimeStats]
+    @field(resolver: "SeatsTripPosTransactionResolver@timeStats")
 
   # Seats Trip Booking
   seatsTripBookings(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String, status: String): [SeatsTripBooking]
