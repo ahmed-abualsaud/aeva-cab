@@ -376,10 +376,6 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "SeatsTripEventResolver@pickUser")
   dropSeatsTripUser(input: DropSeatsTripUserInput! @spread): Boolean 
     @field(resolver: "SeatsTripEventResolver@dropUser")
-
-  # Seats Trip Terminal Payment
-  createSeatsTripPosTransaction(input: CreateSeatsTripPosTransactionInput! @spread): Boolean
-    @field(resolver: "SeatsTripPosTransactionResolver@create")
 }
 
 # Admin|Partner|User Guard
@@ -460,6 +456,13 @@ extend type Mutation @guard(with: ["user"]) {
   # Seats Trip Rating
   updateSeatsTripRating(input: UpdateSeatsTripRatingInput! @spread): SeatsTripRating
     @field(resolver: "SeatsTripRatingResolver@update")
+}
+
+# Driver Guard
+extend type Mutation @guard(with: ["driver"]) {
+  # Seats Trip POS Transaction
+  createSeatsTripPosTransaction(input: CreateSeatsTripPosTransactionInput! @spread): SeatsTripPosTransaction
+    @field(resolver: "SeatsTripPosTransactionResolver@create")
 }
 
 # -- QUERIES --
