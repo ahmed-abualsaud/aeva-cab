@@ -59,7 +59,7 @@ class Driver extends Authenticatable implements JWTSubject
     public function partners()
     {
         return $this->belongsToMany(Partner::class, 'partner_drivers')
-            ->select('id', 'name');
+            ->select('id', 'name', 'logo');
     }
 
     public function vehicles()
