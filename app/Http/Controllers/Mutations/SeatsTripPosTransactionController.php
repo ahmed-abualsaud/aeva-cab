@@ -27,6 +27,7 @@ class SeatsTripPosTransactionController
             'partner_id' => ['required'],
             'driver_id' => ['required'],
             'vehicle_id' => ['required'],
+            'tickets' => ['required'],
             'amount' => ['required']
         ]);
 

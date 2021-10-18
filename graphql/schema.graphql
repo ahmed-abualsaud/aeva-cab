@@ -461,7 +461,7 @@ extend type Mutation @guard(with: ["user"]) {
 # Driver Guard
 extend type Mutation @guard(with: ["driver"]) {
   # Seats Trip POS Transaction
-  createSeatsTripPosTransaction(input: CreateSeatsTripPosTransactionInput! @spread): SeatsTripPosTransaction
+  createSeatsTripPosTransaction(input: CreateSeatsTripPosTransactionInput! @spread): [SeatsTripPosTransaction]
     @field(resolver: "SeatsTripPosTransactionResolver@create")
 }
 

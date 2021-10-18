@@ -13,6 +13,7 @@ input CreateSeatsTripPosTransactionInput {
   partner_id: ID! @rules(apply: ["required"])
   driver_id: ID! @rules(apply: ["required"])
   vehicle_id: ID! @rules(apply: ["required"])
+  tickets: Int! @rules(apply: ["required"])
   amount: Float! @rules(apply: ["required"])
 }
 
@@ -37,12 +38,11 @@ type SeatsTripAppTransaction {
 
 type SeatsTripPosTransaction {
   id: ID
+  trx_id: ID
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
   amount: Float
-  trx_id: ID
   created_at: String
-  updated_at: String
 }
 
 type SeatsTripTerminalTransaction {

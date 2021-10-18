@@ -20,7 +20,7 @@ class CreateSeatsTripPosTransactionsTable extends Migration
             $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->unsignedBigInteger('trx_id')->nullable();
             $table->float('amount', 8, 2);
-            $table->dateTime('created_at')->useCurrent();
+            $table->dateTime('created_at');
 
             $table->index('partner_id');
             $table->index('vehicle_id');
