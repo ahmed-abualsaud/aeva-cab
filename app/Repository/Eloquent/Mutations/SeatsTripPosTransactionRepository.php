@@ -33,7 +33,7 @@ class SeatsTripPosTransactionRepository extends BaseRepository
             return $this->model
                 ->where('vehicle_id', $input['vehicle_id'])
                 ->limit($args['tickets'])
-                ->latest()
+                ->latest('id')
                 ->get();
         } else {
             $input['serial'] = $serial;
