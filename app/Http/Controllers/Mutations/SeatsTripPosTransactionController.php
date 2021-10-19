@@ -23,28 +23,37 @@ class SeatsTripPosTransactionController
 
     public function create(Request $request)
     {
-        $validator = Validator::make($request->all(),[
-            'partner_id' => ['required'],
-            'driver_id' => ['required'],
-            'vehicle_id' => ['required'],
-            'tickets' => ['required'],
-            'amount' => ['required']
-        ]);
-
-        if ($validator->fails()) {
+        try {
+            $validator = Validator::make($request->all(),[
+                'partner_id' => ['required'],
+                'driver_id' => ['required'],
+                'vehicle_id' => ['required'],
+                'tickets' => ['required'],
+                'amount' => ['required'],
+                'serial' => ['required'],
+            ]);
+    
+            if ($validator->fails()) {
+                $response = [
+                    'success' => false,
+                    'message' => $validator->errors()->first(),
+                ];
+                return response()->json($response, 400);
+            }
+    
+            $response = [
+                'success' => true,
+                'message' => 'Transaction created successfully',
+                'data' => $this->SeatsTripPosTransactionRepository->create($request->all())
+            ];
+    
+            return $response;
+        } catch (\Exception $e) {
             $response = [
                 'success' => false,
-                'message' => $validator->errors()->first(),
+                'message' => $e->getMessage(),
             ];
             return response()->json($response, 400);
         }
-
-        $response = [
-            'success' => true,
-            'message' => 'Transaction created successfully',
-            'data' => $this->SeatsTripPosTransactionRepository->create($request->all())
-        ];
-
-        return $response;
     }
 }

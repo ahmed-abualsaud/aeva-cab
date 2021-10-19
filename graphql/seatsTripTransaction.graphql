@@ -15,6 +15,7 @@ input CreateSeatsTripPosTransactionInput {
   vehicle_id: ID! @rules(apply: ["required"])
   tickets: Int! @rules(apply: ["required"])
   amount: Float! @rules(apply: ["required"])
+  serial: Int! @rules(apply: ["required"])
 }
 
 input UpdateSeatsTripTerminalTransactionInput {
@@ -39,6 +40,7 @@ type SeatsTripAppTransaction {
 type SeatsTripPosTransaction {
   id: ID
   trx_id: ID
+  serial: Int
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
   amount: Float

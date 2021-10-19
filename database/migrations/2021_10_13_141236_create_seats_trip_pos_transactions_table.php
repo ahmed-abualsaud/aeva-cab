@@ -19,11 +19,13 @@ class CreateSeatsTripPosTransactionsTable extends Migration
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->unsignedBigInteger('trx_id')->nullable();
+            $table->unsignedBigInteger('serial');
             $table->float('amount', 8, 2);
             $table->dateTime('created_at');
 
             $table->index('partner_id');
             $table->index('vehicle_id');
+            $table->index('driver_id');
             $table->index('created_at');
 
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
