@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use Illuminate\Support\Stringable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,8 +26,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->command('database:backup')->cron('0 0 */3 * *')->at('01:00')
+            ->onSuccess(function (Stringable $output) {
+                Log::info('Database backup executed successfully!  output: '.$output);
+            })
+            ->onFailure(function (Stringable $output) {
+                Log::error('Database backup failed with error: '.$output);
+            });
     }
 
     /**

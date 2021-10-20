@@ -13,5 +13,9 @@ return [
     'otp_sender_id' => env('OTP_SENDER_ID'),
     'seats_search_radius' => env('SEATS_SEARCH_RADIUS'),
     'otp_signature' => env('OTP_SIGNATURE'),
+    'db_name' => env('DB_DATABASE', 'qruz'),
+    'db_user' => env('DB_USERNAME', 'root'),
+    'db_pass' => env('DB_PASSWORD', 'rootroot'),
+    'db_backup_path' => env('DB_BACKUP_DIRECTORY', '/var/www/qruz/backup'),
 
 ];
