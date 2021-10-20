@@ -407,6 +407,12 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
   # Promo codes
   applyPromoCode(name: String!, user_id: ID!): PromoCode
     @field(resolver: "PromoCodeResolver@apply")
+
+  # Business Trip Followers
+  createBusinessTripFollower(input: CreateBusinessTripFollowerInput! @spread): Boolean
+    @field(resolver: "FollowerResolver@create")
+  deleteBusinessTripFollower(id: ID!): Boolean
+    @field(resolver: "FollowerResolver@destroy")
 }
 
 # Admin|Partner|Driver Guard
@@ -776,6 +782,12 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   seatsTripRatings(log_id: String! @eq): [SeatsTripRating] @all
   unratedSeatsTrips(user_id: ID!): [SeatsTrip] 
     @all(scopes: ["unrated"], model: "SeatsTripRating")
+
+  
+  # Business Trip Followers
+  followerBusinessTrips(follower_id: ID!): [BusinessTrip] @all(scopes: ["trip"], model: "App\\Follower")
+  userFollowers(user_id: ID! @eq): [Follower] @all(scopes: ["follower"])
+
 }
 
 # Admin|Partner|Driver Guard
@@ -880,3 +892,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import seatsTripRating.graphql
 #import student.graphql
 #import studentSubscription.graphql
+#import follower.graphql

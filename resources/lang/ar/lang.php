@@ -115,5 +115,6 @@ return [
     'supervisor_not_found' => 'هذا المشرف غير موجود',
     'rating_not_found' => 'هذا التقييم غير موجود',
     'trip_schedule_required' => 'رجاء ادخال جدول للرحلة',
-    'student_not_found' => 'هذا الطالب غير موجود'
+    'student_not_found' => 'هذا الطالب غير موجود',
+    'the_following_already_exists' => 'المتابعة موجودة بالفعل'
 ];
