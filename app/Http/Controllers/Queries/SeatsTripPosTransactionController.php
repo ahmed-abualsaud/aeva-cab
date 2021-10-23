@@ -14,12 +14,12 @@ class SeatsTripPosTransactionController
         $this->seatsTripPosTransactionRepository = $seatsTripPosTransactionRepository;
     }
 
-    public function driverMaxSerial($driver_id)
+    public function vehicleMaxSerial($vehicle_id)
     {
         return [
             'success' => true,
-            'message' => 'Driver Max Serial',
-            'data' => $this->seatsTripPosTransactionRepository->driverMaxSerial(['driver_id' => $driver_id])
+            'message' => 'Vehicle Max Serial',
+            'data' => $this->seatsTripPosTransactionRepository->vehicleMaxSerial(['vehicle_id' => $vehicle_id])
         ];
     }
 

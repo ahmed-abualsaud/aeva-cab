@@ -31,7 +31,7 @@ class SeatsTripPosTransactionRepository extends BaseRepository
             }
             $this->model->insert($data);
             return $this->model
-                ->where('driver_id', $input['driver_id'])
+                ->where('vehicle_id', $input['vehicle_id'])
                 ->limit($args['tickets'])
                 ->latest('id')
                 ->get();

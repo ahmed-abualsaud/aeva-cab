@@ -75,10 +75,10 @@ class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsT
             ->addSelect(\DB::raw('DATE_FORMAT(created_at, "%d %b %Y") as time'));
     }
 
-    public function driverMaxSerial(array $args)
+    public function vehicleMaxSerial(array $args)
     {
         return $this->model
-            ->where('driver_id', $args['driver_id'])
+            ->where('vehicle_id', $args['vehicle_id'])
             ->max('serial');
     }
 }
