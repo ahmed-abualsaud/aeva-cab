@@ -7,14 +7,13 @@ use App\Traits\Searchable;
 use Illuminate\Support\Facades\Cache;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable, Searchable, SoftDeletes;
+    use Notifiable, Searchable;
     
     protected $guarded = [];
 
