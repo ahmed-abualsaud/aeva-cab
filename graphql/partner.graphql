@@ -22,6 +22,15 @@ input UpdatePartnerInput @validator {
   license_expires_on: String
   paymob_id: ID
   telescope_id: ID
+  payment_categories: [PaymentCategoriesInput]
+}
+
+input PaymentCategoriesInput {
+  value: Int
+}
+
+type PaymentCategories {
+  value: Int 
 }
 
 input PartnerDriverInput {
@@ -51,6 +60,7 @@ type Partner {
   paymob_id: ID
   telescope_id: ID
   type: String
+  payment_categories: [PaymentCategories]
   users: [User] @hasMany
   drivers: [Driver] @belongsToMany
   documents: [Document] @morphMany

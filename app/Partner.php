@@ -15,6 +15,10 @@ class Partner extends Authenticatable implements JWTSubject
 
     protected $hidden = ['password'];
 
+    protected $casts = [
+        'payment_categories' => 'json',
+    ];
+
     /**
      * Send the password reset notification.
      *

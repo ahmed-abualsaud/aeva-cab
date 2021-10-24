@@ -11,7 +11,6 @@ class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsT
 {
     use Filterable;
 
-
     public function __construct(SeatsTripPosTransaction $model)
     {
         parent::__construct($model);
