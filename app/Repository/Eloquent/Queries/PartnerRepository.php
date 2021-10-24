@@ -29,6 +29,7 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
     public function partnerPaymentCategories(array $args)
     {
         return $this->model->select('payment_categories')
-            ->findOrFail($args['partner_id']);
+            ->findOrFail($args['partner_id'])
+            ->payment_categories;
     }
 }
