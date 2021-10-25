@@ -28,7 +28,6 @@ class CreatePartnersTable extends Migration
             $table->unsignedBigInteger('paymob_id')->nullable();
             $table->unsignedBigInteger('telescope_id')->nullable();
             $table->enum('type', ['TOSCHOOL','TOWORK','PLAYGROUND','SEATS']);
-            $table->json('payment_categories')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

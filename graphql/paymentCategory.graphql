@@ -1,0 +1,18 @@
+input CreatePaymentCategoryInput @validator {
+  partner_id: ID! 
+  value: Float!
+  description: String
+}
+
+input UpdatePaymentCategoryInput @validator {
+  id: ID!
+  partner_id: ID!
+  value: Float!
+  description: String
+}
+
+type PaymentCategory {
+  id: ID
+  value: Float
+  description: String
+}

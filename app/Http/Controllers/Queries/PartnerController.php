@@ -14,13 +14,4 @@ class PartnerController
         $this->partnerRepository = $partnerRepository;
     }
 
-    public function partnerPaymentCategories($partner_id)
-    {
-        return [
-            'success' => true,
-            'message' => 'Partner Payment Categories',
-            'data' => $this->partnerRepository->partnerPaymentCategories(['partner_id' => $partner_id])
-        ];
-    }
-
 }

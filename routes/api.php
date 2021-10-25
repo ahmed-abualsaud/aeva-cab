@@ -78,7 +78,7 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Queries'], functi
     Route::get('/business/trip/users/status/{trip_id?}', 'BusinessTripSubscriptionController@businessTripUsersStatus');
     Route::get('/business/trip/{trip_id}/user/{user_id}/status', 'BusinessTripSubscriptionController@businessTripUserStatus');
     Route::get('/vehicle/{vehicle_id}/max/serial', 'SeatsTripPosTransactionController@vehicleMaxSerial');
-    Route::get('/partner/{partner_id}/payment-categories', 'PartnerController@partnerPaymentCategories');
+    Route::get('/partner/{partner_id}/payment-categories', 'PaymentCategoryController@partnerPaymentCategories');
 });
 
 /*

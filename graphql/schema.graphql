@@ -283,6 +283,11 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   # Seats Trip POS Transaction
   updateSeatsTripPosTransaction(input: UpdateSeatsTripTerminalTransactionInput! @spread): SeatsTripPosTransaction @update
   deleteSeatsTripPosTransaction(id: ID!): SeatsTripPosTransaction @delete
+
+  # Payment Category
+  createPaymentCategory(input: CreatePaymentCategoryInput! @spread): PaymentCategory @create
+  updatePaymentCategory(input: UpdatePaymentCategoryInput! @spread): PaymentCategory @update
+  deletePaymentCategory(id: ID!): PaymentCategory @delete
   
 }
 
@@ -676,6 +681,9 @@ extend type Query @guard(with: ["admin", "partner"]) {
   # Fund Transactions
   fundTransactions(searchFor: String, searchQuery: String, period: String): [UserTransaction]
     @paginate(scopes: ["period", "search"], defaultCount: 50)
+
+  # Payment Categories
+  paymentCategories(partner_id: ID @eq): [PaymentCategory] @all
 }
 
 # Admin|User Guard
@@ -858,6 +866,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import seatsTripEvent.graphql
 #import terminal.graphql
 #import device.graphql
+#import paymentCategory.graphql
 #import userTransaction.graphql
 #import supervisor.graphql
 #import businessTripRating.graphql
