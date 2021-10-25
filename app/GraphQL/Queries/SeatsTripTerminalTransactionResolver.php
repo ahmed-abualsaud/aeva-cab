@@ -12,14 +12,6 @@ class SeatsTripTerminalTransactionResolver
     {
         $this->seatsTripTerminalTransaction = $seatsTripTerminalTransaction;
     }
-    /**
-     * @param  null  $_
-     * @param  array<string, mixed>  $args
-     */
-    public function stats($_, array $args)
-    {
-        return $this->seatsTripTerminalTransaction->stats($args);
-    }
 
     public function vehiclesStats($_, array $args)
     {

@@ -49,6 +49,7 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Mutations'], func
     Route::post('/business/trip/attendance/create', 'BusinessTripAttendanceController@create');
     Route::post('/send/message', 'CommunicationController@sendBusinessTripChatMessage');
     Route::post('/seats/trip/booking/update', 'SeatsTripBookingController@update');
+    Route::post('/seats/trip/pos/transaction', 'SeatsTripPosTransactionController@create');
 });
 
 /*
@@ -76,6 +77,8 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Queries'], functi
     Route::get('/business/trip/{trip_id}/subscribers', 'BusinessTripSubscriptionController@businessTripSubscribers');
     Route::get('/business/trip/users/status/{trip_id?}', 'BusinessTripSubscriptionController@businessTripUsersStatus');
     Route::get('/business/trip/{trip_id}/user/{user_id}/status', 'BusinessTripSubscriptionController@businessTripUserStatus');
+    Route::get('/vehicle/{vehicle_id}/max/serial', 'SeatsTripPosTransactionController@vehicleMaxSerial');
+    Route::get('/partner/{partner_id}/payment-categories', 'PaymentCategoryController@partnerPaymentCategories');
 });
 
 /*

@@ -103,6 +103,7 @@ return [
     'no_chat_messages' => 'لم نتمكن من العثور على رسائل الدردشة هذه',
     'not_available_name' => 'الاسم المختار غير متوفر',
     'terminal_exist' => 'هذا الجهاز موجود بالفعل',
+    'payment_category_exist' => 'فئة الدفع هذه موجوده بالفعل',
     'device_exist' => 'هذا الجهاز موجود بالفعل',
     'not_available_phone' => 'الهاتف المختار غير متوفر',
     'not_available_email' => 'البريد الإلكتروني المختار غير متوفر',
