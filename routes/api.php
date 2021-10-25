@@ -43,8 +43,8 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Mutations'], func
     Route::post('/seats/trip/event/start', 'SeatsTripEventController@start');
     Route::post('/seats/trip/event/end', 'SeatsTripEventController@end');
     Route::post('/seats/trip/event/at/station', 'SeatsTripEventController@atStation');
-    Route::post('/seats/trip/event/pick/users', 'SeatsTripEventController@pickUsers');
-    Route::post('/seats/trip/event/drop/users', 'SeatsTripEventController@dropUsers');
+    Route::post('/seats/trip/event/pick/users', 'SeatsTripEventController@pickUser');
+    Route::post('/seats/trip/event/drop/users', 'SeatsTripEventController@dropUser');
     Route::post('/seats/trip/event/update/driver/location','SeatsTripEventController@updateDriverLocation');
     Route::post('/business/trip/attendance/create', 'BusinessTripAttendanceController@create');
     Route::post('/send/message', 'CommunicationController@sendBusinessTripChatMessage');

@@ -180,7 +180,7 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
             ];
             $this->model->create($input);
         } catch (\Exception $e) {
-            //
+            throw new CustomException($e->getMessage());
         }
     }
 

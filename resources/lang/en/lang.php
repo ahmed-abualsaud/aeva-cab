@@ -41,6 +41,7 @@ return [
     'accept_station_failed' => 'We could not able to accept this station',
     'car_model_not_found' => 'The provided carModel ID is not found',
     'car_type_not_found' => 'The provided carType ID is not found',
+    'message_sent' => 'Message sent successfully',
     'send_message_failed' => 'We could not able to send message to selected recipients',
     'save_message_failed' => 'We could not able to save this message',
     'document_not_found' => 'Document with the provided ID is not found. ',

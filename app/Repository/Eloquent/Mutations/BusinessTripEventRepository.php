@@ -162,6 +162,9 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         if(BusinessTrip::find($args['trip_id'])['type'] == 'TOSCHOOL') 
         {
             $students_ids = BusinessTripAttendance::whereStudents($args);
+            if (count($students_ids) <= 0) {
+                return true;
+            }
             $students = Student::select('id', 'name')->whereIn('id', $students_ids)->get();
             
             $this->updateStudentStatus(
@@ -286,6 +289,10 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     protected function pickOrDropUsers($args, $is_picked_up, $msg)
     {
         try {
+            if (gettype($args['users']) == "string") {
+                $args['users'] = json_decode($args['users'], true);
+            }
+
             $user_ids = Arr::pluck($args['users'], 'id');
 
             $this->updateUserStatus(
@@ -323,6 +330,10 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     protected function pickOrDropStudents($args, $is_picked_up, $msg)
     {
         try {
+            if (gettype($args['users']) == "string") {
+                $args['users'] = json_decode($args['users'], true);
+            }
+
             $student_ids = Arr::pluck($args['users'], 'id');
 
             $this->updateStudentStatus(
@@ -330,7 +341,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
             );
 
             SendPushNotification::dispatch(
-                $this->usersToken($this->getStudentsParents($args['trip_id'], $student_ids)), 
+                $this->usersToken($args['trip_id'], $this->getStudentsParents($args['trip_id'], $student_ids)), 
                 $msg, 
                 $args['trip_name'],
                 ['view' => 'BusinessTripUserStatus', 'id' => $args['trip_id']]
@@ -500,7 +511,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
             ];
             $this->model->create($input);
         } catch (\Exception $e) {
-            //
+            throw new CustomException($e->getMessage());
         }
     }
 

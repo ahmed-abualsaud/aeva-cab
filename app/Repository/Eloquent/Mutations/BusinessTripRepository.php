@@ -120,6 +120,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
         try {
             $arr = [
                 'trip_id' => $args['trip_id'],
+                'due_date' => date('Y-m-d'),
                 'created_at' => now(), 
                 'updated_at' => now()
             ];

@@ -65,7 +65,7 @@ class BusinessTripEventController
             'station_name' => ['required'],
             'log_id' => ['required'],
             'trip_id' => ['required'],
-            'trip_time' => ['required'],
+            'trip_name' => ['required'],
             'latitude' => ['required'],
             'longitude' => ['required']
         ]);

@@ -27,7 +27,7 @@ input ConfirmBusinessTripSubscriptionInput {
 input VerifyBusinessTripSubscriptionInput {
   user_id: ID! @rules(apply: ["required"])
   trip_id: ID! @rules(apply: ["required"])
-  subscription_verified_at: String
+  subscription_verified_at: String @rules(apply: ["required"])
 }
 
 input AssignBusinessTripStationUserInput {

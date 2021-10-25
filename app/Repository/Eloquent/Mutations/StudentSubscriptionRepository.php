@@ -28,7 +28,7 @@ class StudentSubscriptionRepository extends BaseRepository
                 ->where('user_id', $args['user_id'])->first();
 
             if($schedule != null)
-                $input['days'] = $schedule['days'];
+                $input['days'] = json_encode($schedule->days);
                 
             else throw new CustomException(__('lang.trip_schedule_required'));
         } 

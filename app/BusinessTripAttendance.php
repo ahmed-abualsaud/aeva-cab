@@ -40,7 +40,7 @@ class BusinessTripAttendance extends Model
             ->where('user_id', $args['user_id'])
             ->where('date', $args['date'])
             ->pluck('students')
-            ->first();
+            ->flatten();
     }
 
     public function getStudentsAttribute($value) {

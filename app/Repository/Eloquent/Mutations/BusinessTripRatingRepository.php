@@ -27,10 +27,10 @@ class BusinessTripRatingRepository extends BaseRepository
 
         $rating->update($input);
 
-        $avg = $this->model->where('driver_id', $args['driver_id'])
+        $avg = $this->model->where('driver_id', $rating->driver_id)
         ->whereNotNull('rating')->avg('rating');
 
-        Driver::where('id', $args['driver_id'])->update(['rating' => $avg]);
+        Driver::find($rating->driver_id)->update(['rating' => $avg]);
 
         return $rating;
     }

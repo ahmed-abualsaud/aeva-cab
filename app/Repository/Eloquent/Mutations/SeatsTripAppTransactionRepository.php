@@ -4,7 +4,7 @@ namespace App\Repository\Eloquent\Mutations;
 
 use App\SeatsTripAppTransaction;
 use App\Repository\Eloquent\BaseRepository;
-
+use App\SeatsTripBooking;
 
 class SeatsTripAppTransactionRepository extends BaseRepository
 {
@@ -16,6 +16,7 @@ class SeatsTripAppTransactionRepository extends BaseRepository
     public function create(array $args)
     {
         $input = collect($args)->except(['directive'])->toArray();
+        $input['trip_time'] = SeatsTripBooking::find($args['booking_id'])->trip_time;
         return $this->model->create($input);
     }
 

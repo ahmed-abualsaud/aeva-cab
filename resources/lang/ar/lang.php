@@ -41,6 +41,7 @@ return [
     'accept_station_failed' => 'لم نتمكن من قبول هذه المحطة',
     'car_model_not_found' => 'لم يتم العثور على معرّف carModel المقدم',
     'car_type_not_found' => 'لم يتم العثور على معرّف carType المقدم',
+    'message_sent' => 'تم ارسال الرسالة بنجاح',
     'send_message_failed' => 'لم نتمكن من إرسال رسالة إلى المستلمين المحددين',
     'save_message_failed' => 'لم نتمكن من حفظ هذه الرسالة',
     'document_not_found' => 'لم يتم العثور على المستند بالمعرف المقدم',

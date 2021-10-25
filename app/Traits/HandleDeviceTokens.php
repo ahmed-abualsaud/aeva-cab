@@ -61,7 +61,7 @@ trait HandleDeviceTokens
         return User::select('device_id')
             ->where('id', $user_id)
             ->pluck('device_id')
-            ->merge($this->getUserFollowersTokens($trip_id, $user_id))
+            ->merge($this->getUsersFollowersTokens($trip_id, (array) $user_id))
             ->unique()
             ->toArray();
     }

@@ -564,9 +564,9 @@ extend type Query @guard(with: ["user"]) {
   student(id: ID @eq): Student @findOrFail
 
   # Student Subscription
-  studentsSubscriptions(user_id: ID! @eq): [StudentSubscription] @all
+  userStudentsSubscriptions(user_id: ID! @eq): [StudentSubscription] @all
+  tripStudentsSubscriptions(trip_id: ID! @eq): [StudentSubscription] @all
   studentSubscriptions(user_id: ID! @eq , student_id: ID! @eq, trip_id: ID @eq): [StudentSubscription] @all
-  studentsSubscriptions(trip_id: ID! @eq): [StudentSubscription] @all
 }
 
 # Driver Guard

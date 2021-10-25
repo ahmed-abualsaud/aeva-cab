@@ -24,7 +24,7 @@ input CreateMultipleUsersInput {
 
 input UserFromFileInput {
   name: String! @rules(apply: ["required"])
-  phone: Int! @rules(apply: ["required"])
+  phone: String! @rules(apply: ["required"])
 }
 
 input UpdateUserInput @validator {

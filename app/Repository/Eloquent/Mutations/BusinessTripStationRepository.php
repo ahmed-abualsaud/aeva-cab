@@ -50,8 +50,9 @@ class BusinessTripStationRepository extends BaseRepository implements BusinessTr
                 'station_id' => $args['station_id'],
                 'destination_id' => $args['destination_id'],
                 'subscription_verified_at' => now(),
-                'created_at' => now(), 'updated_at' => now(),
-                //'due_date' => '2021-7-8'
+                'created_at' => now(), 
+                'updated_at' => now(),
+                'due_date' => now()
             ];
             return BusinessTripSubscription::upsert($data, ['station_id', 'destination_id', 'updated_at']);
         } catch (\Exception $e) {
