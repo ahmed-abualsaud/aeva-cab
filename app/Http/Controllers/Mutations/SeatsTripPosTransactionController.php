@@ -29,8 +29,7 @@ class SeatsTripPosTransactionController
                 'driver_id' => ['required'],
                 'vehicle_id' => ['required'],
                 'tickets' => ['required'],
-                'amount' => ['required'],
-                'serial' => ['required'],
+                'amount' => ['required']
             ]);
     
             if ($validator->fails()) {

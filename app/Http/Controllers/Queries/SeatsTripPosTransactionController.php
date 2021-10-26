@@ -14,13 +14,4 @@ class SeatsTripPosTransactionController
         $this->seatsTripPosTransactionRepository = $seatsTripPosTransactionRepository;
     }
 
-    public function vehicleMaxSerial($vehicle_id)
-    {
-        return [
-            'success' => true,
-            'message' => 'Vehicle Max Serial',
-            'data' => $this->seatsTripPosTransactionRepository->vehicleMaxSerial(['vehicle_id' => $vehicle_id])
-        ];
-    }
-
 }

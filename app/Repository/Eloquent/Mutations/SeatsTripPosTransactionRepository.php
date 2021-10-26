@@ -15,6 +15,10 @@ class SeatsTripPosTransactionRepository extends BaseRepository
 
     public function create(array $args)
     {
+        $serial = $this->model
+            ->where('vehicle_id', $args['vehicle_id'])
+            ->max('serial') + 1;
+
         $input = [
             'partner_id' => $args['partner_id'],
             'driver_id' => $args['driver_id'],
@@ -22,7 +26,7 @@ class SeatsTripPosTransactionRepository extends BaseRepository
             'amount' => $args['amount'],
             'created_at' => date('Y-m-d H:i:s')
         ];
-        $serial = $args['serial'] + 1;
+
         if ($args['tickets'] > 1) {
             for ($i = 0; $i < $args['tickets']; $i++) {
                 $input['serial'] = $serial;
