@@ -4,8 +4,9 @@ namespace App\Repository\Eloquent\Queries;
 
 use App\Traits\Filterable;
 use App\SeatsTripPosTransaction;
-use App\Repository\Queries\SeatsTripPosTransactionRepositoryInterface;
 use App\Repository\Eloquent\BaseRepository;
+use App\Exports\SeatsTripPosTransactionExport;
+use App\Repository\Queries\SeatsTripPosTransactionRepositoryInterface;
 
 class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsTripPosTransactionRepositoryInterface
 {
@@ -72,5 +73,16 @@ class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsT
 
         return $transactions
             ->addSelect(\DB::raw('DATE_FORMAT(created_at, "%d %b %Y") as time'));
+    }
+
+    public function export($req) 
+    {
+        $partner = $req->query('partner');
+        $period = $req->query('period');
+        $searchFor = $req->query('searchFor');
+        $searchQuery = $req->query('searchQuery');
+
+        return (new SeatsTripPosTransactionExport($partner, $period, $searchFor, $searchQuery))
+            ->download('transactions.xlsx');
     }
 }
