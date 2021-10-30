@@ -97,8 +97,7 @@ class BusinessTrip extends Model
         return $query->whereNull('ready_at')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('days->"$.'.$day.'" <> CAST("null" AS JSON)')
-            ->whereRaw('TIME_TO_SEC(?) between TIME_TO_SEC(days->"$.'.$day.'") - 1800 
-                and TIME_TO_SEC(?)', [date('H:i:s'), '23:59:59']);
+            ->whereRaw('TIME_TO_SEC(?) > TIME_TO_SEC(days->"$.'.$day.'") - 1800', [date('H:i:s')]);
     }
 
     public function scopeSearch($query, $args) 
