@@ -8,7 +8,7 @@ input CreatePartnerInput {
   type: String! @rules(apply: ["in:PLAYGROUND,TOSCHOOL,TOWORK,SEATS"])
   license_expires_on: String
   paymob_id: ID
-  createTelescopeAccount: Boolean
+  create_telescope_account: Boolean
 }
 
 input UpdatePartnerInput @validator {

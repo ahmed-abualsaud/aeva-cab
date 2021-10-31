@@ -294,26 +294,6 @@
   ),
   'cors' => 
   array (
-    'supportsCredentials' => false,
-    'allowedOrigins' => 
-    array (
-      0 => '*',
-    ),
-    'allowedOriginsPatterns' => 
-    array (
-    ),
-    'allowedHeaders' => 
-    array (
-      0 => '*',
-    ),
-    'allowedMethods' => 
-    array (
-      0 => '*',
-    ),
-    'exposedHeaders' => 
-    array (
-    ),
-    'maxAge' => 0,
     'paths' => 
     array (
     ),
@@ -351,6 +331,11 @@
     'otp_sender_id' => 'Qruz',
     'seats_search_radius' => '2000',
     'otp_signature' => 'EcypWXxmHK9',
+    'db_name' => 'qruz',
+    'db_user' => 'root',
+    'db_pass' => 'secret',
+    'db_backup_path' => '/var/www/qruz/backup',
+    'telescope_token' => 'cXJ1ejoxMjM0NTY3ODk=',
   ),
   'database' => 
   array (
@@ -544,8 +529,32 @@
       'failed' => 10080,
       'monitored' => 10080,
     ),
+    'metrics' => 
+    array (
+      'trim_snapshots' => 
+      array (
+        'job' => 24,
+        'queue' => 24,
+      ),
+    ),
     'fast_termination' => false,
     'memory_limit' => 64,
+    'defaults' => 
+    array (
+      'supervisor-1' => 
+      array (
+        'connection' => 'redis',
+        'queue' => 
+        array (
+          0 => 'default',
+        ),
+        'balance' => 'auto',
+        'maxProcesses' => 1,
+        'memory' => 128,
+        'tries' => 1,
+        'nice' => 0,
+      ),
+    ),
     'environments' => 
     array (
       'production' => 
@@ -693,6 +702,7 @@
     'transactional_mutations' => true,
     'force_fill' => true,
     'batchload_relations' => true,
+    'non_null_pagination_results' => false,
     'subscriptions' => 
     array (
       'queue_broadcasts' => true,
@@ -953,7 +963,7 @@
     'cookie' => 'qruz_session',
     'path' => '/',
     'domain' => NULL,
-    'secure' => false,
+    'secure' => NULL,
     'http_only' => true,
     'same_site' => NULL,
   ),
@@ -975,6 +985,9 @@
     array (
       0 => 'web',
       1 => 'Laravel\\Telescope\\Http\\Middleware\\Authorize',
+    ),
+    'only_paths' => 
+    array (
     ),
     'ignore_paths' => 
     array (
@@ -1098,14 +1111,24 @@
     'reporting' => 
     array (
       'anonymize_ips' => true,
-      'collect_git_information' => true,
+      'collect_git_information' => false,
       'report_queries' => true,
       'maximum_number_of_collected_queries' => 200,
       'report_query_bindings' => true,
       'report_view_data' => true,
       'grouping_type' => NULL,
+      'report_logs' => true,
+      'maximum_number_of_collected_logs' => 200,
+      'censor_request_body_fields' => 
+      array (
+        0 => 'password',
+      ),
     ),
     'send_logs_as_events' => true,
+    'censor_request_body_fields' => 
+    array (
+      0 => 'password',
+    ),
   ),
   'ignition' => 
   array (
@@ -1121,23 +1144,6 @@
     'remote_sites_path' => '',
     'local_sites_path' => '',
     'housekeeping_endpoint_prefix' => '_ignition',
-  ),
-  'vapor' => 
-  array (
-    'redirect_to_root' => true,
-    'redirect_robots_txt' => true,
-    'serve_assets' => 
-    array (
-    ),
-  ),
-  'trustedproxy' => 
-  array (
-    'proxies' => 
-    array (
-      0 => '0.0.0.0/0',
-      1 => '2000:0:0:0:0:0:0:0/3',
-    ),
-    'headers' => 30,
   ),
   'excel' => 
   array (
@@ -1253,7 +1259,13 @@
       'name' => 'graphql-playground',
     ),
     'endpoint' => '/graphql',
+    'subscriptionEndpoint' => NULL,
     'enabled' => true,
+  ),
+  'trustedproxy' => 
+  array (
+    'proxies' => NULL,
+    'headers' => 94,
   ),
   'tinker' => 
   array (

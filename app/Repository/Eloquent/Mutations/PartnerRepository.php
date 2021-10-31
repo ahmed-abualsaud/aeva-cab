@@ -25,7 +25,7 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
 
     public function create(array $args)
     {
-        $input = collect($args)->except(['directive', 'logo', 'createTelescopeAccount'])->toArray();
+        $input = collect($args)->except(['directive', 'logo', 'create_telescope_account'])->toArray();
         $input['password'] = Hash::make($input['phone1']);
 
         if (array_key_exists('logo', $args) && $args['logo']) {
@@ -33,19 +33,23 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
             $input['logo'] = $url;
         }
          
-        if (array_key_exists('createTelescopeAccount', $args) && $args['createTelescopeAccount']) {
-            $response = Http::withBasicAuth('qruz', '123456789')
+        if (array_key_exists('create_telescope_account', $args) && $args['create_telescope_account']) {
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => 'basic '+config('custom.telescope_token')
+                ])
                 ->post('https://telescope.qruz.xyz/api/partner/register', [
-
-                'name' => $args['name'],
-                'email' => $args['email'],
-                'phone' => $args['phone1'],
-                'password' => $args['phone1'],
-                'deviceLimit' => -1
-
-            ])->throw();
-
-            $input['telescope_id'] = $response['data']['userId'];
+                    'name' => $args['name'],
+                    'email' => $args['email'],
+                    'phone' => $args['phone1'],
+                    'password' => $args['phone1'],
+                    'deviceLimit' => -1
+                ])
+                ->throw();
+                $input['telescope_id'] = $response['data']['userId'];
+            } catch (\Exception $e) {
+                //
+            }
         }
 
         $partner = $this->model->create($input);
@@ -69,14 +73,22 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
             $input['logo'] = $url;
         }
 
-        $url = 'https://telescope.qruz.xyz/api/partner/'.$partner->telescope_id;
-        $params = Arr::only($args, ['name', 'email', 'phone1']);
-
-        if (array_key_exists('phone1', $params)) {
-            $params['phone'] = $params['phone1'];
-            unset($params['phone1']);
-        }        
-        $response = Http::withBasicAuth('qruz', '123456789')->put($url, $params)->throw();
+        if ($partner->telescope_id) {
+            try {
+                $url = 'https://telescope.qruz.xyz/api/partner/'.$partner->telescope_id;   
+                $params = Arr::only($args, ['name', 'email']);
+                if (array_key_exists('phone1', $args) && $args['phone1']) {
+                    $params['phone'] = $args['phone1'];
+                }    
+                Http::withHeaders([
+                    'Authorization' => 'basic '+config('custom.telescope_token')
+                ])
+                ->put($url, $params)
+                ->throw();
+            } catch (\Exception $e) {
+                //
+            }
+        }  
 
         $partner->update($input);
 
@@ -236,10 +248,21 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
             throw new \Exception(__('lang.partner_not_found'));
         }
 
-        $url = 'https://telescope.qruz.xyz/api/partner/'.$partner->telescope_id;
-        Http::withBasicAuth('qruz', '123456789')->delete($url)->throw();
+        if ($partner->telescope_id) {
+            try {
+                $url = 'https://telescope.qruz.xyz/api/partner/'.$partner->telescope_id;
+                Http::withHeaders([
+                    'Authorization' => 'basic '+config('custom.telescope_token')
+                ])
+                ->delete($url)
+                ->throw();
+            } catch (\Exception $e) {
+                // 
+            }
+        }
+
         $partner->delete();
 
-        return true;
+        return $partner;
     }
 }

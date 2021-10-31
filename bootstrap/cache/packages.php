@@ -1,11 +1,4 @@
 <?php return array (
-  'barryvdh/laravel-cors' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Barryvdh\\Cors\\ServiceProvider',
-    ),
-  ),
   'beyondcode/laravel-websockets' => 
   array (
     'providers' => 
@@ -33,6 +26,13 @@
     'providers' => 
     array (
       0 => 'Fideloper\\Proxy\\TrustedProxyServiceProvider',
+    ),
+  ),
+  'fruitcake/laravel-cors' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Fruitcake\\Cors\\CorsServiceProvider',
     ),
   ),
   'genealabs/laravel-sign-in-with-apple' => 
@@ -71,11 +71,11 @@
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
     ),
   ),
-  'laravel/vapor-core' => 
+  'laravel/ui' => 
   array (
     'providers' => 
     array (
-      0 => 'Laravel\\Vapor\\VaporServiceProvider',
+      0 => 'Laravel\\Ui\\UiServiceProvider',
     ),
   ),
   'maatwebsite/excel' => 
@@ -126,12 +126,13 @@
     'providers' => 
     array (
       0 => 'Nuwave\\Lighthouse\\LighthouseServiceProvider',
-      1 => 'Nuwave\\Lighthouse\\GlobalId\\GlobalIdServiceProvider',
-      2 => 'Nuwave\\Lighthouse\\OrderBy\\OrderByServiceProvider',
-      3 => 'Nuwave\\Lighthouse\\Pagination\\PaginationServiceProvider',
-      4 => 'Nuwave\\Lighthouse\\Scout\\ScoutServiceProvider',
-      5 => 'Nuwave\\Lighthouse\\SoftDeletes\\SoftDeletesServiceProvider',
-      6 => 'Nuwave\\Lighthouse\\Validation\\ValidationServiceProvider',
+      1 => 'Nuwave\\Lighthouse\\Auth\\AuthServiceProvider',
+      2 => 'Nuwave\\Lighthouse\\GlobalId\\GlobalIdServiceProvider',
+      3 => 'Nuwave\\Lighthouse\\OrderBy\\OrderByServiceProvider',
+      4 => 'Nuwave\\Lighthouse\\Pagination\\PaginationServiceProvider',
+      5 => 'Nuwave\\Lighthouse\\Scout\\ScoutServiceProvider',
+      6 => 'Nuwave\\Lighthouse\\SoftDeletes\\SoftDeletesServiceProvider',
+      7 => 'Nuwave\\Lighthouse\\Validation\\ValidationServiceProvider',
     ),
   ),
   'tymon/jwt-auth' => 

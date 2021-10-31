@@ -81,7 +81,7 @@ extend type Mutation @guard(with: ["admin"]) {
   # Partner
   createPartner(input: CreatePartnerInput! @spread): Partner
     @field(resolver: "PartnerResolver@create")
-  deletePartner(id: ID!): Boolean
+  deletePartner(id: ID!): Partner
     @field(resolver: "PartnerResolver@destroy")
 
   # Partner User
