@@ -351,10 +351,6 @@ extend type Mutation @guard(with: ["admin", "user"]) {
 
 # Admin|Driver Guard
 extend type Mutation @guard(with: ["admin", "driver"]) {
-  # Driver
-  changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
-    @field(resolver: "DriverResolver@updatePassword")
-
   # Business Trip Event
   readyBusinessTrip(input: ReadyTripInput! @spread): BusinessTrip
     @field(resolver: "BusinessTripEventResolver@ready")
@@ -430,6 +426,8 @@ extend type Mutation @guard(with: ["admin", "partner", "driver"]) {
   # Driver
   updateDriver(input: UpdateDriverInput! @spread): Driver
     @field(resolver: "DriverResolver@update")
+  changeDriverPassword(input: ChangePasswordInput @spread): DefaultResponse 
+    @field(resolver: "DriverResolver@updatePassword")
   
   # Business Trip Event
   endBusinessTrip(input: EndTripInput! @spread): Boolean

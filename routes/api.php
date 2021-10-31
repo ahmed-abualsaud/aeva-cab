@@ -88,4 +88,5 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Queries'], functi
 */
 Route::group(['middleware' => ['auth:admin,partner'], 'namespace' => 'Queries'], function () {
     Route::get('/seats/trip/terminal/transactions/export', 'SeatsTripTerminalTransactionController@export');
+    Route::get('/seats/trip/pos/transactions/export', 'SeatsTripPosTransactionController@export');
 });

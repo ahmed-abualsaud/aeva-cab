@@ -98,24 +98,21 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         try {
             $driver = $this->model->findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            return [
-                'status' => false, 
-                'message' => __('lang.driver_not_found')
-            ];
+            throw new \Exception(__('lang.driver_not_found'));
         }
 
         if (!(Hash::check($args['current_password'], $driver->password))) {
-            return [
-                'status' => false,
-                'message' => __('lang.password_missmatch')
-            ];
+            throw new CustomException(
+                __('lang.password_missmatch'),
+                'customValidation'
+            );
         }
 
         if (strcmp($args['current_password'], $args['new_password']) == 0) {
-            return [
-                'status' => false,
-                'message' => __('lang.type_new_password')
-            ];
+            throw new CustomException(
+                __('lang.type_new_password'),
+                'customValidation'
+            );
         }
 
         $driver->password = Hash::make($args['new_password']);
