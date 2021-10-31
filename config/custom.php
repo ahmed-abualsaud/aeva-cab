@@ -18,4 +18,5 @@ return [
     'db_pass' => env('DB_PASSWORD'),
     'db_backup_path' => env('DB_BACKUP_DIRECTORY', '/var/www/qruz/backup'),
     'telescope_token' => env('TELESCOPE_TOKEN'),
+    
 ];

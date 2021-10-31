@@ -48,7 +48,7 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
                 ->throw();
                 $input['telescope_id'] = $response['data']['userId'];
             } catch (\Exception $e) {
-                //
+                throw new \Exception($e->getMessage());
             }
         }
 
@@ -86,7 +86,7 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
                 ->put($url, $params)
                 ->throw();
             } catch (\Exception $e) {
-                //
+                throw new \Exception($e->getMessage());
             }
         }  
 
@@ -257,7 +257,7 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
                 ->delete($url)
                 ->throw();
             } catch (\Exception $e) {
-                // 
+                throw new \Exception($e->getMessage());
             }
         }
 
