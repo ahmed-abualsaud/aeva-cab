@@ -17,6 +17,7 @@ class CreateBusinessTripEventsTable extends Migration
             $table->uuid('log_id');
             $table->unsignedBigInteger('trip_id');
             $table->unsignedBigInteger('driver_id');
+            $table->unsignedBigInteger('supervisor_id')->nullable();
             $table->unsignedBigInteger('vehicle_id');
             $table->dateTime('trip_time');
             $table->json('content');
@@ -36,6 +37,11 @@ class CreateBusinessTripEventsTable extends Migration
                 ->references('id')
                 ->on('drivers')
                 ->onDelete('cascade');
+
+            $table->foreign('supervisor_id')
+                ->references('id')
+                ->on('supervisors')
+                ->onDelete('set null');
 
             $table->foreign('vehicle_id')
                 ->references('id')

@@ -296,6 +296,8 @@
   array (
     'paths' => 
     array (
+      0 => 'rest/*',
+      1 => 'graphql',
     ),
     'allowed_methods' => 
     array (

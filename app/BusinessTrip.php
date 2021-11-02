@@ -90,15 +90,25 @@ class BusinessTrip extends Model
         return $query;
     }
 
-    public function scopeUnready($query) 
+    public function scopeUnready($query, $args) 
     {
-        $day = strtolower(date('l'));
+        $day = strtolower(date('l', strtotime($args['date'])));
         
-        return $query->whereNull('ready_at')
+        return $query
+            ->selectRaw('
+                business_trips.id, 
+                business_trips.name, 
+                business_trips.driver_id, 
+                business_trips.supervisor_id, 
+                business_trips.days
+            ')
+            ->whereNull('event.log_id')
             ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
             ->whereRaw('days->"$.'.$day.'" <> CAST("null" AS JSON)')
-            ->whereRaw('TIME_TO_SEC(?) between TIME_TO_SEC(days->"$.'.$day.'") - 1800 
-                and TIME_TO_SEC(days->"$.'.$day.'")', [date('H:i:s')]);
+            ->leftJoin('business_trip_events as event', function ($join) use ($args) {
+                $join->on('event.trip_id', '=', 'business_trips.id')
+                    ->whereDate('event.trip_time', $args['date']);
+            });
     }
 
     public function scopeSearch($query, $args) 

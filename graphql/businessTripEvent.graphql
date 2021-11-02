@@ -42,15 +42,12 @@ input UserObj {
 
 type BusinessTripEvent {
   log_id: String
-  trip_id: ID
-  trip_name: String
   trip_time: String
-  trip_duration: Int
-  trip_distance: Int
-  driver_id: ID
-  driver_name: String
   map_url: String
+  content: TripEventContent
   created_at: String
   updated_at: String
-  content: TripEventContent
+  trip: BusinessTrip @belongsTo
+  driver: Driver @belongsTo
+  supervisor: Supervisor @belongsTo
 }

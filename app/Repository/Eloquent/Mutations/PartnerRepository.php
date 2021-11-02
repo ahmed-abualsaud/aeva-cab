@@ -36,7 +36,7 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
         if (array_key_exists('create_telescope_account', $args) && $args['create_telescope_account']) {
             try {
                 $response = Http::withHeaders([
-                    'Authorization' => 'basic '+config('custom.telescope_token')
+                    'Authorization' => 'basic '.config('custom.telescope_token')
                 ])
                 ->post('https://telescope.qruz.xyz/api/partner/register', [
                     'name' => $args['name'],
@@ -81,7 +81,7 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
                     $params['phone'] = $args['phone1'];
                 }    
                 Http::withHeaders([
-                    'Authorization' => 'basic '+config('custom.telescope_token')
+                    'Authorization' => 'basic '.config('custom.telescope_token')
                 ])
                 ->put($url, $params)
                 ->throw();
@@ -252,7 +252,7 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
             try {
                 $url = 'https://telescope.qruz.xyz/api/partner/'.$partner->telescope_id;
                 Http::withHeaders([
-                    'Authorization' => 'basic '+config('custom.telescope_token')
+                    'Authorization' => 'basic '.config('custom.telescope_token')
                 ])
                 ->delete($url)
                 ->throw();

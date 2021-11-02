@@ -45,7 +45,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
 
         $this->checkSchedule($args['trip_id']);
 
-        $this->initTripEvent($args, $logId, $trip->driver_id, $trip->vehicle_id);
+        $this->initTripEvent($args, $logId, $trip->driver_id, $trip->vehicle_id, $trip->supervisor_id);
 
         $trip->update(['log_id' => $logId, 'ready_at' => date("Y-m-d H:i:s")]);
 
@@ -276,7 +276,8 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
                 'drivers.id as driver_id', 'drivers.name as driver_name',
                 'drivers.latitude as driver_lat', 'drivers.longitude as driver_lng',
                 'partners.id as partner_id', 'partners.name as partner_name',
-                'vehicle_id'
+                'vehicle_id',
+                'supervisor_id'
             )
             ->join('drivers', 'drivers.id', '=', 'business_trips.driver_id')
             ->join('partners', 'partners.id', '=', 'business_trips.partner_id')
@@ -492,13 +493,14 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
         }
     }
 
-    protected function initTripEvent($args, $logId, $driverId, $vehicleId)
+    protected function initTripEvent($args, $logId, $driverId, $vehicleId, $supervisorId)
     {
         try {
             $input = [
                 'trip_id' => $args['trip_id'],
                 'trip_time' => $args['trip_time'],
                 'driver_id' => $driverId,
+                'supervisor_id' => $supervisorId,
                 'vehicle_id' => $vehicleId,
                 'log_id' => $logId,
                 'content' => [ 
