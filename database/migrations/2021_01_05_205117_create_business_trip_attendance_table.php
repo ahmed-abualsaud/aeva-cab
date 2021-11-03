@@ -20,7 +20,6 @@ class CreateBusinessTripAttendanceTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->boolean('is_absent');
             $table->string('comment')->nullable();
-            $table->json('students')->nullable();
             $table->timestamps();
 
             $table->index(['trip_id', 'date']);

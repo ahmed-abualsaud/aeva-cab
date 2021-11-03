@@ -17,11 +17,6 @@ class SchoolRequest extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function student()
-    {
-        return $this->belongsTo(Student::class);
-    }
-
     public function school()
     {
         return $this->belongsTo(School::class);

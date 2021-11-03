@@ -25,25 +25,13 @@ class BusinessTripAttendanceRepository extends BaseRepository
         try {
             $firstArgs = Arr::only($args, ['date', 'trip_id', 'user_id']);
             $secondArgs = Arr::only($args, ['is_absent', 'comment']);
-
-            if(array_key_exists('students', $args))
-                $secondArgs['students'] = $args['students'];
                 
-            if ($args['date'] === date('Y-m-d'))
-            {
-                if(BusinessTrip::find($args['trip_id'])['type'] === 'TOSCHOOL')
-                {
-                    $this->updateStudentStatus(
-                        $args['trip_id'], ['is_absent' => $args['is_absent']], $args['students']
-                    );
-                }
-                else {
-                    $this->updateUserStatus(
-                        $args['trip_id'], 
-                        ['is_absent' => $args['is_absent']], 
-                        $args['user_id']
-                    );
-                }
+            if ($args['date'] === date('Y-m-d')) {
+                $this->updateUserStatus(
+                    $args['trip_id'], 
+                    ['is_absent' => $args['is_absent']], 
+                    $args['user_id']
+                );
             }
             return $this->model->updateOrCreate($firstArgs, $secondArgs);
 

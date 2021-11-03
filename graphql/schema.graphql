@@ -466,26 +466,6 @@ extend type Mutation @guard(with: ["user"]) {
   # Seats Trip Rating
   updateSeatsTripRating(input: UpdateSeatsTripRatingInput! @spread): SeatsTripRating
     @field(resolver: "SeatsTripRatingResolver@update")
-
-  # Student
-  createStudent(input: CreateStudentInput! @spread): Student
-    @field(resolver: "StudentResolver@create")
-  updateStudent(input: UpdateStudentInput! @spread): Student
-    @field(resolver: "StudentResolver@update")
-  deleteStudent(id: [ID!]!): Boolean
-    @field(resolver: "StudentResolver@destroy")
-
-
-  # Student Subscription
-  createStudentSubscription(input: CreateStudentSubscriptionInput! @spread): StudentSubscription
-    @field(resolver: "StudentSubscriptionResolver@create")
-  updateStudentSubscription(input: UpdateStudentSubscriptionInput! @spread): StudentSubscription
-    @field(resolver: "StudentSubscriptionResolver@update")
-  deleteStudentSubscription(id: [ID!]!): Boolean
-    @field(resolver: "StudentSubscriptionResolver@destroy")
-
-  rescheduleStudentAttendance(input: RescheduleStudentAttendanceInput! @spread): Boolean
-    @field(resolver: "StudentSubscriptionResolver@reschedule")
 }
 
 # Driver Guard
@@ -573,15 +553,6 @@ extend type Query @guard(with: ["partner"]) {
 extend type Query @guard(with: ["user"]) {
   # Authenticated User
   authUser: User @auth
-
-  # Student
-  students: [Student] @all
-  student(id: ID @eq): Student @findOrFail
-
-  # Student Subscription
-  userStudentsSubscriptions(user_id: ID! @eq): [StudentSubscription] @all
-  tripStudentsSubscriptions(trip_id: ID! @eq): [StudentSubscription] @all
-  studentSubscriptions(user_id: ID! @eq , student_id: ID! @eq, trip_id: ID @eq): [StudentSubscription] @all
 }
 
 # Driver Guard
@@ -911,6 +882,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import supervisor.graphql
 #import businessTripRating.graphql
 #import seatsTripRating.graphql
-#import student.graphql
-#import studentSubscription.graphql
 #import follower.graphql

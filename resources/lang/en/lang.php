@@ -117,6 +117,5 @@ return [
     'supervisor_not_found' => 'Supervisor not found',
     'rating_not_found' => 'Rating not found',
     'trip_schedule_required' => 'Trip schedule required',
-    'student_not_found' => 'Student not found',
     'the_following_already_exists' => 'The following already exists'
 ];

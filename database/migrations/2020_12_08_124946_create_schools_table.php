@@ -45,7 +45,6 @@ class CreateSchoolsTable extends Migration
             $table->unsignedBigInteger('school_id')->nullable();
             $table->unsignedBigInteger('price_package_id');
             $table->unsignedBigInteger('grade_id')->nullable();
-            $table->unsignedBigInteger('student_id');
             $table->string('student_name');
             $table->enum('level', ['KG','G1 to G6','G7 to G9','G10 to G12'])->nullable();
             $table->string('contact_phone');
@@ -76,7 +75,6 @@ class CreateSchoolsTable extends Migration
             $table->index('status');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('set null');
             $table->foreign('grade_id')->references('id')->on('school_grades')->onDelete('set null');

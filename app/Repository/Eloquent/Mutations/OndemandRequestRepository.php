@@ -43,9 +43,9 @@ class OndemandRequestRepository extends BaseRepository
 
         $this->smsRequest($request->id);
         
-        $this->broadcastRequest($request);
+        // $this->broadcastRequest($request);
 
-        $this->mailRequest($request->id);
+        // $this->mailRequest($request->id);
 
         return $request;
     }
