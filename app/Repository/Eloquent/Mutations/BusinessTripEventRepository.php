@@ -435,8 +435,8 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
             'log_id' => $args['log_id'],
             'trip_time' => $args['trip_time'],
             'driver_id' => $args['driver_id'],
-            'created_at' => now(), 
-            'updated_at' => now()
+            'created_at' => date('Y-m-d H:i:s'), 
+            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         foreach($user_ids as $user_id) {

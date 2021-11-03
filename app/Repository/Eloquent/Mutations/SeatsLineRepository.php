@@ -97,8 +97,6 @@ class SeatsLineRepository extends BaseRepository implements SeatsLineRepositoryI
 
         foreach($originalStations as $station) {
             $station->line_id = $newLineId;
-            $station->created_at = now();
-            $station->updated_at = now();
         }
 
         return SeatsLineStation::insert($originalStations->toArray());

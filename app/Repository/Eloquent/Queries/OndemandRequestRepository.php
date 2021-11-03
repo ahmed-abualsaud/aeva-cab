@@ -28,7 +28,7 @@ class OndemandRequestRepository extends BaseRepository implements OndemandReques
             $req = $this->model->findOrFail($args['id']);
 
             if (array_key_exists('nav', $args) && $args['nav']) {
-                if (!$req->read_at) $req->update(["read_at" => now()]);
+                if (!$req->read_at) $req->update(["read_at" => date('Y-m-d H:i:s')]);
 
                 $next = $this->model->select('id')
                     ->where('id', '<', $req->id)

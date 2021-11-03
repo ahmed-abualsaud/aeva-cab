@@ -44,7 +44,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $password = $input['password'];
         } elseif (array_key_exists('phone', $input)) {
             $password = $input['phone'];
-            $input['phone_verified_at'] = now();
+            $input['phone_verified_at'] = date('Y-m-d H:i:s');
         } else {
             throw new CustomException(__('lang.password_phone_not_provided'));
         }
@@ -111,7 +111,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
 
         if (array_key_exists('phone', $args) && $args['phone'] && is_null($user->phone)) {
-            $input['phone_verified_at'] = now();
+            $input['phone_verified_at'] = date('Y-m-d H:i:s');
         }
 
         $user->update($input);
@@ -294,7 +294,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     protected function createUsers(array $args)
     {
         try {
-            $arr = ['created_at' => now(), 'updated_at' => now()];
+            $arr = ['created_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s')];
 
             if (array_key_exists('partner_id', $args))
                 $arr['partner_id'] = $args['partner_id'];
@@ -334,7 +334,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         BusinessTripSubscription::create([
             'trip_id' => $args['trip_id'],
             'user_id' => $user_id,
-            'subscription_verified_at' => now(),
+            'subscription_verified_at' => date('Y-m-d H:i:s'),
             'due_date' =>  date('Y-m-d'),
             'payable' => $args['payable']
         ]);
@@ -344,7 +344,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         $tripUserArr = [
             'trip_id' => $args['trip_id'], 
-            'subscription_verified_at' => now(),
+            'subscription_verified_at' => date('Y-m-d H:i:s'),
             'due_date' =>  date('Y-m-d'),
             'payable' => $args['payable']
         ];

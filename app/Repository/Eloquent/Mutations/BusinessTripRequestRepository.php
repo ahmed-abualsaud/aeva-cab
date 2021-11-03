@@ -223,7 +223,7 @@ class BusinessTripRequestRepository implements BusinessTripRequestRepositoryInte
             'state' => 'PICKABLE',
             'request_type' => $args['request_type'],
             'trip_id' => $trip_id,
-            'created_at' => now(), 'updated_at' => now(), 'accepted_at' => now(),
+            'created_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s'), 'accepted_at' => date('Y-m-d H:i:s'),
         ];
         foreach($args['users'] as $user) {
             $pickable['request_id'] = $user['request_id'];
@@ -244,7 +244,7 @@ class BusinessTripRequestRepository implements BusinessTripRequestRepositoryInte
             'request_id' => null,
             'state' => 'DESTINATION',
             'trip_id' => $trip_id,
-            'created_at' => now(), 'updated_at' => now(), 'accepted_at' => now(),
+            'created_at' => date('Y-m-d H:i:s'), 'updated_at' => date('Y-m-d H:i:s'), 'accepted_at' => date('Y-m-d H:i:s'),
         ];
         foreach($destinations as $destination) {
             $arr['name'] = $destination['name'];
@@ -262,10 +262,10 @@ class BusinessTripRequestRepository implements BusinessTripRequestRepositoryInte
         $arr = [
             'request_type' => $args['request_type'],
             'trip_id' => $args['trip_id'],
-            'subscription_verified_at' => now(),
+            'subscription_verified_at' => date('Y-m-d H:i:s'),
             'due_date' => date('Y-m-d'),
-            'created_at' => now(), 
-            'updated_at' => now()
+            'created_at' => date('Y-m-d H:i:s'), 
+            'updated_at' => date('Y-m-d H:i:s')
         ];
 
         if (array_key_exists('station_id', $args)) {
@@ -290,10 +290,10 @@ class BusinessTripRequestRepository implements BusinessTripRequestRepositoryInte
         return [
             'request_type' => $args['request_type'],
             'trip_id' => $trip_id,
-            'subscription_verified_at' => now(),
+            'subscription_verified_at' => date('Y-m-d H:i:s'),
             'due_date' => date('Y-m-d'),
-            'created_at' => now(), 
-            'updated_at' => now()
+            'created_at' => date('Y-m-d H:i:s'), 
+            'updated_at' => date('Y-m-d H:i:s')
         ];
     }
 

@@ -49,10 +49,10 @@ class BusinessTripStationRepository extends BaseRepository implements BusinessTr
                 'user_id' => $args['user_id'],
                 'station_id' => $args['station_id'],
                 'destination_id' => $args['destination_id'],
-                'subscription_verified_at' => now(),
-                'created_at' => now(), 
-                'updated_at' => now(),
-                'due_date' => now()
+                'subscription_verified_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H:i:s'), 
+                'updated_at' => date('Y-m-d H:i:s'),
+                'due_date' => date('Y-m-d H:i:s')
             ];
             return BusinessTripSubscription::upsert($data, ['station_id', 'destination_id', 'updated_at']);
         } catch (\Exception $e) {
@@ -69,17 +69,17 @@ class BusinessTripStationRepository extends BaseRepository implements BusinessTr
                 'name' => $args['station_name'],
                 'name_ar' => $args['station_name_ar'],
                 'state' => 'PICKABLE', 
-                'accepted_at' => now()
+                'accepted_at' => date('Y-m-d H:i:s')
             ]);
             
             $data =[
                 'trip_id' => $args['trip_id'],
                 'station_id' => $args['station_id'],
                 'user_id' => $station['request_id'],
-                'subscription_verified_at' => now(),
+                'subscription_verified_at' => date('Y-m-d H:i:s'),
                 'due_date' => date('Y-m-d'),
-                'created_at' => now(), 
-                'updated_at' => now()
+                'created_at' => date('Y-m-d H:i:s'), 
+                'updated_at' => date('Y-m-d H:i:s')
             ];
             BusinessTripSubscription::upsert($data, ['station_id', 'updated_at']);
 

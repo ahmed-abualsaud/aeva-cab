@@ -109,7 +109,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
             DB::commit();
         } catch(\Exception $e) {
             DB::rollback();
-            throw new CustomException(__('lang.copy_trip_failed'));
+            throw new CustomException($e->getMessage());
         }
 
         return $trip;
@@ -121,8 +121,8 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
             $arr = [
                 'trip_id' => $args['trip_id'],
                 'due_date' => date('Y-m-d'),
-                'created_at' => now(), 
-                'updated_at' => now()
+                'created_at' => date('Y-m-d H:i:s'), 
+                'updated_at' => date('Y-m-d H:i:s')
             ];
 
             foreach($args['user_id'] as $val) {
@@ -145,9 +145,9 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
                 'trip_id' => $args['trip_id'],
                 'station_id' => $args['station_id'],
                 'destination_id' => $args['destination_id'],
-                'created_at' => now(), 
-                'updated_at' => now(),
-                'subscription_verified_at' => now(),
+                'created_at' => date('Y-m-d H:i:s'), 
+                'updated_at' => date('Y-m-d H:i:s'),
+                'subscription_verified_at' => date('Y-m-d H:i:s'),
                 'payable' => $args['payable']
             ];
 
@@ -185,7 +185,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
                 throw new CustomException(__('lang.already_subscribed'));
             } else {
                 $tripUser->update([
-                    'subscription_verified_at' => now(),
+                    'subscription_verified_at' => date('Y-m-d H:i:s'),
                     'payable' => $trip->price,
                     'due_date' => date('Y-m-d')
                 ]);
@@ -194,7 +194,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
             BusinessTripSubscription::create([
                 'trip_id' => $trip->id,
                 'user_id' => $args['user_id'],
-                'subscription_verified_at' => now(),
+                'subscription_verified_at' => date('Y-m-d H:i:s'),
                 'due_date' => date('Y-m-d')
             ]);
 
@@ -283,9 +283,6 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
 
         foreach($originalStations as $station) {
             $station->trip_id = $newTripId;
-            $station->created_at = now();
-            $station->updated_at = now();
-            $station->accepted_at = now();
         }
 
         return BusinessTripStation::insert($originalStations->toArray());
@@ -299,9 +296,7 @@ class BusinessTripRepository extends BaseRepository implements BusinessTripRepos
 
         foreach($originalSubscriptions as $subscription) {
             $subscription->trip_id = $newTripId;
-            $subscription->created_at = now();
-            $subscription->updated_at = now();
-            $subscription->subscription_verified_at = now();
+            $subscription->subscription_verified_at = date('Y-m-d H:i:s');
             $subscription->due_date = date('Y-m-d');
         }
 
