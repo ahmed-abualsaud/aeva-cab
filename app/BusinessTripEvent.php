@@ -2,10 +2,13 @@
 
 namespace App;
 
+use App\Traits\Filterable;
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
 class BusinessTripEvent extends Model
 {
+    use Searchable, Filterable;
     
     protected $guarded = [];
 
@@ -68,7 +71,7 @@ class BusinessTripEvent extends Model
     public function scopeFilter($query, $args)
     {
         if (array_key_exists('period', $args) && $args['period']) {
-            $query = $this->dateFilter($args['period'], $query, 'seats_trip_events.created_at');
+            $query = $this->dateFilter($args['period'], $query, 'business_trip_events.created_at');
         }
 
         return $query;

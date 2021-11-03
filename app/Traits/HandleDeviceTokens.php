@@ -14,6 +14,14 @@ trait HandleDeviceTokens
         return $this->getBusinessTripUsersToken()
             ->where('business_trip_users.trip_id', $trip_id)
             ->pluck('device_id')
+            ->toArray();
+    }
+
+    protected function tripUsersAndFollowersToken($trip_id)
+    {
+        return $this->getBusinessTripUsersToken()
+            ->where('business_trip_users.trip_id', $trip_id)
+            ->pluck('device_id')
             ->merge($this->getBusinessTripFollowersTokens($trip_id))
             ->unique()
             ->toArray();
@@ -28,7 +36,15 @@ trait HandleDeviceTokens
             ->toArray();
     }
 
-    protected function stationUsersToken($station_id, $trip_id)
+    protected function stationUsersToken($station_id)
+    {
+        return $this->getBusinessTripUsersToken()
+            ->where('business_trip_users.station_id', $station_id)
+            ->pluck('device_id')
+            ->toArray();
+    }
+
+    protected function stationUsersAndFollowersToken($station_id, $trip_id)
     {
         return $this->getBusinessTripUsersToken()
             ->where('business_trip_users.station_id', $station_id)
@@ -46,7 +62,20 @@ trait HandleDeviceTokens
             ->where('business_trip_users.is_scheduled', true);
     }
 
-    protected function usersToken($trip_id, array $user_id)
+    protected function usersToken(array $user_id)
+    {
+        return User::select('device_id')
+            ->whereIn('id', $user_id)
+            ->pluck('device_id')->toArray();
+    }
+
+    protected function userToken($user_id)
+    {
+        return User::select('device_id')
+            ->find($user_id)->device_id;
+    }
+
+    protected function usersAndFollowersToken($trip_id, array $user_id)
     {
         return User::select('device_id')
             ->whereIn('id', $user_id)
@@ -56,7 +85,7 @@ trait HandleDeviceTokens
             ->toArray();
     }
 
-    protected function userToken($trip_id, $user_id)
+    protected function userAndFollowersToken($trip_id, $user_id)
     {
         return User::select('device_id')
             ->where('id', $user_id)
@@ -75,6 +104,7 @@ trait HandleDeviceTokens
     protected function getBusinessTripFollowersTokens($trip_id)
     {
         return Follower::Join('users', 'users.id', '=', 'business_trip_followers.follower_id')
+            ->select('device_id')
             ->where('trip_id', $trip_id)
             ->pluck('device_id')
             ->toArray();
@@ -83,6 +113,7 @@ trait HandleDeviceTokens
     protected function getUserFollowersIDs($trip_id, $user_id)
     {
         return Follower::Join('users', 'users.id', '=', 'business_trip_followers.follower_id')
+            ->select('device_id')
             ->where('trip_id', $trip_id)
             ->where('user_id', $user_id)
             ->pluck('device_id')
@@ -92,6 +123,7 @@ trait HandleDeviceTokens
     protected function getUsersFollowersTokens($trip_id, array $user_id)
     {
         return Follower::Join('users', 'users.id', '=', 'business_trip_followers.follower_id')
+            ->select('device_id')
             ->where('trip_id', $trip_id)
             ->whereIn('user_id', $user_id)
             ->pluck('device_id')
