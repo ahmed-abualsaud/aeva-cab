@@ -94,21 +94,26 @@ class BusinessTrip extends Model
     {
         $day = strtolower(date('l', strtotime($args['date'])));
         
-        return $query
-            ->selectRaw('
-                business_trips.id, 
-                business_trips.name, 
-                business_trips.driver_id, 
-                business_trips.supervisor_id, 
-                business_trips.days
-            ')
-            ->whereNull('event.log_id')
-            ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
-            ->whereRaw('days->"$.'.$day.'" <> CAST("null" AS JSON)')
-            ->leftJoin('business_trip_events as event', function ($join) use ($args) {
-                $join->on('event.trip_id', '=', 'business_trips.id')
-                    ->whereDate('event.trip_time', $args['date']);
-            });
+        $query = $query->selectRaw('
+            business_trips.id, 
+            business_trips.name, 
+            business_trips.driver_id, 
+            business_trips.supervisor_id, 
+            business_trips.days
+        ')
+        ->whereNull('event.log_id')
+        ->whereRaw('? between start_date and end_date', [date('Y-m-d')])
+        ->whereRaw('days->"$.'.$day.'" <> CAST("null" AS JSON)')
+        ->leftJoin('business_trip_events as event', function ($join) use ($args) {
+            $join->on('event.trip_id', '=', 'business_trips.id')
+                ->whereDate('event.trip_time', $args['date']);
+        });
+
+        if ($args['date'] === date('Y-m-d')) {
+            $query = $query->whereRaw('TIME_TO_SEC(?) > TIME_TO_SEC(days->"$.'.$day.'") - 1800', [date('H:i:s')]);
+        }
+        
+        return $query;
     }
 
     public function scopeSearch($query, $args) 

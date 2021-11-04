@@ -76,4 +76,14 @@ class BusinessTripEvent extends Model
 
         return $query;
     }
+
+    public function scopeOfType($query, $args) 
+    {
+        if (array_key_exists('type', $args) && $args['type']) {
+            return $query->whereHas('trip', function($query) use ($args) {
+                $query->where('type', $args['type']);
+            });
+        }
+        return $query;
+    }
 }

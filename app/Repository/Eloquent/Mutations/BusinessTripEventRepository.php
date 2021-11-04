@@ -168,7 +168,7 @@ class BusinessTripEventRepository extends BaseRepository implements BusinessTrip
     {
         $msg = __('lang.bye_trip');
 
-        $this->createUsersRatings($args);
+        // $this->createUsersRatings($args);
         
         return $this->pickOrDropUsers($args, false, $msg);
     }
