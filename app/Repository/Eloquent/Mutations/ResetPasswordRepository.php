@@ -2,10 +2,11 @@
 
 namespace App\Repository\Eloquent\Mutations;
 
-use Illuminate\Foundation\Auth\ResetsPasswords;
-use Illuminate\Foundation\Validation\ValidatesRequests;
+use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class ResetPasswordRepository
 {
@@ -31,5 +32,21 @@ class ResetPasswordRepository
             'status'  => false,
             'message' => trans($response),
         ];   
+    }
+
+    public function withOtp(array $args)
+    {
+        try {
+            return $args['model']::where('phone', $args['phone'])
+                ->firstOrFail()
+                ->update([
+                    'password' => Hash::make($args['password'])
+                ]);
+        } catch(\Exception $e) {
+            throw new CustomException(
+                __('lang.password_not_changed'),
+                'customValidation'
+            );
+        }
     }
 }

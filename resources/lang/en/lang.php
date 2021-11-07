@@ -8,6 +8,7 @@ return [
     'password_missmatch' => 'Your current password does not matches with the password you provided',
     'type_new_password' => 'New Password cannot be same as your current password. Please choose a different password',
     'password_changed' => 'Password changed successfully',
+    'password_not_changed' => 'Can\'t reset your password',
     'create_trnx_failed' => 'Could not create transaction',
     'create_attendance_failed' => 'We could not able to create or update an attendance record',
     'trip_already_started' => 'This Trip has already been started',

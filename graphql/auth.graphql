@@ -25,6 +25,13 @@ input NewPasswordWithCodeInput {
   password_confirmation: String!
 }
 
+input ResetPasswordInput {
+  model: String! @rules(apply: ["required", "in:App\\User,App\\Driver,App\\Partner,App\\Admin"])
+  phone: String! @rules(apply: ["required"])
+  password: String! @rules(apply: ["required", "confirmed"])
+  password_confirmation: String! @rules(apply: ["required"])
+}
+
 input ChangePasswordInput {
   id: ID! @rules(apply: ["required"])
   current_password: String! @rules(apply: ["required"])

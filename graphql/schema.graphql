@@ -8,6 +8,8 @@ type Mutation {
     @field(resolver: "AdminResolver@login")
 
   # User Auth
+  userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
+    @field(resolver: "UserResolver@phoneVerification")
   createUser(input: CreateUserInput! @spread): UserPayload!
     @field(resolver: "UserResolver@create")
   userLogin(input: LoginInput! @spread): UserPayload! 
@@ -18,6 +20,8 @@ type Mutation {
     @field(resolver: "ForgotPasswordResolver")
   updateForgottenPassword(input: NewPasswordWithCodeInput @spread): DefaultResponse 
     @field(resolver: "ResetPasswordResolver")
+  resetPasswordWithOtp(input: ResetPasswordInput @spread): Boolean 
+    @field(resolver: "ResetPasswordResolver@withOtp")
 
   # Driver Auth
   createDriver(input: CreateDriverInput! @spread): Driver 
@@ -295,8 +299,6 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
 # Admin|User Guard
 extend type Mutation @guard(with: ["admin", "user"]) {
   # User
-  userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
-    @field(resolver: "UserResolver@phoneVerification")
   changeUserPassword(input: ChangePasswordInput @spread): DefaultResponse 
     @field(resolver: "UserResolver@updatePassword")
 
