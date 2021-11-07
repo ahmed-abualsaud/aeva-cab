@@ -37,11 +37,16 @@ class ResetPasswordRepository
     public function withOtp(array $args)
     {
         try {
-            return $args['model']::where('phone', $args['phone'])
+            $args['model']::where('phone', $args['phone'])
                 ->firstOrFail()
                 ->update([
                     'password' => Hash::make($args['password'])
                 ]);
+
+            return [
+                'status' => true,
+                'message' => __('lang.password_changed')
+            ];
         } catch(\Exception $e) {
             throw new CustomException(
                 __('lang.password_not_changed'),

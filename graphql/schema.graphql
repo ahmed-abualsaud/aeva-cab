@@ -20,7 +20,7 @@ type Mutation {
     @field(resolver: "ForgotPasswordResolver")
   updateForgottenPassword(input: NewPasswordWithCodeInput @spread): DefaultResponse 
     @field(resolver: "ResetPasswordResolver")
-  resetPasswordWithOtp(input: ResetPasswordInput @spread): Boolean 
+  resetPasswordWithOtp(input: ResetPasswordInput @spread): DefaultResponse 
     @field(resolver: "ResetPasswordResolver@withOtp")
 
   # Driver Auth
