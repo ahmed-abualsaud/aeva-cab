@@ -20,7 +20,7 @@ type Mutation {
     @field(resolver: "ForgotPasswordResolver")
   updateForgottenPassword(input: NewPasswordWithCodeInput @spread): DefaultResponse 
     @field(resolver: "ResetPasswordResolver")
-  resetPasswordWithOtp(input: ResetPasswordInput @spread): DefaultResponse 
+  resetPasswordWithOtp(input: ResetPasswordWithOtpInput @spread): DefaultResponse 
     @field(resolver: "ResetPasswordResolver@withOtp")
 
   # Driver Auth
@@ -154,6 +154,10 @@ extend type Mutation @guard(with: ["admin"]) {
 
 # Admin|Partner Guard
 extend type Mutation @guard(with: ["admin", "partner"]) {
+  # Reset Password
+  resetPasswordById(input: ResetPasswordByIdInput @spread): DefaultResponse 
+    @field(resolver: "ResetPasswordResolver@byId")
+
   # User
   createMultipleUsers(input: CreateMultipleUsersInput! @spread): Boolean 
     @field(resolver: "UserResolver@createMultipleUsers")
@@ -570,8 +574,6 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @paginate(scopes: ["assigned", "search"], defaultCount: 50)
   partnerNotAssignedUsers(partner_id: ID!, searchFor: String, searchQuery: String): [User] 
     @paginate(scopes: ["notAssigned", "search"], defaultCount: 50)
-  partnerUsers(partner_id: ID!, searchFor: String, searchQuery: String, assigned: Boolean): [User] 
-    @paginate(scopes: ["assignedOrNot", "search"])
 
   # Partner
   partner(id: ID @eq): Partner @findOrFail

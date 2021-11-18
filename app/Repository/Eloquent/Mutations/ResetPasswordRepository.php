@@ -54,4 +54,24 @@ class ResetPasswordRepository
             );
         }
     }
+
+    public function byId(array $args)
+    {
+        try {
+            $args['model']::findOrFail($args['id'])
+                ->update([
+                    'password' => Hash::make($args['password'])
+                ]);
+
+            return [
+                'status' => true,
+                'message' => __('lang.password_changed')
+            ];
+        } catch(\Exception $e) {
+            throw new CustomException(
+                __('lang.password_not_changed'),
+                'customValidation'
+            );
+        }
+    }
 }
