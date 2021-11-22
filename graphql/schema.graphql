@@ -646,10 +646,7 @@ extend type Query @guard(with: ["admin", "partner"]) {
   seatsTripEvents(searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [SeatsTripEvent] @paginate(scopes: ["trip", "partner", "search", "filter"], defaultCount: 50)
 
   # Seats Lines
-  seatsLines(partner_id: ID, searchFor: String, searchQuery: String): [SeatsLine] 
-    @paginate(scopes: ["partner", "search"])
   seatsLine(id: ID! @eq): SeatsLine @findOrFail
-  seatsLineStations(line_id: ID! @eq): [SeatsLineStation] @all
   partnerSeatsLines(partner_id: ID! @eq): [SeatsLine] @all
 
   # Seats Trip Transaction
@@ -780,6 +777,13 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   # Business Trip Followers
   followerBusinessTrips(follower_id: ID!): [BusinessTrip] @all(scopes: ["trip"], model: "App\\Follower")
   userFollowers(user_id: ID! @eq): [Follower] @all(scopes: ["follower"])
+
+  # Seats Lines
+  seatsLines(partner_id: ID, searchFor: String, searchQuery: String): [SeatsLine] 
+    @paginate(scopes: ["partner", "search"])
+  seatsLineStations(line_id: ID! @eq): [SeatsLineStation] @all
+  seatsLineStationsTrips(line_id: ID!, pickup_id: ID!, dropoff_id: ID!): [SeatsNearbyStation]
+    @field(resolver: "SeatsTripResolver@seatsLineStationsTrips")
 
 }
 

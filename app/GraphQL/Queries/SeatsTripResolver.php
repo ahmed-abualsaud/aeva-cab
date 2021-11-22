@@ -30,4 +30,9 @@ class SeatsTripResolver
     {
         return $this->seatsTripRepository->driverLiveTrips($args);
     }
+
+    public function seatsLineStationsTrips($_, array $args)
+    {
+        return $this->seatsTripRepository->seatsLineStationsTrips($args);
+    }
 }

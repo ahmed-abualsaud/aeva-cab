@@ -44,6 +44,28 @@ class SeatsTripRepository extends BaseRepository implements SeatsTripRepositoryI
         return $liveTrips;
     }
 
+    public function seatsLineStationsTrips(array $args)
+    {
+        $day = strtolower(date('l'));
+        $lineStationsTrips = SeatsTrip::selectRaw('
+            ADDDATE(
+                CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$day.'"))), 
+                INTERVAL pickup.duration SECOND
+            ) as pickup_time'
+            , [date('Y-m-d')])
+            ->join('seats_line_stations as pickup', 'pickup.line_id', '=', 'seats_trips.line_id')
+            ->join('seats_line_stations as dropoff', 'dropoff.line_id', '=', 'seats_trips.line_id')
+            ->where('seats_trips.line_id', $args['line_id'])
+            ->where('pickup.id', $args['pickup_id'])
+            ->where('dropoff.id', $args['dropoff_id'])
+            ->whereRaw('pickup.order < dropoff.order')
+            ->havingRaw('pickup_time > ?', [date("Y-m-d H:i:s")])
+            ->oldest('pickup_time')
+            ->get();
+
+        return $lineStationsTrips;
+    }
+
     protected function schedule($trips, $day) 
     {
         $dateTime = date('Y-m-d', strtotime($day));
