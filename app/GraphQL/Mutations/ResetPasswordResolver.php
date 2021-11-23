@@ -22,4 +22,9 @@ class ResetPasswordResolver
     {
         return $this->resetPasswordRepository->withOtp($args);
     }
+
+    public function byId($_, array $args)
+    {
+        return $this->resetPasswordRepository->byId($args);
+    }
 }

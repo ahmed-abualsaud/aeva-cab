@@ -25,9 +25,16 @@ input NewPasswordWithCodeInput {
   password_confirmation: String!
 }
 
-input ResetPasswordInput {
-  model: String! @rules(apply: ["required", "in:App\\User,App\\Driver,App\\Partner,App\\Admin"])
+input ResetPasswordWithOtpInput {
+  model: String! @rules(apply: ["required", "in:App\\User,App\\Driver"])
   phone: String! @rules(apply: ["required"])
+  password: String! @rules(apply: ["required", "confirmed"])
+  password_confirmation: String! @rules(apply: ["required"])
+}
+
+input ResetPasswordByIdInput {
+  model: String! @rules(apply: ["required", "in:App\\User,App\\Driver,App\\Partner,App\\Admin"])
+  id: ID! @rules(apply: ["required"])
   password: String! @rules(apply: ["required", "confirmed"])
   password_confirmation: String! @rules(apply: ["required"])
 }

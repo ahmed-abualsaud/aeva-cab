@@ -8,20 +8,12 @@ type Mutation {
     @field(resolver: "AdminResolver@login")
 
   # User Auth
-  userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
-    @field(resolver: "UserResolver@phoneVerification")
   createUser(input: CreateUserInput! @spread): UserPayload!
     @field(resolver: "UserResolver@create")
   userLogin(input: LoginInput! @spread): UserPayload! 
     @field(resolver: "UserResolver@login")
   userSocialLogin(input: SocialLoginInput! @spread): UserPayload! 
     @field(resolver: "UserResolver@socialLogin")
-  forgotPassword(input: ForgotPasswordInput! @spread): DefaultResponse 
-    @field(resolver: "ForgotPasswordResolver")
-  updateForgottenPassword(input: NewPasswordWithCodeInput @spread): DefaultResponse 
-    @field(resolver: "ResetPasswordResolver")
-  resetPasswordWithOtp(input: ResetPasswordInput @spread): DefaultResponse 
-    @field(resolver: "ResetPasswordResolver@withOtp")
 
   # Driver Auth
   createDriver(input: CreateDriverInput! @spread): Driver 
@@ -32,6 +24,12 @@ type Mutation {
   # Partner Auth
   partnerLogin(input: LoginInput! @spread): PartnerAuthPayload! 
     @field(resolver: "PartnerResolver@login")
+
+  # Password Reset
+  userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
+    @field(resolver: "UserResolver@phoneVerification")
+  resetPasswordWithOtp(input: ResetPasswordWithOtpInput @spread): DefaultResponse 
+    @field(resolver: "ResetPasswordResolver@withOtp")
 }
 
 # Admin Guard
@@ -154,6 +152,10 @@ extend type Mutation @guard(with: ["admin"]) {
 
 # Admin|Partner Guard
 extend type Mutation @guard(with: ["admin", "partner"]) {
+  # Reset Password
+  resetPasswordById(input: ResetPasswordByIdInput @spread): DefaultResponse 
+    @field(resolver: "ResetPasswordResolver@byId")
+
   # User
   createMultipleUsers(input: CreateMultipleUsersInput! @spread): Boolean 
     @field(resolver: "UserResolver@createMultipleUsers")
@@ -570,8 +572,6 @@ extend type Query @guard(with: ["admin", "partner"]) {
     @paginate(scopes: ["assigned", "search"], defaultCount: 50)
   partnerNotAssignedUsers(partner_id: ID!, searchFor: String, searchQuery: String): [User] 
     @paginate(scopes: ["notAssigned", "search"], defaultCount: 50)
-  partnerUsers(partner_id: ID!, searchFor: String, searchQuery: String, assigned: Boolean): [User] 
-    @paginate(scopes: ["assignedOrNot", "search"])
 
   # Partner
   partner(id: ID @eq): Partner @findOrFail
