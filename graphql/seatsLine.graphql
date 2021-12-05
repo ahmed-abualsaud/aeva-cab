@@ -3,7 +3,9 @@ input CreateSeatsLineInput {
   name: String! @rules(apply: ["required"])
   name_ar: String! @rules(apply: ["required"])
   code: String! @rules(apply: ["required"])
-  price: Float! @rules(apply: ["required"])
+  base_price: Float! @rules(apply: ["required"])
+  distance_price: Float
+  minimum_distance: Int
 }
 
 input UpdateSeatsLineInput {
@@ -11,7 +13,9 @@ input UpdateSeatsLineInput {
   name: String
   name_ar: String
   code: String
-  price: Float
+  base_price: Float
+  distance_price: Float
+  minimum_distance: Int
 }
 
 type SeatsLine {
@@ -21,7 +25,9 @@ type SeatsLine {
   code: String
   distance: Int
   duration: Int
-  price: Float 
+  base_price: Float
+  distance_price: Float
+  minimum_distance: Int
   route: String
   partner: Partner @belongsTo
   stations: [SeatsLineStation] @hasMany

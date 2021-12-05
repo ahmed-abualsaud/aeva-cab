@@ -30,8 +30,12 @@ type SeatsLineStation {
 type SeatsNearbyStation {
   trip_id: ID
   trip_time: String
-  price: Float
+  base_price: Float
+  distance_price: Float
+  minimum_distance: Int
+  pickup_dropoff_distance: Int
   bookable: Boolean
+  ac: Boolean
   pickup_id: ID
   pickup_name: String
   pickup_name_ar: String

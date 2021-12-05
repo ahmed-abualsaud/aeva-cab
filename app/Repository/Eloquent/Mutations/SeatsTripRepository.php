@@ -72,7 +72,7 @@ class SeatsTripRepository extends BaseRepository
     {
         $originalTrip = $this->model->select(
             'line_id', 'partner_id', 'driver_id', 'vehicle_id', 'start_date', 'end_date', 
-            'days', 'bookable', 'price'
+            'days', 'bookable', 'ac', 'base_price', 'distance_price', 'minimum_distance'
             )
             ->findOrFail($args['id'])
             ->toArray();

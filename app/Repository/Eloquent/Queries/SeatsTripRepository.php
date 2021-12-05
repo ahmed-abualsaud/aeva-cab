@@ -46,28 +46,37 @@ class SeatsTripRepository extends BaseRepository implements SeatsTripRepositoryI
 
     public function seatsLineStationsTrips(array $args)
     {
-        $date = date('Y-m-d');
-        $lineStationsTrips = SeatsTrip::selectRaw('
+        $date = date('Y-m-d', strtotime($args['day']));
+
+        $results = SeatsTrip::selectRaw('
             seats_trips.id as trip_id,
-            seats_trips.price,
+            seats_trips.base_price,
+            seats_trips.minimum_distance,
+            seats_trips.distance_price,
+            seats_trips.bookable,
+            seats_trips.ac,
             CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))) as trip_time,
             ADDDATE(
                 CONCAT(?, " ", JSON_UNQUOTE(JSON_EXTRACT(days, "$.'.$args['day'].'"))), 
                 INTERVAL pickup.duration SECOND
-            ) as pickup_time'
-            , [$date, $date])
-            ->join('seats_line_stations as pickup', 'pickup.line_id', '=', 'seats_trips.line_id')
-            ->join('seats_line_stations as dropoff', 'dropoff.line_id', '=', 'seats_trips.line_id')
-            ->where('seats_trips.bookable', true)
-            ->where('seats_trips.line_id', $args['line_id'])
-            ->where('pickup.id', $args['pickup_id'])
-            ->where('dropoff.id', $args['dropoff_id'])
-            ->whereRaw('pickup.order < dropoff.order')
-            ->havingRaw('pickup_time > ?', [date("Y-m-d H:i:s")])
-            ->oldest('pickup_time')
-            ->get();
+            ) as pickup_time,
+            (dropoff.distance - pickup.distance) as pickup_dropoff_distance
+            ', [$date, $date]
+        )
+        ->join('seats_line_stations as pickup', 'pickup.line_id', '=', 'seats_trips.line_id')
+        ->join('seats_line_stations as dropoff', 'dropoff.line_id', '=', 'seats_trips.line_id')
+        ->where('seats_trips.line_id', $args['line_id'])
+        ->where('pickup.id', $args['pickup_id'])
+        ->where('dropoff.id', $args['dropoff_id'])
+        ->whereRaw('
+            JSON_EXTRACT(seats_trips.days, "$.'.$args['day'].'") <> CAST("null" AS JSON)
+            and pickup.`order` < dropoff.`order`
+        ')
+        ->havingRaw('pickup_time > ?', [date("Y-m-d H:i:s")])
+        ->oldest('pickup_time')
+        ->get();
 
-        return $lineStationsTrips;
+        return $results;
     }
 
     protected function schedule($trips, $day) 

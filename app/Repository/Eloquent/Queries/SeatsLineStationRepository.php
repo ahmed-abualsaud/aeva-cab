@@ -3,8 +3,9 @@
 namespace App\Repository\Eloquent\Queries;
 
 use App\SeatsTrip;
-use App\Repository\Queries\SeatsLineStationRepositoryInterface;
 use App\Repository\Eloquent\BaseRepository;
+use App\Http\Resources\SeatsNearbyStationsResource;
+use App\Repository\Queries\SeatsLineStationRepositoryInterface;
 
 class SeatsLineStationRepository extends BaseRepository implements SeatsLineStationRepositoryInterface
 {
@@ -19,10 +20,13 @@ class SeatsLineStationRepository extends BaseRepository implements SeatsLineStat
         $date = date('Y-m-d', strtotime($args['day']));
         $radius = config('custom.seats_search_radius');
 
-        return $this->model->selectRaw('
+        $results = $this->model->selectRaw('
             seats_trips.id as trip_id,
-            seats_trips.price,
+            seats_trips.base_price,
+            seats_trips.minimum_distance,
+            seats_trips.distance_price,
             seats_trips.bookable,
+            seats_trips.ac,
             pickup.id as pickup_id,
             pickup.name as pickup_name,
             pickup.name_ar as pickup_name_ar,
@@ -39,9 +43,10 @@ class SeatsLineStationRepository extends BaseRepository implements SeatsLineStat
                 INTERVAL '.'dropoff.duration'.' SECOND
             ) as dropoff_time,
             ST_Distance_Sphere(point(pickup.longitude, pickup.latitude), point(?, ?)
-            ) AS pickup_distance,
+            ) as pickup_distance,
             ST_Distance_Sphere(point(dropoff.longitude, dropoff.latitude), point(?, ?)
-            ) AS dropoff_distance
+            ) as dropoff_distance,
+            (dropoff.distance - pickup.distance) as pickup_dropoff_distance
             ', [$date, $date, $date, $args['plng'], $args['plat'], $args['dlng'], $args['dlat']]
         )
         ->join('seats_line_stations as pickup', 'pickup.line_id', '=', 'seats_trips.line_id')
@@ -56,5 +61,7 @@ class SeatsLineStationRepository extends BaseRepository implements SeatsLineStat
             pickup_time > ?
         ', [$radius, $radius, date("Y-m-d H:i:s")])
         ->oldest('pickup_time');
+
+        return $results;
     }
 }

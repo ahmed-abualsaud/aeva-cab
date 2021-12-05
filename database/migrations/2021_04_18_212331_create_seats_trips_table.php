@@ -27,8 +27,11 @@ class CreateSeatsTripsTable extends Migration
             $table->date('start_date');
             $table->json('days');
             $table->date('end_date');
-            $table->float('price', 8, 2)->nullable();
+            $table->float('base_price', 8, 2)->default(0.00);
+            $table->float('distance_price', 8, 2)->default(0.00);
+            $table->integer('minimum_distance')->default(0);
             $table->boolean('bookable')->default(false);
+            $table->boolean('ac')->default(false);
             $table->timestamps();
 
             $table->index('line_id');

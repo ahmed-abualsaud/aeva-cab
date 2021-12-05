@@ -21,7 +21,9 @@ class CreateSeatsLinesTable extends Migration
             $table->string('code');
             $table->integer('duration')->nullable();
             $table->integer('distance')->nullable();
-            $table->float('price', 8, 2)->nullable();
+            $table->float('base_price', 8, 2)->default(0.00);
+            $table->float('distance_price', 8, 2)->default(0.00);
+            $table->integer('minimum_distance')->default(0);
             $table->text('route')->nullable();
             $table->timestamps();
 

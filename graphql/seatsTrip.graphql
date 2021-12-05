@@ -9,7 +9,10 @@ input CreateSeatsTripInput {
   end_date: String! @rules(apply: ["required"])
   days: TripDaysInput! @rules(apply: ["required"])
   bookable: Boolean! @rules(apply: ["required"])
-  price: Float! @rules(apply: ["required"])
+  ac: Boolean! @rules(apply: ["required"])
+  base_price: Float! @rules(apply: ["required"])
+  minimum_distance: Int
+  distance_price: Float
 }
 
 input UpdateSeatsTripInput {
@@ -22,7 +25,10 @@ input UpdateSeatsTripInput {
   end_date: String
   days: TripDaysInput
   bookable: Boolean
-  price: Float
+  ac: Boolean
+  base_price: Float
+  distance_price: Float
+  minimum_distance: Int
 }
 
 input CopySeatsTripInput {
@@ -36,14 +42,16 @@ type SeatsTrip {
   name: String
   name_ar: String
   log_id: String
-  name: String
   start_date: String
   end_date: String
   starts_at: String
   ready_at: String
   days: TripDays
   bookable: Boolean
-  price: Float
+  ac: Boolean
+  base_price: Float
+  distance_price: Float
+  minimum_distance: Int
   partner: Partner @belongsTo
   driver: Driver @belongsTo
   vehicle: Vehicle @belongsTo
