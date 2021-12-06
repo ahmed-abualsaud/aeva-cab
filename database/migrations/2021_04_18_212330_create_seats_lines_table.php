@@ -16,6 +16,7 @@ class CreateSeatsLinesTable extends Migration
         Schema::create('seats_lines', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('partner_id');
+            $table->unsignedBigInteger('city_id')->nullable();
             $table->string('name');
             $table->string('name_ar')->nullable();
             $table->string('code');
@@ -28,9 +29,11 @@ class CreateSeatsLinesTable extends Migration
             $table->timestamps();
 
             $table->index('partner_id');
+            $table->index('city_id');
             $table->index('created_at');
 
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
+            $table->foreign('city_id')->references('id')->on('cities')->onDelete('set null');
         });
     }
 

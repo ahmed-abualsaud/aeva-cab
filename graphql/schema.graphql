@@ -781,12 +781,11 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   userFollowers(user_id: ID! @eq): [Follower] @all(scopes: ["follower"])
 
   # Seats Lines
-  seatsRoutes: [SeatsLine] 
-    @paginate(type: SIMPLE, defaultCount: 10)
+  seatsRoutes(city_id: ID): [SeatsLine] 
+    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["city"])
   seatsLineStations(line_id: ID! @eq): [SeatsLineStation] @all
   seatsLineStationsTrips(line_id: ID!, pickup_id: ID!, dropoff_id: ID!, day: String!): [SeatsNearbyStation]
     @field(resolver: "SeatsTripResolver@seatsLineStationsTrips")
-
 }
 
 # Admin|Partner|Driver Guard

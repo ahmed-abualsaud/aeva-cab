@@ -1,5 +1,6 @@
 input CreateSeatsLineInput {
   partner_id: ID! @rules(apply: ["required"])
+  city_id: ID! @rules(apply: ["required"])
   name: String! @rules(apply: ["required"])
   name_ar: String! @rules(apply: ["required"])
   code: String! @rules(apply: ["required"])
@@ -10,6 +11,7 @@ input CreateSeatsLineInput {
 
 input UpdateSeatsLineInput {
   id: ID! @rules(apply: ["required"])
+  city_id: ID
   name: String
   name_ar: String
   code: String
@@ -30,5 +32,6 @@ type SeatsLine {
   minimum_distance: Int
   route: String
   partner: Partner @belongsTo
+  city: City @belongsTo
   stations: [SeatsLineStation] @hasMany
 }

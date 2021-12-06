@@ -13,6 +13,11 @@ class SeatsLine extends Model
         return $this->belongsTo(Partner::class);
     }
 
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
     public function stations() 
     {        
         return $this->hasMany(SeatsLineStation::class, 'line_id');
@@ -33,5 +38,14 @@ class SeatsLine extends Model
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
 
         return $query->latest();
+    }
+
+    public function scopeCity($query, $args) 
+    {
+        if (array_key_exists('city_id', $args) && $args['city_id']) {
+            return $query->where('city_id', $args['city_id']);
+        }
+ 
+        return $query;
     }
 }
