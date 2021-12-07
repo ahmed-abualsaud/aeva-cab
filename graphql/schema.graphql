@@ -522,10 +522,6 @@ type Query @guard(with: ["admin"]) {
   partnerNotAssignedDrivers(partner_id: ID!, searchFor: String, searchQuery: String): [Driver] 
     @paginate(scopes: ["notAssigned", "search"])
 
-  # Zone
-  zones(type: String! @eq): [Zone] @all
-  zone(id: ID! @eq): Zone @findOrFail
-
   # To School
   allSchools(searchFor: String, searchQuery: String): [School] 
     @paginate(scopes: ["search"])
@@ -718,6 +714,10 @@ extend type Query @guard(with: ["admin", "user"]) {
 
 # Admin|Partner|User Guard
 extend type Query @guard(with: ["admin", "partner", "user"]) {
+  # Zone
+  zones(type: String! @eq): [Zone] @all
+  zone(id: ID! @eq): Zone @findOrFail
+
   # Promo Code
   promoCodes(type: String, is_valid: Boolean): [PromoCode] @all(scopes: ["ofType", "isValid"])
   promoCode(name: String! @eq): PromoCode @find
@@ -781,8 +781,8 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   userFollowers(user_id: ID! @eq): [Follower] @all(scopes: ["follower"])
 
   # Seats Lines
-  seatsRoutes(city_id: ID): [SeatsLine] 
-    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["city"])
+  seatsRoutes(zone_id: ID): [SeatsLine] 
+    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["zone"])
   seatsLineStations(line_id: ID! @eq): [SeatsLineStation] @all
   seatsLineStationsTrips(line_id: ID!, pickup_id: ID!, dropoff_id: ID!, day: String!): [SeatsNearbyStation]
     @field(resolver: "SeatsTripResolver@seatsLineStationsTrips")

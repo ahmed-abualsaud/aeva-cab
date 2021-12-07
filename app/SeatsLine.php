@@ -13,9 +13,9 @@ class SeatsLine extends Model
         return $this->belongsTo(Partner::class);
     }
 
-    public function city()
+    public function zone()
     {
-        return $this->belongsTo(City::class);
+        return $this->belongsTo(Zone::class);
     }
 
     public function stations() 
@@ -40,10 +40,10 @@ class SeatsLine extends Model
         return $query->latest();
     }
 
-    public function scopeCity($query, $args) 
+    public function scopeZone($query, $args) 
     {
-        if (array_key_exists('city_id', $args) && $args['city_id']) {
-            return $query->where('city_id', $args['city_id']);
+        if (array_key_exists('zone_id', $args) && $args['zone_id']) {
+            return $query->where('zone_id', $args['zone_id']);
         }
  
         return $query;

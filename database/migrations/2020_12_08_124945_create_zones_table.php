@@ -18,7 +18,7 @@ class CreateZonesTable extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->unsignedBigInteger('city_id');
-            $table->enum('type', ['TOSCHOOL','TOWORK']);
+            $table->enum('type', ['TOSCHOOL','TOWORK', 'SEATS']);
             $table->timestamps();
 
             $table->index('city_id');

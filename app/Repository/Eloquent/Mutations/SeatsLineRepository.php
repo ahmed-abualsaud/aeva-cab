@@ -76,7 +76,7 @@ class SeatsLineRepository extends BaseRepository implements SeatsLineRepositoryI
     protected function createLineCopy(array $args)
     {
         $originalLine = $this->model->select(
-            'partner_id', 'city_id', 'code', 'distance', 'duration', 'base_price', 'distance_price', 'minimum_distance', 'route'
+            'partner_id', 'zone_id', 'code', 'distance', 'duration', 'base_price', 'distance_price', 'minimum_distance', 'route'
             )
             ->findOrFail($args['id'])
             ->toArray();

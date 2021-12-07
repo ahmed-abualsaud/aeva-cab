@@ -1,13 +1,13 @@
 input CreateZoneInput @validator {
   name: String
   city_id: ID! @rules(apply: ["required"])
-  type: String! @rules(apply: ["required", "in:TOSCHOOL,TOWORK"])
+  type: String! @rules(apply: ["required", "in:TOSCHOOL,TOWORK,SEATS"])
   description: String
 }
 
 input UpdateZoneInput @validator {
   id: ID! @rules(apply: ["required"])
-  type: String! @rules(apply: ["required", "in:TOSCHOOL,TOWORK"])
+  type: String! @rules(apply: ["required", "in:TOSCHOOL,TOWORK,SEATS"])
   city_id: ID @rules(apply: ["required"])
   name: String @rules(apply: ["required"])
   description: String
