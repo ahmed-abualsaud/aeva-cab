@@ -715,7 +715,7 @@ extend type Query @guard(with: ["admin", "user"]) {
 # Admin|Partner|User Guard
 extend type Query @guard(with: ["admin", "partner", "user"]) {
   # Zone
-  zones(type: String! @eq): [Zone] @all
+  zones(type: String! @eq, orderBy: _ @orderBy(columns: ["city_id"])): [Zone] @all
   zone(id: ID! @eq): Zone @findOrFail
 
   # Promo Code
