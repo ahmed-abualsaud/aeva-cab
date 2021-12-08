@@ -1,16 +1,19 @@
-input CreateCityInput {
-  name: String! @rules(apply: ["required", "unique:cities,name"])
-  name_ar: String! @rules(apply: ["required", "unique:cities,name_ar"])
+input CreateCityInput @validator {
+  name: String! @rules(apply: ["required"])
+  name_ar: String! @rules(apply: ["required"])
+  type: String! @rules(apply: ["required", "in:TOSCHOOL,TOWORK,SEATS"])
 }
 
 input UpdateCityInput @validator {
   id: ID! @rules(apply: ["required"])
-  name: String
-  name_ar: String
+  name: String! @rules(apply: ["required"])
+  name_ar: String! @rules(apply: ["required"])
+  type: String! @rules(apply: ["required", "in:TOSCHOOL,TOWORK,SEATS"])
 }
 
 type City {
   id: ID
   name: String
   name_ar: String
+  type: String
 }

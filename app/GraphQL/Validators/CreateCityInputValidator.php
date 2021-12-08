@@ -5,7 +5,7 @@ namespace App\GraphQL\Validators;
 use Illuminate\Validation\Rule;
 use Nuwave\Lighthouse\Validation\Validator;
 
-class UpdateCityInputValidator extends Validator
+class CreateCityInputValidator extends Validator
 {
   /**
    * @return mixed[]
@@ -14,15 +14,13 @@ class UpdateCityInputValidator extends Validator
   {
     return [
       'name' => [
-        'sometimes', 
+        'required', 
         Rule::unique('cities', 'name')
-          ->ignore($this->arg('id'), 'id')
           ->where('type', $this->arg('type'))
       ],
       'name_ar' => [
-        'sometimes', 
+        'required', 
         Rule::unique('cities', 'name_ar')
-          ->ignore($this->arg('id'), 'id')
           ->where('type', $this->arg('type'))
       ],
     ];

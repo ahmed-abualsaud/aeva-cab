@@ -705,9 +705,6 @@ extend type Query @guard(with: ["admin", "user"]) {
   workRequest(id: ID! @eq): WorkRequest @find
   userWorkRequests(user_id: ID! @eq): [WorkRequest] @all
 
-  # City
-  cities: [City] @all
-
   # Statement
   statement(type: String! @eq): Statement @find
 }
@@ -717,6 +714,9 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
   # Zone
   zones(type: String! @eq, orderBy: _ @orderBy(columns: ["city_id"])): [Zone] @all
   zone(id: ID! @eq): Zone @findOrFail
+
+  # City
+  cities(type: String): [City] @all(scopes: ["ofType"])
 
   # Promo Code
   promoCodes(type: String, is_valid: Boolean): [PromoCode] @all(scopes: ["ofType", "isValid"])

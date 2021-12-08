@@ -15,9 +15,12 @@ class CreateCitiesTable extends Migration
     {
         Schema::create('cities', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->unique();
-            $table->string('name_ar')->unique();
+            $table->string('name');
+            $table->string('name_ar');
+            $table->enum('type', ['TOSCHOOL','TOWORK', 'SEATS']);
             $table->timestamps();
+
+            $table->index('type');
         });
     }
 
