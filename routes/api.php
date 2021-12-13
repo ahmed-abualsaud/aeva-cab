@@ -7,10 +7,16 @@
 |
 */
 Route::group(['namespace' => 'Mutations'], function () {
+    Route::post('/admin/login', 'AdminController@login');
     Route::post('/driver/login', 'DriverController@login');
-    Route::post('/seats/trip/terminal/transaction', 'SeatsTripTerminalTransactionController@create');
-});
+    
+    Route::post('/user/create', 'UserController@create');
+    Route::post('/user/login', 'UserController@login');
+    Route::post('/user/social/login', 'UserController@socialLogin');
 
+    Route::post('/seats/trip/terminal/transaction', 'SeatsTripTerminalTransactionController@create');
+
+});
 /*
 |--------------------------------------------------------------------------
 | Mutations auth:user
@@ -78,6 +84,9 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Queries'], functi
     Route::get('/business/trip/users/status/{trip_id?}', 'BusinessTripSubscriptionController@businessTripUsersStatus');
     Route::get('/business/trip/{trip_id}/user/{user_id}/status', 'BusinessTripSubscriptionController@businessTripUserStatus');
     Route::get('/partner/{partner_id}/payment-categories', 'PaymentCategoryController@partnerPaymentCategories');
+    Route::get('/user/{user_id}/device/id', 'UserController@userDeviceId');
+    Route::get('/driver/{driver_id}/device/id', 'DriverController@driverDeviceId');
+    Route::get('/drivers/device/id', 'DriverController@driversDeviceId');
 });
 
 /*

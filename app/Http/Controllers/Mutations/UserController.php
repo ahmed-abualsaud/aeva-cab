@@ -24,4 +24,19 @@ class UserController
         return $this->userRepository->getLanguage($request);
     }
 
+    public function create(Request $request) 
+    {
+        return $this->userRepository->create($request);
+    }
+
+    public function login(Request $request) 
+    {
+        return $this->userRepository->login($request);
+    }
+
+    public function socialLogin(Request $request) 
+    {
+        return $this->userRepository->login($request);
+    }
+
 }
