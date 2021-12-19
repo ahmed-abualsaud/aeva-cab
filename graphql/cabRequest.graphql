@@ -1,0 +1,51 @@
+input CabRequestInput {
+    id: ID
+    user_id: ID
+    user_name: String
+    driver_id: ID
+    vehicle_id: ID
+    cancelled_by: String
+    cancel_reason: String
+    payment_method: String
+    s_address: String
+    s_latitude: Float
+    s_longitude: Float
+    d_address: String
+    d_latitude: Float
+    d_longitude: Float
+}
+
+type CabRequest {
+    id: ID
+    user_id: ID
+    driver_id: ID
+    drivers_ids: [ID]
+    vehicle_id: ID
+    status: String
+    payment_method: String
+    paid: Float
+    history: CabRequestHistory
+    s_address: String
+    s_latitude: Float
+    s_longitude: Float
+    d_address: String
+    d_latitude: Float
+    d_longitude: Float
+}
+
+type CabRequestHistory {
+  searching: HistoryObj
+  accepted: HistoryObj
+  arrived: HistoryObj
+  started: HistoryObj
+  completed: HistoryObj
+  cancelled: HistoryObj
+}
+
+type HistoryObj {
+  at: String
+  by: String
+  reason: String
+  user_lat: Float
+  user_lng: Float
+}
