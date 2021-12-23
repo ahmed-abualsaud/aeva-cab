@@ -56,6 +56,7 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Mutations'], func
     Route::post('/send/message', 'CommunicationController@sendBusinessTripChatMessage');
     Route::post('/seats/trip/booking/update', 'SeatsTripBookingController@update');
     Route::post('/seats/trip/pos/transaction', 'SeatsTripPosTransactionController@create');
+    Route::post('/seats/trip/pos/bulk-transaction', 'SeatsTripPosTransactionController@bulkCreate');
 });
 
 /*

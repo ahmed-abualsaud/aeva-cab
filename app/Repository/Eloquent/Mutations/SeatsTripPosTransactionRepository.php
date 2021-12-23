@@ -45,4 +45,21 @@ class SeatsTripPosTransactionRepository extends BaseRepository
             return array($created);
         }
     }
+
+    public function bulkCreate(array $args)
+    {
+        $arr = [];
+        foreach($args as $val) {
+            $arr['ticket_id'] = $val['ticket_id'];
+            $arr['partner_id'] = $val['partner_id'];
+            $arr['driver_id'] = $val['driver_id'];
+            $arr['vehicle_id'] = $val['vehicle_id'];
+            $arr['serial'] = $val['serial'];
+            $arr['amount'] = $val['amount'];
+            $arr['created_at'] = $val['created_at'];
+            $data[] = $arr;
+        }
+
+        return $this->model->insert($data);
+    }
 }
