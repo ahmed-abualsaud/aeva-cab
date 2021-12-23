@@ -88,6 +88,7 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Queries'], functi
     Route::get('/user/{user_id}/device/id', 'UserController@userDeviceId');
     Route::get('/driver/{driver_id}/device/id', 'DriverController@driverDeviceId');
     Route::get('/drivers/device/id', 'DriverController@driversDeviceId');
+    Route::get('/seats/trip/pos/vehicle/{vehicle_id}/max-serial', 'SeatsTripPosTransactionController@vehicleMaxSerial');
 });
 
 /*

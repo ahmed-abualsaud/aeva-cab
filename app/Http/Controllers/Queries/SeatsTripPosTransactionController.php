@@ -20,4 +20,14 @@ class SeatsTripPosTransactionController
         return $this->seatsTripPosTransactionRepository->export($req);
     }
 
+    public function vehicleMaxSerial($vehicle_id) 
+    {
+        $response = [
+            'status' => true,
+            'data' => $this->seatsTripPosTransactionRepository->vehicleMaxSerial($vehicle_id)
+        ];
+
+        return response()->json($response, 200);
+    }
+
 }
