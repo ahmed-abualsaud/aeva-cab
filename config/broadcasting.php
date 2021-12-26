@@ -40,7 +40,7 @@ return [
                 'useTLS' => true,
                 'host' => 'ws.qruz.xyz',
                 'port' => 6001,
-                'scheme' => 'https',
+                'scheme' => 'http',
                 'curl_options' => [
                     CURLOPT_SSL_VERIFYHOST => 0,
                     CURLOPT_SSL_VERIFYPEER => 0,
