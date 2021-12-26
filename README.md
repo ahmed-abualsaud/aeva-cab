@@ -6,5 +6,6 @@ Qruz offers the absolute best transportation experience and technology out there
 - Qruz To Work
 - Qruz On-demand
 - Qruz Seats
+- Qruz Cab
 - Qruz POS
 - Qruz Telescope
