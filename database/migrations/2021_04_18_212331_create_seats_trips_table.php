@@ -33,6 +33,7 @@ class CreateSeatsTripsTable extends Migration
             $table->boolean('bookable')->default(false);
             $table->boolean('ac')->default(false);
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index('line_id');
             $table->index('log_id');
@@ -43,8 +44,8 @@ class CreateSeatsTripsTable extends Migration
             
             $table->foreign('line_id')->references('id')->on('seats_lines')->onDelete('cascade');
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
-            $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
-            $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('cascade');
+            $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('set null');
+            $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('set null');
         });
     }
 
