@@ -1,6 +1,6 @@
 input CreateSeatsLineInput {
   partner_id: ID! @rules(apply: ["required"])
-  zone_id: ID! @rules(apply: ["required"])
+  zone_id: ID
   name: String! @rules(apply: ["required"])
   name_ar: String! @rules(apply: ["required"])
   code: String! @rules(apply: ["required"])

@@ -27,6 +27,7 @@ class CreateSeatsLinesTable extends Migration
             $table->integer('minimum_distance')->default(0);
             $table->text('route')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index('partner_id');
             $table->index('zone_id');
