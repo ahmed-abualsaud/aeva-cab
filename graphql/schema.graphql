@@ -559,6 +559,10 @@ type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["status", "period", "search", "zone"])
   workRequestsArchive(searchFor: String, searchQuery: String, period: String): [WorkRequest] 
     @paginate(scopes: ["archived", "period", "search"])
+
+  # Cab Request
+  cabRequests(status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
+    @paginate(scopes: ["filter", "search"])
 }
 
 # Partner Guard
@@ -571,12 +575,22 @@ extend type Query @guard(with: ["partner"]) {
 extend type Query @guard(with: ["user"]) {
   # Authenticated User
   authUser: User @auth
+
+  # Cab Request
+  userCabRequests(user_id: ID! @eq): [CabRequest] 
+    @paginate(type: SIMPLE, defaultCount: 10)
+  userLiveCabRequest(user_id: ID! @eq): CabRequest @first(scopes: ["live"])
 }
 
 # Driver Guard
 extend type Query @guard(with: ["driver"]) {
   # Authenticated Driver
   authDriver: Driver @auth
+
+  # Cab Request
+  driverCabRequests(driver_id: ID! @eq): [CabRequest] 
+    @paginate(type: SIMPLE, defaultCount: 10)
+  driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["live"])
 }
 
 # Admin|Partner Guard
@@ -861,6 +875,13 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 
   # Vehicle
   vehicle(id: ID @eq): Vehicle @findOrFail
+}
+
+extend type Query @guard(with: ["admin", "user", "driver"]) {
+
+  # Cab Request
+  cabRequest(id: ID!): CabRequest @findOrFail
+
 }
 
 #import auth.graphql
