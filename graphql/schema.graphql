@@ -574,7 +574,7 @@ extend type Query @guard(with: ["partner"]) {
 }
 
 # User Guard
-extend type Query {#@guard(with: ["user"]) {
+extend type Query @guard(with: ["user"]) {
   # Authenticated User
   authUser: User @auth
 
@@ -582,10 +582,11 @@ extend type Query {#@guard(with: ["user"]) {
   userCabRequests(user_id: ID!, time: String): [CabRequest] 
     @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
   userLiveCabRequest(user_id: ID! @eq): CabRequest @first(scopes: ["live"])
+  userScheduledCabRequests(user_id: ID! @eq): [CabRequest] @all(scopes: ["whereScheduled"])
 }
 
 # Driver Guard
-extend type Query {#@guard(with: ["driver"]) {
+extend type Query @guard(with: ["driver"]) {
   # Authenticated Driver
   authDriver: Driver @auth
 
