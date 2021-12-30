@@ -4,6 +4,7 @@ namespace App\Repository\Mutations;
 
 interface CabRequestRepositoryInterface
 {
+    public function schedule(array $args);
     public function search(array $args);
     public function accept(array $args);
     public function arrived(array $args);

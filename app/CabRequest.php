@@ -40,18 +40,30 @@ class CabRequest extends Model
     public function scopeTime($query, $args)
     {
         if (array_key_exists('time', $args) && $args['time']) {
-            if(array_key_exists('past', $args) && $args['past']) {
-                return $query->where('created_at', '<', $args['time']);
+            $now = date('Y-m-d H:i:s');
+
+            switch($args['time']) {
+                case 'PAST':
+                    $query = $query->where('status', '<>', 'SCHEDULED');
+                break;
+                default:
+                    $query = $query->where('status', 'SCHEDULED');
             }
-            return $query->where('created_at', '>=', $args['time']);
-        }
-        
+
+            return $query->latest('schedule_time');
+        }        
     }
 
     public function scopeWherePending($query, $user_id)
     {
         return $query->where('user_id', $user_id)
-            ->whereNotIn('status' , ['CANCELLED', 'COMPLETED']);
+            ->whereNotIn('status' , ['SCHEDULED', 'CANCELLED', 'COMPLETED']);
+    }
+
+    public function scopeWhereScheduled($query, $user_id)
+    {
+        return $query->where('user_id', $user_id)
+            ->where('status', 'SCHEDULED');
     }
 
     public function scopeSearch($query, $args) 

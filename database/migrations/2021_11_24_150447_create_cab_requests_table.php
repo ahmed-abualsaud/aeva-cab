@@ -19,6 +19,7 @@ class CreateCabRequestsTable extends Migration
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->enum('status', [
+                'SCHEDULED',
                 'SEARCHING',
                 'ACCEPTED', 
                 'ARRIVED',
@@ -26,13 +27,9 @@ class CreateCabRequestsTable extends Migration
                 'COMPLETED',
                 'CANCELLED',
             ]);
-            $table->enum('payment_method', [
-                'CASH',
-                'CARD',
-                'FAWRY'
-            ]);
             $table->boolean('paid')->default(0);
             $table->json('history')->nullable();
+            $table->dateTime('schedule_time')->nullable();
             $table->string('s_address')->nullable();
             $table->double('s_latitude', 15, 8);
             $table->double('s_longitude', 15, 8);

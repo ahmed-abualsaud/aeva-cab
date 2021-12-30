@@ -353,6 +353,8 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "SeatsTripAppTransactionResolver@create")
 
   # Cab Request
+  scheduleCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@schedule")
   searchCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@search")
   arrivedCabRequest(input: CabRequestInput! @spread): CabRequest
@@ -572,23 +574,23 @@ extend type Query @guard(with: ["partner"]) {
 }
 
 # User Guard
-extend type Query @guard(with: ["user"]) {
+extend type Query {#@guard(with: ["user"]) {
   # Authenticated User
   authUser: User @auth
 
   # Cab Request
-  userCabRequests(user_id: ID!, time: String, past: Boolean): [CabRequest] 
+  userCabRequests(user_id: ID!, time: String): [CabRequest] 
     @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
   userLiveCabRequest(user_id: ID! @eq): CabRequest @first(scopes: ["live"])
 }
 
 # Driver Guard
-extend type Query @guard(with: ["driver"]) {
+extend type Query {#@guard(with: ["driver"]) {
   # Authenticated Driver
   authDriver: Driver @auth
 
   # Cab Request
-  driverCabRequests(driver_id: ID!, time: String, past: Boolean): [CabRequest] 
+  driverCabRequests(driver_id: ID!, time: String): [CabRequest] 
     @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
   driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["live"])
 }

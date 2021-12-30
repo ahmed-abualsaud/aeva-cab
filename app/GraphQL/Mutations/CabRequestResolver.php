@@ -13,6 +13,11 @@ class CabRequestResolver
         $this->cabRequestRepository = $cabRequestRepository;
     }
 
+    public function schedule($_, array $args)
+    {
+        return $this->cabRequestRepository->schedule($args);
+    }
+
     public function search($_, array $args)
     {
         return $this->cabRequestRepository->search($args);

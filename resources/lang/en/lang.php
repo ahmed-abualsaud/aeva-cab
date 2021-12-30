@@ -122,6 +122,8 @@ return [
 
     // ============================== Qruz Cab ==============================
 
+    'schedule_request_failed' => 'Schedule request failed',
+    'search_request_failed' => 'Search request failed',
     'request_inprogress' => 'Request in progress.',
     'no_available_drivers' => 'No available drivers.',
     'accept_request' => 'Accept Request.',

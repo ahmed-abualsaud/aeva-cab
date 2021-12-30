@@ -122,6 +122,8 @@ return [
 
     // ============================== Qruz Cab ==============================
 
+    'schedule_request_failed' => 'فشل جدولة الطلب',
+    'search_request_failed' => 'فشل عملية البحث',
     'request_inprogress' => 'الطلب قيد التنفيذ',
     'no_available_drivers' => 'لا يوجد سائق متاح',
     'accept_request' => 'قبول طلب',
