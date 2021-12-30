@@ -37,6 +37,17 @@ class CabRequest extends Model
         return $query->where('status', 'STARTED');
     }
 
+    public function scopeTime($query, $args)
+    {
+        if (array_key_exists('time', $args) && $args['time']) {
+            if(array_key_exists('past', $args) && $args['past']) {
+                return $query->where('created_at', '<', $args['time']);
+            }
+            return $query->where('created_at', '>=', $args['time']);
+        }
+        
+    }
+
     public function scopeWherePending($query, $user_id)
     {
         return $query->where('user_id', $user_id)

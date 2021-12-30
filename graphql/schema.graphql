@@ -577,8 +577,8 @@ extend type Query @guard(with: ["user"]) {
   authUser: User @auth
 
   # Cab Request
-  userCabRequests(user_id: ID! @eq): [CabRequest] 
-    @paginate(type: SIMPLE, defaultCount: 10)
+  userCabRequests(user_id: ID!, time: String, past: Boolean): [CabRequest] 
+    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
   userLiveCabRequest(user_id: ID! @eq): CabRequest @first(scopes: ["live"])
 }
 
@@ -588,8 +588,8 @@ extend type Query @guard(with: ["driver"]) {
   authDriver: Driver @auth
 
   # Cab Request
-  driverCabRequests(driver_id: ID! @eq): [CabRequest] 
-    @paginate(type: SIMPLE, defaultCount: 10)
+  driverCabRequests(driver_id: ID!, time: String, past: Boolean): [CabRequest] 
+    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
   driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["live"])
 }
 
