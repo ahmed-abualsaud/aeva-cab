@@ -351,6 +351,14 @@ extend type Mutation @guard(with: ["admin", "user"]) {
   # Seats Trip Transaction
   createSeatsTripAppTransaction(input: CreateSeatsTripAppTransactionInput! @spread): Boolean
     @field(resolver: "SeatsTripAppTransactionResolver@create")
+
+  # Cab Request
+  scheduleCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@schedule")
+  searchCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@search")
+  arrivedCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@arrived")
 }
 
 # Admin|Driver Guard
@@ -382,6 +390,14 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "SeatsTripEventResolver@pickUser")
   dropSeatsTripUser(input: DropSeatsTripUserInput! @spread): Boolean 
     @field(resolver: "SeatsTripEventResolver@dropUser")
+
+  # Cab Request
+  acceptCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@accept")
+  startCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@start")
+  endCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@end")
 }
 
 # Admin|Partner|User Guard
@@ -459,6 +475,10 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Seats
   updateSeatsTripBooking(input: UpdateSeatsTripBookingInput! @spread): SeatsTripBooking
     @field(resolver: "SeatsTripBookingResolver@update")
+
+  # Cab Request
+  cancelCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@cancel")
 }
 
 # User Guard
@@ -541,6 +561,10 @@ type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["status", "period", "search", "zone"])
   workRequestsArchive(searchFor: String, searchQuery: String, period: String): [WorkRequest] 
     @paginate(scopes: ["archived", "period", "search"])
+
+  # Cab Request
+  cabRequests(status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
+    @paginate(scopes: ["filter", "search"])
 }
 
 # Partner Guard
@@ -553,12 +577,23 @@ extend type Query @guard(with: ["partner"]) {
 extend type Query @guard(with: ["user"]) {
   # Authenticated User
   authUser: User @auth
+
+  # Cab Request
+  userCabRequests(user_id: ID!, time: String): [CabRequest] 
+    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
+  userLiveCabRequest(user_id: ID! @eq): CabRequest @first(scopes: ["live"])
+  userScheduledCabRequests(user_id: ID! @eq): [CabRequest] @all(scopes: ["whereScheduled"])
 }
 
 # Driver Guard
 extend type Query @guard(with: ["driver"]) {
   # Authenticated Driver
   authDriver: Driver @auth
+
+  # Cab Request
+  driverCabRequests(driver_id: ID!, time: String): [CabRequest] 
+    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
+  driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["live"])
 }
 
 # Admin|Partner Guard
@@ -845,6 +880,13 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   vehicle(id: ID @eq): Vehicle @findOrFail
 }
 
+extend type Query @guard(with: ["admin", "user", "driver"]) {
+
+  # Cab Request
+  cabRequest(id: ID!): CabRequest @findOrFail
+
+}
+
 #import auth.graphql
 #import role.graphql
 #import admin.graphql
@@ -890,3 +932,4 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
 #import businessTripRating.graphql
 #import seatsTripRating.graphql
 #import follower.graphql
+#import cabRequest.graphql

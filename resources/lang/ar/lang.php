@@ -118,5 +118,24 @@ return [
     'supervisor_not_found' => 'هذا المشرف غير موجود',
     'rating_not_found' => 'هذا التقييم غير موجود',
     'trip_schedule_required' => 'رجاء ادخال جدول للرحلة',
-    'the_following_already_exists' => 'المتابعة موجودة بالفعل'
+    'the_following_already_exists' => 'المتابعة موجودة بالفعل',
+
+    // ============================== Qruz Cab ==============================
+
+    'schedule_request_failed' => 'فشل جدولة الطلب',
+    'search_request_failed' => 'فشل عملية البحث',
+    'request_inprogress' => 'الطلب قيد التنفيذ',
+    'no_available_drivers' => 'لا يوجد سائق متاح',
+    'accept_request' => 'قبول طلب',
+    'accept_request_failed' => 'فشل قبول الطلب',
+    'request_accepted' => 'تم قبول الطلب',
+    'update_request_status_failed' => 'فشل تحديث حالة الطلب',
+    'start_ride_failed' => 'فشل بدء الرحلة',
+    'end_ride_failed' => 'فشل أنهاء الرحلة',
+    'start_ride' => 'يمكنك بدأ الرحلة اﻷن',
+    'ride_started' => 'بدأت الرحلة',
+    'ride_ended' => 'أنتهت الرحلة',
+    'cancel_cab_request_failed' => 'فشل إلغاء الطلب',
+    'request_cancelled' => 'تم الغاء الطلب',
+    'request_not_found' => 'لم يتم العثور على الطلب',
 ];

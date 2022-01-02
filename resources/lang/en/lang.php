@@ -118,5 +118,24 @@ return [
     'supervisor_not_found' => 'Supervisor not found',
     'rating_not_found' => 'Rating not found',
     'trip_schedule_required' => 'Trip schedule required',
-    'the_following_already_exists' => 'The following already exists'
+    'the_following_already_exists' => 'The following already exists',
+
+    // ============================== Qruz Cab ==============================
+
+    'schedule_request_failed' => 'Schedule request failed',
+    'search_request_failed' => 'Search request failed',
+    'request_inprogress' => 'Request in progress.',
+    'no_available_drivers' => 'No available drivers.',
+    'accept_request' => 'Accept Request.',
+    'accept_request_failed' => 'Accept request failed.',
+    'request_accepted' => 'Request Accepted.',
+    'update_request_status_failed' => 'Update request status failed.',
+    'start_ride_failed' => 'Start ride failed.',
+    'end_ride_failed' => 'End ride failed.',
+    'start_ride' => 'You can start the ride now',
+    'ride_started' => 'Ride Started',
+    'ride_ended' => 'Ride Ended',
+    'cancel_cab_request_failed' => 'Cancel request failed.',
+    'request_cancelled' => 'Request Cancelled.',
+    'request_not_found' => 'Request not found.',
 ];
