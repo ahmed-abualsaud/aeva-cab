@@ -30,6 +30,7 @@ class CreateCabRequestsTable extends Migration
             $table->boolean('paid')->default(0);
             $table->json('history')->nullable();
             $table->dateTime('schedule_time')->nullable();
+            $table->dateTime('next_free_time')->nullable();
             $table->string('s_address')->nullable();
             $table->double('s_latitude', 15, 8);
             $table->double('s_longitude', 15, 8);

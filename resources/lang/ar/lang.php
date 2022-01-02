@@ -138,4 +138,5 @@ return [
     'cancel_cab_request_failed' => 'فشل إلغاء الطلب',
     'request_cancelled' => 'تم الغاء الطلب',
     'request_not_found' => 'لم يتم العثور على الطلب',
+    'it_is_not_time_to_search' => 'لم يحن الوقت لعملية للبحث'
 ];

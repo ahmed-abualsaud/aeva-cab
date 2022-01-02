@@ -42,20 +42,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function schedule(array $args)
     {
         $input = Arr::except($args, ['directive', 'user_name']);
-        $lastScheduledRequest = $this->model
-            ->whereScheduled($args['user_id'])
-            ->latest('schedule_time')
-            ->first();
+        $args['next_free_time'] = $this->estimateNextFreeTime($args);
 
-        if ($lastScheduledRequest) 
-        {
-            $schedulingInterval = $this->estimateSchedulingInterval($lastScheduledRequest);
-            $schedulingInterval = '+'.$schedulingInterval.' minutes';
-            $nextScheduleTime = strtotime($schedulingInterval, strtotime($lastScheduledRequest->schedule_time));
-
-            if ($nextScheduleTime >= strtotime($args['schedule_time'])) {
-                throw new CustomException(__('lang.schedule_request_failed'));
-            }
+        if (!$this->isTimeValidated($args)) {
+            throw new CustomException(__('lang.schedule_request_failed'));
         }
 
         $payload = [
@@ -71,6 +61,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $input['history'] = $payload;
         $input['status'] = 'SCHEDULED';
+        $input['next_free_time'] = $args['next_free_time'];
 
         return $this->model->create($input); 
     }
@@ -103,6 +94,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         if ( $request->status != 'SCHEDULED' ) {
             throw new CustomException(__('lang.search_request_failed'));
+        }
+
+        if (time() < strtotime($request->schedule_time)) {
+            throw new CustomException(__('lang.it_is_not_time_to_search'));
         }
 
         $driversIds = $this->getNearestDrivers($request->s_latitude, $request->s_longitude);
@@ -380,22 +375,57 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $driversIds;
     }
 
-    protected function estimateSchedulingInterval($request)
+    protected function isTimeValidated($args)
     {
-        $rideDistance = $request->selectRaw('
-            ST_Distance_Sphere(point(s_longitude, s_latitude), point(d_longitude, d_latitude))
-            as distance
-        ')
-        ->first()
-        ->distance;
+        $occupiedPeriods = $this->model
+            ->select('schedule_time','next_free_time')
+            ->whereScheduled($args['user_id'])
+            ->whereRaw('
+                (? >= schedule_time AND ? < next_free_time) OR 
+                (? >= schedule_time AND ? < next_free_time)
+            ', [
+                $args['schedule_time'], $args['schedule_time'], 
+                $args['next_free_time'], $args['next_free_time']
+            ])
+            ->first();
+        
+        if($occupiedPeriods || time() > strtotime($args['schedule_time'])) {
+            return false;
+        }
+        return true;
+    }
 
-        $rideDistance /= 1000;
-        $expectedDriverVelocity = 20;
+    protected function estimateNextFreeTime($args) 
+    {
+        $expectedDriverVelocity = 20; //in km/hour
+        $expectedTimeFromDriverToUser = 0.25; // in hours
 
-        $expectedTimeFromDriverToUser = 0.25;
-        $expectedTimeFromUserToDestination = (int) ($rideDistance / $expectedDriverVelocity);
-
+        $rideDistance = $this->distance(
+            $args['s_latitude'], $args['s_longitude'], 
+            $args['d_latitude'], $args['d_longitude']
+        );
+            
+        $expectedTimeFromUserToDestination = $rideDistance / $expectedDriverVelocity;
         $schedulingInterval = $expectedTimeFromDriverToUser + $expectedTimeFromUserToDestination;
-        return $schedulingInterval *= 60;
+        $schedulingInterval = round($schedulingInterval * 60); //hours to seconds
+
+        $interval = '+'.$schedulingInterval.' minutes';
+        return date('Y-m-d H:i:s', strtotime($interval, strtotime($args['schedule_time'])));
+    }
+
+    protected function distance($lat1, $lng1, $lat2, $lng2) 
+    { 
+        $pi80 = M_PI / 180; 
+        $lat1 *= $pi80; 
+        $lng1 *= $pi80; 
+        $lat2 *= $pi80; 
+        $lng2 *= $pi80; 
+        $r = 6372.797; // radius of Earth in km
+        $dlat = $lat2 - $lat1; 
+        $dlon = $lng2 - $lng1; 
+        $a = sin($dlat / 2) * sin($dlat / 2) + cos($lat1) * cos($lat2) * sin($dlon / 2) * sin($dlon / 2); 
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a)); 
+        $km = $r * $c; 
+        return $km; 
     }
 }
