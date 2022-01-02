@@ -38,6 +38,7 @@ type SeatsTripAppTransaction {
 
 type SeatsTripPosTransaction {
   id: ID
+  ticket_id: ID
   trx_id: ID
   serial: Int
   driver: Driver @belongsTo
