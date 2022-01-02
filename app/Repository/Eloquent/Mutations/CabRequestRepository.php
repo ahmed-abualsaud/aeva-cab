@@ -89,8 +89,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ['view' => 'AcceptRequest', 'request_id' => $request->id]
         );
 
-        $user['id'] = $args['user_id'];
-        $user['name'] = $args['user_name'];
+        $user['id'] = $request->user_id;
+        $user['name'] = $request->user_name;
 
         broadcast(new AcceptCabRequest($request->drivers_ids, $user));
         
