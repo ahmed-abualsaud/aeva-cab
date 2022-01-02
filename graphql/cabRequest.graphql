@@ -6,7 +6,7 @@ input CabRequestInput {
     vehicle_id: ID
     cancelled_by: String
     cancel_reason: String
-    payment_method: String
+    schedule_time: String
     s_address: String
     s_latitude: Float
     s_longitude: Float
@@ -22,7 +22,7 @@ type CabRequest {
     drivers_ids: [ID]
     vehicle_id: ID
     status: String
-    payment_method: String
+    schedule_time: String
     paid: Float
     history: CabRequestHistory
     s_address: String
@@ -34,6 +34,7 @@ type CabRequest {
 }
 
 type CabRequestHistory {
+  scheduled: HistoryObj
   searching: HistoryObj
   accepted: HistoryObj
   arrived: HistoryObj
@@ -46,6 +47,9 @@ type HistoryObj {
   at: String
   by: String
   reason: String
-  user_lat: Float
-  user_lng: Float
+  user_name: String
+  source_lat: Float
+  source_lng: Float
+  destination_lat: Float
+  destination_lng: Float
 }

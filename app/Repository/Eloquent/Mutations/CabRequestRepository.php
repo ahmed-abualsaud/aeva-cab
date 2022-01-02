@@ -39,7 +39,94 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         parent::__construct($model);
     }
 
+    public function schedule(array $args)
+    {
+        $input = Arr::except($args, ['directive', 'user_name']);
+        $lastScheduledRequest = $this->model
+            ->whereScheduled($args['user_id'])
+            ->latest('schedule_time')
+            ->first();
+
+        if ($lastScheduledRequest) 
+        {
+            $schedulingInterval = $this->estimateSchedulingInterval($lastScheduledRequest);
+            $schedulingInterval = '+'.$schedulingInterval.' minutes';
+            $nextScheduleTime = strtotime($schedulingInterval, strtotime($lastScheduledRequest->schedule_time));
+
+            if ($nextScheduleTime >= strtotime($args['schedule_time'])) {
+                throw new CustomException(__('lang.schedule_request_failed'));
+            }
+        }
+
+        $payload = [
+            'scheduled' => [
+                'at' => date("Y-m-d H:i:s"),
+                'user_name' => $args['user_name'],
+                'source_lat' => $args['s_latitude'],
+                'source_lng' => $args['s_longitude'],
+                'destination_lat' => $args['d_latitude'],
+                'destination_lng' => $args['d_longitude']
+            ]
+        ];
+
+        $input['history'] = $payload;
+        $input['status'] = 'SCHEDULED';
+
+        return $this->model->create($input); 
+    }
+
     public function search(array $args)
+    {
+        if (array_key_exists('id', $args) && $args['id']) {
+            $request = $this->searchScheduledRequest($args);
+        } else {
+            $request = $this->searchNewRequest($args);
+        }
+
+        SendPushNotification::dispatch(
+            $this->driversToken($request->drivers_ids),
+            __('lang.accept_request'),
+            ['view' => 'AcceptRequest', 'request_id' => $request->id]
+        );
+
+        $user['id'] = $request->user_id;
+        $user['name'] = $request->user_name;
+
+        broadcast(new AcceptCabRequest($request->drivers_ids, $user));
+        
+        return $request;
+    }
+
+    protected function searchScheduledRequest(array $args) 
+    {
+        $request = $this->findRequest($args['id']);
+
+        if ( $request->status != 'SCHEDULED' ) {
+            throw new CustomException(__('lang.search_request_failed'));
+        }
+
+        $driversIds = $this->getNearestDrivers($request->s_latitude, $request->s_longitude);
+
+        if ( !count($driversIds) ) {
+            throw new CustomException(__('lang.no_available_drivers'));
+        }
+
+        $payload = [
+            'searching' => [
+                'at' => date("Y-m-d H:i:s"),
+            ]
+        ];
+
+        $input['history'] = array_merge($request->history, $payload);
+        $input['status'] = 'SEARCHING';
+
+        $request = $this->updateRequest($request, $input);
+        $request['drivers_ids'] = $driversIds;
+
+        return $request;
+    }
+
+    protected function searchNewRequest(array $args) 
     {
         $input = Arr::except($args, ['directive', 'user_name']);
         $activeRequests = $this->model->wherePending($args['user_id'])->first();
@@ -57,8 +144,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $payload = [
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
-                'user_lat' => $args['s_latitude'],
-                'user_lng' => $args['s_longitude']
+                'user_name' => $args['user_name'],
+                'source_lat' => $args['s_latitude'],
+                'source_lat' => $args['s_longitude'],
+                'destination_lat' => $args['s_latitude'],
+                'destination_lat' => $args['s_longitude']
             ]
         ];
 
@@ -66,19 +156,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['status'] = 'SEARCHING';
 
         $request = $this->model->create($input);
-
-        SendPushNotification::dispatch(
-            $this->driversToken($driversIds),
-            __('lang.accept_request'),
-            ['view' => 'AcceptRequest', 'request_id' => $request->id]
-        );
-
-        $user['id'] = $args['user_id'];
-        $user['name'] = $args['user_name'];
-
-        broadcast(new AcceptCabRequest($driversIds, $user));
-        
         $request['drivers_ids'] = $driversIds;
+
         return $request;
     }
 
@@ -287,8 +366,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $radius = config('custom.seats_search_radius');
 
         $driversIds = Driver::selectRaw('id ,
-            ST_Distance_Sphere(point(longitude, latitude), point(?, ?)
-            ) as distance
+            ST_Distance_Sphere(point(longitude, latitude), point(?, ?))
+            as distance
             ', [$lng, $lat]
             )
             ->having('distance', '<=', $radius)
@@ -299,5 +378,24 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ->toArray();
         
         return $driversIds;
+    }
+
+    protected function estimateSchedulingInterval($request)
+    {
+        $rideDistance = $request->selectRaw('
+            ST_Distance_Sphere(point(s_longitude, s_latitude), point(d_longitude, d_latitude))
+            as distance
+        ')
+        ->first()
+        ->distance;
+
+        $rideDistance /= 1000;
+        $expectedDriverVelocity = 20;
+
+        $expectedTimeFromDriverToUser = 0.25;
+        $expectedTimeFromUserToDestination = (int) ($rideDistance / $expectedDriverVelocity);
+
+        $schedulingInterval = $expectedTimeFromDriverToUser + $expectedTimeFromUserToDestination;
+        return $schedulingInterval *= 60;
     }
 }

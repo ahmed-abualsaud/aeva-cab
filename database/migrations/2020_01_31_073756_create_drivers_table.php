@@ -30,7 +30,7 @@ class CreateDriversTable extends Migration
             $table->double('longitude', 15, 8)->nullable();
             $table->decimal('rating', 4, 2)->default(5);
             $table->boolean('status')->default(0);
-            $table->enum('cab_status', ['ONLINE', 'RIDING', 'OFFLINE'])->default(0);
+            $table->enum('cab_status', ['ONLINE', 'RIDING', 'OFFLINE'])->default('OFFLINE');
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
             $table->string('device_id')->nullable();
