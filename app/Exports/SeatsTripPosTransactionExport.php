@@ -42,6 +42,7 @@ class SeatsTripPosTransactionExport implements FromQuery, WithHeadings
             ->selectRaw('
                 DATE_FORMAT(seats_trip_pos_transactions.created_at, "%d %b %Y, %h %i %s %p"),
                 seats_trip_pos_transactions.id, 
+                seats_trip_pos_transactions.ticket_id,
                 seats_trip_pos_transactions.serial, 
                 vehicles.code, 
                 seats_trip_pos_transactions.amount
@@ -51,6 +52,6 @@ class SeatsTripPosTransactionExport implements FromQuery, WithHeadings
 
     public function headings() :array
     {
-        return ['Transaction Date', 'Transaction ID', 'Vehicle Serial', 'Vehicle Code', 'Amount'];
+        return ['Transaction Date', 'Transaction ID', 'Ticket ID', 'Vehicle Serial', 'Vehicle Code', 'Amount'];
     }
 }
