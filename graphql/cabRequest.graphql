@@ -7,12 +7,13 @@ input CabRequestInput {
     cancelled_by: String
     cancel_reason: String
     schedule_time: String
+    distance: Float
     s_address: String
-    s_latitude: Float
-    s_longitude: Float
+    s_lat: Float
+    s_lng: Float
     d_address: String
-    d_latitude: Float
-    d_longitude: Float
+    d_lat: Float
+    d_lng: Float
 }
 
 type CabRequest {
@@ -24,14 +25,16 @@ type CabRequest {
     status: String
     schedule_time: String
     next_free_time: String
-    paid: Float
+    paid: Boolean
+    costs: Float
+    payment_method: String
     history: CabRequestHistory
     s_address: String
-    s_latitude: Float
-    s_longitude: Float
+    s_lat: Float
+    s_lng: Float
     d_address: String
-    d_latitude: Float
-    d_longitude: Float
+    d_lat: Float
+    d_lng: Float
 }
 
 type CabRequestHistory {
@@ -42,6 +45,7 @@ type CabRequestHistory {
   started: HistoryObj
   completed: HistoryObj
   cancelled: HistoryObj
+  summary: Summary
 }
 
 type HistoryObj {
@@ -49,8 +53,10 @@ type HistoryObj {
   by: String
   reason: String
   user_name: String
-  source_lat: Float
-  source_lng: Float
-  destination_lat: Float
-  destination_lng: Float
+}
+
+type Summary {
+  distance: Float
+  duration: Float
+  eta: Float
 }
