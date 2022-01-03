@@ -7,6 +7,7 @@ input CabRequestInput {
     cancelled_by: String
     cancel_reason: String
     schedule_time: String
+    next_free_time: String
     s_address: String
     s_latitude: Float
     s_longitude: Float
