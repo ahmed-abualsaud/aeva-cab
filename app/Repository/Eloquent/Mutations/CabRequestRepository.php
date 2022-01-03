@@ -92,19 +92,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
 
-        if ( $request->status != 'SCHEDULED' ) {
+        if ( $request->status == 'COMPLETED' || $request->status == 'CANCELLED' ) {
             throw new CustomException(__('lang.search_request_failed'));
         }
 
-        if (time() < strtotime($request->schedule_time)) {
-            throw new CustomException(__('lang.it_is_not_time_to_search'));
-        }
-
-        $driversIds = $this->getNearestDrivers($request->s_latitude, $request->s_longitude);
-
-        if ( !count($driversIds) ) {
-            throw new CustomException(__('lang.no_available_drivers'));
-        }
+        $driversIds = $this->checkPendingAndGetDrivers($request->toArray());
 
         $payload = [
             'searching' => [
@@ -124,17 +116,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     protected function searchNewRequest(array $args) 
     {
         $input = Arr::except($args, ['directive', 'user_name']);
-        $activeRequests = $this->model->wherePending($args['user_id'])->first();
-
-        if($activeRequests) {
-            throw new CustomException(__('lang.request_inprogress'));
-        }
-
-        $driversIds = $this->getNearestDrivers($args['s_latitude'], $args['s_longitude']);
-
-        if ( !count($driversIds) ) {
-            throw new CustomException(__('lang.no_available_drivers'));
-        }
+        $driversIds = $this->checkPendingAndGetDrivers($args);
 
         $payload = [
             'searching' => [
@@ -154,6 +136,23 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request['drivers_ids'] = $driversIds;
 
         return $request;
+    }
+
+    protected function checkPendingAndGetDrivers(array $args)
+    {
+        $activeRequests = $this->model->wherePending($args['user_id'])->first();
+
+        if($activeRequests) {
+            throw new CustomException(__('lang.request_inprogress'));
+        }
+
+        $driversIds = $this->getNearestDrivers($args['s_latitude'], $args['s_longitude']);
+
+        if ( !count($driversIds) ) {
+            throw new CustomException(__('lang.no_available_drivers'));
+        }
+
+        return $driversIds;
     }
 
     public function accept(array $args)

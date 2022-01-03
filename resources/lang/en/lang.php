@@ -138,5 +138,4 @@ return [
     'cancel_cab_request_failed' => 'Cancel request failed.',
     'request_cancelled' => 'Request Cancelled.',
     'request_not_found' => 'Request not found.',
-    'it_is_not_time_to_search' => 'It is not time to search'
 ];
