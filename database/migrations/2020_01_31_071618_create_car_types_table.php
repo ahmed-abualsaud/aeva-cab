@@ -18,11 +18,9 @@ class CreateCarTypesTable extends Migration
             $table->string('name')->unique();
             $table->string('photo')->nullable();
             $table->unsignedSmallInteger('seats');
-            $table->unsignedSmallInteger('fixed');
-            $table->unsignedSmallInteger('price');
-            $table->unsignedSmallInteger('minute');
+            $table->float('fixed', 8, 3);
+            $table->float('price', 8, 3);
             $table->unsignedSmallInteger('distance');
-            $table->enum('calculator', ['MIN', 'HOUR', 'DISTANCE', 'DISTANCEMIN', 'DISTANCEHOUR']);
             $table->boolean('ondemand')->default(1);
             $table->smallInteger('order');
             $table->timestamps();

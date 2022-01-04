@@ -1,0 +1,15 @@
+input CabRequestTransactionInput {
+    user_id: ID
+    request_id: ID
+    amount:Float
+    paid:Float
+    payment_method: String
+}
+
+type CabRequestTransaction {
+    id: ID
+    user_id: ID
+    request_id: ID
+    amount:Float
+    payment_method: String
+}

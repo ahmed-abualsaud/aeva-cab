@@ -490,6 +490,19 @@ extend type Mutation @guard(with: ["user"]) {
   # Seats Trip Rating
   updateSeatsTripRating(input: UpdateSeatsTripRatingInput! @spread): SeatsTripRating
     @field(resolver: "SeatsTripRatingResolver@update")
+
+  # Cab Request
+  createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
+    @field(resolver: "CabRequestTransactionResolver@create")
+  deleteCabRequestTransaction(id: [ID!]!): Boolean
+    @field(resolver: "CabRequestTransactionResolver@destroy")
+}
+
+# Driver Guard
+extend type Mutation @guard(with: ["driver"]) {
+  # Cab Request
+  confirmCabRequestCashPayment(request_id: ID!): Boolean
+    @field(resolver: "CabRequestTransactionResolver@confirmCashPayment")
 }
 
 # -- QUERIES --
@@ -926,3 +939,4 @@ extend type Query @guard(with: ["admin", "user", "driver"]) {
 #import seatsTripRating.graphql
 #import follower.graphql
 #import cabRequest.graphql
+#import cabRequestTransaction.graphql

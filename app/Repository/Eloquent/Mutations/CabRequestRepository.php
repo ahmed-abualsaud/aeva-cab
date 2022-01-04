@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Mutations;   
 
 use App\Driver;
+use App\Vehicle;
 use App\CabRequest;
 
 use App\Events\RideEnded;
@@ -41,36 +42,26 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     public function schedule(array $args)
     {
-        $input = Arr::except($args, ['directive', 'user_name']);
-        $lastScheduledRequest = $this->model
-            ->whereScheduled($args['user_id'])
-            ->latest('schedule_time')
-            ->first();
+        $input = Arr::except($args, ['directive', 'user_name', 'distance']);
+        $args['next_free_time'] = $this->estimateNextFreeTime($args);
 
-        if ($lastScheduledRequest) 
-        {
-            $schedulingInterval = $this->estimateSchedulingInterval($lastScheduledRequest);
-            $schedulingInterval = '+'.$schedulingInterval.' minutes';
-            $nextScheduleTime = strtotime($schedulingInterval, strtotime($lastScheduledRequest->schedule_time));
-
-            if ($nextScheduleTime >= strtotime($args['schedule_time'])) {
-                throw new CustomException(__('lang.schedule_request_failed'));
-            }
+        if (!$this->isTimeValidated($args)) {
+            throw new CustomException(__('lang.schedule_request_failed'));
         }
 
         $payload = [
+            'summary' => [
+                'distance' => $args['distance']
+            ],
             'scheduled' => [
                 'at' => date("Y-m-d H:i:s"),
-                'user_name' => $args['user_name'],
-                'source_lat' => $args['s_latitude'],
-                'source_lng' => $args['s_longitude'],
-                'destination_lat' => $args['d_latitude'],
-                'destination_lng' => $args['d_longitude']
+                'user_name' => $args['user_name']
             ]
         ];
 
         $input['history'] = $payload;
         $input['status'] = 'SCHEDULED';
+        $input['next_free_time'] = $args['next_free_time'];
 
         return $this->model->create($input); 
     }
@@ -101,15 +92,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
 
-        if ( $request->status != 'SCHEDULED' ) {
+        if ( $request->status == 'COMPLETED' || $request->status == 'CANCELLED' ) {
             throw new CustomException(__('lang.search_request_failed'));
         }
 
-        $driversIds = $this->getNearestDrivers($request->s_latitude, $request->s_longitude);
-
-        if ( !count($driversIds) ) {
-            throw new CustomException(__('lang.no_available_drivers'));
-        }
+        $driversIds = $this->checkPendingAndGetDrivers($request->toArray());
 
         $payload = [
             'searching' => [
@@ -128,27 +115,16 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     protected function searchNewRequest(array $args) 
     {
-        $input = Arr::except($args, ['directive', 'user_name']);
-        $activeRequests = $this->model->wherePending($args['user_id'])->first();
-
-        if($activeRequests) {
-            throw new CustomException(__('lang.request_inprogress'));
-        }
-
-        $driversIds = $this->getNearestDrivers($args['s_latitude'], $args['s_longitude']);
-
-        if ( !count($driversIds) ) {
-            throw new CustomException(__('lang.no_available_drivers'));
-        }
+        $input = Arr::except($args, ['directive', 'user_name', 'distance']);
+        $driversIds = $this->checkPendingAndGetDrivers($args);
 
         $payload = [
+            'summary' => [
+                'distance' => $args['distance']
+            ],
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
-                'user_name' => $args['user_name'],
-                'source_lat' => $args['s_latitude'],
-                'source_lat' => $args['s_longitude'],
-                'destination_lat' => $args['s_latitude'],
-                'destination_lat' => $args['s_longitude']
+                'user_name' => $args['user_name']
             ]
         ];
 
@@ -161,6 +137,23 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $request;
     }
 
+    protected function checkPendingAndGetDrivers(array $args)
+    {
+        $activeRequests = $this->model->wherePending($args['user_id'])->first();
+
+        if($activeRequests) {
+            throw new CustomException(__('lang.request_inprogress'));
+        }
+
+        $driversIds = $this->getNearestDrivers($args['s_lat'], $args['s_lng']);
+
+        if ( !count($driversIds) ) {
+            throw new CustomException(__('lang.no_available_drivers'));
+        }
+
+        return $driversIds;
+    }
+
     public function accept(array $args)
     {
         $request = $this->findRequest($args['id']);
@@ -169,6 +162,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.accept_request_failed'));
         }
 
+        $carType = Vehicle::select('fixed', 'price')
+            ->join('car_types', 'car_types.id', '=', 'vehicles.car_type_id')
+            ->find($args['vehicle_id']);
+
         $payload = [
             'accepted' => [
                 'at' => date("Y-m-d H:i:s"),
@@ -176,6 +173,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         ];
 
         $args['history'] = array_merge($request->history, $payload);
+        $args['costs'] = $carType['fixed'] + $carType['price'] * $request->history['summary']['distance'] / 1000;
         $args['status'] = 'ACCEPTED';
 
         $request = $this->updateRequest($request, $args);
@@ -257,7 +255,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
         
-        if ( $request->status != 'STARTED' ) {
+        if ( $request->status != 'STARTED' || $request->paid == false) {
             throw new CustomException(__('lang.end_ride_failed'));
         }
 
@@ -380,22 +378,57 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $driversIds;
     }
 
-    protected function estimateSchedulingInterval($request)
+    protected function isTimeValidated($args)
     {
-        $rideDistance = $request->selectRaw('
-            ST_Distance_Sphere(point(s_longitude, s_latitude), point(d_longitude, d_latitude))
-            as distance
-        ')
-        ->first()
-        ->distance;
+        $occupiedPeriods = $this->model
+            ->select('schedule_time','next_free_time')
+            ->whereScheduled($args['user_id'])
+            ->whereRaw('
+                (? >= schedule_time AND ? < next_free_time) OR 
+                (? >= schedule_time AND ? < next_free_time)
+            ', [
+                $args['schedule_time'], $args['schedule_time'], 
+                $args['next_free_time'], $args['next_free_time']
+            ])
+            ->first();
+        
+        if($occupiedPeriods || time() > strtotime($args['schedule_time'])) {
+            return false;
+        }
+        return true;
+    }
 
-        $rideDistance /= 1000;
-        $expectedDriverVelocity = 20;
+    protected function estimateNextFreeTime($args) 
+    {
+        $expectedDriverVelocity = 20; //in km/hour
+        $expectedTimeFromDriverToUser = 0.25; // in hours
 
-        $expectedTimeFromDriverToUser = 0.25;
-        $expectedTimeFromUserToDestination = (int) ($rideDistance / $expectedDriverVelocity);
-
+        $rideDistance = $this->distance(
+            $args['s_lat'], $args['s_lng'], 
+            $args['d_lat'], $args['d_lng']
+        );
+            
+        $expectedTimeFromUserToDestination = $rideDistance / $expectedDriverVelocity;
         $schedulingInterval = $expectedTimeFromDriverToUser + $expectedTimeFromUserToDestination;
-        return $schedulingInterval *= 60;
+        $schedulingInterval = round($schedulingInterval * 60); //hours to seconds
+
+        $interval = '+'.$schedulingInterval.' minutes';
+        return date('Y-m-d H:i:s', strtotime($interval, strtotime($args['schedule_time'])));
+    }
+
+    protected function distance($lat1, $lng1, $lat2, $lng2) 
+    { 
+        $pi80 = M_PI / 180; 
+        $lat1 *= $pi80; 
+        $lng1 *= $pi80; 
+        $lat2 *= $pi80; 
+        $lng2 *= $pi80; 
+        $r = 6372.797; // radius of Earth in km
+        $dlat = $lat2 - $lat1; 
+        $dlon = $lng2 - $lng1; 
+        $a = sin($dlat / 2) * sin($dlat / 2) + cos($lat1) * cos($lat2) * sin($dlon / 2) * sin($dlon / 2); 
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a)); 
+        $km = $r * $c; 
+        return $km; 
     }
 }

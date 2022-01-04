@@ -20,6 +20,7 @@ class CreateCabRequestsTable extends Migration
             $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->enum('status', [
                 'SCHEDULED',
+                'OFFERING',
                 'SEARCHING',
                 'ACCEPTED', 
                 'ARRIVED',
@@ -27,15 +28,17 @@ class CreateCabRequestsTable extends Migration
                 'COMPLETED',
                 'CANCELLED',
             ]);
-            $table->boolean('paid')->default(0);
             $table->json('history')->nullable();
             $table->dateTime('schedule_time')->nullable();
+            $table->dateTime('next_free_time')->nullable();
+            $table->boolean('paid')->default(0);
+            $table->double('costs', 8, 3)->nullable();
             $table->string('s_address')->nullable();
-            $table->double('s_latitude', 15, 8);
-            $table->double('s_longitude', 15, 8);
+            $table->double('s_lat', 15, 8);
+            $table->double('s_lng', 15, 8);
             $table->string('d_address')->nullable();
-            $table->double('d_latitude', 15, 8);
-            $table->double('d_longitude', 15, 8);
+            $table->double('d_lat', 15, 8);
+            $table->double('d_lng', 15, 8);
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
