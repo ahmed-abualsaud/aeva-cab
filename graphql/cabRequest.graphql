@@ -8,6 +8,7 @@ input CabRequestInput {
     cancel_reason: String
     schedule_time: String
     distance: Float
+    total_eta: Float
     s_address: String
     s_lat: Float
     s_lng: Float

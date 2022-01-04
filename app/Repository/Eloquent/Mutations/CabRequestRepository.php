@@ -42,8 +42,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     public function schedule(array $args)
     {
-        $input = Arr::except($args, ['directive', 'user_name', 'distance']);
-        $args['next_free_time'] = $this->estimateNextFreeTime($args);
+        $input = Arr::except($args, ['directive', 'user_name', 'distance', 'total_eta']);
+        $args['next_free_time'] = date('Y-m-d H:i:s', 
+            strtotime('+'.$args['total_eta'].' seconds', strtotime($args['schedule_time'])));
 
         if (!$this->isTimeValidated($args)) {
             throw new CustomException(__('lang.schedule_request_failed'));
@@ -396,39 +397,5 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             return false;
         }
         return true;
-    }
-
-    protected function estimateNextFreeTime($args) 
-    {
-        $expectedDriverVelocity = 20; //in km/hour
-        $expectedTimeFromDriverToUser = 0.25; // in hours
-
-        $rideDistance = $this->distance(
-            $args['s_lat'], $args['s_lng'], 
-            $args['d_lat'], $args['d_lng']
-        );
-            
-        $expectedTimeFromUserToDestination = $rideDistance / $expectedDriverVelocity;
-        $schedulingInterval = $expectedTimeFromDriverToUser + $expectedTimeFromUserToDestination;
-        $schedulingInterval = round($schedulingInterval * 60); //hours to seconds
-
-        $interval = '+'.$schedulingInterval.' minutes';
-        return date('Y-m-d H:i:s', strtotime($interval, strtotime($args['schedule_time'])));
-    }
-
-    protected function distance($lat1, $lng1, $lat2, $lng2) 
-    { 
-        $pi80 = M_PI / 180; 
-        $lat1 *= $pi80; 
-        $lng1 *= $pi80; 
-        $lat2 *= $pi80; 
-        $lng2 *= $pi80; 
-        $r = 6372.797; // radius of Earth in km
-        $dlat = $lat2 - $lat1; 
-        $dlon = $lng2 - $lng1; 
-        $a = sin($dlat / 2) * sin($dlat / 2) + cos($lat1) * cos($lat2) * sin($dlon / 2) * sin($dlon / 2); 
-        $c = 2 * atan2(sqrt($a), sqrt(1 - $a)); 
-        $km = $r * $c; 
-        return $km; 
     }
 }
