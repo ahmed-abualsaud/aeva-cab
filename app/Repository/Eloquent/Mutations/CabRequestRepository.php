@@ -52,7 +52,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $payload = [
             'summary' => [
-                'distance' => $args['distance']
+                'distance' => $args['distance'],
+                'total_eta' => $args['total_eta']
             ],
             'scheduled' => [
                 'at' => date("Y-m-d H:i:s"),
