@@ -21,7 +21,7 @@ type CabRequest {
     id: ID
     user_id: ID
     driver_id: ID
-    drivers_ids: [ID]
+    drivers_cars: [DriverCar]
     vehicle_id: ID
     status: String
     schedule_time: String
@@ -60,4 +60,9 @@ type Summary {
   distance: Float
   duration: Float
   total_eta: Float
+}
+
+type DriverCar {
+  driver_id: ID
+  car_type: String
 }

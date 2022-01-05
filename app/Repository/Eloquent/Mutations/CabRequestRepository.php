@@ -77,7 +77,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         SendPushNotification::dispatch(
-            $this->driversToken($request->drivers_ids),
+            $this->driversToken($request->drivers_cars->pluck('driver_id')->toArray()),
             __('lang.accept_request'),
             ['view' => 'AcceptRequest', 'request_id' => $request->id]
         );
@@ -85,7 +85,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $user['id'] = $request->user_id;
         $user['name'] = $request->user_name;
 
-        broadcast(new AcceptCabRequest($request->drivers_ids, $user));
+        broadcast(new AcceptCabRequest($request->drivers_cars->pluck('driver_id')->toArray(), $user));
         
         return $request;
     }
@@ -98,7 +98,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.search_request_failed'));
         }
 
-        $driversIds = $this->checkPendingAndGetDrivers($request->toArray());
+        $driversCars = $this->checkPendingAndGetDrivers($request->toArray());
 
         $payload = [
             'searching' => [
@@ -110,7 +110,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['status'] = 'SEARCHING';
 
         $request = $this->updateRequest($request, $input);
-        $request['drivers_ids'] = $driversIds;
+        $request['drivers_cars'] = $driversCars;
 
         return $request;
     }
@@ -118,7 +118,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     protected function searchNewRequest(array $args) 
     {
         $input = Arr::except($args, ['directive', 'user_name', 'distance']);
-        $driversIds = $this->checkPendingAndGetDrivers($args);
+        $driversCars = $this->checkPendingAndGetDrivers($args);
 
         $payload = [
             'summary' => [
@@ -134,7 +134,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['status'] = 'SEARCHING';
 
         $request = $this->model->create($input);
-        $request['drivers_ids'] = $driversIds;
+        $request['drivers_cars'] = $driversCars;
 
         return $request;
     }
@@ -153,7 +153,13 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.no_available_drivers'));
         }
 
-        return $driversIds;
+        $driversCars = Vehicle::selectRaw('driver_vehicles.driver_id, car_types.name as car_type')
+            ->join('car_types', 'car_types.id', '=', 'vehicles.car_type_id')
+            ->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
+            ->whereIn('driver_vehicles.driver_id', $driversIds)
+            ->get();
+
+        return $driversCars;
     }
 
     public function accept(array $args)
