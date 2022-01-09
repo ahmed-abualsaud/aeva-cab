@@ -575,6 +575,8 @@ type Query @guard(with: ["admin"]) {
   # Cab Request
   cabRequests(status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
     @paginate(scopes: ["filter", "search"])
+  cabRequestTransactions(period: String, searchFor: String, searchQuery: String): [CabRequestTransaction]
+    @paginate(scopes: ["filter", "search"])
 }
 
 # Partner Guard
