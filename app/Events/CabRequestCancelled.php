@@ -15,17 +15,17 @@ class CabRequestCancelled implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $by;
-    public $data;
+    public $request;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($by, $data)
+    public function __construct($by, $request)
     {
         $this->by = $by;
-        $this->data = $data;
+        $this->request = $request;
     }
 
     /**
@@ -36,11 +36,11 @@ class CabRequestCancelled implements ShouldBroadcast
     public function broadcastOn()
     {
         if ( $this->by == 'user' ) {
-            return new PrivateChannel('Request.Cancelled.Driver.'.$this->data['driver_id']);
+            return new PrivateChannel('Request.Cancelled.Driver.'.$this->request['driver_id']);
         }
 
         if ( $this->by == 'driver' ) {
-            return new PrivateChannel('Request.Cancelled.User.'.$this->data['user_id']);
+            return new PrivateChannel('Request.Cancelled.User.'.$this->request['user_id']);
         }
 
         return null;
@@ -63,6 +63,6 @@ class CabRequestCancelled implements ShouldBroadcast
      */
     public function broadcastWith()
     {
-        return $this->data;
+        return ['request' => $this->request];
     }
 }

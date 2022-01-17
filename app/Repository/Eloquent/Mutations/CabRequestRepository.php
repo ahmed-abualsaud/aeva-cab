@@ -44,7 +44,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $input = Arr::except($args, ['directive', 'user_name', 'distance', 'total_eta']);
         $args['next_free_time'] = date('Y-m-d H:i:s', 
-            strtotime('+'.$args['total_eta'].' seconds', strtotime($args['schedule_time'])));
+            strtotime('+'.($args['total_eta'] + 300).' seconds', strtotime($args['schedule_time'])));
 
         if (!$this->isTimeValidated($args)) {
             throw new CustomException(__('lang.schedule_request_failed'));
@@ -79,13 +79,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         SendPushNotification::dispatch(
             $this->driversToken($request->drivers_cars->pluck('driver_id')->toArray()),
             __('lang.accept_request'),
-            ['view' => 'AcceptRequest', 'request_id' => $request->id]
+            ['view' => 'AcceptRequest', 'request' => $request]
         );
 
-        $user['id'] = $request->user_id;
-        $user['name'] = $request->user_name;
-
-        broadcast(new AcceptCabRequest($request->drivers_cars->pluck('driver_id')->toArray(), $user));
+        broadcast(new AcceptCabRequest($request->drivers_cars->pluck('driver_id')->toArray(), $request));
         
         return $request;
     }
@@ -153,7 +150,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.no_available_drivers'));
         }
 
-        $driversCars = Vehicle::selectRaw('driver_vehicles.driver_id, car_types.name as car_type')
+        $driversCars = Vehicle::selectRaw('
+            driver_vehicles.driver_id, 
+            car_types.name as car_type,
+            (car_types.fixed  + (car_types.price * ?) / 1000) as price'
+            , [$args['distance']])
             ->join('car_types', 'car_types.id', '=', 'vehicles.car_type_id')
             ->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
             ->whereIn('driver_vehicles.driver_id', $driversIds)
@@ -191,10 +192,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
             __('lang.request_accepted'),
-            ['view' => 'RequestAccepted', 'request_id' => $request->id]
+            ['view' => 'RequestAccepted', 'request' => $request]
         );
 
-        broadcast(new CabRequestAccepted($request->user_id, $args['driver_id']));
+        broadcast(new CabRequestAccepted($request));
 
         return $request;
     }
@@ -219,12 +220,12 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request = $this->updateRequest($request, $args);
 
         SendPushNotification::dispatch(
-            $this->driverToken($request->driver_id),
+            $this->userToken($request->user_id),
             __('lang.start_ride'),
-            ['view' => 'StartRide', 'request_id' => $request->id]
+            ['view' => 'StartRide', 'request' => $request]
         );
 
-        broadcast(new DriverArrived($request->driver_id, $request->user_id));
+        broadcast(new DriverArrived($request));
 
         return $request;
     }
@@ -251,10 +252,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
             __('lang.ride_started'),
-            ['view' => 'RideStarted', 'request_id' => $request->id]
+            ['view' => 'RideStarted', 'request' => $request]
         );
 
-        broadcast(new RideStarted($request->user_id, $request->driver_id));
+        broadcast(new RideStarted($request));
 
         return $request;
     }
@@ -283,10 +284,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
             __('lang.ride_ended'),
-            ['view' => 'RideEnded', 'request_id' => $request->id]
+            ['view' => 'RideEnded', 'request' => $request]
         );
 
-        broadcast(new RideEnded($request->user_id, $request->driver_id));
+        broadcast(new RideEnded($request));
 
         return $request;
     }
@@ -303,7 +304,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             'cancelled' => [
                 'at' => date("Y-m-d H:i:s"),
                 'by' => $args['cancelled_by'],
-                'reason' => array_key_exists('cancel_reason', $args) ? $args['cancel_reason'] : "",
+                'reason' => array_key_exists('cancel_reason', $args) ? $args['cancel_reason'] : "Unknown",
             ]
         ];
 
@@ -319,15 +320,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             SendPushNotification::dispatch(
                 $this->driverToken($request->driver_id),
                 __('lang.request_cancelled'),
-                ['view' => 'CancelRequest', 'request_id' => $request->id]
+                ['view' => 'CancelRequest', 'request' => $request]
             );
 
-            $data['request_id'] = $request->id;
-            $data['user_id'] = $request->user_id;
-            $data['driver_id'] = $request->driver_id;
-            $data['cancel_reason'] = array_key_exists('cancel_reason', $args) ? $args['cancel_reason'] : "Unknown";
-
-            broadcast(new CabRequestCancelled('user', $data));
+            broadcast(new CabRequestCancelled('user', $request));
         }
 
         if ( strtolower($args['cancelled_by']) == 'driver') {
@@ -335,15 +331,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             SendPushNotification::dispatch(
                 $this->userToken($request->user_id),
                 __('lang.request_cancelled'),
-                ['view' => 'CancelRequest', 'request_id' => $request->id]
+                ['view' => 'CancelRequest', 'request' => $request]
             );
 
-            $data['request_id'] = $request->id;
-            $data['user_id'] = $request->user_id;
-            $data['driver_id'] = $request->driver_id;
-            $data['cancel_reason'] = array_key_exists('cancel_reason', $args) ? $args['cancel_reason'] : "Unknown";
-
-            broadcast(new CabRequestCancelled('driver', $data));        
+            broadcast(new CabRequestCancelled('driver', $request));        
         }
 
         return $request;

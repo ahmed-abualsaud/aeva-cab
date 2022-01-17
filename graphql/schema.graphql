@@ -148,6 +148,10 @@ extend type Mutation @guard(with: ["admin"]) {
   createDevice(input: CreateDeviceInput! @spread): Device @create
   updateDevice(input: UpdateDeviceInput! @spread): Device @update
   deleteDevice(id: ID!): Device @delete
+
+  # Cab Request
+  deleteCabRequestTransaction(id: [ID!]!): Boolean
+    @field(resolver: "CabRequestTransactionResolver@destroy")
 } 
 
 # Admin|Partner Guard
@@ -357,8 +361,6 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "CabRequestResolver@schedule")
   searchCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@search")
-  arrivedCabRequest(input: CabRequestInput! @spread): CabRequest
-    @field(resolver: "CabRequestResolver@arrived")
 }
 
 # Admin|Driver Guard
@@ -394,6 +396,8 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
   # Cab Request
   acceptCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@accept")
+  arrivedCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@arrived")
   startCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@start")
   endCabRequest(input: CabRequestInput! @spread): CabRequest
@@ -494,8 +498,6 @@ extend type Mutation @guard(with: ["user"]) {
   # Cab Request
   createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
     @field(resolver: "CabRequestTransactionResolver@create")
-  deleteCabRequestTransaction(id: [ID!]!): Boolean
-    @field(resolver: "CabRequestTransactionResolver@destroy")
 }
 
 # Driver Guard

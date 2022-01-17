@@ -65,4 +65,5 @@ type Summary {
 type DriverCar {
   driver_id: ID
   car_type: String
+  price: Float
 }

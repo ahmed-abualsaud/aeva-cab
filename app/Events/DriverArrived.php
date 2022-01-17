@@ -14,18 +14,18 @@ class DriverArrived implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $driver_id;
     public $user_id;
+    public $request;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($driver_id, $user_id)
+    public function __construct($request)
     {
-        $this->driver_id = $driver_id;
-        $this->user_id = $user_id;
+        $this->user_id = $request->user_id;
+        $this->request = $request;
     }
 
     /**
@@ -35,7 +35,7 @@ class DriverArrived implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('Arrived.Driver.'.$this->driver_id);
+        return new PrivateChannel('Driver.Arrived.User.'.$this->user_id);
     }
 
     /**
@@ -55,6 +55,6 @@ class DriverArrived implements ShouldBroadcast
      */
     public function broadcastWith()
     {
-        return ['user_id' => $this->user_id];
+        return ['request' => $this->request];
     }
 }
