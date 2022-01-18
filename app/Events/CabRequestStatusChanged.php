@@ -10,20 +10,19 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class AcceptCabRequest implements ShouldBroadcast
+class CabRequestStatusChanged implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $driversIds;
     public $request;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(array $driversIds, $request)
+    public function __construct($request)
     {
-        $this->driversIds = $driversIds;
         $this->request = $request;
     }
 
@@ -34,11 +33,7 @@ class AcceptCabRequest implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        foreach ($this->driversIds as $driverId) {
-            $channels[] = new PrivateChannel('Accept.Request.Driver.'.$driverId);  
-        }
-
-        return $channels;
+        return new PrivateChannel('App.CapTrip.'.$this->request->id);
     }
 
     /**
@@ -60,5 +55,4 @@ class AcceptCabRequest implements ShouldBroadcast
     {
         return ['request' => $this->request];
     }
-
 }

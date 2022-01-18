@@ -6,11 +6,8 @@ use App\Driver;
 use App\Vehicle;
 use App\CabRequest;
 
-use App\Events\RideEnded;
-use App\Events\RideStarted;
-use App\Events\DriverArrived;
 use App\Events\AcceptCabRequest;
-use App\Events\CabRequestAccepted;
+use App\Events\CabRequestStatusChanged;
 use App\Events\CabRequestCancelled;
 
 use App\Jobs\SendPushNotification;
@@ -195,7 +192,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ['view' => 'RequestAccepted', 'request' => $request]
         );
 
-        broadcast(new CabRequestAccepted($request));
+        broadcast(new CabRequestStatusChanged($request));
 
         return $request;
     }
@@ -225,7 +222,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ['view' => 'StartRide', 'request' => $request]
         );
 
-        broadcast(new DriverArrived($request));
+        broadcast(new CabRequestStatusChanged($request));
 
         return $request;
     }
@@ -255,7 +252,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ['view' => 'RideStarted', 'request' => $request]
         );
 
-        broadcast(new RideStarted($request));
+        broadcast(new CabRequestStatusChanged($request));
 
         return $request;
     }
@@ -287,7 +284,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ['view' => 'RideEnded', 'request' => $request]
         );
 
-        broadcast(new RideEnded($request));
+        broadcast(new CabRequestStatusChanged($request));
 
         return $request;
     }
