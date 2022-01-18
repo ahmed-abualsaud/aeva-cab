@@ -20,8 +20,8 @@ class CreateCabRequestsTable extends Migration
             $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->enum('status', [
                 'SCHEDULED',
-                'OFFERING',
                 'SEARCHING',
+                'SENDING',
                 'ACCEPTED', 
                 'ARRIVED',
                 'STARTED',

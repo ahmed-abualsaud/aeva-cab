@@ -125,6 +125,8 @@ return [
     'schedule_request_failed' => 'فشل جدولة الطلب',
     'search_request_failed' => 'فشل عملية البحث',
     'request_inprogress' => 'الطلب قيد التنفيذ',
+    'request_drivers_failed' => 'فشل ارسال الطلب للسائقين',
+    'unavailable_car_type' => 'نوع السيارة غير متاح',
     'no_available_drivers' => 'لا يوجد سائق متاح',
     'accept_request' => 'قبول طلب',
     'accept_request_failed' => 'فشل قبول الطلب',

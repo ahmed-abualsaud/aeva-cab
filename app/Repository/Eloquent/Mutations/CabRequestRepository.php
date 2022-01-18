@@ -68,19 +68,42 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function search(array $args)
     {
         if (array_key_exists('id', $args) && $args['id']) {
-            $request = $this->searchScheduledRequest($args);
+            return $this->searchScheduledRequest($args);
         } else {
-            $request = $this->searchNewRequest($args);
+            return $this->searchNewRequest($args);
+        }
+    }
+
+    public function send(array $args) 
+    {
+        $request = $this->findRequest($args['id']);
+
+        if ( $request->status != 'SEARCHING' ) {
+            throw new CustomException(__('lang.request_drivers_failed'));
         }
 
+        $searchResults = $request->history['searching']['result'];
+
+        $filtered = Arr::where($searchResults, function ($value, $key) use ($args){
+            return $value['car_type'] == $args['car_type'];
+        });
+
+        if ( $filtered == null ) {
+            throw new CustomException(__('lang.unavailable_car_type'));
+        }
+
+        $request = $this->updateRequest($request, ['status' => 'SENDING']);
+
+        $driversIds = Arr::pluck($filtered, 'driver_id');
+
         SendPushNotification::dispatch(
-            $this->driversToken($request->drivers_cars->pluck('driver_id')->toArray()),
+            $this->driversToken($driversIds),
             __('lang.accept_request'),
             ['view' => 'AcceptRequest', 'request' => $request]
         );
 
-        broadcast(new AcceptCabRequest($request->drivers_cars->pluck('driver_id')->toArray(), $request));
-        
+        broadcast(new AcceptCabRequest($driversIds, $request));
+
         return $request;
     }
 
@@ -97,6 +120,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $payload = [
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
+                'result' => $driversCars
             ]
         ];
 
@@ -120,7 +144,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ],
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
-                'user_name' => $args['user_name']
+                'user_name' => $args['user_name'],
+                'result' => $driversCars
             ]
         ];
 
@@ -164,7 +189,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
         
-        if ( $request->status != 'SEARCHING' ) {
+        if ( $request->status != 'SENDING' ) {
             throw new CustomException(__('lang.accept_request_failed'));
         }
 

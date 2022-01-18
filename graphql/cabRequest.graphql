@@ -4,6 +4,7 @@ input CabRequestInput {
     user_name: String
     driver_id: ID
     vehicle_id: ID
+    car_type: String
     cancelled_by: String
     cancel_reason: String
     schedule_time: String
@@ -54,6 +55,7 @@ type HistoryObj {
   by: String
   reason: String
   user_name: String
+  result: [DriverCar]
 }
 
 type Summary {

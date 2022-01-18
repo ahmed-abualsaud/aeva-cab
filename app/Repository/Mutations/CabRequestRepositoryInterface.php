@@ -6,6 +6,7 @@ interface CabRequestRepositoryInterface
 {
     public function schedule(array $args);
     public function search(array $args);
+    public function send(array $args);
     public function accept(array $args);
     public function arrived(array $args);
     public function start(array $args);
