@@ -92,7 +92,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.unavailable_car_type'));
         }
 
-        $request = $this->updateRequest($request, ['status' => 'SENDING']);
+        $request = $this->updateRequest($request, [
+            'status' => 'SENDING',
+            'costs' => $filtered[0]['price']
+        ]);
 
         $driversIds = Arr::pluck($filtered, 'driver_id');
 
@@ -166,23 +169,27 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.request_inprogress'));
         }
 
-        $driversIds = $this->getNearestDrivers($args['s_lat'], $args['s_lng']);
+        $drivers = $this->getNearestDrivers($args['s_lat'], $args['s_lng']);
 
-        if ( !count($driversIds) ) {
+        if (!count($drivers) ) {
             throw new CustomException(__('lang.no_available_drivers'));
         }
 
-        $driversCars = Vehicle::selectRaw('
-            driver_vehicles.driver_id, 
+        $vehicles = Vehicle::selectRaw('
+            driver_vehicles.driver_id,
+            car_models.name car_model,
             car_types.name as car_type,
-            (car_types.fixed  + (car_types.price * ?) / 1000) as price'
+            (car_types.fixed  + (car_types.price * ?) / 1000) as price,
+            vehicles.license_plate as license,
+            vehicles.photo'
             , [$args['distance']])
             ->join('car_types', 'car_types.id', '=', 'vehicles.car_type_id')
+            ->join('car_models', 'car_models.id', '=', 'vehicles.car_model_id')
             ->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
-            ->whereIn('driver_vehicles.driver_id', $driversIds)
+            ->whereIn('driver_vehicles.driver_id', Arr::pluck($drivers, 'driver_id'))
             ->get();
 
-        return $driversCars;
+        return ['drivers' => $drivers, 'vehicles' => $vehicles];
     }
 
     public function accept(array $args)
@@ -193,10 +200,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.accept_request_failed'));
         }
 
-        $carType = Vehicle::select('fixed', 'price')
-            ->join('car_types', 'car_types.id', '=', 'vehicles.car_type_id')
-            ->find($args['vehicle_id']);
-
         $payload = [
             'accepted' => [
                 'at' => date("Y-m-d H:i:s"),
@@ -204,7 +207,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         ];
 
         $args['history'] = array_merge($request->history, $payload);
-        $args['costs'] = $carType['fixed'] + $carType['price'] * $request->history['summary']['distance'] / 1000;
         $args['status'] = 'ACCEPTED';
 
         $request = $this->updateRequest($request, $args);
@@ -337,7 +339,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $this->updateDriverStatus($request->driver_id ,'ONLINE');
 
-        if ( strtolower($args['cancelled_by']) == 'user') {
+        if ( strtolower($args['cancelled_by']) == 'user' && $request->driver_id) {
 
             SendPushNotification::dispatch(
                 $this->driverToken($request->driver_id),
@@ -384,7 +386,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $radius = config('custom.seats_search_radius');
 
-        $driversIds = Driver::selectRaw('id ,
+        $drivers = Driver::selectRaw('id AS driver_id, name, phone, avatar,
             ST_Distance_Sphere(point(longitude, latitude), point(?, ?))
             as distance
             ', [$lng, $lat]
@@ -393,10 +395,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ->where('status', 'ACTIVE')
             ->orderBy('distance','asc')
             ->take(5)
-            ->pluck('id')
-            ->toArray();
+            ->get();
         
-        return $driversIds;
+        return $drivers;
     }
 
     protected function isTimeValidated($args)

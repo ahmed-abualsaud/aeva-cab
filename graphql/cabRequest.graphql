@@ -22,7 +22,7 @@ type CabRequest {
     id: ID
     user_id: ID
     driver_id: ID
-    drivers_cars: [DriverCar]
+    drivers_cars: DriverCar
     vehicle_id: ID
     status: String
     schedule_time: String
@@ -55,7 +55,7 @@ type HistoryObj {
   by: String
   reason: String
   user_name: String
-  result: [DriverCar]
+  result: DriverCar
 }
 
 type Summary {
@@ -65,7 +65,23 @@ type Summary {
 }
 
 type DriverCar {
+  drivers: [DriverObj]
+  vehicles: [VehicleObj]
+}
+
+type DriverObj {
   driver_id: ID
+  name: String
+  phone: String
+  avatar: String
+  distance: Float
+}
+
+type VehicleObj {
+  driver_id: ID
+  car_model: String
   car_type: String
+  license: String
+  photo: String
   price: Float
 }
