@@ -118,12 +118,12 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.search_request_failed'));
         }
 
-        $driversCars = $this->checkPendingAndGetDrivers($request->toArray());
+        $result = $this->checkPendingAndGetDrivers($request->toArray());
 
         $payload = [
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
-                'result' => $driversCars
+                'result' => $result
             ]
         ];
 
@@ -131,7 +131,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['status'] = 'SEARCHING';
 
         $request = $this->updateRequest($request, $input);
-        $request['drivers_cars'] = $driversCars;
+        $request['result'] = $result;
 
         return $request;
     }
@@ -139,7 +139,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     protected function searchNewRequest(array $args) 
     {
         $input = Arr::except($args, ['directive', 'user_name', 'distance']);
-        $driversCars = $this->checkPendingAndGetDrivers($args);
+        $result = $this->checkPendingAndGetDrivers($args);
 
         $payload = [
             'summary' => [
@@ -148,7 +148,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
                 'user_name' => $args['user_name'],
-                'result' => $driversCars
+                'result' => $result
             ]
         ];
 
@@ -156,7 +156,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['status'] = 'SEARCHING';
 
         $request = $this->model->create($input);
-        $request['drivers_cars'] = $driversCars;
+        $request['result'] = $result;
 
         return $request;
     }
