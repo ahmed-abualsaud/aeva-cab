@@ -42,6 +42,7 @@ type CabRequest {
 type CabRequestHistory {
   scheduled: HistoryObj
   searching: HistoryObj
+  sending: HistoryObj
   accepted: HistoryObj
   arrived: HistoryObj
   started: HistoryObj

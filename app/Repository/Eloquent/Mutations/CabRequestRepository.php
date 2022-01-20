@@ -82,9 +82,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.request_drivers_failed'));
         }
 
-        $searchResults = $request->history['searching']['result'];
+        $vehicles = $request->history['searching']['result']['vehicles'];
 
-        $filtered = Arr::where($searchResults, function ($value, $key) use ($args){
+        $filtered = Arr::where($vehicles, function ($value, $key) use ($args){
             return $value['car_type'] == $args['car_type'];
         });
 
@@ -92,10 +92,17 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.unavailable_car_type'));
         }
 
-        $request = $this->updateRequest($request, [
-            'status' => 'SENDING',
-            'costs' => $filtered[0]['price']
-        ]);
+        $payload = [
+            'sending' => [
+                'at' => date("Y-m-d H:i:s"),
+            ]
+        ];
+
+        $input['status'] = 'SENDING';
+        $input['costs'] = $filtered[0]['price'];
+        $input['history'] = array_merge($request->history, $payload);
+        
+        $request = $this->updateRequest($request, $input);
 
         $driversIds = Arr::pluck($filtered, 'driver_id');
 
@@ -127,8 +134,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $input['history'] = array_merge($request->history, $payload);
         $input['status'] = 'SEARCHING';
+        $input['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $input);
         $request['result'] = $result;
@@ -152,8 +159,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $input['history'] = $payload;
         $input['status'] = 'SEARCHING';
+        $input['history'] = $payload;
 
         $request = $this->model->create($input);
         $request['result'] = $result;
@@ -206,8 +213,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $args['history'] = array_merge($request->history, $payload);
         $args['status'] = 'ACCEPTED';
+        $args['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $args);
 
@@ -238,8 +245,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $args['history'] = array_merge($request->history, $payload);
         $args['status'] = 'ARRIVED';
+        $args['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $args);
 
@@ -268,8 +275,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $args['history'] = array_merge($request->history, $payload);
         $args['status'] = 'STARTED';
+        $args['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $args);
 
@@ -298,8 +305,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $args['history'] = array_merge($request->history, $payload);
         $args['status'] = 'COMPLETED';
+        $args['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $args);
 
@@ -331,9 +338,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'reason' => array_key_exists('cancel_reason', $args) ? $args['cancel_reason'] : "Unknown",
             ]
         ];
-
-        $args['history'] = array_merge($request->history, $payload);
         $args['status'] = 'CANCELLED';
+        $args['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $args);
 
