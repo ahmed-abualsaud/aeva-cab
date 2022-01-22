@@ -4,10 +4,12 @@ input CabRequestInput {
     user_name: String
     driver_id: ID
     vehicle_id: ID
+    car_type: String
     cancelled_by: String
     cancel_reason: String
     schedule_time: String
     distance: Float
+    total_eta: Float
     s_address: String
     s_lat: Float
     s_lng: Float
@@ -20,7 +22,7 @@ type CabRequest {
     id: ID
     user_id: ID
     driver_id: ID
-    drivers_ids: [ID]
+    result: DriverVehicle
     vehicle_id: ID
     status: String
     schedule_time: String
@@ -40,6 +42,7 @@ type CabRequest {
 type CabRequestHistory {
   scheduled: HistoryObj
   searching: HistoryObj
+  sending: HistoryObj
   accepted: HistoryObj
   arrived: HistoryObj
   started: HistoryObj
@@ -53,10 +56,33 @@ type HistoryObj {
   by: String
   reason: String
   user_name: String
+  result: DriverVehicle
 }
 
 type Summary {
   distance: Float
   duration: Float
-  eta: Float
+  total_eta: Float
+}
+
+type DriverVehicle {
+  drivers: [DriverObj]
+  vehicles: [VehicleObj]
+}
+
+type DriverObj {
+  driver_id: ID
+  name: String
+  phone: String
+  avatar: String
+  distance: Float
+}
+
+type VehicleObj {
+  driver_id: ID
+  car_model: String
+  car_type: String
+  license: String
+  photo: String
+  price: Float
 }

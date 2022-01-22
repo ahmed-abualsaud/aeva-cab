@@ -15,17 +15,17 @@ class RideEnded implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $user_id;
-    public $driver_id;
+    public $request;
     
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($user_id, $driver_id)
+    public function __construct($request)
     {
-        $this->user_id = $user_id;
-        $this->driver_id = $driver_id;
+        $this->user_id = $request->user_id;
+        $this->request = $request;
     }
 
     /**
@@ -55,6 +55,6 @@ class RideEnded implements ShouldBroadcast
      */
     public function broadcastWith()
     {
-        return ['driver_id' => $this->driver_id];
+        return ['request' => $this->request];
     }
 }

@@ -15,16 +15,16 @@ class AcceptCabRequest implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $driversIds;
-    public $user;
+    public $request;
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(array $driversIds, $user)
+    public function __construct(array $driversIds, $request)
     {
         $this->driversIds = $driversIds;
-        $this->user = $user;
+        $this->request = $request;
     }
 
     /**
@@ -35,7 +35,7 @@ class AcceptCabRequest implements ShouldBroadcast
     public function broadcastOn()
     {
         foreach ($this->driversIds as $driverId) {
-            $channels[] = new PrivateChannel('Request.Accept.Driver.'.$driverId);  
+            $channels[] = new PrivateChannel('Accept.Request.Driver.'.$driverId);  
         }
 
         return $channels;
@@ -48,7 +48,7 @@ class AcceptCabRequest implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'accept.request';
+        return 'client-cap.trip.status';
     }
 
     /**
@@ -58,7 +58,7 @@ class AcceptCabRequest implements ShouldBroadcast
      */
     public function broadcastWith()
     {
-        return $this->user;
+        return ['request' => $this->request];
     }
 
 }

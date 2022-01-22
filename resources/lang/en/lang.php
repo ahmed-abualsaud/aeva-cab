@@ -125,6 +125,8 @@ return [
     'schedule_request_failed' => 'Schedule request failed',
     'search_request_failed' => 'Search request failed',
     'request_inprogress' => 'Request in progress.',
+    'request_drivers_failed' => 'Request drivers failed',
+    'unavailable_car_type' => 'Unavailable car type',
     'no_available_drivers' => 'No available drivers.',
     'accept_request' => 'Accept Request.',
     'accept_request_failed' => 'Accept request failed.',

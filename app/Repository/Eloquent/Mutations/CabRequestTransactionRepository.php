@@ -73,9 +73,14 @@ class CabRequestTransactionRepository extends BaseRepository
     protected function updateWallet($user_id, $amount)
     {
         try {
-            User::updateWallet($user_id, $amount);
+            $user = User::findOrFail($user_id);
         } catch (\Exception $e) {
-            throw new CustomException(__('lang.update_wallet_failed'));
+            throw new CustomException(__('lang.user_not_found'));
         }
+
+        if ( $user->wallet_balance < $amount ) {
+            throw new CustomException(__('lang.insufficient_balance'));
+        }
+        $user->updateWallet($user_id, $amount);
     }
 }

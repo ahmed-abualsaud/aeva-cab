@@ -23,6 +23,11 @@ class CabRequestResolver
         return $this->cabRequestRepository->search($args);
     }
 
+    public function send($_, array $args)
+    {
+        return $this->cabRequestRepository->send($args);
+    }
+
     public function accept($_, array $args)
     {
         return $this->cabRequestRepository->accept($args);

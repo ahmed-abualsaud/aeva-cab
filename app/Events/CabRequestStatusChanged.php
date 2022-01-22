@@ -10,11 +10,10 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class RideStarted implements ShouldBroadcast
+class CabRequestStatusChanged implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $user_id;
     public $request;
 
     /**
@@ -24,7 +23,6 @@ class RideStarted implements ShouldBroadcast
      */
     public function __construct($request)
     {
-        $this->user_id = $request->user_id;
         $this->request = $request;
     }
 
@@ -35,7 +33,7 @@ class RideStarted implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('Ride.Started.User.'.$this->user_id);
+        return new PrivateChannel('App.CapTrip.'.$this->request->id);
     }
 
     /**
@@ -45,7 +43,7 @@ class RideStarted implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'ride.started';
+        return 'client-cap.trip.status';
     }
 
     /**
