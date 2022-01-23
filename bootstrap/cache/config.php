@@ -687,7 +687,7 @@
     ),
     'pagination' => 
     array (
-      'default_count' => NULL,
+      'default_count' => 50,
       'max_count' => NULL,
     ),
     'debug' => 3,
