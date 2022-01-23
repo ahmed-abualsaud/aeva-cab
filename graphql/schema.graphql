@@ -163,7 +163,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "UserResolver@destroy")
 
   # Partner
-  changePartnerPassword(input: ChangePasswordInput @spread): String 
+  changePartnerPassword(input: ChangePasswordInput @spread): PartnerAuthPayload 
     @field(resolver: "PartnerResolver@updatePassword")
   updatePartner(input: UpdatePartnerInput! @spread): Partner 
     @field(resolver: "PartnerResolver@update")
