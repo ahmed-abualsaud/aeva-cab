@@ -13,6 +13,7 @@ input CreateUserInput {
   device_id: String
   ref_code: String
   payable: Float
+  nfc_balance: Float
 }
 
 input CreateMultipleUsersInput {
@@ -39,6 +40,7 @@ input UpdateUserInput @validator {
   phone_verified_at: String
   device_id: String
   wallet_balance: Float
+  nfc_balance: Float
 }
 
 input UserPhoneVerificationInput {
@@ -69,6 +71,7 @@ type User {
   longitude: Float
   wallet_balance: Float
   insurance_balance: Float
+  nfc_balance: Float
   rating: Float
   ref_code: String
   created_at: String

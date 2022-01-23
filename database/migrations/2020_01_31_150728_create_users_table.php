@@ -31,6 +31,7 @@ class CreateUsersTable extends Migration
             $table->double('longitude',15,8)->nullable();
             $table->float('wallet_balance')->default('0.00');
             $table->float('insurance_balance')->default('0.00');
+            $table->float('nfc_balance')->default('0.00');
             $table->decimal('rating', 4, 2)->default(5);
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();

@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Mutations;
 
 use App\SeatsTripPosTransaction;
+use Illuminate\Support\Facades\DB;
 use App\Repository\Eloquent\BaseRepository;
 
 
@@ -48,18 +49,61 @@ class SeatsTripPosTransactionRepository extends BaseRepository
 
     public function bulkCreate(array $args)
     {
-        $arr = [];
+        $trxArr = [];
+        $usersArr = [];
+
         foreach($args as $val) {
-            $arr['ticket_id'] = $val['ticket_id'];
-            $arr['partner_id'] = $val['partner_id'];
-            $arr['driver_id'] = $val['driver_id'];
-            $arr['vehicle_id'] = $val['vehicle_id'];
-            $arr['serial'] = $val['serial'];
-            $arr['amount'] = $val['amount'];
-            $arr['created_at'] = $val['created_at'];
-            $data[] = $arr;
+            $trxArr['ticket_id'] = $val['ticket_id'];
+            $trxArr['partner_id'] = $val['partner_id'];
+            $trxArr['driver_id'] = $val['driver_id'];
+            $trxArr['vehicle_id'] = $val['vehicle_id'];
+            $trxArr['serial'] = $val['serial'];
+            $trxArr['amount'] = $val['amount'];
+            $trxArr['created_at'] = $val['created_at'];
+
+            if (array_key_exists('user_id', $val) && $val['user_id']) {
+                $trxArr['user_id'] = $val['user_id'];
+                $usersArr['user_id'] = $val['user_id'];
+                $usersArr['amount'] = $val['amount'];
+                $usersData[] = $usersArr;
+            } else {
+                $trxArr['user_id'] = null;
+            }
+
+            $trxData[] = $trxArr;
+
         }
 
-        return $this->model->insert($data);
+        if ($usersArr) {
+            $this->updateNfcBalance($usersData);
+        }
+
+        return $this->model->insert($trxData);
+    }
+
+    protected function updateNfcBalance(array $usersData)
+    {
+        try {
+            
+            $cases = []; $ids = []; $amount = [];
+
+            foreach ($usersData as $value) {
+                $id = (int) $value['user_id'];
+                $cases[] = "WHEN {$id} then ?";
+                $amount[] = $value['amount'];
+                $ids[] = $id;
+            }
+
+            $ids = implode(',', $ids);
+            $cases = implode(' ', $cases);
+            $params = array_merge($amount);
+
+            return DB::update("UPDATE `users` 
+                SET `nfc_balance` = `nfc_balance` - CASE `id` {$cases} END
+                WHERE `id` in ({$ids})", $params);
+            
+        } catch (\Exception $e) {
+            //
+        }
     }
 }

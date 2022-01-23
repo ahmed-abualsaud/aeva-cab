@@ -19,6 +19,7 @@ class CreateSeatsTripPosTransactionsTable extends Migration
             $table->unsignedBigInteger('partner_id');
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('vehicle_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('trx_id')->nullable();
             $table->unsignedBigInteger('serial');
             $table->float('amount', 8, 2);
@@ -33,6 +34,7 @@ class CreateSeatsTripPosTransactionsTable extends Migration
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('set null');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('set null');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
