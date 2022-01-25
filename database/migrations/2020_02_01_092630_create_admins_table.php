@@ -24,7 +24,6 @@ class CreateAdminsTable extends Migration
             $table->string('status')->nullable();
             $table->unsignedBigInteger('role_id');
             $table->boolean('is_super_admin')->default(false);
-            $table->text('token')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
