@@ -6,6 +6,7 @@ use App\Partner;
 use App\PartnerUser;
 use App\PartnerDriver;
 use App\Traits\HandleUpload;
+use App\Traits\HandleAccessTokenCache;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -17,6 +18,7 @@ use App\Repository\Mutations\PartnerRepositoryInterface;
 class PartnerRepository extends BaseRepository implements PartnerRepositoryInterface
 {
     use HandleUpload;
+    use HandleAccessTokenCache;
 
     public function __construct(Partner $model)
     {
@@ -89,9 +91,11 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
 
         $partner = auth('partner')->user();
 
+        $this->handleAccessTokenCache('partner', $partner, $token);
+
         return [
-        'access_token' => $token,
-        'partner' => $partner
+            'access_token' => $token,
+            'partner' => $partner
         ];
 
     }
@@ -207,9 +211,19 @@ class PartnerRepository extends BaseRepository implements PartnerRepositoryInter
         }
 
         $partner->password = Hash::make($args['new_password']);
+
         $partner->save();
 
-        return __('lang.password_changed');
+        auth('partner')->onceUsingId($partner->id);
+
+        $token = auth('partner')->fromUser($partner);
+        
+        $this->handleAccessTokenCache('partner', $partner, $token);
+        
+        return [
+            'access_token' => $token,
+            'partner' => $partner
+        ];
 
     }
 

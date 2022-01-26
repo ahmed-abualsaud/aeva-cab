@@ -24,8 +24,6 @@ class RoleRepository extends BaseRepository
             throw new \Exception(__('lang.role_not_found'));
         }
 
-        $this->invalidateTokens($args['id']);
-
         $role->update($input);
 
         return $role;

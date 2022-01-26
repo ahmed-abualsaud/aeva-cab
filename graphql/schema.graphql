@@ -46,7 +46,7 @@ extend type Mutation @guard(with: ["admin"]) {
     @field(resolver: "AdminResolver@create")
   updateAdmin(input: UpdateAdminInput! @spread): Admin 
     @field(resolver: "AdminResolver@update")
-  changeAdminPassword(input: ChangePasswordInput @spread): String 
+  changeAdminPassword(input: ChangePasswordInput @spread): AdminAuthPayload 
     @field(resolver: "AdminResolver@updatePassword")
   deleteAdmin(id: ID!): Admin @delete
 
@@ -167,7 +167,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "UserResolver@destroy")
 
   # Partner
-  changePartnerPassword(input: ChangePasswordInput @spread): String 
+  changePartnerPassword(input: ChangePasswordInput @spread): PartnerAuthPayload 
     @field(resolver: "PartnerResolver@updatePassword")
   updatePartner(input: UpdatePartnerInput! @spread): Partner 
     @field(resolver: "PartnerResolver@update")
