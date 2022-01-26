@@ -107,6 +107,11 @@
         'driver' => 'jwt',
         'provider' => 'cached-partners',
       ),
+      'manager' => 
+      array (
+        'driver' => 'jwt',
+        'provider' => 'cached-managers',
+      ),
       'user' => 
       array (
         'driver' => 'jwt',
@@ -130,6 +135,11 @@
         'driver' => 'eloquent',
         'model' => 'App\\Partner',
       ),
+      'managers' => 
+      array (
+        'driver' => 'eloquent',
+        'model' => 'App\\Manager',
+      ),
       'users' => 
       array (
         'driver' => 'eloquent',
@@ -149,6 +159,11 @@
       array (
         'driver' => 'cached-partner',
         'model' => 'App\\Partner',
+      ),
+      'cached-managers' => 
+      array (
+        'driver' => 'cached-manager',
+        'model' => 'App\\Manager',
       ),
       'cached-users' => 
       array (
@@ -180,6 +195,13 @@
       'partners' => 
       array (
         'provider' => 'partners',
+        'table' => 'password_resets',
+        'expire' => 60,
+        'throttle' => 60,
+      ),
+      'managers' => 
+      array (
+        'provider' => 'managers',
         'table' => 'password_resets',
         'expire' => 60,
         'throttle' => 60,

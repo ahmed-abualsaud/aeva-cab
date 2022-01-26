@@ -1,14 +1,3 @@
-input CreateRoleInput {
-  name: String! @rules(apply: ["required", "unique:roles,name"])
-  permissions: RolePermissionInput! @rules(apply: ["required"])
-}
-
-input UpdateRoleInput @validator {
-  id: ID
-  name: String
-  permissions: RolePermissionInput
-}
-
 input RolePermissionInput {
   admins: PermissionActionInput! @rules(apply: ["required"])
   users: PermissionActionInput! @rules(apply: ["required"])
@@ -20,17 +9,6 @@ input RolePermissionInput {
   seats: PermissionActionInput! @rules(apply: ["required"])
   cab: PermissionActionInput! @rules(apply: ["required"])
   settings: PermissionActionInput! @rules(apply: ["required"])
-}
-
-input PermissionActionInput {
-  read: Boolean
-  write: Boolean
-}
-
-type Role {
-  id: ID
-  name: String
-  permissions: RolePermission
 }
 
 type RolePermission {
@@ -46,8 +24,19 @@ type RolePermission {
   settings: PermissionAction
 }
 
-type PermissionAction {
-  read: Boolean
-  write: Boolean
+input CreateRoleInput {
+  name: String! @rules(apply: ["required", "unique:roles,name"])
+  permissions: RolePermissionInput! @rules(apply: ["required"])
 }
 
+input UpdateRoleInput @validator {
+  id: ID
+  name: String
+  permissions: RolePermissionInput
+}
+
+type Role {
+  id: ID
+  name: String
+  permissions: RolePermission
+}

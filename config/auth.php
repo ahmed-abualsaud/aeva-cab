@@ -51,6 +51,11 @@ return [
             'provider' => 'cached-partners',
         ],
 
+        'manager' => [
+            'driver' => 'jwt',
+            'provider' => 'cached-managers',
+        ],
+
         'user' => [
             'driver' => 'jwt',
             'provider' => 'cached-users',
@@ -91,6 +96,11 @@ return [
             'model' => App\Partner::class,
         ],
 
+        'managers' => [
+            'driver' => 'eloquent',
+            'model' => App\Manager::class,
+        ],
+
         'users' => [
             'driver' => 'eloquent',
             'model' => App\User::class,
@@ -109,6 +119,11 @@ return [
         'cached-partners' => [
             'driver' => 'cached-partner',
             'model' => App\Partner::class,
+        ],
+
+        'cached-managers' => [
+            'driver' => 'cached-manager',
+            'model' => App\Manager::class,
         ],
 
         'cached-users' => [
@@ -152,6 +167,12 @@ return [
         ],
         'partners' => [
             'provider' => 'partners',
+            'table' => 'password_resets',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'managers' => [
+            'provider' => 'managers',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,

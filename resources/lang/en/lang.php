@@ -60,6 +60,7 @@ return [
     'request_submitted' => 'New On-Demand request has been submitted',
     'request_ID_submitted' => 'New On-Demand request # :request_id has been submitted',
     'partner_not_found' => 'The provided partner ID is not found',
+    'manager_not_found' => 'The provided manager ID is not found',
     'driver_assign_failed' => 'Driver can not be assigned to the same partner more than once',
     'driver_assigned' => 'Selected drivers have been assigned successfully',
     'driver_unassigned' => 'Selected drivers have been unassigned successfully',

@@ -16,20 +16,23 @@ class CreateUserTransactionsTable extends Migration
         Schema::create('user_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('trx_id')->nullable();
+            $table->unsignedBigInteger('partner_id')->nullable();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('admin_id')->nullable();
+            $table->nullableMorphs('admin');
             $table->string('source')->nullable();
             $table->float('amount', 8, 2);
             $table->enum('type', ['WALLET_DEPOSIT','WALLET_WITHDRAW','INSURANCE_DEPOSIT','INSURANCE_WITHDRAW']);
-            $table->enum('service', ['RENT','TOSCHOOL','TOWORK','OTHER']);
+            $table->enum('service', ['RENT','TOSCHOOL','TOWORK','PLAYGROUND','SEATS','OTHER']);
             $table->string('notes')->nullable();
             $table->dateTime('created_at')->useCurrent();
 
+            $table->index('partner_id');
             $table->index('user_id');
             $table->index('type');
+            $table->index('service');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('admin_id')->references('id')->on('admins')->onDelete('set null');
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('set null');
         });
     }
 

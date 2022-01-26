@@ -5,11 +5,13 @@ namespace App\Providers;
 use App\User;
 use App\Admin;
 use App\Driver;
+use App\Manager;
 use App\Partner;
 use App\Observers\UserObserver;
 use App\Observers\AdminObserver;
 use App\Observers\DriverObserver;
 use App\Observers\PartnerObserver;
+use App\Observers\ManagerObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Socialite\Contracts\Factory;
@@ -43,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
 
         Admin::observe(AdminObserver::class);
         Partner::observe(PartnerObserver::class);
+        Manager::observe(ManagerObserver::class);
         User::observe(UserObserver::class);
         Driver::observe(DriverObserver::class);
     }

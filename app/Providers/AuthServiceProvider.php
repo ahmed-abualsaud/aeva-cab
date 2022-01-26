@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Extensions\CachingAdminProvider;
 use App\Extensions\CachingDriverProvider;
 use App\Extensions\CachingPartnerProvider;
+use App\Extensions\CachingManagerProvider;
 use App\Extensions\CachingUserProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -60,6 +61,14 @@ class AuthServiceProvider extends ServiceProvider
         $this->app['auth']->provider('cached-partner',
             function($app, array $config) {
                 return new CachingPartnerProvider(
+                    $this->app['hash'],
+                    $config['model']
+                );
+            });
+
+        $this->app['auth']->provider('cached-manager',
+            function($app, array $config) {
+                return new CachingManagerProvider(
                     $this->app['hash'],
                     $config['model']
                 );

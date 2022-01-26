@@ -1,0 +1,45 @@
+input ManagerPermissionInput {
+  users: PermissionActionInput! @rules(apply: ["required"])
+  drivers: PermissionActionInput! @rules(apply: ["required"])
+  supervisors: PermissionActionInput! @rules(apply: ["required"])
+  vehicles: PermissionActionInput! @rules(apply: ["required"])
+  trips: PermissionActionInput! @rules(apply: ["required"])
+}
+
+type ManagerPermission {
+  users: PermissionAction
+  drivers: PermissionAction
+  supervisors: PermissionAction
+  vehicles: PermissionAction
+  trips: PermissionAction
+}
+
+input CreateManagerInput @validator {
+  name: String
+  phone: String
+  partner_id: ID
+  permissions: ManagerPermissionInput
+}
+
+input UpdateManagerInput @validator {
+  id: ID
+  name: String
+  phone: String
+  partner_id: ID
+  permissions: ManagerPermissionInput
+}
+
+type ManagerAuthPayload {
+  access_token: String
+  manager: Manager
+}
+
+type Manager {
+  id: ID
+  name: String
+  phone: String
+  partner: Partner @belongsTo
+  permissions: ManagerPermission
+  created_at: String
+  updated_at: String
+}

@@ -4,18 +4,23 @@ input CreateUserTransactionInput {
   amount: Float! @rules(apply: ["required"])
   source: String
   type: String! @rules(apply: [
-    "required","in:WALLET_DEPOSIT,WALLET_WITHDRAW,INSURANCE_DEPOSIT,INSURANCE_WITHDRAW"
+    "required",
+    "in:WALLET_DEPOSIT,WALLET_WITHDRAW,INSURANCE_DEPOSIT,INSURANCE_WITHDRAW,NFC_DEPOSIT,NFC_WITHDRAW,OTHER"
   ])
-  service: String! @rules(apply: ["required","in:RENT,TOSCHOOL,TOWORK,OTHER"])
+  service: String! @rules(apply: [
+    "required","in:RENT,TOSCHOOL,TOWORK,RECHARGE,OTHER"
+  ])
   admin_id: ID
   notes: String
 }
+
+union AdminType = Admin | Partner 
 
 type UserTransaction {
   id: ID
   trx_id: ID
   user: User @belongsTo
-  admin: Admin @belongsTo
+  admin: AdminType @morphTo
   amount: Float
   source: String
   type: String

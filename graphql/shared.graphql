@@ -51,3 +51,13 @@ input RouteInput {
   distance: Int
   order: Int
 }
+
+input PermissionActionInput {
+  read: Boolean
+  write: Boolean
+}
+
+type PermissionAction {
+  read: Boolean
+  write: Boolean
+}
