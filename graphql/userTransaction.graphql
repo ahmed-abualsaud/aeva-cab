@@ -1,5 +1,6 @@
 input CreateUserTransactionInput {
   trx_id: ID
+  partner_id: ID
   user_id: ID! @rules(apply: ["required"])
   amount: Float! @rules(apply: ["required"])
   source: String
@@ -8,13 +9,14 @@ input CreateUserTransactionInput {
     "in:WALLET_DEPOSIT,WALLET_WITHDRAW,INSURANCE_DEPOSIT,INSURANCE_WITHDRAW,NFC_DEPOSIT,NFC_WITHDRAW,OTHER"
   ])
   service: String! @rules(apply: [
-    "required","in:RENT,TOSCHOOL,TOWORK,RECHARGE,OTHER"
+    "required","in:RENT,TOSCHOOL,TOWORK,PLAYGROUND,SEATS,RECHARGE,OTHER"
   ])
   admin_id: ID
+  admin_type: String @rules(apply: ["in:App\\Admin,App\\Partner,App\\Manager"])
   notes: String
 }
 
-union AdminType = Admin | Partner 
+union AdminType = Admin | Partner | Manager
 
 type UserTransaction {
   id: ID
