@@ -37,6 +37,7 @@ type CabRequest {
     d_address: String
     d_lat: Float
     d_lng: Float
+    created_at: String
 }
 
 type CabRequestHistory {
