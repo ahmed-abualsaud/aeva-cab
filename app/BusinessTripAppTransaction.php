@@ -30,8 +30,7 @@ class BusinessTripAppTransaction extends Model
 
     public function admin()
     {
-        return $this->belongsTo(Admin::class)
-            ->select('id', 'name');
+        return $this->morphTo();
     }
 
     public function scopeSearch($query, $args) 

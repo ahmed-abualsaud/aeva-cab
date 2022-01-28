@@ -1,3 +1,5 @@
+union AdminType = Admin | Partner | Manager
+
 input UpdateOrderInput {
   model: String! @rules(apply: ["required"])
   orders: [OrderInput!]! @rules(apply: ["required"])

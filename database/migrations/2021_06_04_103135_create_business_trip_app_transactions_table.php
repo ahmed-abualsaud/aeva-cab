@@ -18,7 +18,7 @@ class CreateBusinessTripAppTransactionsTable extends Migration
             $table->unsignedBigInteger('trx_id')->nullable();
             $table->unsignedBigInteger('subscription_id')->nullable();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('admin_id')->nullable();
+            $table->nullableMorphs('admin');
             $table->unsignedBigInteger('trip_id');
             $table->date('due_date');
             $table->float('amount', 8, 2);

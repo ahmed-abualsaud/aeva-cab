@@ -16,8 +16,6 @@ input CreateUserTransactionInput {
   notes: String
 }
 
-union AdminType = Admin | Partner | Manager
-
 type UserTransaction {
   id: ID
   trx_id: ID
