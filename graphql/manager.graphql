@@ -1,17 +1,17 @@
 input ManagerPermissionInput {
   users: PermissionActionInput! @rules(apply: ["required"])
   drivers: PermissionActionInput! @rules(apply: ["required"])
-  supervisors: PermissionActionInput! @rules(apply: ["required"])
   vehicles: PermissionActionInput! @rules(apply: ["required"])
-  trips: PermissionActionInput! @rules(apply: ["required"])
+  rides: PermissionActionInput! @rules(apply: ["required"])
+  reports: PermissionActionInput! @rules(apply: ["required"])
 }
 
 type ManagerPermission {
   users: PermissionAction
   drivers: PermissionAction
-  supervisors: PermissionAction
   vehicles: PermissionAction
-  trips: PermissionAction
+  rides: PermissionAction
+  reports: PermissionAction
 }
 
 input CreateManagerInput @validator {
