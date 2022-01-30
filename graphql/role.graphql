@@ -3,12 +3,12 @@ input RolePermissionInput {
   users: PermissionActionInput! @rules(apply: ["required"])
   drivers: PermissionActionInput! @rules(apply: ["required"])
   vehicles: PermissionActionInput! @rules(apply: ["required"])
-  ondemand: PermissionActionInput! @rules(apply: ["required"])
   business: PermissionActionInput! @rules(apply: ["required"])
-  school: PermissionActionInput! @rules(apply: ["required"])
   seats: PermissionActionInput! @rules(apply: ["required"])
   cab: PermissionActionInput! @rules(apply: ["required"])
+  ondemand: PermissionActionInput! @rules(apply: ["required"])
   settings: PermissionActionInput! @rules(apply: ["required"])
+  reports: PermissionActionInput! @rules(apply: ["required"])
 }
 
 type RolePermission {
@@ -18,10 +18,10 @@ type RolePermission {
   vehicles: PermissionAction
   ondemand: PermissionAction
   business: PermissionAction
-  school: PermissionAction
   seats: PermissionAction
   cab: PermissionAction
   settings: PermissionAction
+  reports: PermissionAction
 }
 
 input CreateRoleInput {
