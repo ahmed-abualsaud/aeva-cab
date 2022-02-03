@@ -31,6 +31,7 @@ type CabRequest {
     costs: Float
     payment_method: String
     history: CabRequestHistory
+    map_url: String
     s_address: String
     s_lat: Float
     s_lng: Float
