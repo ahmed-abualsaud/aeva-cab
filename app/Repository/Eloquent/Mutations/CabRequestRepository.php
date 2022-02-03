@@ -5,7 +5,6 @@ namespace App\Repository\Eloquent\Mutations;
 use App\Driver;
 use App\Vehicle;
 use App\CabRequest;
-use App\CabTripEntry;
 
 use App\Helpers\StaticMapUrl;
 
@@ -310,19 +309,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $args['status'] = 'COMPLETED';
         $args['history'] = array_merge($request->history, $payload);
-
-        $locations = CabTripEntry::select('latitude', 'longitude')
-                ->where('request_id', $args['id'])
-                ->get();
-        
-        if ($locations->isNotEmpty()) {
-            foreach($locations as $loc) 
-                $path[] = $loc->latitude.','.$loc->longitude;
-
-            $args['map_url'] = StaticMapUrl::generatePath(implode('|', $path));
-
-            CabTripEntry::where('request_id', $args['id'])->delete();
-        }
+        $args['map_url'] = StaticMapUrl::generatePolylines($request);
 
         $request = $this->updateRequest($request, $args);
 

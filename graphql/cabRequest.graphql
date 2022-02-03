@@ -10,6 +10,7 @@ input CabRequestInput {
     schedule_time: String
     distance: Float
     total_eta: Float
+    route_key: String
     s_address: String
     s_lat: Float
     s_lng: Float
@@ -20,10 +21,10 @@ input CabRequestInput {
 
 type CabRequest {
     id: ID
-    user_id: ID
-    driver_id: ID
+    user: User @BelongsTo
+    driver: Driver @BelongsTo
+    vehicle: Vehicle @BelongsTo
     result: DriverVehicle
-    vehicle_id: ID
     status: String
     schedule_time: String
     next_free_time: String
