@@ -29,6 +29,7 @@ class CreateCabRequestsTable extends Migration
                 'CANCELLED',
             ]);
             $table->json('history')->nullable();
+            $table->text('route_key');
             $table->text('map_url')->nullable();
             $table->dateTime('schedule_time')->nullable();
             $table->dateTime('next_free_time')->nullable();
