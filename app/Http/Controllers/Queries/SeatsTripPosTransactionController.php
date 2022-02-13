@@ -30,4 +30,8 @@ class SeatsTripPosTransactionController
         return response()->json($response, 200);
     }
 
+    public function driverReport(Request $req) 
+    {
+        return $this->seatsTripPosTransactionRepository->driverReport($req);
+    }
 }

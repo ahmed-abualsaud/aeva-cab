@@ -101,3 +101,13 @@ Route::group(['middleware' => ['auth:admin,partner'], 'namespace' => 'Queries'],
     Route::get('/seats/trip/terminal/transactions/export', 'SeatsTripTerminalTransactionController@export');
     Route::get('/seats/trip/pos/transactions/export', 'SeatsTripPosTransactionController@export');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Queries auth:manager
+|--------------------------------------------------------------------------
+|
+*/
+Route::group(['middleware' => ['auth:manager'], 'namespace' => 'Queries'], function () {
+    Route::get('/seats/trip/driver/pos/transactions/report', 'SeatsTripPosTransactionController@driverReport');
+});
