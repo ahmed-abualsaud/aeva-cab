@@ -52,4 +52,9 @@ class CabRequestResolver
     {
         return $this->cabRequestRepository->cancel($args);
     }
+
+    public function reset($_, array $args)
+    {
+        return $this->cabRequestRepository->reset($args);
+    }
 }

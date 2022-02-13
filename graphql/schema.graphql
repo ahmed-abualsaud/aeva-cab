@@ -485,6 +485,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
   # Cab Request
   cancelCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@cancel")
+  resetCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest]
+    @field(resolver: "CabRequestResolver@reset")
 }
 
 # User Guard
