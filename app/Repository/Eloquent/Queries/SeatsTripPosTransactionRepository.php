@@ -102,7 +102,7 @@ class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsT
             ROUND(SUM(amount), 2) as sum,
             COUNT(seats_trip_pos_transactions.id) as count
         ')
-        ->where('driver_id', $args['driver_id'])
+        ->where('vehicle_id', $args['vehicle_id'])
         ->where('seats_trip_pos_transactions.created_at', '>=', $args['date_from'])
         ->where('seats_trip_pos_transactions.created_at', '<=', $args['date_to'])
         ->join('drivers', 'drivers.id', '=', 'seats_trip_pos_transactions.driver_id')
