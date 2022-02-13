@@ -1,3 +1,29 @@
+input RolePermissionInput {
+  admins: PermissionActionInput! @rules(apply: ["required"])
+  users: PermissionActionInput! @rules(apply: ["required"])
+  drivers: PermissionActionInput! @rules(apply: ["required"])
+  vehicles: PermissionActionInput! @rules(apply: ["required"])
+  business: PermissionActionInput! @rules(apply: ["required"])
+  seats: PermissionActionInput! @rules(apply: ["required"])
+  cab: PermissionActionInput! @rules(apply: ["required"])
+  ondemand: PermissionActionInput! @rules(apply: ["required"])
+  settings: PermissionActionInput! @rules(apply: ["required"])
+  reports: PermissionActionInput! @rules(apply: ["required"])
+}
+
+type RolePermission {
+  admins: PermissionAction
+  users: PermissionAction
+  drivers: PermissionAction
+  vehicles: PermissionAction
+  ondemand: PermissionAction
+  business: PermissionAction
+  seats: PermissionAction
+  cab: PermissionAction
+  settings: PermissionAction
+  reports: PermissionAction
+}
+
 input CreateRoleInput {
   name: String! @rules(apply: ["required", "unique:roles,name"])
   permissions: RolePermissionInput! @rules(apply: ["required"])
@@ -9,45 +35,8 @@ input UpdateRoleInput @validator {
   permissions: RolePermissionInput
 }
 
-input RolePermissionInput {
-  admins: PermissionActionInput! @rules(apply: ["required"])
-  users: PermissionActionInput! @rules(apply: ["required"])
-  drivers: PermissionActionInput! @rules(apply: ["required"])
-  vehicles: PermissionActionInput! @rules(apply: ["required"])
-  ondemand: PermissionActionInput! @rules(apply: ["required"])
-  business: PermissionActionInput! @rules(apply: ["required"])
-  school: PermissionActionInput! @rules(apply: ["required"])
-  seats: PermissionActionInput! @rules(apply: ["required"])
-  cab: PermissionActionInput! @rules(apply: ["required"])
-  settings: PermissionActionInput! @rules(apply: ["required"])
-}
-
-input PermissionActionInput {
-  read: Boolean
-  write: Boolean
-}
-
 type Role {
   id: ID
   name: String
   permissions: RolePermission
 }
-
-type RolePermission {
-  admins: PermissionAction
-  users: PermissionAction
-  drivers: PermissionAction
-  vehicles: PermissionAction
-  ondemand: PermissionAction
-  business: PermissionAction
-  school: PermissionAction
-  seats: PermissionAction
-  cab: PermissionAction
-  settings: PermissionAction
-}
-
-type PermissionAction {
-  read: Boolean
-  write: Boolean
-}
-

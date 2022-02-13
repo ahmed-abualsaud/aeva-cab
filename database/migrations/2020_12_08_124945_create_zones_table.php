@@ -16,6 +16,7 @@ class CreateZonesTable extends Migration
         Schema::create('zones', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
+            $table->string('name_ar');
             $table->string('description')->nullable();
             $table->unsignedBigInteger('city_id');
             $table->enum('type', ['TOSCHOOL','TOWORK', 'SEATS']);

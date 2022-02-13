@@ -22,8 +22,7 @@ class UserTransaction extends Model
 
     public function admin()
     {
-        return $this->belongsTo(Admin::class)
-            ->select('id', 'name');
+        return $this->morphTo();
     }
 
     public function scopeSearch($query, $args) 
@@ -42,5 +41,23 @@ class UserTransaction extends Model
         }
 
         return $query->latest();
+    }
+
+    public function scopePartner($query, $args) 
+    {
+        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
+            return $query->where('partner_id', $args['partner_id']);
+        }
+ 
+        return $query;
+    }
+
+    public function scopeService($query, $args) 
+    {
+        if (array_key_exists('service', $args) && $args['service']) {
+            return $query->where('service', $args['service']);
+        }
+ 
+        return $query;
     }
 }

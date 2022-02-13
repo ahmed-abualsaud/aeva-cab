@@ -85,4 +85,11 @@ class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsT
         return (new SeatsTripPosTransactionExport($partner, $period, $searchFor, $searchQuery))
             ->download('transactions.xlsx');
     }
+
+    public function vehicleMaxSerial($vehicle_id)
+    {
+        return $this->model
+            ->where('vehicle_id', $vehicle_id)
+            ->max('serial');
+    }
 }

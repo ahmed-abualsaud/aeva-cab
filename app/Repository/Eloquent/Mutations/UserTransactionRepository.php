@@ -28,7 +28,10 @@ class UserTransactionRepository extends BaseRepository
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            throw new CustomException($e->getMessage());
+            throw new CustomException(
+                __('lang.create_trnx_failed'),
+                'customValidation'
+            ); 
         }
 
         $transaction->created_at = date('Y-m-d H:i:s');
@@ -48,6 +51,10 @@ class UserTransactionRepository extends BaseRepository
                     return User::updateInsurance($args['user_id'], -abs($args['amount']));
                 case 'INSURANCE_WITHDRAW':
                     return User::updateInsurance($args['user_id'], abs($args['amount'])); 
+                case 'NFC_DEPOSIT':
+                    return User::updateNfcBalance($args['user_id'], -abs($args['amount']));
+                case 'NFC_WITHDRAW':
+                    return User::updateNfcBalance($args['user_id'], abs($args['amount'])); 
             }
         } catch (\Exception $e) {
             throw new CustomException($e->getMessage());

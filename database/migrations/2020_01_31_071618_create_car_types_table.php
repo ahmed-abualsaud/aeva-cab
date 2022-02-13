@@ -20,9 +20,7 @@ class CreateCarTypesTable extends Migration
             $table->unsignedSmallInteger('seats');
             $table->float('fixed', 8, 3);
             $table->float('price', 8, 3);
-            $table->unsignedSmallInteger('minute');
             $table->unsignedSmallInteger('distance');
-            $table->enum('calculator', ['MIN', 'HOUR', 'DISTANCE', 'DISTANCEMIN', 'DISTANCEHOUR']);
             $table->boolean('ondemand')->default(1);
             $table->smallInteger('order');
             $table->timestamps();

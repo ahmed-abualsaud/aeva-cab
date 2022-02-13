@@ -60,6 +60,7 @@ return [
     'request_submitted' => 'تم تقديم طلب On-Demand جديد',
     'request_ID_submitted' => 'طلب On-Demand الجديد # :request_id تم تقديمه',
     'partner_not_found' => 'لم يتم العثور على معرف الشريك المقدم',
+    'manager_not_found' => 'لم يتم العثور على المدير المقدم',
     'driver_assign_failed' => 'لا يمكن تعيين السائق لنفس الشريك أكثر من مرة',
     'driver_assigned' => 'تم تعيين السائقين المختارين بنجاح',
     'driver_unassigned' => 'تم إلغاء تعيين السائقين المحددين بنجاح',

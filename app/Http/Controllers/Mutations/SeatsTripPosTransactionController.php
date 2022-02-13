@@ -16,11 +16,6 @@ class SeatsTripPosTransactionController
         $this->SeatsTripPosTransactionRepository = $SeatsTripPosTransactionRepository;
     }
 
-    /**
-     * @param  null  $_
-     * @param  array<string, mixed>  $args
-     */
-
     public function create(Request $request)
     {
         try {
@@ -46,6 +41,26 @@ class SeatsTripPosTransactionController
                 'data' => $this->SeatsTripPosTransactionRepository->create($request->all())
             ];
     
+            return $response;
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 400);
+        }
+    }
+
+    public function bulkCreate(Request $request)
+    {
+        try {
+            $this->SeatsTripPosTransactionRepository->bulkCreate($request->all());
+    
+            $response = [
+                'success' => true,
+                'message' => 'Transactions created successfully'
+            ];
+
             return $response;
         } catch (\Exception $e) {
             $response = [

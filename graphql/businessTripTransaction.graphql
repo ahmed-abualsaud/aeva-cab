@@ -9,6 +9,7 @@ input CreateBusinessTripAppTransactionInput {
   type: String! @rules(apply: ["in:TOSCHOOL,TOWORK,PLAYGROUND"])
   notes: String
   admin_id: ID
+  admin_type: ID
 }
 
 type BusinessTripAppTransaction {
@@ -17,7 +18,7 @@ type BusinessTripAppTransaction {
   subscription_id: ID
   trip: BusinessTrip @belongsTo
   user: User @belongsTo
-  admin: Admin @belongsTo
+  admin: AdminType @morphTo
   due_date: String
   amount: Float
   payment_method: String

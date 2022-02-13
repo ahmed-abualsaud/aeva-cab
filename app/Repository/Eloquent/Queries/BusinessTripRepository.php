@@ -10,11 +10,6 @@ use App\Repository\Queries\BusinessTripRepositoryInterface;
 class BusinessTripRepository extends BaseRepository implements BusinessTripRepositoryInterface
 {
 
-    /**
-    * BusinessTripRepository constructor.
-    *
-    * @param User $model
-    */
     public function __construct(BusinessTrip $model)
     {
         parent::__construct($model);

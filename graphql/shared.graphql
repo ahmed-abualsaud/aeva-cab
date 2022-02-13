@@ -1,3 +1,5 @@
+union AdminType = Admin | Partner | Manager
+
 input UpdateOrderInput {
   model: String! @rules(apply: ["required"])
   orders: [OrderInput!]! @rules(apply: ["required"])
@@ -50,4 +52,14 @@ input RouteInput {
   duration: Int
   distance: Int
   order: Int
+}
+
+input PermissionActionInput {
+  read: Boolean
+  write: Boolean
+}
+
+type PermissionAction {
+  read: Boolean
+  write: Boolean
 }

@@ -7,11 +7,13 @@ use App\Admin;
 use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;
 use Illuminate\Support\Facades\Hash;
+use App\Traits\HandleAccessTokenCache;
 use App\Repository\Eloquent\BaseRepository;
 
 class AdminRepository extends BaseRepository
 {
     use HandleUpload;
+    use HandleAccessTokenCache;
     
     public function __construct(Admin $model)
     {
@@ -51,7 +53,9 @@ class AdminRepository extends BaseRepository
         }
 
         if (array_key_exists('role_id', $args) && $args['role_id']) {
-            $this->invalidateToken($admin);
+            $token = $this->getCachedToken('admin', $admin->id);
+            if ($token)
+                $this->invalidateToken('admin', $token);
         }
 
         $admin->update($input);
@@ -80,7 +84,7 @@ class AdminRepository extends BaseRepository
 
         $admin = auth('admin')->user();
 
-        $admin->update(['token' => $token]);
+        $this->handleAccessTokenCache('admin', $admin, $token);
 
         return [
             'access_token' => $token,
@@ -111,16 +115,18 @@ class AdminRepository extends BaseRepository
         }
 
         $admin->password = Hash::make($args['new_password']);
+
         $admin->save();
 
-        return __('lang.password_changed');
-    }
+        auth('admin')->onceUsingId($admin->id);
 
-    protected function invalidateToken($admin)
-    {
-        if ($admin->token) {
-            JWTAuth::setToken($admin->token)->invalidate();
-            $admin->update(['token' => null]);
-        }
+        $token = auth('admin')->fromUser($admin);
+        
+        $this->handleAccessTokenCache('admin', $admin, $token);
+
+        return [
+            'access_token' => $token,
+            'admin' => $admin
+        ];
     }
 }

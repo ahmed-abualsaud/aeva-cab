@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Mutations;
 
 use App\SeatsTripPosTransaction;
+use Illuminate\Support\Facades\DB;
 use App\Repository\Eloquent\BaseRepository;
 
 
@@ -43,6 +44,66 @@ class SeatsTripPosTransactionRepository extends BaseRepository
             $input['serial'] = $serial;
             $created = $this->model->create($input);
             return array($created);
+        }
+    }
+
+    public function bulkCreate(array $args)
+    {
+        $trxArr = [];
+        $usersArr = [];
+
+        foreach($args as $val) {
+            $trxArr['ticket_id'] = $val['ticket_id'];
+            $trxArr['partner_id'] = $val['partner_id'];
+            $trxArr['driver_id'] = $val['driver_id'];
+            $trxArr['vehicle_id'] = $val['vehicle_id'];
+            $trxArr['serial'] = $val['serial'];
+            $trxArr['amount'] = $val['amount'];
+            $trxArr['created_at'] = $val['created_at'];
+
+            if (array_key_exists('user_id', $val) && $val['user_id']) {
+                $trxArr['user_id'] = $val['user_id'];
+                $usersArr['user_id'] = $val['user_id'];
+                $usersArr['amount'] = $val['amount'];
+                $usersData[] = $usersArr;
+            } else {
+                $trxArr['user_id'] = null;
+            }
+
+            $trxData[] = $trxArr;
+
+        }
+
+        if ($usersArr) {
+            $this->updateNfcBalance($usersData);
+        }
+
+        return $this->model->insert($trxData);
+    }
+
+    protected function updateNfcBalance(array $usersData)
+    {
+        try {
+            
+            $cases = []; $ids = []; $amount = [];
+
+            foreach ($usersData as $value) {
+                $id = (int) $value['user_id'];
+                $cases[] = "WHEN {$id} then ?";
+                $amount[] = $value['amount'];
+                $ids[] = $id;
+            }
+
+            $ids = implode(',', $ids);
+            $cases = implode(' ', $cases);
+            $params = array_merge($amount);
+
+            return DB::update("UPDATE `users` 
+                SET `nfc_balance` = `nfc_balance` - CASE `id` {$cases} END
+                WHERE `id` in ({$ids})", $params);
+            
+        } catch (\Exception $e) {
+            //
         }
     }
 }

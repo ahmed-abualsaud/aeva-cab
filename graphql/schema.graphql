@@ -25,6 +25,10 @@ type Mutation {
   partnerLogin(input: LoginInput! @spread): PartnerAuthPayload! 
     @field(resolver: "PartnerResolver@login")
 
+  # Manager Auth
+  managerLogin(input: LoginInput! @spread): ManagerAuthPayload! 
+    @field(resolver: "ManagerResolver@login")
+
   # Password Reset
   userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
     @field(resolver: "UserResolver@phoneVerification")
@@ -46,7 +50,7 @@ extend type Mutation @guard(with: ["admin"]) {
     @field(resolver: "AdminResolver@create")
   updateAdmin(input: UpdateAdminInput! @spread): Admin 
     @field(resolver: "AdminResolver@update")
-  changeAdminPassword(input: ChangePasswordInput @spread): String 
+  changeAdminPassword(input: ChangePasswordInput @spread): AdminAuthPayload 
     @field(resolver: "AdminResolver@updatePassword")
   deleteAdmin(id: ID!): Admin @delete
 
@@ -154,8 +158,8 @@ extend type Mutation @guard(with: ["admin"]) {
     @field(resolver: "CabRequestTransactionResolver@destroy")
 } 
 
-# Admin|Partner Guard
-extend type Mutation @guard(with: ["admin", "partner"]) {
+# Admin,Partner,Manager Guard
+extend type Mutation @guard(with: ["admin", "partner", "manager"]) {
   # Reset Password
   resetPasswordById(input: ResetPasswordByIdInput @spread): DefaultResponse 
     @field(resolver: "ResetPasswordResolver@byId")
@@ -167,10 +171,20 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
     @field(resolver: "UserResolver@destroy")
 
   # Partner
-  changePartnerPassword(input: ChangePasswordInput @spread): String 
+  changePartnerPassword(input: ChangePasswordInput @spread): PartnerAuthPayload 
     @field(resolver: "PartnerResolver@updatePassword")
   updatePartner(input: UpdatePartnerInput! @spread): Partner 
     @field(resolver: "PartnerResolver@update")
+
+  # Manager
+  createManager(input: CreateManagerInput! @spread): Manager
+    @field(resolver: "ManagerResolver@create")
+  updateManager(input: UpdateManagerInput! @spread): Manager 
+    @field(resolver: "ManagerResolver@update")
+  changeManagerPassword(input: ChangePasswordInput @spread): ManagerAuthPayload 
+    @field(resolver: "ManagerResolver@updatePassword")
+  deleteManager(id: ID!): Manager
+    @field(resolver: "ManagerResolver@destroy")
 
   # Vehicle
   createVehicle(input: CreateVehicleInput! @spread): Vehicle 
@@ -302,7 +316,7 @@ extend type Mutation @guard(with: ["admin", "partner"]) {
   
 }
 
-# Admin|User Guard
+# Admin,User Guard
 extend type Mutation @guard(with: ["admin", "user"]) {
   # User
   changeUserPassword(input: ChangePasswordInput @spread): DefaultResponse 
@@ -365,7 +379,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "CabRequestResolver@send")
 }
 
-# Admin|Driver Guard
+# Admin,Driver Guard
 extend type Mutation @guard(with: ["admin", "driver"]) {
   # Business Trip Event
   readyBusinessTrip(input: ReadyTripInput! @spread): BusinessTrip
@@ -406,8 +420,8 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "CabRequestResolver@end")
 }
 
-# Admin|Partner|User Guard
-extend type Mutation @guard(with: ["admin", "partner", "user"]) {
+# Admin,Partner,Manager,User Guard
+extend type Mutation @guard(with: ["admin", "partner", "manager", "user"]) {
   # User
   updateUser(input: UpdateUserInput! @spread): User 
     @field(resolver: "UserResolver@update")
@@ -447,8 +461,8 @@ extend type Mutation @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "FollowerResolver@destroy")
 }
 
-# Admin|Partner|Driver Guard
-extend type Mutation @guard(with: ["admin", "partner", "driver"]) {
+# Admin,Partner,Manager,Driver Guard
+extend type Mutation @guard(with: ["admin", "partner", "manager", "driver"]) {
   # Driver
   updateDriver(input: UpdateDriverInput! @spread): Driver
     @field(resolver: "DriverResolver@update")
@@ -464,8 +478,8 @@ extend type Mutation @guard(with: ["admin", "partner", "driver"]) {
     @field(resolver: "SeatsTripEventResolver@end")
 }
 
-# Admin|Partner|User|Driver Guard
-extend type Mutation @guard(with: ["admin", "partner", "user", "driver"]) {
+# Admin,Partner,Manager,User,Driver Guard
+extend type Mutation @guard(with: ["admin", "partner", "manager", "user", "driver"]) {
   # Communication
   sendBusinessTripChatMessage(input: SendBusinessTripChatMessageInput! @spread): BusinessTripChat
     @field(resolver: "CommunicationResolver@sendBusinessTripChatMessage")
@@ -506,10 +520,6 @@ extend type Mutation @guard(with: ["user"]) {
 
 # Driver Guard
 extend type Mutation @guard(with: ["driver"]) {
-  # Seats Trip POS Transaction
-  createSeatsTripPosTransaction(input: CreateSeatsTripPosTransactionInput! @spread): [SeatsTripPosTransaction]
-    @field(resolver: "SeatsTripPosTransactionResolver@create")
-
   # Cab Request
   confirmCabRequestCashPayment(request_id: ID!): Boolean
     @field(resolver: "CabRequestTransactionResolver@confirmCashPayment")
@@ -591,6 +601,12 @@ extend type Query @guard(with: ["partner"]) {
   authPartner: Partner @auth
 }
 
+# Manager Guard
+extend type Query @guard(with: ["manager"]) {
+  # Authenticated Manager
+  authManager: Manager @auth
+}
+
 # User Guard
 extend type Query @guard(with: ["user"]) {
   # Authenticated User
@@ -614,8 +630,8 @@ extend type Query @guard(with: ["driver"]) {
   driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["live"])
 }
 
-# Admin|Partner Guard
-extend type Query @guard(with: ["admin", "partner"]) {
+# Admin,Partner,Manager Guard
+extend type Query @guard(with: ["admin", "partner", "manager"]) {
   # Partner User
   partnerAssignedUsers(partner_id: ID!, searchFor: String, searchQuery: String): [User] 
     @paginate(scopes: ["assigned", "search"], defaultCount: 50)
@@ -624,6 +640,9 @@ extend type Query @guard(with: ["admin", "partner"]) {
 
   # Partner
   partner(id: ID @eq): Partner @findOrFail
+
+  # Manager
+  managers(partner_id: ID): [Manager] @all(scopes: ["partner"])
 
   # Partner Driver 
   partnerAssignedDrivers(partner_id: ID!): [Driver] 
@@ -734,14 +753,14 @@ extend type Query @guard(with: ["admin", "partner"]) {
   supervisors(partner_id: ID): [Supervisor] @all(scopes: ["partner"])
 
   # Fund Transactions
-  fundTransactions(searchFor: String, searchQuery: String, period: String): [UserTransaction]
-    @paginate(scopes: ["period", "search"], defaultCount: 50)
+  fundTransactions(partner_id: ID, service: String, searchFor: String, searchQuery: String, period: String): [UserTransaction]
+    @paginate(scopes: ["period", "search", "partner", "service"], defaultCount: 50)
 
   # Payment Categories
   paymentCategories(partner_id: ID @eq): [PaymentCategory] @all
 }
 
-# Admin|User Guard
+# Admin,User Guard
 extend type Query @guard(with: ["admin", "user"]) {
   # Ondemand Request
   userOndemandRequests(user_id: ID! @eq): [OndemandRequest] @all
@@ -762,8 +781,8 @@ extend type Query @guard(with: ["admin", "user"]) {
   statement(type: String! @eq): Statement @find
 }
 
-# Admin|Partner|User Guard
-extend type Query @guard(with: ["admin", "partner", "user"]) {
+# Admin,Partner,Manager,User Guard
+extend type Query @guard(with: ["admin", "partner", "manager", "user"]) {
   # Zone
   zones(type: String! @eq, orderBy: _ @orderBy(columns: ["city_id"])): [Zone] @all
   zone(id: ID! @eq): Zone @findOrFail
@@ -841,8 +860,8 @@ extend type Query @guard(with: ["admin", "partner", "user"]) {
     @field(resolver: "SeatsTripResolver@seatsLineStationsTrips")
 }
 
-# Admin|Partner|Driver Guard
-extend type Query @guard(with: ["admin", "partner", "driver"]) {
+# Admin,Partner,Manager,Driver Guard
+extend type Query @guard(with: ["admin", "partner", "manager", "driver"]) {
   # Business Trip Attendance
   businessTripAttendance(trip_id: ID!, date: String): [BusinessTripAttendance]
     @field(resolver: "BusinessTripAttendanceResolver")
@@ -860,8 +879,8 @@ extend type Query @guard(with: ["admin", "partner", "driver"]) {
     @field(resolver: "SeatsTripResolver@driverTrips")
 }
 
-# Admin|Partner|User|Driver Guard
-extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
+# Admin,Partner,Manager,User,Driver Guard
+extend type Query @guard(with: ["admin", "partner", "manager", "user", "driver"]) {
   # Business Trip
   businessTrip(id: ID @eq): BusinessTrip @findOrFail
 
@@ -898,17 +917,20 @@ extend type Query @guard(with: ["admin", "partner", "user", "driver"]) {
   vehicle(id: ID @eq): Vehicle @findOrFail
 }
 
+# Admin,User,Driver Guard
 extend type Query @guard(with: ["admin", "user", "driver"]) {
   # Cab Request
   cabRequest(id: ID!): CabRequest @findOrFail
   pendingCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest] @all(scopes: ["pending"])
 }
 
+#import shared.graphql
 #import auth.graphql
 #import role.graphql
 #import admin.graphql
 #import user.graphql
 #import partner.graphql
+#import manager.graphql
 #import fleet.graphql 
 #import driver.graphql
 #import vehicle.graphql
@@ -925,7 +947,6 @@ extend type Query @guard(with: ["admin", "user", "driver"]) {
 #import statement.graphql
 #import zone.graphql
 #import workplace.graphql
-#import utilities.graphql
 #import businessTrip.graphql
 #import businessTripStation.graphql
 #import businessTripSubscription.graphql
