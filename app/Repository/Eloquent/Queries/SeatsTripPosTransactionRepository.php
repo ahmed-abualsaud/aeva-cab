@@ -108,7 +108,7 @@ class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsT
         ->join('drivers', 'drivers.id', '=', 'seats_trip_pos_transactions.driver_id')
         ->join('vehicles', 'vehicles.id', '=', 'seats_trip_pos_transactions.vehicle_id');
 
-        return $vehicles->groupBy('code', 'name')
+        return $vehicles->groupBy('code', 'name_ar')
           ->orderBy('sum', 'desc')
           ->get();
     }
