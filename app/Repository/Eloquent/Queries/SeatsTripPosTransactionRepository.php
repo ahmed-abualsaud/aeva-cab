@@ -96,7 +96,7 @@ class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsT
     public function driverReport($args) 
     {
         $vehicles = $this->model->selectRaw('
-            name, vehicles.code,
+            name_ar, vehicles.code,
             MIN(serial) as serial_from,
             MAX(serial) as serial_to,
             ROUND(SUM(amount), 2) as sum,
