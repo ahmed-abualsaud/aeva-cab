@@ -96,7 +96,7 @@ class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsT
     public function driverReport($args) 
     {
         $vehicles = $this->model->selectRaw('
-            name_ar, vehicles.code,
+            name_ar, vehicles.id, vehicles.code,
             MIN(serial) as serial_from,
             MAX(serial) as serial_to,
             ROUND(SUM(amount), 2) as sum,
@@ -108,7 +108,7 @@ class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsT
         ->join('drivers', 'drivers.id', '=', 'seats_trip_pos_transactions.driver_id')
         ->join('vehicles', 'vehicles.id', '=', 'seats_trip_pos_transactions.vehicle_id');
 
-        return $vehicles->groupBy('code', 'name_ar')
+        return $vehicles->groupBy('id', 'code', 'name_ar')
           ->orderBy('sum', 'desc')
           ->get();
     }
