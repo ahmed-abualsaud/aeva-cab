@@ -499,6 +499,8 @@ extend type Mutation @guard(with: ["admin", "partner", "manager", "user", "drive
   # Cab Request
   cancelCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@cancel")
+  resetCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest]
+    @field(resolver: "CabRequestResolver@reset")
 }
 
 # User Guard
@@ -919,6 +921,7 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user", "driver"]
 extend type Query @guard(with: ["admin", "user", "driver"]) {
   # Cab Request
   cabRequest(id: ID!): CabRequest @findOrFail
+  pendingCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest] @all(scopes: ["pending"])
 }
 
 #import shared.graphql

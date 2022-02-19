@@ -89,4 +89,10 @@ class CabRequest extends Model
 
         return $query->latest();
     }
+
+    public function scopePending($query, $args)
+    {
+        return $query->where($args['issuer_type'].'_id', $args['issuer_id'])
+            ->whereNotIn('status' , ['SCHEDULED', 'CANCELLED', 'COMPLETED']);
+    }
 }

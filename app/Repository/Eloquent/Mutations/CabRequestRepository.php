@@ -373,6 +373,35 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $request;
     }
 
+    public function reset(array $args)
+    {
+        $requests = $this->model->where($args['issuer_type'].'_id', $args['issuer_id'])
+                    ->where(function ($query) {
+                        $query->where('status', 'SEARCHING')
+                              ->orWhere('status', 'SENDING');
+                    });
+
+        $ret = $requests->get();
+        
+        $payload = [
+            'cancelled' => [
+                'at' => date("Y-m-d H:i:s"),
+                'by' => $args['issuer_type'],
+                'reason' => "Reset Request",
+            ]
+        ];
+
+        foreach( $requests->get()->toArray() as $request)
+        {   $model = with(new CabRequest)->newInstance($request, true);
+            $model->update([
+                'status'  => 'CANCELLED',
+                'history' => array_merge($request['history'], $payload)
+            ]);
+        }
+        
+        return $ret;
+    }
+
     protected function updateRequest($request, $args) 
     {
         $input = Arr::except($args, ['id', 'directive', 'cancelled_by', 'cancel_reason']);

@@ -92,4 +92,24 @@ class SeatsTripPosTransactionRepository extends BaseRepository implements SeatsT
             ->where('vehicle_id', $vehicle_id)
             ->max('serial');
     }
+
+    public function driverReport($args) 
+    {
+        $vehicles = $this->model->selectRaw('
+            name_ar, vehicles.id, vehicles.code,
+            MIN(serial) as serial_from,
+            MAX(serial) as serial_to,
+            ROUND(SUM(amount), 2) as sum,
+            COUNT(seats_trip_pos_transactions.id) as count
+        ')
+        ->where('vehicle_id', $args['vehicle_id'])
+        ->where('seats_trip_pos_transactions.created_at', '>=', $args['date_from'])
+        ->where('seats_trip_pos_transactions.created_at', '<=', $args['date_to'])
+        ->join('drivers', 'drivers.id', '=', 'seats_trip_pos_transactions.driver_id')
+        ->join('vehicles', 'vehicles.id', '=', 'seats_trip_pos_transactions.vehicle_id');
+
+        return $vehicles->groupBy('id', 'code', 'name_ar')
+          ->orderBy('sum', 'desc')
+          ->get();
+    }
 }
