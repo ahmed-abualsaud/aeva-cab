@@ -920,7 +920,7 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user", "driver"]
 # Admin,User,Driver Guard
 extend type Query @guard(with: ["admin", "user", "driver"]) {
   # Cab Request
-  cabRequest(id: ID!): CabRequest @findOrFail
+  cabRequest(id: ID! @eq): CabRequest @findOrFail
   pendingCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest] @all(scopes: ["pending"])
 }
 
