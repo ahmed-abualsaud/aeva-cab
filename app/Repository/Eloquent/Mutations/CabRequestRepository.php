@@ -430,7 +430,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ', [$lng, $lat]
             )
             ->having('distance', '<=', $radius)
-            ->where('status', 'ACTIVE')
+            ->where('cab_status', 'ONLINE')
             ->orderBy('distance','asc')
             ->take(5)
             ->get();
