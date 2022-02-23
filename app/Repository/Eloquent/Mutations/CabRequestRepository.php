@@ -220,7 +220,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $request = $this->updateRequest($request, $args);
 
-        $this->updateDriverStatus($args['driver_id'], false);
+        $this->updateDriverStatus($args['driver_id'], 'RIDING');
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
@@ -313,7 +313,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $request = $this->updateRequest($request, $args);
 
-        $this->updateDriverStatus($request->driver_id, true);
+        $this->updateDriverStatus($request->driver_id, 'ONLINE');
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
@@ -346,7 +346,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $request = $this->updateRequest($request, $args);
 
-        $this->updateDriverStatus($request->driver_id, true);
+        $this->updateDriverStatus($request->driver_id, 'ONLINE');
 
         if ( strtolower($args['cancelled_by']) == 'user' && $request->driver_id) {
 
@@ -430,7 +430,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ', [$lng, $lat]
             )
             ->having('distance', '<=', $radius)
-            ->where('status', true)
+            ->where('cab_status', 'ONLINE')
             ->orderBy('distance','asc')
             ->take(5)
             ->get();

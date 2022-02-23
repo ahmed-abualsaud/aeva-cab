@@ -7,7 +7,7 @@ trait HandleDriverAttributes
 {
     protected function updateDriverStatus($driver_id, $status)
     {
-        Driver::where('id', $driver_id)->update(['status' => $status]);
+        Driver::where('id', $driver_id)->update(['cab_status' => $status]);
     }
 
     protected function driversToken(array $drivers_ids)
