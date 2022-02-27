@@ -516,6 +516,10 @@ extend type Mutation @guard(with: ["user"]) {
   # Cab Request
   createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
     @field(resolver: "CabRequestTransactionResolver@create")
+  
+  # Cab Rating
+  updateCabRating(input: UpdateCabRatingInput! @spread): CabRating
+    @field(resolver: "CabRatingResolver@update")
 }
 
 # Driver Guard
@@ -846,7 +850,11 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user"]) {
   seatsTripRatings(log_id: String! @eq): [SeatsTripRating] @all
   unratedSeatsTrips(user_id: ID!): [SeatsTrip] 
     @all(scopes: ["unrated"], model: "SeatsTripRating")
-
+  
+  # Cab Rating
+  cabRating(request_id: ID! @eq): CabRating @find
+  unratedCabRequests(user_id: ID!): [CabRequest] 
+    @all(scopes: ["unrated"], model: "CabRating")
   
   # Business Trip Followers
   followerBusinessTrips(follower_id: ID!): [BusinessTrip] @all(scopes: ["trip"], model: "App\\Follower")
@@ -972,3 +980,4 @@ extend type Query @guard(with: ["admin", "user", "driver"]) {
 #import follower.graphql
 #import cabRequest.graphql
 #import cabRequestTransaction.graphql
+#import cabRating.graphql

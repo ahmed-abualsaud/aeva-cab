@@ -4,6 +4,7 @@ namespace App\Repository\Eloquent\Mutations;
 
 use App\Driver;
 use App\Vehicle;
+use App\CabRating;
 use App\CabRequest;
 
 use App\Helpers\StaticMapUrl;
@@ -281,7 +282,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $args['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $args);
-
+        $this->createCabRating($request);
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
             ['view' => 'RideStarted', 'request' => $request],
@@ -436,6 +437,16 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ->get();
         
         return $drivers;
+    }
+
+    protected function createCabRating($args) {
+        $input = [
+            'request_id' => $args['id'],
+            'user_id' => $args['user_id'],
+            'driver_id' => $args['driver_id'],
+            'trip_time' => date('Y-m-d H:i:s')
+        ];
+        CabRating::create($input);
     }
 
     protected function isTimeValidated($args)
