@@ -73,7 +73,7 @@ class CabRequest extends Model
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
 
-        return $query;
+        return $query->latest();
     }
 
     public function scopeFilter($query, $args) 
