@@ -1,0 +1,19 @@
+input UpdateCabRatingInput {
+  id: ID
+  request_id: ID
+  user_id: ID
+  driver_id: ID
+  rating: Float
+  trip_time: String
+  comment: String
+}
+
+type CabRating {
+  id: ID
+  request_id: ID
+  user_id: ID
+  driver_id: ID
+  rating: Float
+  trip_time: String
+  comment: String
+}
