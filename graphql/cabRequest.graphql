@@ -24,6 +24,7 @@ type CabRequest {
     user: User @BelongsTo
     driver: Driver @BelongsTo
     vehicle: Vehicle @BelongsTo
+    rating: CabRating @HasOne
     result: DriverVehicle
     status: String
     schedule_time: String

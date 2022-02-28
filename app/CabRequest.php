@@ -32,6 +32,11 @@ class CabRequest extends Model
         return $this->belongsTo(Vehicle::class);
     }
 
+    public function rating()
+    {
+        return $this->hasOne(CabRating::class, 'request_id');
+    }
+
     public function scopeLive($query)
     {
         return $query->where('status', 'STARTED');
