@@ -403,6 +403,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $ret;
     }
 
+    public function updateDriverCabStatus(array $args)
+    {
+        return $this->updateDriverStatus($args['driver_id'], $args['cab_status']);
+    }
+
     protected function updateRequest($request, $args) 
     {
         $input = Arr::except($args, ['id', 'directive', 'cancelled_by', 'cancel_reason']);
