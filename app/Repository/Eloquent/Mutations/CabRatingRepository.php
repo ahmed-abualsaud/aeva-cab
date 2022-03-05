@@ -17,12 +17,17 @@ class CabRatingRepository extends BaseRepository
 
     public function update(array $args)
     {
-        $input = collect($args)->except(['id', 'directive'])->toArray();
+        $input = collect($args)->except(['id', 'request_id', 'directive'])->toArray();
 
-        try {
-            $rating = $this->model->findOrFail($args['id']);
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.rating_not_found'));
+        if (array_key_exists('id', $args) && $args['id'] != null) {
+            try {
+                $rating = $this->model->findOrFail($args['id']);
+            } catch (ModelNotFoundException $e) {
+                throw new \Exception(__('lang.rating_not_found'));
+            }
+        }
+        if (array_key_exists('request_id', $args) && $args['request_id'] != null) {
+            $rating = $this->model->where('request_id', $args['request_id'])->first();
         }
 
         $rating->update($input);
