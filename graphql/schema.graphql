@@ -512,10 +512,6 @@ extend type Mutation @guard(with: ["user"]) {
   # Seats Trip Rating
   updateSeatsTripRating(input: UpdateSeatsTripRatingInput! @spread): SeatsTripRating
     @field(resolver: "SeatsTripRatingResolver@update")
-
-  # Cab Request
-  createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
-    @field(resolver: "CabRequestTransactionResolver@create")
   
   # Cab Rating
   updateCabRating(input: UpdateCabRatingInput! @spread): CabRating
@@ -525,6 +521,8 @@ extend type Mutation @guard(with: ["user"]) {
 # Driver Guard
 extend type Mutation @guard(with: ["driver"]) {
   # Cab Request
+  createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
+    @field(resolver: "CabRequestTransactionResolver@create")
   confirmCabRequestCashPayment(request_id: ID!): Boolean
     @field(resolver: "CabRequestTransactionResolver@confirmCashPayment")
   updateDriverCabStatus(driver_id: ID!, cab_status: String!): Boolean 
