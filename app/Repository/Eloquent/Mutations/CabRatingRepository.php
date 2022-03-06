@@ -17,26 +17,28 @@ class CabRatingRepository extends BaseRepository
 
     public function update(array $args)
     {
-        $input = collect($args)->except(['id', 'request_id', 'directive'])->toArray();
+        $input = collect($args)->except(['id', 'request_id', 'user_id', 'directive'])->toArray();
 
         if (array_key_exists('id', $args) && $args['id'] != null) {
-            try {
-                $rating = $this->model->findOrFail($args['id']);
-            } catch (ModelNotFoundException $e) {
-                throw new \Exception(__('lang.rating_not_found'));
-            }
+            $rating = $this->model->find($args['id']);
         }
         if (array_key_exists('request_id', $args) && $args['request_id'] != null) {
             $rating = $this->model->where('request_id', $args['request_id'])->first();
         }
-
+        if (array_key_exists('user_id', $args) && $args['user_id'] != null) {
+            $rating = $this->model->where('user_id', $args['user_id'])->first();
+        }
+        if (!$rating) {
+            throw new \Exception(__('lang.rating_not_found'));
+        }
         $rating->update($input);
 
-        $avg = $this->model->where('driver_id', $rating->driver_id)
-        ->whereNotNull('rating')->avg('rating');
+        $avgs = $this->model->selectRaw('driver_id, AVG(rating) as rating_avg')
+            ->whereNotNull('rating')->groupBy('driver_id')->get();
 
-        Driver::find($rating->driver_id)->update(['rating' => $avg]);
-
+        foreach ($avgs as $avg) {
+            Driver::find($avg['driver_id'])->update(['rating' => $avg['rating_avg']]);
+        }
         return $rating;
     }
 }
