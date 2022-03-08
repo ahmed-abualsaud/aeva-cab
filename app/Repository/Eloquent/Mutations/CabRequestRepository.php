@@ -111,7 +111,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         SendPushNotification::dispatch(
             $this->driversToken($driversIds),
-            ['view' => 'AcceptRequest', 'request' => $request],
+            ['view' => 'AcceptRequest', 'request_id' => $args['id'], 'request' => $request],
             __('lang.accept_request')
         );
 
@@ -225,7 +225,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
-            ['view' => 'RequestAccepted', 'request' => $request],
+            ['view' => 'RequestAccepted', 'request_id' => $args['id'], 'request' => $request],
             __('lang.request_accepted')
         );
 
@@ -255,7 +255,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
-            ['view' => 'StartRide', 'request' => $request],
+            ['view' => 'StartRide', 'request_id' => $args['id'], 'request' => $request],
             __('lang.start_ride')
         );
 
@@ -285,7 +285,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $this->createCabRating($request);
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
-            ['view' => 'RideStarted', 'request' => $request],
+            ['view' => 'RideStarted', 'request_id' => $args['id'], 'request' => $request],
             __('lang.ride_started')
         );
 
@@ -318,7 +318,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
-            ['view' => 'RideEnded', 'request' => $request],
+            ['view' => 'RideEnded', 'request_id' => $args['id'], 'request' => $request],
             __('lang.ride_ended')
         );
 
@@ -353,7 +353,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
             SendPushNotification::dispatch(
                 $this->driverToken($request->driver_id),
-                ['view' => 'CancelRequest', 'request' => $request],
+                ['view' => 'CancelRequest', 'request_id' => $args['id'], 'request' => $request],
                 __('lang.request_cancelled')
             );
 
@@ -364,7 +364,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
             SendPushNotification::dispatch(
                 $this->userToken($request->user_id),
-                ['view' => 'CancelRequest', 'request' => $request],
+                ['view' => 'CancelRequest', 'request_id' => $args['id'], 'request' => $request],
                 __('lang.request_cancelled'),
             );
 
