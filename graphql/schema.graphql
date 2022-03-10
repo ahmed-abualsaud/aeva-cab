@@ -514,7 +514,7 @@ extend type Mutation @guard(with: ["user"]) {
     @field(resolver: "SeatsTripRatingResolver@update")
   
   # Cab Rating
-  updateCabRating(input: UpdateCabRatingInput! @spread): CabRating
+  updateCabRating(input: UpdateCabRatingInput! @spread): [CabRating]
     @field(resolver: "CabRatingResolver@update")
 }
 

@@ -19,15 +19,14 @@ class CabRatingRepository extends BaseRepository
     {
         $input = collect($args)->except(['id', 'request_id', 'user_id', 'directive'])->toArray();
 
-        if (array_key_exists('id', $args) && $args['id'] != null) {
-            $rating = $this->model->find($args['id']);
-        }
         if (array_key_exists('request_id', $args) && $args['request_id'] != null) {
-            $rating = $this->model->where('request_id', $args['request_id'])->first();
+            $rating = $this->model->where('request_id', $args['request_id']);
+        } else if (array_key_exists('user_id', $args) && $args['user_id'] != null) {
+            $rating = $this->model->where('user_id', $args['user_id']);
+        } else {
+            throw new \Exception(__('lang.rating_not_found'));
         }
-        if (array_key_exists('user_id', $args) && $args['user_id'] != null) {
-            $rating = $this->model->where('user_id', $args['user_id'])->first();
-        }
+
         if (!$rating) {
             throw new \Exception(__('lang.rating_not_found'));
         }
@@ -39,6 +38,7 @@ class CabRatingRepository extends BaseRepository
         foreach ($avgs as $avg) {
             Driver::find($avg['driver_id'])->update(['rating' => $avg['rating_avg']]);
         }
-        return $rating;
+
+        return $rating->get();
     }
 }
