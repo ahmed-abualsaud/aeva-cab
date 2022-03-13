@@ -44,8 +44,13 @@ class CabRequest extends Model
 
     public function scopeTime($query, $args)
     {
+        if (array_key_exists('driver_id', $args) && $args['driver_id']) {
+            $query = $query->where('driver_id', $args['driver_id']);
+        }
+        if (array_key_exists('user_id', $args) && $args['user_id']) {
+            $query = $query->where('user_id', $args['user_id']);
+        }
         if (array_key_exists('time', $args) && $args['time']) {
-            $now = date('Y-m-d H:i:s');
 
             switch($args['time']) {
                 case 'PAST':
@@ -54,9 +59,8 @@ class CabRequest extends Model
                 default:
                     $query = $query->where('status', 'SCHEDULED');
             }
-
-            return $query->latest('schedule_time');
-        }        
+        }
+        return $query->latest();
     }
 
     public function scopeWherePending($query, $user_id)
