@@ -354,29 +354,22 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $this->updateDriverStatus($request->driver_id, 'ONLINE');
 
-        if ( strtolower($args['cancelled_by']) == 'user' && $request->driver_id) {
-
-            SendPushNotification::dispatch(
-                $this->driverToken($request->driver_id),
-                __('lang.request_cancelled_body'),
-                __('lang.request_cancelled'),
-                ['view' => 'CancelRequest', 'id' => $args['id']]
-            );
-
+        if (strtolower($args['cancelled_by']) == 'user' && $request->driver_id) {
+            $token = $this->driverToken($request->driver_id);
             broadcast(new CabRequestCancelled('user', $request));
         }
 
-        if ( strtolower($args['cancelled_by']) == 'driver') {
-
-            SendPushNotification::dispatch(
-                $this->userToken($request->user_id),
-                __('lang.request_cancelled_body'),
-                __('lang.request_cancelled'),
-                ['view' => 'CancelRequest', 'id' => $args['id']]
-            );
-
+        if (strtolower($args['cancelled_by']) == 'driver') {
+            $token = $this->userToken($request->user_id);
             broadcast(new CabRequestCancelled('driver', $request));        
         }
+
+        SendPushNotification::dispatch(
+            $token,
+            __('lang.request_cancelled_body'),
+            __('lang.request_cancelled'),
+            ['view' => 'CancelRequest', 'id' => $args['id']]
+        );
 
         return $request;
     }
