@@ -39,7 +39,7 @@ class CabRequest extends Model
 
     public function scopeLive($query)
     {
-        return $query->where('status', 'STARTED');
+        return $query->whereIn('status', ['ACCEPTED', 'STARTED']);
     }
 
     public function scopeTime($query, $args)
