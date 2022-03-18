@@ -27,6 +27,8 @@ input UpdateDriverInput @validator {
   device_id: String
   partner_id: ID
   code: String
+  latitude: Float
+  longitude: Float
 }
 
 input DriverVehicleInput {
