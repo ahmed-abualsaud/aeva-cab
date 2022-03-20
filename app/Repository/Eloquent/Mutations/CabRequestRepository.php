@@ -28,7 +28,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CabRequestRepository extends BaseRepository implements CabRequestRepositoryInterface
 {
-    use HandleDeviceTokens, HandleDriverAttributes;
+    use HandleDeviceTokens;
+    use HandleDriverAttributes;
 
     /**
     * CabRequest constructor.
@@ -376,31 +377,12 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     public function reset(array $args)
     {
-        $requests = $this->model->where($args['issuer_type'].'_id', $args['issuer_id'])
-                    ->where(function ($query) {
-                        $query->where('status', 'SEARCHING')
-                              ->orWhere('status', 'SENDING');
-                    });
-
-        $ret = $requests->get();
-        
-        $payload = [
-            'cancelled' => [
-                'at' => date("Y-m-d H:i:s"),
-                'by' => $args['issuer_type'],
-                'reason' => "Reset Request",
-            ]
-        ];
-
-        foreach( $requests->get()->toArray() as $request)
-        {   $model = with(new CabRequest)->newInstance($request, true);
-            $model->update([
-                'status'  => 'CANCELLED',
-                'history' => array_merge($request['history'], $payload)
-            ]);
-        }
-        
-        return $ret;
+        return $this->model->where($args['issuer_type'].'_id', $args['issuer_id'])
+            ->where(function ($query) {
+                $query->where('status', 'SEARCHING')
+                        ->orWhere('status', 'SENDING');
+            })
+            ->delete();        
     }
 
     public function updateDriverCabStatus(array $args)

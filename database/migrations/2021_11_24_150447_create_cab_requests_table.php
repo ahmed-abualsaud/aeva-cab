@@ -42,6 +42,7 @@ class CreateCabRequestsTable extends Migration
             $table->double('d_lat', 15, 8);
             $table->double('d_lng', 15, 8);
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
