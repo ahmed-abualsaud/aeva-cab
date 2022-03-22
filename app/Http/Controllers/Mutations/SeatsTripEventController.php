@@ -33,7 +33,23 @@ class SeatsTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->seatsTripEventRepository->ready($request->all());
+        try {
+            $data = $this->seatsTripEventRepository->ready($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Driver is ready to start the trip',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function start(Request $request)
@@ -53,7 +69,23 @@ class SeatsTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->seatsTripEventRepository->start($request->all());
+        try {
+            $data = $this->seatsTripEventRepository->start($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Trip started successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function updateDriverLocation(Request $request)
@@ -72,7 +104,23 @@ class SeatsTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->seatsTripEventRepository->updateDriverLocation($request->all());
+        try {
+            $data = $this->seatsTripEventRepository->updateDriverLocation($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Driver location updated successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function atStation(Request $request)
@@ -96,7 +144,23 @@ class SeatsTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->seatsTripEventRepository->atStation($request->all());
+        try {
+            $data = $this->seatsTripEventRepository->atStation($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Vehicle arrived to the station successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function pickUser(Request $request)
@@ -113,7 +177,23 @@ class SeatsTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->seatsTripEventRepository->pickUser($request->all());
+        try {
+            $data = $this->seatsTripEventRepository->pickUser($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Users picked up successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function dropUser(Request $request)
@@ -137,7 +217,23 @@ class SeatsTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->seatsTripEventRepository->dropUser($request->all());
+        try {
+            $data = $this->seatsTripEventRepository->dropUser($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Users dropped off successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function end(Request $request)
@@ -153,7 +249,23 @@ class SeatsTripEventController
             ];
             return response()->json($response, 400);
         }
-            
-        return $this->seatsTripEventRepository->end($request->all());
+
+        try {
+            $data = $this->seatsTripEventRepository->end($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Trip ended successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 }

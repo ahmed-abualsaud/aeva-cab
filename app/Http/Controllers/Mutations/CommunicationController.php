@@ -39,6 +39,22 @@ class CommunicationController
             return response()->json($response, 400);
         }
 
-        return $this->communicationRepository->sendBusinessTripChatMessage($request->all());
+        try {
+            $data = $this->communicationRepository->sendBusinessTripChatMessage($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Message sent successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 }

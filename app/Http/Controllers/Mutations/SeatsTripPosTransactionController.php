@@ -18,56 +18,58 @@ class SeatsTripPosTransactionController
 
     public function create(Request $request)
     {
-        try {
-            $validator = Validator::make($request->all(),[
-                'partner_id' => ['required'],
-                'driver_id' => ['required'],
-                'vehicle_id' => ['required'],
-                'tickets' => ['required'],
-                'amount' => ['required']
-            ]);
-    
-            if ($validator->fails()) {
-                $response = [
-                    'success' => false,
-                    'message' => $validator->errors()->first(),
-                ];
-                return response()->json($response, 400);
-            }
-    
+        $validator = Validator::make($request->all(),[
+            'partner_id' => ['required'],
+            'driver_id' => ['required'],
+            'vehicle_id' => ['required'],
+            'tickets' => ['required'],
+            'amount' => ['required']
+        ]);
+
+        if ($validator->fails()) {
             $response = [
-                'success' => true,
-                'message' => 'Transaction created successfully',
-                'data' => $this->SeatsTripPosTransactionRepository->create($request->all())
+                'success' => false,
+                'message' => $validator->errors()->first(),
             ];
-    
-            return $response;
+            return response()->json($response, 400);
+        }
+
+        try {
+            $data = $this->SeatsTripPosTransactionRepository->create($request->all());
         } catch (\Exception $e) {
             $response = [
                 'success' => false,
                 'message' => $e->getMessage(),
             ];
-            return response()->json($response, 400);
+            return response()->json($response, 500);
         }
+
+        $response = [
+            'success' => true,
+            'message' => 'Transaction created successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function bulkCreate(Request $request)
     {
         try {
             $this->SeatsTripPosTransactionRepository->bulkCreate($request->all());
-    
-            $response = [
-                'success' => true,
-                'message' => 'Transactions created successfully'
-            ];
-
-            return $response;
         } catch (\Exception $e) {
             $response = [
                 'success' => false,
                 'message' => $e->getMessage(),
             ];
-            return response()->json($response, 400);
+            return response()->json($response, 500);
         }
+
+        $response = [
+            'success' => true,
+            'message' => 'Transactions created successfully'
+        ];
+
+        return $response;
     }
 }

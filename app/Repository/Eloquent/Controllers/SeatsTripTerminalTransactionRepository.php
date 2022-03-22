@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\SeatsTripTerminalTransaction;
 use App\Exports\SeatsTripTerminalTransactionExport;
 use App\Http\Controllers\Controller;
+use App\Exceptions\CustomException;
 
 class SeatsTripTerminalTransactionRepository extends Controller
 {
@@ -35,7 +36,7 @@ class SeatsTripTerminalTransactionRepository extends Controller
             return $this->model->create($data);
             
         } catch (\Exception $e) {
-            //
+            throw new CustomException(__('lang.create_transaction_failed'));
         }
     }
 
