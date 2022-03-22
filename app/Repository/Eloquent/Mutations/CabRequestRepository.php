@@ -28,7 +28,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CabRequestRepository extends BaseRepository implements CabRequestRepositoryInterface
 {
-    use HandleDeviceTokens, HandleDriverAttributes;
+    use HandleDeviceTokens;
+    use HandleDriverAttributes;
 
     /**
     * CabRequest constructor.
@@ -111,8 +112,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         SendPushNotification::dispatch(
             $this->driversToken($driversIds),
-            ['view' => 'AcceptRequest', 'request' => $request],
-            __('lang.accept_request')
+            __('lang.accept_request_body'),
+            __('lang.accept_request'),
+            ['view' => 'AcceptRequest', 'id' => $args['id']]
         );
 
         broadcast(new AcceptCabRequest($driversIds, $request));
@@ -225,8 +227,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
-            ['view' => 'RequestAccepted', 'request' => $request],
-            __('lang.request_accepted')
+            __('lang.request_accepted_body'),
+            __('lang.request_accepted'),
+            ['view' => 'RequestAccepted', 'id' => $args['id']]
         );
 
         broadcast(new CabRequestStatusChanged($request));
@@ -255,8 +258,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
-            ['view' => 'StartRide', 'request' => $request],
-            __('lang.start_ride')
+            __('lang.driver_arrived_body'),
+            __('lang.driver_arrived'),
+            ['view' => 'StartRide', 'id' => $args['id']]
         );
 
         broadcast(new CabRequestStatusChanged($request));
@@ -285,8 +289,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $this->createCabRating($request);
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
-            ['view' => 'RideStarted', 'request' => $request],
-            __('lang.ride_started')
+            __('lang.ride_started_body'),
+            __('lang.ride_started'),
+            ['view' => 'RideStarted', 'id' => $args['id']]
         );
 
         broadcast(new CabRequestStatusChanged($request));
@@ -318,8 +323,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
-            ['view' => 'RideEnded', 'request' => $request],
-            __('lang.ride_ended')
+            __('lang.ride_ended_body'),
+            __('lang.ride_ended'),
+            ['view' => 'RideEnded', 'id' => $args['id']]
         );
 
         broadcast(new CabRequestStatusChanged($request));
@@ -349,58 +355,39 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $this->updateDriverStatus($request->driver_id, 'ONLINE');
 
-        if ( strtolower($args['cancelled_by']) == 'user' && $request->driver_id) {
-
-            SendPushNotification::dispatch(
-                $this->driverToken($request->driver_id),
-                ['view' => 'CancelRequest', 'request' => $request],
-                __('lang.request_cancelled')
-            );
-
+        if (strtolower($args['cancelled_by']) == 'user' && $request->driver_id) {
+            $token = $this->driverToken($request->driver_id);
             broadcast(new CabRequestCancelled('user', $request));
         }
 
-        if ( strtolower($args['cancelled_by']) == 'driver') {
-
-            SendPushNotification::dispatch(
-                $this->userToken($request->user_id),
-                ['view' => 'CancelRequest', 'request' => $request],
-                __('lang.request_cancelled'),
-            );
-
+        if (strtolower($args['cancelled_by']) == 'driver') {
+            $token = $this->userToken($request->user_id);
             broadcast(new CabRequestCancelled('driver', $request));        
         }
+
+        SendPushNotification::dispatch(
+            $token,
+            __('lang.request_cancelled_body'),
+            __('lang.request_cancelled'),
+            ['view' => 'CancelRequest', 'id' => $args['id']]
+        );
 
         return $request;
     }
 
     public function reset(array $args)
     {
-        $requests = $this->model->where($args['issuer_type'].'_id', $args['issuer_id'])
-                    ->where(function ($query) {
-                        $query->where('status', 'SEARCHING')
-                              ->orWhere('status', 'SENDING');
-                    });
+        return $this->model->where($args['issuer_type'].'_id', $args['issuer_id'])
+            ->where(function ($query) {
+                $query->where('status', 'SEARCHING')
+                        ->orWhere('status', 'SENDING');
+            })
+            ->delete();        
+    }
 
-        $ret = $requests->get();
-        
-        $payload = [
-            'cancelled' => [
-                'at' => date("Y-m-d H:i:s"),
-                'by' => $args['issuer_type'],
-                'reason' => "Reset Request",
-            ]
-        ];
-
-        foreach( $requests->get()->toArray() as $request)
-        {   $model = with(new CabRequest)->newInstance($request, true);
-            $model->update([
-                'status'  => 'CANCELLED',
-                'history' => array_merge($request['history'], $payload)
-            ]);
-        }
-        
-        return $ret;
+    public function updateDriverCabStatus(array $args)
+    {
+        return $this->updateDriverStatus($args['driver_id'], $args['cab_status']);
     }
 
     protected function updateRequest($request, $args) 

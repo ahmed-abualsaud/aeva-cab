@@ -37,6 +37,22 @@ class SeatsTripBookingController
             return response()->json($response, 400);
         }
 
-        return $this->seatsTripBookingRepository->update($request->all());
+        try {
+            $data = $this->seatsTripBookingRepository->update($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Updated successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 }

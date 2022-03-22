@@ -499,7 +499,7 @@ extend type Mutation @guard(with: ["admin", "partner", "manager", "user", "drive
   # Cab Request
   cancelCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@cancel")
-  resetCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest]
+  resetCabRequests(issuer_id: ID!, issuer_type: String!): Boolean
     @field(resolver: "CabRequestResolver@reset")
 }
 
@@ -512,21 +512,21 @@ extend type Mutation @guard(with: ["user"]) {
   # Seats Trip Rating
   updateSeatsTripRating(input: UpdateSeatsTripRatingInput! @spread): SeatsTripRating
     @field(resolver: "SeatsTripRatingResolver@update")
-
-  # Cab Request
-  createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
-    @field(resolver: "CabRequestTransactionResolver@create")
   
   # Cab Rating
-  updateCabRating(input: UpdateCabRatingInput! @spread): CabRating
+  updateCabRating(input: UpdateCabRatingInput! @spread): [CabRating]
     @field(resolver: "CabRatingResolver@update")
 }
 
 # Driver Guard
 extend type Mutation @guard(with: ["driver"]) {
   # Cab Request
+  createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
+    @field(resolver: "CabRequestTransactionResolver@create")
   confirmCabRequestCashPayment(request_id: ID!): Boolean
     @field(resolver: "CabRequestTransactionResolver@confirmCashPayment")
+  updateDriverCabStatus(driver_id: ID!, cab_status: String!): Boolean 
+    @field(resolver: "CabRequestResolver@updateDriverCabStatus")
 }
 
 # -- QUERIES --
@@ -762,6 +762,10 @@ extend type Query @guard(with: ["admin", "partner", "manager"]) {
 
   # Payment Categories
   paymentCategories(partner_id: ID @eq): [PaymentCategory] @all
+
+  # Cab Transaction
+  cabRequestTransactionsReport(date_from: String!, date_to: String!): [CabRequestTransactionReport]
+    @field(resolver: "CabRequestTransactionResolver@report")
 }
 
 # Admin,User Guard

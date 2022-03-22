@@ -57,4 +57,9 @@ class CabRequestResolver
     {
         return $this->cabRequestRepository->reset($args);
     }
+
+    public function updateDriverCabStatus($_, array $args)
+    {
+        return $this->cabRequestRepository->updateDriverCabStatus($args);
+    }
 }

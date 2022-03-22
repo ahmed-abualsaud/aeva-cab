@@ -15,3 +15,8 @@ type CabRequestTransaction {
     amount:Float
     payment_method: String
 }
+
+type CabRequestTransactionReport {
+    count:Float
+    sum:Float
+}

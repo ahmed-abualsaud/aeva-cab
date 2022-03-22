@@ -16,7 +16,23 @@ class SeatsTripTerminalTransactionController
 
     public function create(Request $req) 
     {
-        return $this->seatsTripTerminalTransactionRepository->create($req);
+        try {
+            $data = $this->seatsTripTerminalTransactionRepository->create($req);
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Transaction created successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
 }

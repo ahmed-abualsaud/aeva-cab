@@ -19,7 +19,36 @@ class DriverController
 
     public function handleAvatar(Request $request)
     {
-        return $this->driverRepository->handleAvatar($request);
+        $validator = Validator::make($request->all(),[
+            'id' => 'required|numeric',
+            'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            $response = [
+                'success' => false,
+                'message' => $validator->errors()->first(),
+            ];
+            return response()->json($response, 400);
+        }
+
+        try {
+            $data = $this->driverRepository->handleAvatar($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Avatar handled successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function update(Request $request)
@@ -38,7 +67,16 @@ class DriverController
             return response()->json($response, 400);
         }
 
-        $data = $this->driverRepository->update($request->all());
+        try {
+            $data = $this->driverRepository->update($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
         $response = [
             'success' => true,
             'message' => 'Updated successfully',
@@ -98,7 +136,23 @@ class DriverController
             ];
             return response()->json($response, 400);
         }
-            
-        return $this->driverRepository->updatePassword($request->all());
+
+        try {
+            $data = $this->driverRepository->updatePassword($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Password updated successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 }

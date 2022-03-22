@@ -1,5 +1,4 @@
 input UpdateCabRatingInput {
-  id: ID
   request_id: ID
   user_id: ID
   driver_id: ID

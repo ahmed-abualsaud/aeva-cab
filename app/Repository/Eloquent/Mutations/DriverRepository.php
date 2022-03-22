@@ -21,6 +21,21 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         parent::__construct($model);
     }
 
+    public function handleAvatar(array $args)
+    {
+        try {
+            $driver = $this->model->findOrFail($args['id']);
+        } catch (ModelNotFoundException $e) {
+            throw new CustomException(__('lang.driver_not_found'));
+        }
+
+        if ($driver->avatar) $this->deleteOneFile($driver->avatar, 'avatars');
+        $url = $this->uploadOneFile($args['avatar'], 'avatars');
+
+        $driver->update(['avatar' => $url]);
+
+        return $driver;
+    }
 
     public function create(array $args)
     {

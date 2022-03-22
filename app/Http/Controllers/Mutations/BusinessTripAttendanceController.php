@@ -35,7 +35,22 @@ class BusinessTripAttendanceController
             ];
             return response()->json($response, 400);
         }
-            
-        return $this->businessTripAttendanceRepository->create($request->all());
+        try {
+            $data = $this->businessTripAttendanceRepository->create($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Attendance created successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 }

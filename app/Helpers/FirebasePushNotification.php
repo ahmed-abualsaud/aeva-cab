@@ -23,10 +23,11 @@ class FirebasePushNotification
         } else {
             $fields['to'] = $token;
         }
-        
-        if ($data)
-            $fields['data'] = array_merge($fields['data'], $data);
 
+        if ($data) {
+            $fields['data'] = array_merge($fields['data'], $data);
+            $fields['notification'] = array_merge($fields['notification'], $data);
+        }
         $headers = [
             'Authorization: key=' . $API_ACCESS_KEY,
             'Content-Type: application/json'

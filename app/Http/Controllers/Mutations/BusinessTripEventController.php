@@ -34,7 +34,23 @@ class BusinessTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->businessTripEventRepository->ready($request->all());
+        try {
+            $data = $this->businessTripEventRepository->ready($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Driver is ready to start the trip',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function start(Request $request)
@@ -54,7 +70,23 @@ class BusinessTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->businessTripEventRepository->start($request->all());
+        try {
+            $data = $this->businessTripEventRepository->start($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Trip started successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function atStation(Request $request)
@@ -78,7 +110,23 @@ class BusinessTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->businessTripEventRepository->atStation($request->all());
+        try {
+            $data = $this->businessTripEventRepository->atStation($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Vehicle arrived to the station successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function changeAttendanceStatus(Request $request)
@@ -105,7 +153,23 @@ class BusinessTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->businessTripEventRepository->changeAttendanceStatus($request->all());
+        try {
+            $data = $this->businessTripEventRepository->changeAttendanceStatus($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Attendance status changed successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function pickUsers(Request $request)
@@ -129,7 +193,23 @@ class BusinessTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->businessTripEventRepository->pickUsers($request->all());
+        try {
+            $data = $this->businessTripEventRepository->pickUsers($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Users picked up successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function dropUsers(Request $request)
@@ -153,7 +233,23 @@ class BusinessTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->businessTripEventRepository->dropUsers($request->all());
+        try {
+            $data = $this->businessTripEventRepository->dropUsers($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Users dropped off successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function updateDriverLocation(Request $request)
@@ -172,7 +268,23 @@ class BusinessTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->businessTripEventRepository->updateDriverLocation($request->all());
+        try {
+            $data = $this->businessTripEventRepository->updateDriverLocation($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Driver location updated successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 
     public function end(Request $request)
@@ -189,6 +301,22 @@ class BusinessTripEventController
             return response()->json($response, 400);
         }
 
-        return $this->businessTripEventRepository->end($request->all());
+        try {
+            $data = $this->businessTripEventRepository->end($request->all());
+        } catch (\Exception $e) {
+            $response = [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+            return response()->json($response, 500);
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Trip ended successfully',
+            'data' => $data
+        ];
+
+        return $response;
     }
 }
