@@ -20,8 +20,8 @@ class DriverController
     public function handleAvatar(Request $request)
     {
         $validator = Validator::make($request->all(),[
-            'id' => 'required|numeric',
-            'avatar' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'id' => ['required|numeric'],
+            'avatar' => ['required|image|mimes:jpeg,png,jpg|max:2048'],
         ]);
 
         if ($validator->fails()) {
