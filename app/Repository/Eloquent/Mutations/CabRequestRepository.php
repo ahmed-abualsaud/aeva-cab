@@ -7,7 +7,7 @@ use App\Vehicle;
 use App\CabRating;
 use App\CabRequest;
 
-use App\Helpers\StaticMapUrl;
+use App\Helpers\ResizableMapUrl;
 
 use App\Events\AcceptCabRequest;
 use App\Events\CabRequestStatusChanged;
@@ -315,7 +315,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $args['status'] = 'COMPLETED';
         $args['history'] = array_merge($request->history, $payload);
-        $args['map_url'] = StaticMapUrl::generatePolylines($request);
+        $args['map_url'] = ResizableMapUrl::generatePolylines($request);
 
         $request = $this->updateRequest($request, $args);
 

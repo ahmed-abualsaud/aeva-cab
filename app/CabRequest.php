@@ -40,6 +40,11 @@ class CabRequest extends Model
         return $this->hasOne(CabRating::class, 'request_id');
     }
 
+    public function transaction()
+    {
+        return $this->hasOne(CabRequestTransaction::class, 'request_id');
+    }
+
     public function scopeLive($query)
     {
         return $query->whereIn('status', ['ACCEPTED', 'STARTED']);

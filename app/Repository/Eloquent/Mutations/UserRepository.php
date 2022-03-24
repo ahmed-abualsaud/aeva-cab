@@ -9,6 +9,7 @@ use App\Jobs\SendOtp;
 use App\BusinessTripSubscription;
 use Illuminate\Support\Str;
 use App\Traits\HandleUpload;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Vinkla\Hashids\Facades\Hashids;
@@ -27,6 +28,28 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function __construct(User $model)
     {
         parent::__construct($model);
+    }
+
+    public function handleAvatar(array $args)
+    {
+        try {
+            $user = $this->model->findOrFail($args['id']);
+        } catch (ModelNotFoundException $e) {
+            throw new CustomException(__('lang.user_not_found'));
+        }
+
+        if ($user->avatar) $this->deleteOneFile($user->avatar, 'avatars');
+        $url = $this->uploadOneFile($args['avatar'], 'avatars');
+
+        $user->update(['avatar' => $url]);
+
+        return $user;
+    }
+
+    public function getLanguage(Request $request) 
+    {
+        $request->session()->forget('locale');
+        return __('auth.failed');
     }
 
     public function create(array $args)
