@@ -37,7 +37,7 @@ class CabRequestTransactionRepository extends BaseRepository
             case 'WALLET':
                 $this->walletPay($args, $request);
         }
-
+        $request->update(['paid' => true]);
         return $this->model->create($input);
     }
 
@@ -61,13 +61,13 @@ class CabRequestTransactionRepository extends BaseRepository
         if ($extra) {
             $this->updateWallet($args['user_id'], $extra);
         }
-        $request->update(['paid' => true]);
+        //$request->update(['paid' => true]);
     }
 
     protected function walletPay($args, $request)
     {
         $this->updateWallet($args['user_id'], $args['amount']);
-        $request->update(['paid' => true]);
+        //$request->update(['paid' => true]);
     }
 
     protected function updateWallet($user_id, $amount)
