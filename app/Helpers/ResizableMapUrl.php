@@ -8,7 +8,7 @@ class ResizableMapUrl
 
   public static function generatePolylines($value)
   {
-    $url = self::$map."&markers=color:0x9476E0%7C".$value->s_lat.",".$value->s_lng."&markers=color:0x9476E0%7C".$value->d_lat.",".$value->d_lng."&path=color:0x28077A|weight:3|enc:".$value->route_key."&key=".config('custom.google_map_key');
+    $url = self::$map."&markers=icon:https://qruz.blob.core.windows.net/uploads/images/violetdot.png%7Cscale%3A2%7C|".$value->s_lat.",".$value->s_lng."&markers=icon:https://qruz.blob.core.windows.net/uploads/images/reddot.png%7Cscale%3A2%7C|".$value->d_lat.",".$value->d_lng."&path=color:0x28077A|weight:3|enc:".$value->route_key."&key=".config('custom.google_map_key');
 
     return urldecode($url);
   }
