@@ -253,6 +253,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             'signature' => config('custom.otp_signature'),
         ]);
 
+        if (array_key_exists('verify', $args) && $args['verify'] && 
+            $this->model->where('phone', $args['phone'])->exists()) {
+                throw new CustomException( __('lang.user_exists'));        
+        }
+
         SendOtp::dispatch($args['phone'], $message);
 
         return [

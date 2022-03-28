@@ -44,6 +44,7 @@ input UpdateUserInput @validator {
 }
 
 input UserPhoneVerificationInput {
+  verify: Boolean
   phone: String! @rules(apply: ["required"])
 }
 

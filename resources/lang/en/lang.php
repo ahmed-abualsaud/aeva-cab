@@ -120,6 +120,7 @@ return [
     'rating_not_found' => 'Rating not found',
     'trip_schedule_required' => 'Trip schedule required',
     'the_following_already_exists' => 'The following already exists',
+    'user_exists' => 'User already exists',
 
     // ============================== Qruz Cab ==============================
 
