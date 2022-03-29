@@ -2,12 +2,14 @@
 
 namespace App;
 
+use App\Traits\Filterable;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
 class SeatsTripBooking extends Model
 {
 
+    use Filterable;
     use Searchable;
 
     protected $guarded = [];
