@@ -121,9 +121,21 @@ return [
     */
 
     'namespaces' => [
-        'models' => ['App', 'App\\Models'],
-        'queries' => 'App\\GraphQL\\Queries',
-        'mutations' => 'App\\GraphQL\\Mutations',
+        'models' => [
+            'App', 'App\\Models', 
+            'Qruz\\Cab\\Domain\\Models', 
+            'Qruz\\Seats\\Domain\\Models'
+        ],
+        'queries' => [
+            'App\\GraphQL\\Queries', 
+            'Qruz\\Cab\\Application\\GraphQL\\Queries', 
+            'Qruz\\Seats\\Application\\GraphQL\\Queries'
+        ],
+        'mutations' => [
+            'App\\GraphQL\\Mutations', 
+            'Qruz\\Cab\\Application\\GraphQL\\Mutations', 
+            'Qruz\\Seats\\Application\\GraphQL\\Mutations'
+        ],
         'subscriptions' => 'App\\GraphQL\\Subscriptions',
         'interfaces' => 'App\\GraphQL\\Interfaces',
         'unions' => 'App\\GraphQL\\Unions',

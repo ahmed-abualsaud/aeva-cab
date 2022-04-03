@@ -7,7 +7,6 @@ namespace App\Providers;
 use App\GraphQL\Queries\BusinessTripAttendanceResolver;
 use App\GraphQL\Queries\BusinessTripScheduleResolver;
 use App\GraphQL\Queries\DocumentResolver;
-use App\GraphQL\Queries\SeatsTripUserResolver;
 
 # Interfaces
 use App\Repository\EloquentRepositoryInterface; 
@@ -19,12 +18,6 @@ use App\Repository\Queries\NotificationRepositoryInterface;
 use App\Repository\Queries\OndemandRequestRepositoryInterface;
 use App\Repository\Queries\PartnerRepositoryInterface;
 use App\Repository\Queries\PaymentCategoryRepositoryInterface;
-use App\Repository\Queries\SeatsLineStationRepositoryInterface;
-use App\Repository\Queries\SeatsTripAppTransactionRepositoryInterface;
-use App\Repository\Queries\SeatsTripBookingRepositoryInterface;
-use App\Repository\Queries\SeatsTripRepositoryInterface;
-use App\Repository\Queries\SeatsTripTerminalTransactionRepositoryInterface;
-use App\Repository\Queries\SeatsTripPosTransactionRepositoryInterface;
 use App\Repository\Queries\VehicleRepositoryInterface;
 
 # Repositories
@@ -39,13 +32,6 @@ use App\Repository\Eloquent\Queries\NotificationRepository;
 use App\Repository\Eloquent\Queries\OndemandRequestRepository;
 use App\Repository\Eloquent\Queries\PartnerRepository;
 use App\Repository\Eloquent\Queries\PaymentCategoryRepository;
-use App\Repository\Eloquent\Queries\SeatsLineStationRepository;
-use App\Repository\Eloquent\Queries\SeatsTripAppTransactionRepository;
-use App\Repository\Eloquent\Queries\SeatsTripBookingRepository;
-use App\Repository\Eloquent\Queries\SeatsTripRepository;
-use App\Repository\Eloquent\Queries\SeatsTripTerminalTransactionRepository;
-use App\Repository\Eloquent\Queries\SeatsTripPosTransactionRepository;
-use App\Repository\Eloquent\Queries\SeatsTripUserRepository;
 use App\Repository\Eloquent\Queries\VehicleRepository;
 
 # ---------------------------------- MUTATIONS -----------------------------------
@@ -61,8 +47,6 @@ use App\Repository\Mutations\PartnerRepositoryInterface as PartnerRepoInterface;
 use App\Repository\Mutations\ManagerRepositoryInterface;
 use App\Repository\Mutations\PaymentRepositoryInterface;
 use App\Repository\Mutations\PromoCodeRepositoryInterface;
-use App\Repository\Mutations\SeatsLineRepositoryInterface;
-use App\Repository\Mutations\SeatsTripEventRepositoryInterface;
 use App\Repository\Mutations\UserRepositoryInterface;
 
 
@@ -78,8 +62,6 @@ use App\Repository\Eloquent\Mutations\PartnerRepository as PartnerRepo;
 use App\Repository\Eloquent\Mutations\ManagerRepository;
 use App\Repository\Eloquent\Mutations\PaymentRepository;
 use App\Repository\Eloquent\Mutations\PromoCodeRepository;
-use App\Repository\Eloquent\Mutations\SeatsLineRepository;
-use App\Repository\Eloquent\Mutations\SeatsTripEventRepository;
 use App\Repository\Eloquent\Mutations\UserRepository;
 
 use Illuminate\Support\ServiceProvider;
@@ -103,12 +85,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(OndemandRequestRepositoryInterface::class, OndemandRequestRepository::class);
         $this->app->bind(PartnerRepositoryInterface::class, PartnerRepository::class);
         $this->app->bind(PaymentCategoryRepositoryInterface::class, PaymentCategoryRepository::class);
-        $this->app->bind(SeatsLineStationRepositoryInterface::class, SeatsLineStationRepository::class);
-        $this->app->bind(SeatsTripAppTransactionRepositoryInterface::class, SeatsTripAppTransactionRepository::class);
-        $this->app->bind(SeatsTripBookingRepositoryInterface::class, SeatsTripBookingRepository::class);
-        $this->app->bind(SeatsTripRepositoryInterface::class, SeatsTripRepository::class);
-        $this->app->bind(SeatsTripTerminalTransactionRepositoryInterface::class, SeatsTripTerminalTransactionRepository::class);
-        $this->app->bind(SeatsTripPosTransactionRepositoryInterface::class, SeatsTripPosTransactionRepository::class);
         $this->app->bind(VehicleRepositoryInterface::class, VehicleRepository::class);
 
         $this->app->when(BusinessTripAttendanceResolver::class)
@@ -122,10 +98,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->when(DocumentResolver::class)
                   ->needs(MainRepositoryInterface::class)
                   ->give(DocumentRepository::class);
-    
-        $this->app->when(SeatsTripUserResolver::class)
-                  ->needs(MainRepositoryInterface::class)
-                  ->give(SeatsTripUserRepository::class);
 
 
         # ---------------------------------- MUTATIONS -----------------------------------
@@ -141,8 +113,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ManagerRepositoryInterface::class, ManagerRepository::class);
         $this->app->bind(PaymentRepositoryInterface::class, PaymentRepository::class);
         $this->app->bind(PromoCodeRepositoryInterface::class, PromoCodeRepository::class);
-        $this->app->bind(SeatsLineRepositoryInterface::class, SeatsLineRepository::class);
-        $this->app->bind(SeatsTripEventRepositoryInterface::class, SeatsTripEventRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
 
     }

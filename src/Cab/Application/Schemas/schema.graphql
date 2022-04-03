@@ -1,0 +1,113 @@
+# --------------------------------------- Mutations ---------------------------------------
+
+# Admin Guard
+extend type Mutation @guard(with: ["admin"]) {
+  # Cab Request
+  deleteCabRequestTransaction(id: [ID!]!): Boolean
+    @field(resolver: "CabRequestTransactionResolver@destroy")
+}
+
+# User Guard
+extend type Mutation @guard(with: ["user"]) {
+  # Cab Rating
+  updateCabRating(input: UpdateCabRatingInput! @spread): [CabRating]
+    @field(resolver: "CabRatingResolver@update")
+}
+
+# Driver Guard
+extend type Mutation @guard(with: ["driver"]) {
+  # Cab Request
+  createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
+    @field(resolver: "CabRequestTransactionResolver@create")
+  confirmCabRequestCashPayment(request_id: ID!): Boolean
+    @field(resolver: "CabRequestTransactionResolver@confirmCashPayment")
+  updateDriverCabStatus(driver_id: ID!, cab_status: String!): Boolean 
+    @field(resolver: "CabRequestResolver@updateDriverCabStatus")
+}
+
+# Admin,User Guard
+extend type Mutation @guard(with: ["admin", "user"]) {
+  # Cab Request
+  scheduleCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@schedule")
+  searchCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@search")
+  sendCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@send")
+}
+
+# Admin,Driver Guard
+extend type Mutation @guard(with: ["admin", "driver"]) {
+  # Cab Request
+  acceptCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@accept")
+  arrivedCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@arrived")
+  startCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@start")
+  endCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@end")
+}
+
+# Admin,Partner,Manager,User,Driver Guard
+extend type Mutation @guard(with: ["admin", "partner", "manager", "user", "driver"]) {
+  # Cab Request
+  cancelCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@cancel")
+  resetCabRequests(issuer_id: ID!, issuer_type: String!): Boolean
+    @field(resolver: "CabRequestResolver@reset")
+}
+
+# --------------------------------------- QUERIES ---------------------------------------
+
+# Admin Guard
+extend type Query @guard(with: ["admin"]) {
+  # Cab Request
+  cabRequests(status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
+    @paginate(scopes: ["filter", "search"])
+  cabRequestTransactions(period: String, searchFor: String, searchQuery: String): [CabRequestTransaction]
+    @paginate(scopes: ["filter", "search"])
+}
+
+# User Guard
+extend type Query @guard(with: ["user"]) {
+  # Cab Request
+  userCabRequests(user_id: ID!, time: String): [CabRequest] 
+    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
+  userLiveCabRequest(user_id: ID! @eq): CabRequest @first(scopes: ["live"])
+  userScheduledCabRequests(user_id: ID! @eq): [CabRequest] @all(scopes: ["whereScheduled"])
+}
+
+# Driver Guard
+extend type Query @guard(with: ["driver"]) {
+  # Cab Request
+  driverCabRequests(driver_id: ID!, time: String): [CabRequest] 
+    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
+  driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["live"])
+}
+
+# Admin,Partner,Manager Guard
+extend type Query @guard(with: ["admin", "partner", "manager"]) {
+  # Cab Transaction
+  cabRequestTransactionsReport(date_from: String!, date_to: String!): [CabRequestTransactionReport]
+    @field(resolver: "CabRequestTransactionResolver@report")
+}
+
+# Admin,Partner,Manager,User Guard
+extend type Query @guard(with: ["admin", "partner", "manager", "user"]) {
+  # Cab Rating
+  cabRating(request_id: ID! @eq): CabRating @find
+  unratedCabRequests(user_id: ID!): [CabRequest] 
+    @all(scopes: ["unrated"], model: "CabRating")
+}
+
+# Admin,User,Driver Guard
+extend type Query @guard(with: ["admin", "user", "driver"]) {
+  # Cab Request
+  cabRequest(id: ID! @eq): CabRequest @findOrFail
+  pendingCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest] @all(scopes: ["pending"])
+}
+
+#import cabRating.graphql
+#import cabRequest.graphql
+#import cabRequestTransaction.graphql

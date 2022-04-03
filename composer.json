@@ -53,7 +53,9 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
+            "App\\": "app/",
+            "Qruz\\Cab\\": "src/Cab",
+            "Qruz\\Seats\\": "src/Seats"
         },
         "classmap": [
             "database/seeds",

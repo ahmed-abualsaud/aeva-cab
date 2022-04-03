@@ -13,9 +13,6 @@ Route::group(['namespace' => 'Mutations'], function () {
     Route::post('/user/create', 'UserController@create');
     Route::post('/user/login', 'UserController@login');
     Route::post('/user/social/login', 'UserController@socialLogin');
-
-    Route::post('/seats/trip/terminal/transaction', 'SeatsTripTerminalTransactionController@create');
-
 });
 /*
 |--------------------------------------------------------------------------
@@ -45,18 +42,8 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Mutations'], func
     Route::post('/business/trip/event/drop/users', 'BusinessTripEventController@dropUsers');
     Route::post('/business/trip/event/update/driver/location', 'BusinessTripEventController@updateDriverLocation');
     Route::post('/business/trip/event/change/attendance/status','BusinessTripEventController@changeAttendanceStatus');
-    Route::post('/seats/trip/event/ready', 'SeatsTripEventController@ready');
-    Route::post('/seats/trip/event/start', 'SeatsTripEventController@start');
-    Route::post('/seats/trip/event/end', 'SeatsTripEventController@end');
-    Route::post('/seats/trip/event/at/station', 'SeatsTripEventController@atStation');
-    Route::post('/seats/trip/event/pick/users', 'SeatsTripEventController@pickUser');
-    Route::post('/seats/trip/event/drop/users', 'SeatsTripEventController@dropUser');
-    Route::post('/seats/trip/event/update/driver/location','SeatsTripEventController@updateDriverLocation');
     Route::post('/business/trip/attendance/create', 'BusinessTripAttendanceController@create');
     Route::post('/send/message', 'CommunicationController@sendBusinessTripChatMessage');
-    Route::post('/seats/trip/booking/update', 'SeatsTripBookingController@update');
-    Route::post('/seats/trip/pos/transaction', 'SeatsTripPosTransactionController@create');
-    Route::post('/seats/trip/pos/bulk-transaction', 'SeatsTripPosTransactionController@bulkCreate');
 });
 
 /*
@@ -69,16 +56,10 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Queries'], functi
     Route::get('/driver/auth', 'DriverController@auth');
     Route::get('/driver/{id}', 'DriverController@show');
     Route::get('/business/trip/{id}', 'BusinessTripController@show');
-    Route::get('/driver/{driver_id}/seats/trips', 'SeatsTripController@driverSeatsTrips');
     Route::get('/business/trip/{trip_id}/stations', 'BusinessTripController@businessTripStations');
-    Route::get('/seats/trip/line/{line_id}/stations', 'SeatsTripController@seatsTripLineStations');
     Route::get('/driver/{driver_id}/business/trips/schedule','BusinessTripController@driverBusinessTripsSchedule');
     Route::get('/driver/{driver_id}/live/business/trips', 'BusinessTripController@driverLiveBusinessTrips');
-    Route::get('/driver/{driver_id}/seats/trips/schedule', 'SeatsTripController@driverSeatsTripsSchedule');
-    Route::get('/driver/{driver_id}/live/seats/trips', 'SeatsTripController@driverLiveSeatsTrips');
-    Route::get('/seats/trip/{trip_id}/users', 'SeatsTripUserController@users');
     Route::get('/business/trip/{trip_id}/attendance', 'BusinessTripAttendanceController@businessTripAttendance');
-    Route::get('/seats/trip/{trip_id}/app/transactions/detail' ,'SeatsTripController@seatsTripAppTransactionsDetail');
     Route::get('/user/{user_id}/business/trip/chat/messages', 'CommunicationController@businessTripChatMessages');
     Route::get('/business/trip/private/chat/users', 'CommunicationController@businessTripPrivateChatUsers');
     Route::get('/business/trip/{trip_id}/subscribers', 'BusinessTripSubscriptionController@businessTripSubscribers');
@@ -88,26 +69,4 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Queries'], functi
     Route::get('/user/{user_id}/device/id', 'UserController@userDeviceId');
     Route::get('/driver/{driver_id}/device/id', 'DriverController@driverDeviceId');
     Route::get('/drivers/device/id', 'DriverController@driversDeviceId');
-    Route::get('/seats/trip/pos/vehicle/{vehicle_id}/max-serial', 'SeatsTripPosTransactionController@vehicleMaxSerial');
-});
-
-/*
-|--------------------------------------------------------------------------
-| Queries auth:admin,partner
-|--------------------------------------------------------------------------
-|
-*/
-Route::group(['middleware' => ['auth:admin,partner'], 'namespace' => 'Queries'], function () {
-    Route::get('/seats/trip/terminal/transactions/export', 'SeatsTripTerminalTransactionController@export');
-    Route::get('/seats/trip/pos/transactions/export', 'SeatsTripPosTransactionController@export');
-});
-
-/*
-|--------------------------------------------------------------------------
-| Queries auth:manager
-|--------------------------------------------------------------------------
-|
-*/
-Route::group(['middleware' => ['auth:manager'], 'namespace' => 'Queries'], function () {
-    Route::get('/seats/trip/driver/pos/transactions/report', 'SeatsTripPosTransactionController@driverReport');
 });

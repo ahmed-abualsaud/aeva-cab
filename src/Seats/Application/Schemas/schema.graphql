@@ -1,0 +1,195 @@
+# --------------------------------------- Mutations ---------------------------------------
+
+# Admin,Partner,Manager Guard
+extend type Mutation @guard(with: ["admin", "partner", "manager"]) {
+  # Seats Trip Event
+  deleteSeatsTripEvent(log_id: [String!]!): Boolean
+    @field(resolver: "SeatsTripEventResolver@destroy")
+
+  # Seats Trip
+  createSeatsTrip(input: CreateSeatsTripInput! @spread): SeatsTrip 
+    @field(resolver: "SeatsTripResolver@create")
+  copySeatsTrip(input: CopySeatsTripInput! @spread): SeatsTrip 
+    @field(resolver: "SeatsTripResolver@copy")
+  updateSeatsTrip(input: UpdateSeatsTripInput! @spread): SeatsTrip
+    @field(resolver: "SeatsTripResolver@update")
+  deleteSeatsTrip(id: ID!): SeatsTrip @delete
+
+  # Seats Lines
+  createSeatsLine(input: CreateSeatsLineInput! @spread): SeatsLine @create
+  copySeatsLine(input: CopySeatsTripInput! @spread): SeatsLine 
+    @field(resolver: "SeatsLineResolver@copy")
+  updateSeatsLine(input: UpdateSeatsLineInput! @spread): SeatsLine @update
+  updateSeatsLineRoute(input: UpdateLineRouteInput! @spread): SeatsLine 
+    @field(resolver: "SeatsLineResolver@updateRoute")
+  deleteSeatsLine(id: ID!): SeatsLine @delete
+
+  # Seats Trip Station
+  createSeatsLineStation(input: CreateSeatsLineStationInput! @spread): SeatsLineStation @create
+  updateSeatsLineStation(input: UpdateSeatsLineStationInput! @spread): SeatsLineStation @update
+  deleteSeatsLineStation(id: ID!): SeatsLineStation @delete
+
+  # Seats Trip Booking
+  deleteSeatsTripBooking(id: [ID!]!): Boolean
+    @field(resolver: "SeatsTripBookingResolver@destroy")
+
+  # Seats Trip Transaction
+  deleteSeatsTripAppTransaction(id: [ID!]!): Boolean
+    @field(resolver: "SeatsTripAppTransactionResolver@destroy")
+
+  # Seats Trip Terminal Transaction
+  updateSeatsTripTerminalTransaction(input: UpdateSeatsTripTerminalTransactionInput! @spread): SeatsTripTerminalTransaction @update
+  deleteSeatsTripTerminalTransaction(id: ID!): SeatsTripTerminalTransaction @delete
+
+  # Seats Trip POS Transaction
+  updateSeatsTripPosTransaction(input: UpdateSeatsTripTerminalTransactionInput! @spread): SeatsTripPosTransaction @update
+  deleteSeatsTripPosTransaction(id: ID!): SeatsTripPosTransaction @delete
+}
+
+# Admin,User Guard
+extend type Mutation @guard(with: ["admin", "user"]) {
+  # Seats Trip Booking
+  createSeatsTripBooking(input: CreateSeatsTripBookingInput! @spread): SeatsTripBooking
+    @field(resolver: "SeatsTripBookingResolver@create")
+  
+  # Seats Trip Transaction
+  createSeatsTripAppTransaction(input: CreateSeatsTripAppTransactionInput! @spread): Boolean
+    @field(resolver: "SeatsTripAppTransactionResolver@create")
+}
+
+# Admin,Driver Guard
+extend type Mutation @guard(with: ["admin", "driver"]) {
+  # Seats Trip Event
+  readySeatsTrip(input: ReadyTripInput! @spread): SeatsTrip
+    @field(resolver: "SeatsTripEventResolver@ready")
+  startSeatsTrip(input: StartTripInput! @spread): SeatsTrip 
+    @field(resolver: "SeatsTripEventResolver@start")
+  updateSeatsTripDriverLocation(input: UpdateTripDriverLocationInput! @spread): Boolean 
+    @field(resolver: "SeatsTripEventResolver@updateDriverLocation")
+  atSeatsTripStation(input: AtTripStationInput! @spread): Boolean 
+    @field(resolver: "SeatsTripEventResolver@atStation")
+  pickSeatsTripUser(input: PickSeatsTripUserInput! @spread): Boolean 
+    @field(resolver: "SeatsTripEventResolver@pickUser")
+  dropSeatsTripUser(input: DropSeatsTripUserInput! @spread): Boolean 
+    @field(resolver: "SeatsTripEventResolver@dropUser")
+}
+
+# Admin,Partner,Manager,Driver Guard
+extend type Mutation @guard(with: ["admin", "partner", "manager", "driver"]) {
+  # Seats Trip Event
+  endSeatsTrip(input: EndTripInput! @spread): Boolean
+    @field(resolver: "SeatsTripEventResolver@end")
+}
+
+# Admin,Partner,Manager,User,Driver Guard
+extend type Mutation @guard(with: ["admin", "partner", "manager", "user", "driver"]) {
+  # Seats
+  updateSeatsTripBooking(input: UpdateSeatsTripBookingInput! @spread): SeatsTripBooking
+    @field(resolver: "SeatsTripBookingResolver@update")
+}
+
+# User Guard
+extend type Mutation @guard(with: ["user"]) {
+  # Seats Trip Rating
+  updateSeatsTripRating(input: UpdateSeatsTripRatingInput! @spread): SeatsTripRating
+    @field(resolver: "SeatsTripRatingResolver@update")
+}
+
+# --------------------------------------- QUERIES ---------------------------------------
+
+# Admin,Partner,Manager Guard
+extend type Query @guard(with: ["admin", "partner", "manager"]) {
+  # Seats Trip
+  seatsTrips(partner_id: ID, searchFor: String, searchQuery: String): [SeatsTrip] 
+    @paginate(scopes: ["partner", "search"])
+  liveSeatsTrips(partner_id: ID): [SeatsTrip] 
+    @all(scopes: ["live", "partner"])
+  unreadySeatsTrips(partner_id: ID): [SeatsTrip] 
+    @all(scopes: ["unReady", "partner"])
+  
+  # Seats Trip Event
+  seatsTripEvents(searchFor: String, searchQuery: String, partner_id: ID, trip_id: ID, period: String): [SeatsTripEvent] @paginate(scopes: ["trip", "partner", "search", "filter"], defaultCount: 50)
+
+  # Seats Lines
+  seatsLines(partner_id: ID, searchFor: String, searchQuery: String): [SeatsLine] 
+    @paginate(scopes: ["partner", "search"])
+  seatsLine(id: ID! @eq): SeatsLine @findOrFail
+  partnerSeatsLines(partner_id: ID! @eq): [SeatsLine] @all
+
+  # Seats Trip Transaction
+  seatsTripAppTransactions(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String): [SeatsTripAppTransaction]
+    @paginate(scopes: ["partner", "trip", "period", "search"])
+  seatsTripTerminalTransactions(partner_id: ID, terminal_id: ID, period: String, searchFor: String, searchQuery: String): [SeatsTripTerminalTransaction]
+    @paginate(scopes: ["partner", "terminal", "period", "search"])
+  seatsTripTerminalTransactionsVehiclesStats(partner_id: ID, period: String): [SeatsTripTransactionVehiclesStats]
+    @field(resolver: "SeatsTripTerminalTransactionResolver@vehiclesStats")
+  seatsTripTerminalTransactionsTimeStats(partner_id: ID, terminal_id: ID, period: String, scope: String): [SeatsTripTransactionTimeStats]
+    @field(resolver: "SeatsTripTerminalTransactionResolver@timeStats")
+  seatsTripPosTransactions(partner_id: ID, period: String, searchFor: String, searchQuery: String): [SeatsTripPosTransaction]
+    @paginate(scopes: ["partner", "period", "search"], defaultCount: 50)
+  seatsTripPosTransactionsVehiclesStats(partner_id: ID, period: String): [SeatsTripTransactionVehiclesStats]
+    @field(resolver: "SeatsTripPosTransactionResolver@vehiclesStats")
+  seatsTripPosTransactionsTimeStats(partner_id: ID, vehicle_id: ID, period: String, scope: String): [SeatsTripTransactionTimeStats]
+    @field(resolver: "SeatsTripPosTransactionResolver@timeStats")
+
+  # Seats Trip Booking
+  seatsTripBookings(partner_id: ID, trip_id: ID, searchFor: String, searchQuery: String, period: String, status: String): [SeatsTripBooking]
+    @paginate(scopes: ["partner", "trip", "period", "status", "search"])
+}
+
+# Admin,Partner,Manager,User Guard
+extend type Query @guard(with: ["admin", "partner", "manager", "user"]) {
+  # User
+  userLiveSeatsTrips(user_id: ID!): [SeatsTrip]
+    @field(resolver: "SeatsTripResolver@userLiveTrips")
+
+  # Seats Trip
+  seatsNearbyStations(plat: String!, plng: String!, dlat: String!, dlng: String!, day: String!): 
+    [SeatsNearbyStation] 
+    @paginate(builder: "Qruz\\Seats\\Application\\GraphQL\\Queries\\SeatsLineStationResolver@nearby", type: SIMPLE, defaultCount: 10)
+    @cache(maxAge: 300)
+  seatsTripBooking(id: ID! @eq): SeatsTripBooking @find
+  userSeatsTripBookings(user_id: ID! @eq, time: String!): [SeatsTripBooking] 
+    @paginate(scopes: ["pickupTime"] type: SIMPLE, defaultCount: 10)
+  preSeatsTripBooking(pickup_id: ID!, dropoff_id: ID!): PreSeatsTripBooking
+    @field(resolver: "SeatsTripBookingResolver@pre")
+
+  # Seats Trip Rating
+  seatsTripRatings(log_id: String! @eq): [SeatsTripRating] @all
+  unratedSeatsTrips(user_id: ID!): [SeatsTrip] 
+    @all(scopes: ["unrated"], model: "SeatsTripRating")
+
+  # Seats Lines
+  seatsRoutes(zone_id: ID): [SeatsLine] 
+    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["zone"])
+  seatsLineStations(line_id: ID! @eq): [SeatsLineStation] @all
+  seatsLineStationsTrips(line_id: ID!, pickup_id: ID!, dropoff_id: ID!, day: String!): [SeatsNearbyStation]
+    @field(resolver: "SeatsTripResolver@seatsLineStationsTrips")
+}
+
+# Admin,Partner,Manager,Driver Guard
+extend type Query @guard(with: ["admin", "partner", "manager", "driver"]) {
+  # Driver
+  driverSeatsTrips(driver_id: ID! @eq): [SeatsTrip] @all
+  driverLiveSeatsTrips(driver_id: ID!): [SeatsTrip]
+    @field(resolver: "SeatsTripResolver@driverLiveTrips")
+  driverSeatsTripSchedule(driver_id: ID!, day: String!): [SeatsTrip]
+    @field(resolver: "SeatsTripResolver@driverTrips")
+}
+
+# Admin,Partner,Manager,User,Driver Guard
+extend type Query @guard(with: ["admin", "partner", "manager", "user", "driver"]) {
+  # Seats Trip
+  seatsTrip(id: ID @eq): SeatsTrip @findOrFail
+  seatsTripUsers(trip_id: ID!, trip_time: String!, status: String!, station_id: ID): 
+    [SeatsTripBookedUser] @field(resolver: "SeatsTripUserResolver")
+  seatsTripAppTransactionsDetail(trip_id: ID! @eq, trip_time: String! @eq): [SeatsTripAppTransaction] @all
+}
+
+#import seatsTrip.graphql
+#import seatsLine.graphql
+#import seatsLineStation.graphql
+#import seatsTripBooking.graphql
+#import seatsTripTransaction.graphql
+#import seatsTripEvent.graphql
+#import seatsTripRating.graphql

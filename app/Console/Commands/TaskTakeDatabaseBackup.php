@@ -2,11 +2,13 @@
 
 namespace App\Console\Commands;
 
+use Carbon\Carbon;
+
 use Illuminate\Http\File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
-use App\SeatsTripTerminalTransaction;
-use Carbon\Carbon;
+
+use Qruz\Seats\Domain\Models\SeatsTripTerminalTransaction;
 
 class TaskTakeDatabaseBackup extends Command
 {
