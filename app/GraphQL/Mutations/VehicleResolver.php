@@ -33,4 +33,9 @@ class VehicleResolver
     {
         return $this->vehicleRepository->update($args);
     }
+
+    public function activateVehicle($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        return $this->vehicleRepository->activateVehicle($args);
+    }
 }

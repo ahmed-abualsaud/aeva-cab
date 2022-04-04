@@ -317,7 +317,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
 }
 
 # Admin,Driver Guard
-extend type Mutation @guard(with: ["admin", "driver"]) {
+extend type Mutation {#@guard(with: ["admin", "driver"]) {
   # Business Trip Event
   readyBusinessTrip(input: ReadyTripInput! @spread): BusinessTrip
     @field(resolver: "BusinessTripEventResolver@ready")
@@ -331,6 +331,10 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
     @field(resolver: "BusinessTripEventResolver@pickUsers")
   dropBusinessTripUsers(input: SelectBusinessTripUsersInput! @spread): Boolean
     @field(resolver: "BusinessTripEventResolver@dropUsers")
+  
+  # Vehicle 
+  activateDriverVehicle(driver_id: ID!, vehicle_id: ID!): Vehicle
+    @field(resolver: "VehicleResolver@activateVehicle")
 }
 
 # Admin,Partner,Manager,User Guard
@@ -676,6 +680,8 @@ extend type Query @guard(with: ["admin", "partner", "manager", "driver"]) {
   driverBusinessTripSchedule(driver_id: ID!, day: String!): [BusinessTrip]
     @field(resolver: "BusinessTripResolver@driverTrips")
   driverBusinessTrips(driver_id: ID! @eq): [BusinessTrip] @all
+  driverActiveVehicle(driver_id: ID!): Vehicle 
+    @field(resolver: "VehicleResolver@activeVehicle")
 }
 
 # Admin,Partner,Manager,User,Driver Guard

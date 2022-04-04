@@ -200,6 +200,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ->join('car_models', 'car_models.id', '=', 'vehicles.car_model_id')
             ->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
             ->whereIn('driver_vehicles.driver_id', Arr::pluck($drivers, 'driver_id'))
+            ->where('driver_vehicles.active', true)
             ->get();
 
         return ['drivers' => $drivers, 'vehicles' => $vehicles];

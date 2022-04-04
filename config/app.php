@@ -176,7 +176,10 @@ return [
         App\Providers\HorizonServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\RepositoryServiceProvider::class,
-        
+
+        /*
+         * Modules Service Providers...
+         */
         Qruz\Cab\Providers\CabServiceProvider::class,
         Qruz\Seats\Providers\SeatsServiceProvider::class,
 

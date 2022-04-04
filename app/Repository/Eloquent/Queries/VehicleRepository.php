@@ -2,6 +2,7 @@
 
 namespace App\Repository\Eloquent\Queries;
 
+use App\Vehicle;
 use App\CarModel;
 use App\Repository\Queries\VehicleRepositoryInterface;
 use App\Repository\Eloquent\BaseRepository;
@@ -27,5 +28,13 @@ class VehicleRepository extends BaseRepository implements VehicleRepositoryInter
             ->get();
 
         return $models;
+    }
+
+    public function activeVehicle(array $args) 
+    {   
+        return Vehicle::join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
+            ->where('driver_vehicles.driver_id', $args['driver_id'])
+            ->where('driver_vehicles.active', true)
+            ->first();
     }
 }

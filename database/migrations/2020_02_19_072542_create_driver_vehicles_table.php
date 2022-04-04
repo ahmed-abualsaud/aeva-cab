@@ -16,6 +16,7 @@ class CreateDriverVehiclesTable extends Migration
         Schema::create('driver_vehicles', function (Blueprint $table) {
             $table->unsignedBigInteger('driver_id');
             $table->unsignedBigInteger('vehicle_id');
+            $table->boolean('active')->default(false);
 
             $table->primary(['driver_id', 'vehicle_id']);
 

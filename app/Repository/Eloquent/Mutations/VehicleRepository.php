@@ -2,10 +2,12 @@
 
 namespace App\Repository\Eloquent\Mutations;
 
-use \App\Vehicle;
-use \App\Traits\HandleUpload;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Vehicle;
+use App\Traits\HandleUpload;
 use App\Repository\Eloquent\BaseRepository;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class VehicleRepository extends BaseRepository
 {
@@ -49,5 +51,19 @@ class VehicleRepository extends BaseRepository
         $vehicle->update($input);
 
         return $vehicle;
+    }
+
+    public function activateVehicle(array $args) {
+        DB::table('driver_vehicles')
+            ->where('driver_vehicles.driver_id', $args['driver_id'])
+            ->where('active', true)
+            ->update(['active' => false]);
+
+        $vehicle = $this->model->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
+        ->where('driver_vehicles.driver_id', $args['driver_id'])
+        ->where('driver_vehicles.vehicle_id', $args['vehicle_id']);
+
+        $vehicle->update(['active' => true]);
+        return $vehicle->first();
     }
 }

@@ -21,4 +21,13 @@ class VehicleResolver
     {
         return $this->vehicleRepository->typeModels($args);
     }
+
+    /**
+     * @param  null  $_
+     * @param  array<string, mixed>  $args
+     */
+    public function activeVehicle($_, array $args)
+    {
+        return $this->vehicleRepository->activeVehicle($args);
+    }
 }
