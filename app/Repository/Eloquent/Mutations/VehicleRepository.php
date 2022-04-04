@@ -53,17 +53,22 @@ class VehicleRepository extends BaseRepository
         return $vehicle;
     }
 
-    public function activateVehicle(array $args) {
-        DB::table('driver_vehicles')
-            ->where('driver_vehicles.driver_id', $args['driver_id'])
-            ->where('active', true)
-            ->update(['active' => false]);
-
+    public function activateVehicle(array $args) 
+    {
         $vehicle = $this->model->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
         ->where('driver_vehicles.driver_id', $args['driver_id'])
         ->where('driver_vehicles.vehicle_id', $args['vehicle_id']);
 
-        $vehicle->update(['active' => true]);
-        return $vehicle->first();
+        $ret = $vehicle->first();
+        if ($ret) {
+            DB::table('driver_vehicles')
+                ->where('driver_vehicles.driver_id', $args['driver_id'])
+                ->where('active', true)
+                ->update(['active' => false]);
+
+            $vehicle->update(['active' => true]);
+        }
+
+        return $ret;
     }
 }
