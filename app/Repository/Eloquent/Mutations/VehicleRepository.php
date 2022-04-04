@@ -56,8 +56,8 @@ class VehicleRepository extends BaseRepository
     public function activateVehicle(array $args) 
     {
         $vehicle = $this->model->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
-        ->where('driver_vehicles.driver_id', $args['driver_id'])
-        ->where('driver_vehicles.vehicle_id', $args['vehicle_id']);
+            ->where('driver_vehicles.driver_id', $args['driver_id'])
+            ->where('driver_vehicles.vehicle_id', $args['vehicle_id']);
 
         $ret = $vehicle->first();
         if ($ret) {
