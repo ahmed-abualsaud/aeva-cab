@@ -9,14 +9,14 @@ input CabRequestTransactionInput {
 
 type CabRequestTransaction {
     id: ID
-    user_id: ID
-    driver_id: ID
+    user: User @BelongsTo
+    driver: Driver @BelongsTo
     request_id: ID
     amount:Float
     payment_method: String
 }
 
 type CabRequestTransactionReport {
-    count:Float
-    sum:Float
+    count: Float
+    sum: Float
 }
