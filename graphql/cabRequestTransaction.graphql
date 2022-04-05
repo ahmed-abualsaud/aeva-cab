@@ -14,6 +14,7 @@ type CabRequestTransaction {
     request_id: ID
     amount:Float
     payment_method: String
+    created_at: String
 }
 
 type CabRequestTransactionReport {
