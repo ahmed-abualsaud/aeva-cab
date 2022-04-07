@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\CAb\Domain\Models;
+namespace Qruz\Cab\Domain\Models;
 
 use App\PartnerUser;
 use App\Traits\Searchable;
