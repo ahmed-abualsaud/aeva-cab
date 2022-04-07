@@ -12,8 +12,8 @@ trait HandleUpload
         try {
             $fileHash = str_replace('.' . $file->extension(), '', $file->hashName());
             $fileName = $fileHash . '.' . $file->getClientOriginalExtension();
-            $uploadedFile = Storage::disk('azure')->putFileAs($folder, $file, $fileName);
-            $url = config('custom.azure_storage_url') . '/' . $uploadedFile;
+            $uploadedFile = Storage::disk('s3')->putFileAs($folder, $file, $fileName);
+            $url = Storage::disk('s3')->url($uploadedFile);
         } catch(\Exception $e) {
             throw new \Exception(__('lang.upload_file_failed'));
         }
@@ -25,8 +25,8 @@ trait HandleUpload
     {
         try {
             $fileName = explode($folder.'/', $file)[1];
-            $exists = Storage::disk('azure')->exists($folder.'/'.$fileName);
-            if ($exists) Storage::disk('azure')->delete($folder.'/'.$fileName);
+            $exists = Storage::disk('s3')->exists($folder.'/'.$fileName);
+            if ($exists) Storage::disk('s3')->delete($folder.'/'.$fileName);
         } catch(\Exception $e) {
             // Do nothing. Simply, file does not exist.
         }

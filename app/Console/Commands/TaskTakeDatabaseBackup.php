@@ -65,7 +65,7 @@ class TaskTakeDatabaseBackup extends Command
 
         system($executeCmd);
 
-        Storage::disk('azure')->putFileAs('backups', new File($dbPath), $fileName);
+        Storage::disk('s3')->putFileAs('backups', new File($dbPath), $fileName);
 
         SeatsTripTerminalTransaction::where('created_at', '<', Carbon::now()->subMonth(2))->delete();
 

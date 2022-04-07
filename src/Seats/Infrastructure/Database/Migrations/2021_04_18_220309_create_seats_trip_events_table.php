@@ -17,7 +17,7 @@ class CreateSeatsTripEventsTable extends Migration
             $table->uuid('log_id');
             $table->unsignedBigInteger('trip_id');
             $table->unsignedBigInteger('driver_id');
-            $table->unsignedBigInteger('vehicle_id');
+            $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->dateTime('trip_time');
             $table->json('content');
             $table->text('map_url')->nullable();

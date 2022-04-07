@@ -19,8 +19,10 @@
         "laravel/socialite": "^5.2",
         "laravel/tinker": "^2.6",
         "laravel/ui": "^3.3",
+        "laravel/vapor-core": "^2.21",
+        "laravel/vapor-ui": "^1.5",
+        "league/flysystem-aws-s3-v3": "~1.0",
         "maatwebsite/excel": "^3.1",
-        "matthewbdaly/laravel-azure-storage": "^1.3",
         "mll-lab/graphql-php-scalars": "^4",
         "mll-lab/laravel-graphql-playground": "^2.0",
         "nuwave/lighthouse": "^5.8",
@@ -79,6 +81,9 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vapor-ui:publish --ansi"
         ]
     }
 }
