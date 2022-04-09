@@ -67,10 +67,10 @@ type PermissionAction {
 type TransactionStats {
   count: Int
   sum: Float
-  transactions: [TransactionsGroup]
+  transactions: [chartObject]
 }
 
-type TransactionsGroup {
-  date: String
-  sum: Float
+type chartObject {
+  x: String
+  y: Float
 }
