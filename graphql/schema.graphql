@@ -597,6 +597,8 @@ type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["filter", "search"])
   cabRequestTransactions(period: String, searchFor: String, searchQuery: String): [CabRequestTransaction]
     @paginate(scopes: ["filter", "search"])
+  cabRequestTransactionsStats(period: String): TransactionStats
+    @field(resolver: "CabRequestTransactionResolver@stats")
 }
 
 # Partner Guard
@@ -762,10 +764,6 @@ extend type Query @guard(with: ["admin", "partner", "manager"]) {
 
   # Payment Categories
   paymentCategories(partner_id: ID @eq): [PaymentCategory] @all
-
-  # Cab Transaction
-  cabRequestTransactionsReport(date_from: String!, date_to: String!): [CabRequestTransactionReport]
-    @field(resolver: "CabRequestTransactionResolver@report")
 }
 
 # Admin,User Guard

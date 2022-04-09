@@ -63,3 +63,14 @@ type PermissionAction {
   read: Boolean
   write: Boolean
 }
+
+type TransactionStats {
+  count: Int
+  sum: Float
+  transactions: [TransactionsGroup]
+}
+
+type TransactionsGroup {
+  date: String
+  sum: Float
+}
