@@ -1,6 +1,7 @@
 <?php
 
 namespace Qruz\Cab\Domain\Models;
+
 use App\User;
 use App\Driver;
 
