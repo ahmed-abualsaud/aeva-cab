@@ -2,6 +2,8 @@
 
 namespace Qruz\Cab\Domain\Repository\Eloquent\Queries;
 
+use App\Traits\Filterable;
+
 use Qruz\Cab\Domain\Models\CabRequestTransaction;
 
 use Qruz\Cab\Domain\Repository\Eloquent\BaseRepository;
@@ -12,19 +14,37 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CabRequestTransactionRepository extends BaseRepository
 {
+    use Filterable;
+    
     public function __construct(CabRequestTransaction $model)
     {
         parent::__construct($model);
     }
 
-    public function report($args) 
+    public function stats(array $args)
     {
-        $report = $this->model->selectRaw('
-            ROUND(SUM(amount), 2) as sum,
-            COUNT(id) as count
-        ')
-        ->where('created_at', '>=', $args['date_from'])
-        ->where('created_at', '<=', $args['date_to']);
-        return $report->orderBy('sum', 'desc')->get();
+        $transactions = $this->model->query();
+
+        $transactionGroup = $this->model->selectRaw('
+            DATE_FORMAT(created_at, "%d %b %Y") as x,
+            ROUND(SUM(amount), 2) as y
+        ');
+
+        if (array_key_exists('period', $args) && $args['period']) {
+            $transactions = $this->dateFilter($args['period'], $transactions, 'created_at');
+            $transactionGroup = $this->dateFilter($args['period'], $transactionGroup, 'created_at');
+        }
+
+        $transactionCount = $transactions->count();
+        $transactionSum = $transactions->sum('amount');
+        $transactionGroup = $transactionGroup->groupBy('x')->get();
+
+        $response = [
+            'count' => $transactionCount,
+            'sum' => round($transactionSum, 2),
+            'transactions' => $transactionGroup
+        ];
+
+        return $response;
     }
 }

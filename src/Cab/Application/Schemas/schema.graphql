@@ -63,16 +63,18 @@ extend type Mutation @guard(with: ["admin", "partner", "manager", "user", "drive
 # Admin Guard
 extend type Query @guard(with: ["admin"]) {
   # Cab Request
-  cabRequests(status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
+  cabRequests(driver_id: ID, user_id: ID, status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
     @paginate(scopes: ["filter", "search"])
   cabRequestTransactions(period: String, searchFor: String, searchQuery: String): [CabRequestTransaction]
     @paginate(scopes: ["filter", "search"])
+  cabRequestTransactionsStats(period: String): TransactionStats
+    @field(resolver: "CabRequestTransactionResolver@stats")
 }
 
 # User Guard
 extend type Query @guard(with: ["user"]) {
   # Cab Request
-  userCabRequests(user_id: ID!, time: String): [CabRequest] 
+  userCabRequests(user_id: ID! @eq, time: String): [CabRequest] 
     @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
   userLiveCabRequest(user_id: ID! @eq): CabRequest @first(scopes: ["live"])
   userScheduledCabRequests(user_id: ID! @eq): [CabRequest] @all(scopes: ["whereScheduled"])
@@ -81,16 +83,9 @@ extend type Query @guard(with: ["user"]) {
 # Driver Guard
 extend type Query @guard(with: ["driver"]) {
   # Cab Request
-  driverCabRequests(driver_id: ID!, time: String): [CabRequest] 
+  driverCabRequests(driver_id: ID! @eq, time: String): [CabRequest] 
     @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
   driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["live"])
-}
-
-# Admin,Partner,Manager Guard
-extend type Query @guard(with: ["admin", "partner", "manager"]) {
-  # Cab Transaction
-  cabRequestTransactionsReport(date_from: String!, date_to: String!): [CabRequestTransactionReport]
-    @field(resolver: "CabRequestTransactionResolver@report")
 }
 
 # Admin,Partner,Manager,User Guard

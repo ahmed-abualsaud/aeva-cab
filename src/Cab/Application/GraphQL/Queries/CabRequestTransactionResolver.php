@@ -13,8 +13,8 @@ class CabRequestTransactionResolver
         $this->cabRequestTransactionRepository = $cabRequestTransactionRepository;
     }
 
-    public function report($_, array $args)
+    public function stats($_, array $args)
     {
-        return $this->cabRequestTransactionRepository->report($args);
+        return $this->cabRequestTransactionRepository->stats($args);
     }
 }
