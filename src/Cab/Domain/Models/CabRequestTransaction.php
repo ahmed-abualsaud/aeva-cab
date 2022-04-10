@@ -1,6 +1,8 @@
 <?php
 
 namespace Qruz\Cab\Domain\Models;
+use App\User;
+use App\Driver;
 
 use App\Traits\Filterable;
 use App\Traits\Searchable;
