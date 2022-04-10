@@ -58,7 +58,7 @@ return [
 
         'user' => [
             'driver' => 'jwt',
-            'provider' => 'cached-users',
+            'provider' => 'users',
         ],
 
         'driver' => [
@@ -103,7 +103,7 @@ return [
 
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model' => Qruz\Cab\Domain\Models\User::class,
         ],
 
         'drivers' => [
@@ -128,7 +128,7 @@ return [
 
         'cached-users' => [
             'driver' => 'cached-user',
-            'model' => App\User::class,
+            'model' => Qruz\Cab\Domain\Models\User::class,
         ],
 
         'cached-drivers' => [

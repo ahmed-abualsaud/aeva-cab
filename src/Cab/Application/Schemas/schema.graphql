@@ -8,7 +8,7 @@ extend type Mutation @guard(with: ["admin"]) {
 }
 
 # User Guard
-extend type Mutation @guard(with: ["user"]) {
+extend type Mutation {#@guard(with: ["user"]) {
   # Cab Rating
   updateCabRating(input: UpdateCabRatingInput! @spread): [CabRating]
     @field(resolver: "CabRatingResolver@update")
@@ -26,7 +26,7 @@ extend type Mutation @guard(with: ["driver"]) {
 }
 
 # Admin,User Guard
-extend type Mutation @guard(with: ["admin", "user"]) {
+extend type Mutation @guard(with: ["admin"]) {
   # Cab Request
   scheduleCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@schedule")
@@ -34,7 +34,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "CabRequestResolver@search")
   sendCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@send")
-}
+} #eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvZ3JhcGhxbCIsImlhdCI6MTY0MDc5NDAyNSwibmJmIjoxNjQwNzk0MDI1LCJqdGkiOiJYMTlhSVZRU3p2MVQxbmE5Iiwic3ViIjoxLCJwcnYiOiJjZjI4NGMyYjFlMDZmMzNjMjZiZDU3OTc1NjZkOWZkNzRiZTExYmY1In0.8F3CoQvohzzR8og_2zqpPhnQjV6tfLoJkDHS_DIdEC4
 
 # Admin,Driver Guard
 extend type Mutation @guard(with: ["admin", "driver"]) {
@@ -50,7 +50,7 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
 }
 
 # Admin,Partner,Manager,User,Driver Guard
-extend type Mutation @guard(with: ["admin", "partner", "manager", "user", "driver"]) {
+extend type Mutation @guard(with: ["admin", "partner", "manager", "driver"]) {
   # Cab Request
   cancelCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@cancel")
@@ -70,7 +70,7 @@ extend type Query @guard(with: ["admin"]) {
 }
 
 # User Guard
-extend type Query @guard(with: ["user"]) {
+extend type Query {#@guard(with: ["user"]) {
   # Cab Request
   userCabRequests(user_id: ID!, time: String): [CabRequest] 
     @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
@@ -94,7 +94,7 @@ extend type Query @guard(with: ["admin", "partner", "manager"]) {
 }
 
 # Admin,Partner,Manager,User Guard
-extend type Query @guard(with: ["admin", "partner", "manager", "user"]) {
+extend type Query @guard(with: ["admin", "partner", "manager"]) {
   # Cab Rating
   cabRating(request_id: ID! @eq): CabRating @find
   unratedCabRequests(user_id: ID!): [CabRequest] 
@@ -102,12 +102,13 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user"]) {
 }
 
 # Admin,User,Driver Guard
-extend type Query @guard(with: ["admin", "user", "driver"]) {
+extend type Query @guard(with: ["admin", "driver"]) {
   # Cab Request
   cabRequest(id: ID! @eq): CabRequest @findOrFail
   pendingCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest] @all(scopes: ["pending"])
 }
 
+#import cabUser.graphql
 #import cabRating.graphql
 #import cabRequest.graphql
 #import cabRequestTransaction.graphql

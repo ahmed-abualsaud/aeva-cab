@@ -1,0 +1,21 @@
+type CabUser {
+  id: ID
+  first_name: String
+  last_name: String
+  full_name: String
+  pin_code: String
+  email: String
+  phone: String
+  image: String
+  is_active: Boolean
+  verification: String
+  id_number: Float
+  front_national_id: String
+  back_national_id: String
+  selfie_your_id: String
+  wallet: Float
+  device_id: String
+  deleted_at: String
+  created_at: String
+  updated_at: String
+}

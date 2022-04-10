@@ -1,23 +1,23 @@
 input CabRequestTransactionInput {
-    user_id: ID!
-    driver_id: ID!
-    request_id: ID!
-    amount:Float!
-    paid:Float
-    payment_method: String!
+  user_id: ID!
+  driver_id: ID!
+  request_id: ID!
+  amount:Float!
+  paid:Float
+  payment_method: String!
 }
 
 type CabRequestTransaction {
-    id: ID
-    user: User @BelongsTo
-    driver: Driver @BelongsTo
-    request_id: ID
-    amount:Float
-    payment_method: String
-    created_at: String
+  id: ID
+  request: CabRequest @BelongsTo
+  user: CabUser @BelongsTo(relation: "user")
+  driver: Driver @BelongsTo
+  amount:Float
+  payment_method: String
+  created_at: String
 }
 
 type CabRequestTransactionReport {
-    count: Float
-    sum: Float
+  count: Float
+  sum: Float
 }

@@ -22,7 +22,6 @@ class CreateCabRequestTransactionsTable extends Migration
             $table->enum('payment_method', ['CASH', 'CARD', 'WALLET']);
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
             $table->foreign('request_id')->references('id')->on('cab_requests')->onDelete('cascade');
             

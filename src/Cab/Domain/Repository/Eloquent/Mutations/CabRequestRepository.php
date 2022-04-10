@@ -10,11 +10,12 @@ use App\Helpers\ResizableMapUrl;
 use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
 
-use App\Traits\HandleDeviceTokens;
 use App\Traits\HandleDriverAttributes;
 
 use Qruz\Cab\Domain\Models\CabRating;
 use Qruz\Cab\Domain\Models\CabRequest;
+
+use Qruz\Cab\Domain\Traits\HandleDeviceTokens;
 
 use Qruz\Cab\Domain\Events\AcceptCabRequest;
 use Qruz\Cab\Domain\Events\CabRequestCancelled;

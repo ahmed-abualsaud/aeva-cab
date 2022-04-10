@@ -19,6 +19,8 @@ class User extends Authenticatable implements JWTSubject
     
     protected $guarded = [];
 
+    protected $connection = 'mysql2';
+
     protected $hidden = ['password'];
 
     /**
@@ -71,76 +73,12 @@ class User extends Authenticatable implements JWTSubject
         return $query->latest();
     }
 
-    public function scopeAssignedOrNot($query, $args) 
-    {
-        if ($args['assigned']) {
-            return $query->whereIn('id', PartnerUser::getIds($args));
-        } else {
-            return $query->whereNotIn('id', PartnerUser::getIds($args));
-        }
-    }
-
-    public function scopeAssigned($query, $args) 
-    {
-        return $query->whereIn('id', PartnerUser::getIds($args));
-    }
-
-    public function scopeNotAssigned($query, $args) 
-    {
-        return $query->whereNotIn('id', PartnerUser::getIds($args));
-    }
-
-    public function scopeUnsubscribed($query, $args) 
-    {
-        $businessTripUsers = BusinessTripSubscription::select('user_id')
-            ->where('trip_id', $args['trip_id']);
-
-        $query->select('id', 'name', 'avatar', 'phone');
-
-        if (array_key_exists('partner_id', $args) && $args['partner_id']) {
-            $query->join('partner_users', 'users.id', '=', 'partner_users.user_id')
-                ->where('partner_users.partner_id', $args['partner_id'])
-                ->whereNotIn('partner_users.user_id', $businessTripUsers);
-        } else {
-            $query->whereNotIn('id', $businessTripUsers);
-        }
-
-        return $query;
-    }
-
-    public static function updateSecondaryNumber(string $no)
-    {
-        try {
-            auth('user')
-                ->userOrFail()
-                ->update(['secondary_no' => $no]);
-        } catch (UserNotDefinedException $e) {
-            //
-        }
-    }
-
     public function scopeUpdateWallet($query, $user_id, $balance)
     {
         Cache::forget('user.'.$user_id);
 
         return $query->where('id', $user_id)
-            ->decrement('wallet_balance', $balance);
-    }
-
-    public function scopeUpdateInsurance($query, $user_id, $balance)
-    {
-        Cache::forget('user.'.$user_id);
-
-        return $query->where('id', $user_id)
-            ->decrement('insurance_balance', $balance);
-    }
-
-    public function scopeUpdateNfcBalance($query, $user_id, $balance)
-    {
-        Cache::forget('user.'.$user_id);
-
-        return $query->where('id', $user_id)
-            ->decrement('nfc_balance', $balance);
+            ->decrement('wallet', $balance);
     }
 }
  

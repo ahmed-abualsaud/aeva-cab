@@ -9,9 +9,9 @@ input UpdateCabRatingInput {
 
 type CabRating {
   id: ID
-  request_id: ID
-  user_id: ID
-  driver_id: ID
+  request: CabRequest @BelongsTo
+  user: CabUser @BelongsTo(relation: "user")
+  driver: Driver @BelongsTo
   rating: Float
   trip_time: String
   comment: String

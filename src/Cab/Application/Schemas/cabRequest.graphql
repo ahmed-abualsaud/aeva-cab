@@ -1,47 +1,47 @@
 input CabRequestInput {
-    id: ID
-    user_id: ID
-    user_name: String
-    driver_id: ID
-    vehicle_id: ID
-    car_type: String
-    cancelled_by: String
-    cancel_reason: String
-    schedule_time: String
-    distance: Float
-    total_eta: Float
-    route_key: String
-    s_address: String
-    s_lat: Float
-    s_lng: Float
-    d_address: String
-    d_lat: Float
-    d_lng: Float
+  id: ID
+  user_id: ID
+  user_name: String
+  driver_id: ID
+  vehicle_id: ID
+  car_type: String
+  cancelled_by: String
+  cancel_reason: String
+  schedule_time: String
+  distance: Float
+  total_eta: Float
+  route_key: String
+  s_address: String
+  s_lat: Float
+  s_lng: Float
+  d_address: String
+  d_lat: Float
+  d_lng: Float
 }
 
 type CabRequest {
-    id: ID
-    user: User @BelongsTo
-    driver: Driver @BelongsTo
-    vehicle: Vehicle @BelongsTo
-    rating: CabRating @HasOne
-    transaction: CabRequestTransaction @HasOne
-    result: DriverVehicle
-    status: String
-    schedule_time: String
-    next_free_time: String
-    paid: Boolean
-    costs: Float
-    payment_method: String
-    history: CabRequestHistory
-    map_url: String
-    s_address: String
-    s_lat: Float
-    s_lng: Float
-    d_address: String
-    d_lat: Float
-    d_lng: Float
-    created_at: String
+  id: ID
+  user: CabUser @BelongsTo(relation: "user")
+  driver: Driver @BelongsTo
+  vehicle: Vehicle @BelongsTo
+  rating: CabRating @HasOne
+  transaction: CabRequestTransaction @HasOne
+  result: DriverVehicle
+  status: String
+  schedule_time: String
+  next_free_time: String
+  paid: Boolean
+  costs: Float
+  payment_method: String
+  history: CabRequestHistory
+  map_url: String
+  s_address: String
+  s_lat: Float
+  s_lng: Float
+  d_address: String
+  d_lat: Float
+  d_lng: Float
+  created_at: String
 }
 
 type CabRequestHistory {

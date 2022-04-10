@@ -2,7 +2,6 @@
 
 namespace Qruz\Cab\Domain\Models;
 
-use App\User;
 use App\Driver;
 use App\Vehicle;
 
@@ -26,27 +25,27 @@ class CabRequest extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->setConnection('mysql2')->belongsTo(User::class);
     }
 
     public function driver()
     {
-        return $this->belongsTo(Driver::class);
+        return $this->setConnection('mysql')->belongsTo(Driver::class);
     }
 
     public function vehicle()
     {
-        return $this->belongsTo(Vehicle::class);
+        return $this->setConnection('mysql')->belongsTo(Vehicle::class);
     }
 
     public function rating()
     {
-        return $this->hasOne(CabRating::class, 'request_id');
+        return $this->setConnection('mysql')->hasOne(CabRating::class, 'request_id');
     }
 
     public function transaction()
     {
-        return $this->hasOne(CabRequestTransaction::class, 'request_id');
+        return $this->setConnection('mysql')->hasOne(CabRequestTransaction::class, 'request_id');
     }
 
     public function scopeLive($query)

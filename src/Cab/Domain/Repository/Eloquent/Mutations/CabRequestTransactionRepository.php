@@ -2,10 +2,9 @@
 
 namespace Qruz\Cab\Domain\Repository\Eloquent\Mutations;
 
-use App\User;
-
 use App\Exceptions\CustomException;
 
+use Qruz\Cab\Domain\Models\User;
 use Qruz\Cab\Domain\Models\CabRequest;
 use Qruz\Cab\Domain\Models\CabRequestTransaction;
 
@@ -81,9 +80,9 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.user_not_found'));
         }
 
-        if ( $user->wallet_balance < $amount ) {
+        if ( $user->wallet < $amount ) {
             throw new CustomException(__('lang.insufficient_balance'));
         }
-        $user->updateWallet($user_id, $amount);
+        //$user->updateWallet($user_id, $amount);
     }
 }

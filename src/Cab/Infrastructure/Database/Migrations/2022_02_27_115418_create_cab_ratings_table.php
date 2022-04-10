@@ -15,9 +15,9 @@ class CreateCabRatingsTable extends Migration
     {
         Schema::create('cab_ratings', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('request_id');
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('driver_id');
+            $table->unsignedBigInteger('request_id');
             $table->dateTime('trip_time');
             $table->decimal('rating', 4, 2)->nullable();
             $table->string('comment')->nullable();
@@ -26,9 +26,8 @@ class CreateCabRatingsTable extends Migration
             $table->index('request_id');
             $table->index(['user_id', 'request_id']);
             
-            $table->foreign('request_id')->references('id')->on('cab_requests')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
+            $table->foreign('request_id')->references('id')->on('cab_requests')->onDelete('cascade');
         });
     }
 

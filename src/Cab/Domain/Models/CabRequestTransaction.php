@@ -2,8 +2,11 @@
 
 namespace Qruz\Cab\Domain\Models;
 
+use App\Driver;
+
 use App\Traits\Filterable;
 use App\Traits\Searchable;
+
 use Illuminate\Database\Eloquent\Model;
 
 class CabRequestTransaction extends Model
@@ -15,12 +18,17 @@ class CabRequestTransaction extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->setConnection('mysql2')->belongsTo(User::class);
     }
 
     public function driver()
     {
-        return $this->belongsTo(Driver::class);
+        return $this->setConnection('mysql')->belongsTo(Driver::class);
+    }
+
+    public function request()
+    {
+        return $this->setConnection('mysql')->belongsTo(CabRequest::class);
     }
 
     public function scopeSearch($query, $args) 

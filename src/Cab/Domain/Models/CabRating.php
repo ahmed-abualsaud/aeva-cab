@@ -2,11 +2,28 @@
 
 namespace Qruz\Cab\Domain\Models;
 
+use App\Driver;
+
 use Illuminate\Database\Eloquent\Model;
 
 class CabRating extends Model
 {
     protected $guarded = [];
+
+    public function user()
+    {
+        return $this->setConnection('mysql2')->belongsTo(User::class);
+    }
+
+    public function driver()
+    {
+        return $this->setConnection('mysql')->belongsTo(Driver::class);
+    }
+
+    public function request()
+    {
+        return $this->setConnection('mysql')->belongsTo(CabRequest::class);
+    }
 
     public function scopeUnrated($query, $args) 
     {
