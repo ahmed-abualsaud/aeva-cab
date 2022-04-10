@@ -17,7 +17,8 @@ type CabRequestTransaction {
   created_at: String
 }
 
-type CabRequestTransactionReport {
-  count: Float
+type TransactionStats {
+  count: Int
   sum: Float
+  transactions: [chartObject]
 }

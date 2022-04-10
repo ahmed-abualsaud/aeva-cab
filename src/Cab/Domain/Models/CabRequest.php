@@ -55,14 +55,7 @@ class CabRequest extends Model
 
     public function scopeTime($query, $args)
     {
-        if (array_key_exists('driver_id', $args) && $args['driver_id']) {
-            $query = $query->where('driver_id', $args['driver_id']);
-        }
-        if (array_key_exists('user_id', $args) && $args['user_id']) {
-            $query = $query->where('user_id', $args['user_id']);
-        }
         if (array_key_exists('time', $args) && $args['time']) {
-
             switch($args['time']) {
                 case 'PAST':
                     $query = $query->where('status', '<>', 'SCHEDULED');
@@ -71,6 +64,7 @@ class CabRequest extends Model
                     $query = $query->where('status', 'SCHEDULED');
             }
         }
+        
         return $query->latest();
     }
 
@@ -98,6 +92,13 @@ class CabRequest extends Model
 
     public function scopeFilter($query, $args) 
     {
+        if (array_key_exists('driver_id', $args) && $args['driver_id']) {
+            $query = $query->where('driver_id', $args['driver_id']);
+        }
+
+        if (array_key_exists('user_id', $args) && $args['user_id']) {
+            $query = $query->where('user_id', $args['user_id']);
+        }
         
         if (array_key_exists('status', $args) && $args['status']) {
             $query = $query->where('status', $args['status']);

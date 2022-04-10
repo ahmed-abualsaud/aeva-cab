@@ -48,13 +48,6 @@ type SeatsTripTerminalTransaction {
   created_at: String
 }
 
-type SeatsTripTransactionStats {
-  count: Int
-  sum: Float
-  avg: Float
-  transactions: [TransactionsGroup]
-}
-
 type SeatsTripTransactionVehiclesStats {
   license_plate: String
   code: String
@@ -66,10 +59,5 @@ type SeatsTripTransactionVehiclesStats {
 type SeatsTripTransactionTimeStats {
   time: String
   count: Int
-  sum: Float
-}
-
-type TransactionsGroup {
-  date: String
   sum: Float
 }

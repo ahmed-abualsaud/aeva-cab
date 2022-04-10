@@ -63,3 +63,8 @@ type PermissionAction {
   read: Boolean
   write: Boolean
 }
+
+type chartObject {
+  x: String
+  y: Float
+}
