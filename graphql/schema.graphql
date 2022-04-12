@@ -37,7 +37,7 @@ type Mutation {
 }
 
 # Admin Guard
-extend type Mutation @guard(with: ["admin"]) {
+extend type Mutation {#@guard(with: ["admin"]) {
   # Fleet
   createFleet(input: CreateFleetInput! @spread): Fleet
     @field(resolver: "FleetResolver@create")
@@ -83,6 +83,9 @@ extend type Mutation @guard(with: ["admin"]) {
   updateCarType(input: UpdateCarTypeInput! @spread): CarType 
     @field(resolver: "CarTypeResolver@update")
   deleteCarType(id: ID!): CarType @delete
+  updateSurgeFactor(surge_factor: Float!): Boolean
+    @field(resolver: "CarTypeResolver@updateSurgeFactor")
+
 
   # Partner
   createPartner(input: CreatePartnerInput! @spread): Partner

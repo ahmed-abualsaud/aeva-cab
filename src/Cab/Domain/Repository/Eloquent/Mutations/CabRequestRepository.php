@@ -4,6 +4,7 @@ namespace Qruz\Cab\Domain\Repository\Eloquent\Mutations;
 
 use App\Driver;
 use App\Vehicle;
+use App\CarType;
 
 use App\Helpers\ResizableMapUrl;
 
@@ -152,12 +153,13 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     protected function searchNewRequest(array $args) 
     {
-        $input = Arr::except($args, ['directive', 'user_name', 'distance']);
+        $input = Arr::except($args, ['directive', 'user_name', 'distance', 'duration']);
         $result = $this->checkPendingAndGetDrivers($args);
 
         $payload = [
             'summary' => [
-                'distance' => $args['distance']
+                'distance' => $args['distance'],
+                'duration' => $args['duration']
             ],
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
@@ -190,13 +192,15 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         $vehicles = Vehicle::selectRaw('
+            driver_vehicles.vehicle_id,
             driver_vehicles.driver_id,
             car_models.name car_model,
+            car_types.id as car_type_id,
             car_types.name as car_type,
-            (car_types.fixed  + (car_types.price * ?) / 1000) as price,
+            (car_types.base_fare  + ((car_types.distance_price * ?) / 1000) + ((car_types.duration_price * car_types.surge_factor * ?) / 60)) as price,
             vehicles.license_plate as license,
             vehicles.photo'
-            , [$args['distance']])
+            , [$args['distance'], $args['duration']])
             ->join('car_types', 'car_types.id', '=', 'vehicles.car_type_id')
             ->join('car_models', 'car_models.id', '=', 'vehicles.car_model_id')
             ->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
@@ -223,6 +227,14 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $args['status'] = 'ACCEPTED';
         $args['history'] = array_merge($request->history, $payload);
+
+        if ( !array_key_exists('vehicle_id', $args) || $args['vehicle_id'] == null ) {
+            $vehicles = $request->history['searching']['result']['vehicles'];
+            $vehicle = Arr::where($vehicles, function ($value, $key) use ($args){
+                return $value['driver_id'] == $args['driver_id'];
+            });
+            $args['vehicle_id'] = $vehicle[0]['vehicle_id'];
+        }
 
         $request = $this->updateRequest($request, $args);
 
@@ -316,6 +328,16 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
+        $vehicles = $request->history['searching']['result']['vehicles'];
+        $vehicle = Arr::where($vehicles, function ($value, $key) use ($request){
+            return $value['driver_id'] == $request->driver_id;
+        });
+
+        $args['costs'] = CarType::selectRaw(
+            '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60)) as costs'
+            , [$args['distance'], $args['duration']])
+            ->where('id', $vehicle[0]['car_type_id'])->first()->costs;
+
         $args['status'] = 'COMPLETED';
         $args['history'] = array_merge($request->history, $payload);
         $args['map_url'] = ResizableMapUrl::generatePolylines($request);
@@ -397,7 +419,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     protected function updateRequest($request, $args) 
     {
-        $input = Arr::except($args, ['id', 'directive', 'cancelled_by', 'cancel_reason']);
+        $input = Arr::except($args, ['id', 'directive', 'cancelled_by', 'cancel_reason', 'distance', 'duration']);
 
         $request->update($input);
 

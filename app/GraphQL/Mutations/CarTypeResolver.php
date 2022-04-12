@@ -33,4 +33,9 @@ class CarTypeResolver
     {
         return $this->carTypeRepository->update($args);
     }
+
+    public function updateSurgeFactor($rootValue, array $args, GraphQLContext $context, ResolveInfo $resolveInfo)
+    {
+        return $this->carTypeRepository->updateSurgeFactor($args);
+    }
 }

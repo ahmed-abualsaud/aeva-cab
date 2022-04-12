@@ -4,10 +4,10 @@ namespace App\Repository\Eloquent\Mutations;
 
 use App\CarType;
 use App\Traits\HandleUpload;
-use GraphQL\Type\Definition\ResolveInfo;
-use Nuwave\Lighthouse\Support\Contracts\GraphQLContext;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repository\Eloquent\BaseRepository;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CarTypeRepository extends BaseRepository
 {
@@ -52,4 +52,10 @@ class CarTypeRepository extends BaseRepository
 
         return $carType;
     }
+
+    public function updateSurgeFactor(array $args) 
+    {
+        return DB::table('car_types')->update(['surge_factor' => $args['surge_factor']]);
+    }
+
 }

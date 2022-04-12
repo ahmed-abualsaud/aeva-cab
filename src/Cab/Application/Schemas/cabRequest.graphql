@@ -9,6 +9,7 @@ input CabRequestInput {
   cancel_reason: String
   schedule_time: String
   distance: Float
+  duration: Float
   total_eta: Float
   route_key: String
   s_address: String
@@ -85,8 +86,10 @@ type DriverObj {
 
 type VehicleObj {
   driver_id: ID
+  vehicle_id: ID
   car_model: String
   car_type: String
+  car_type_id: ID
   license: String
   photo: String
   price: Float

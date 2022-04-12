@@ -1,9 +1,11 @@
 input CreateCarTypeInput {
   name: String! @rules(apply: ["required", "unique:car_types,name"])
   seats: Int! @rules(apply: ["required"])
-  fixed: Float! @rules(apply: ["required"])
-  price: Float! @rules(apply: ["required"])
-  distance: Int! @rules(apply: ["required"])
+  base_fare: Float! @rules(apply: ["required"])
+  distance_price: Float! @rules(apply: ["required"])
+  duration_price: Float! @rules(apply: ["required"])
+  surge_factor: Float! @rules(apply: ["required"])
+  min_distance: Int! @rules(apply: ["required"])
   photo: Upload
   ondemand: Boolean
   order: Int! @rules(apply: ["required"])
@@ -13,9 +15,11 @@ input UpdateCarTypeInput @validator {
   id: ID
   name: String
   seats: Int
-  fixed: Float
-  price: Float
-  distance: Int
+  base_fare: Float
+  distance_price: Float
+  duration_price: Float
+  surge_factor: Float
+  min_distance: Int
   photo: Upload
   ondemand: Boolean
 }
@@ -24,9 +28,11 @@ type CarType {
   id: ID
   name: String
   seats: Int
-  fixed: Float
-  price: Float
-  distance: Int
+  base_fare: Float
+  distance_price: Float
+  duration_price: Float
+  surge_factor: Float
+  min_distance: Int
   photo: String
   ondemand: Boolean
   order: Int
