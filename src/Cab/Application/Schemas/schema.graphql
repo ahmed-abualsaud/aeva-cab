@@ -15,7 +15,7 @@ extend type Mutation {#@guard(with: ["user"]) {
 }
 
 # Driver Guard
-extend type Mutation @guard(with: ["driver"]) {
+extend type Mutation {#@guard(with: ["driver", "user"]) {
   # Cab Request
   createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
     @field(resolver: "CabRequestTransactionResolver@create")
@@ -26,7 +26,7 @@ extend type Mutation @guard(with: ["driver"]) {
 }
 
 # Admin,User Guard
-extend type Mutation @guard(with: ["admin"]) {
+extend type Mutation {#@guard(with: ["admin", "user"]) {
   # Cab Request
   scheduleCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@schedule")
@@ -34,7 +34,7 @@ extend type Mutation @guard(with: ["admin"]) {
     @field(resolver: "CabRequestResolver@search")
   sendCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@send")
-} #eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC9sb2NhbGhvc3Q6ODAwMFwvZ3JhcGhxbCIsImlhdCI6MTY0MDc5NDAyNSwibmJmIjoxNjQwNzk0MDI1LCJqdGkiOiJYMTlhSVZRU3p2MVQxbmE5Iiwic3ViIjoxLCJwcnYiOiJjZjI4NGMyYjFlMDZmMzNjMjZiZDU3OTc1NjZkOWZkNzRiZTExYmY1In0.8F3CoQvohzzR8og_2zqpPhnQjV6tfLoJkDHS_DIdEC4
+} 
 
 # Admin,Driver Guard
 extend type Mutation @guard(with: ["admin", "driver"]) {
@@ -50,7 +50,7 @@ extend type Mutation @guard(with: ["admin", "driver"]) {
 }
 
 # Admin,Partner,Manager,User,Driver Guard
-extend type Mutation @guard(with: ["admin", "partner", "manager", "driver"]) {
+extend type Mutation {#@guard(with: ["admin", "partner", "manager", "user", "driver"]) {
   # Cab Request
   cancelCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@cancel")
@@ -89,7 +89,7 @@ extend type Query @guard(with: ["driver"]) {
 }
 
 # Admin,Partner,Manager,User Guard
-extend type Query @guard(with: ["admin", "partner", "manager"]) {
+extend type Query {#@guard(with: ["admin", "partner", "user", "manager"]) {
   # Cab Rating
   cabRating(request_id: ID! @eq): CabRating @find
   unratedCabRequests(user_id: ID!): [CabRequest] 
@@ -97,7 +97,7 @@ extend type Query @guard(with: ["admin", "partner", "manager"]) {
 }
 
 # Admin,User,Driver Guard
-extend type Query @guard(with: ["admin", "driver"]) {
+extend type Query {#@guard(with: ["admin", "user", "driver"]) {
   # Cab Request
   cabRequest(id: ID! @eq): CabRequest @findOrFail
   pendingCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest] @all(scopes: ["pending"])

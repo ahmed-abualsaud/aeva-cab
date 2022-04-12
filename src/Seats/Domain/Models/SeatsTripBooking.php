@@ -1,6 +1,8 @@
 <?php
 
 namespace Qruz\Seats\Domain\Models;
+use App\User;
+use App\PromoCode;
 
 use App\Traits\Filterable;
 use App\Traits\Searchable;

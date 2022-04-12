@@ -2,6 +2,9 @@
 
 namespace Qruz\Seats\Domain\Models;
 
+use App\User;
+use App\Driver;
+
 use Illuminate\Database\Eloquent\Model;
 
 class SeatsTripRating extends Model

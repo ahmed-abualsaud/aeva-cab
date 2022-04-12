@@ -2,6 +2,9 @@
 
 namespace Qruz\Seats\Domain\Models;
 
+use App\Zone;
+use App\Partner;
+
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
