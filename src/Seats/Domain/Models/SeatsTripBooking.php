@@ -1,6 +1,7 @@
 <?php
 
 namespace Qruz\Seats\Domain\Models;
+
 use App\User;
 use App\PromoCode;
 

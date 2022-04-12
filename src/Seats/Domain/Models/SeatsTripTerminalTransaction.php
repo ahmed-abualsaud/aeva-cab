@@ -3,6 +3,7 @@
 namespace Qruz\Seats\Domain\Models;
 
 use App\Partner;
+
 use App\Traits\Filterable;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Model;
