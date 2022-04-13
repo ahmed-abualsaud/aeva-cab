@@ -5,10 +5,10 @@ input CreateCarTypeInput {
   distance_price: Float! @rules(apply: ["required"])
   duration_price: Float! @rules(apply: ["required"])
   surge_factor: Float! @rules(apply: ["required"])
-  min_distance: Int! @rules(apply: ["required"])
+  min_distance: Float! @rules(apply: ["required"])
   photo: Upload
   ondemand: Boolean
-  order: Int! @rules(apply: ["required"])
+  order: Int
 }
 
 input UpdateCarTypeInput @validator {
@@ -19,7 +19,7 @@ input UpdateCarTypeInput @validator {
   distance_price: Float
   duration_price: Float
   surge_factor: Float
-  min_distance: Int
+  min_distance: Float
   photo: Upload
   ondemand: Boolean
 }
@@ -32,7 +32,7 @@ type CarType {
   distance_price: Float
   duration_price: Float
   surge_factor: Float
-  min_distance: Int
+  min_distance: Float
   photo: String
   ondemand: Boolean
   order: Int
