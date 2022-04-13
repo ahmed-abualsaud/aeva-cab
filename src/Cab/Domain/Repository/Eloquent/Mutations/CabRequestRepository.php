@@ -75,7 +75,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function search(array $args)
     {
         if (array_key_exists('id', $args) && $args['id']) {
-            return $this->searchScheduledRequest($args);
+            return $this->searchCreatedRequest($args);
         } else {
             return $this->searchNewRequest($args);
         }
@@ -125,17 +125,24 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $request;
     }
 
-    protected function searchScheduledRequest(array $args) 
+    protected function searchCreatedRequest(array $args) 
     {
         $request = $this->findRequest($args['id']);
 
-        if ( $request->status == 'COMPLETED' || $request->status == 'CANCELLED' ) {
+        if ( $request->status != 'SEARCHING' ) {
             throw new CustomException(__('lang.search_request_failed'));
         }
 
-        $result = $this->checkPendingAndGetDrivers($request->toArray());
+        $args = $request->toArray();
+        $args['distance'] = $request->history['summary']['distance'];
+        $args['duration'] = $request->history['summary']['duration'];
+        $result = $this->checkPendingAndGetDrivers($args);
 
         $payload = [
+            'summary' => [
+                'distance' => $args['distance'],
+                'duration' => $args['duration']
+            ],
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
                 'result' => $result
@@ -154,6 +161,13 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     protected function searchNewRequest(array $args) 
     {
         $input = Arr::except($args, ['directive', 'user_name', 'distance', 'duration']);
+
+        $activeRequests = $this->model->wherePending($args['user_id'])->first();
+
+        if($activeRequests) {
+            throw new CustomException(__('lang.request_inprogress'));
+        }
+
         $result = $this->checkPendingAndGetDrivers($args);
 
         $payload = [
@@ -179,12 +193,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     protected function checkPendingAndGetDrivers(array $args)
     {
-        $activeRequests = $this->model->wherePending($args['user_id'])->first();
-
-        if($activeRequests) {
-            throw new CustomException(__('lang.request_inprogress'));
-        }
-
         $drivers = $this->getNearestDrivers($args['s_lat'], $args['s_lng']);
 
         if (!count($drivers) ) {
@@ -199,6 +207,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             car_types.name as car_type,
             (car_types.base_fare  + ((car_types.distance_price * ?) / 1000) + ((car_types.duration_price * car_types.surge_factor * ?) / 60)) as price,
             vehicles.license_plate as license,
+            vehicles.color,
             vehicles.photo'
             , [$args['distance'], $args['duration']])
             ->join('car_types', 'car_types.id', '=', 'vehicles.car_type_id')
@@ -373,21 +382,26 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'reason' => array_key_exists('cancel_reason', $args) ? $args['cancel_reason'] : "Unknown",
             ]
         ];
-        $args['status'] = 'CANCELLED';
+        
         $args['history'] = array_merge($request->history, $payload);
-
-        $request = $this->updateRequest($request, $args);
-
         $this->updateDriverStatus($request->driver_id, 'ONLINE');
 
         $token = null;
-        if (strtolower($args['cancelled_by']) == 'user' && $request->driver_id) {
-            $token = $this->driverToken($request->driver_id);
+        if (strtolower($args['cancelled_by']) == 'user') {
+            $args['status'] = 'CANCELLED';
+            if ($request->driver_id) {
+                $token = $this->driverToken($request->driver_id);
+            }
         }
 
         if (strtolower($args['cancelled_by']) == 'driver') {
+            $args['status'] = 'SEARCHING';
             $token = $this->userToken($request->user_id);
         }
+
+        $request = $this->updateRequest($request, $args);
+        $socketRequest = clone $request;
+        $socketRequest->status = 'CANCELLED';
 
         if ($token) {
             SendPushNotification::dispatch(
@@ -396,7 +410,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 __('lang.request_cancelled'),
                 ['view' => 'CancelRequest', 'id' => $args['id']]
             );
-            broadcast(new CabRequestCancelled(strtolower($args['cancelled_by']), $request));
+            broadcast(new CabRequestCancelled(strtolower($args['cancelled_by']), $socketRequest));
         }
 
         return $request;

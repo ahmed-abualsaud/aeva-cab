@@ -4,6 +4,7 @@ input CreateVehicleInput @validator {
   car_type_id: ID! @rules(apply: ["required"])
   car_make_id: ID! @rules(apply: ["required"])
   car_model_id: ID! @rules(apply: ["required"])
+  color: String! @rules(apply: ["required"])
   year: Int! @rules(apply: ["required", "min:4", "max:4"])
   seats: Int! @rules(apply: ["required"])
   photo: Upload
@@ -20,6 +21,7 @@ input UpdateVehicleInput @validator {
   car_type_id: ID
   car_make_id: ID
   car_model_id: ID
+  color: String
   year: Int @rules(apply: ["min:4", "max:4"])
   seats: Int
   photo: Upload
@@ -36,6 +38,7 @@ type Vehicle {
   type: CarType @belongsTo
   make: CarMake @belongsTo
   model: CarModel @belongsTo
+  color: String
   year: Int
   seats: Int
   photo: String

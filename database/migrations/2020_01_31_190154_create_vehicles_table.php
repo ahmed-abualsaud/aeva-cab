@@ -20,6 +20,7 @@ class CreateVehiclesTable extends Migration
             $table->unsignedBigInteger('car_model_id');
             $table->unsignedBigInteger('car_make_id');
             $table->date('license_expires_on')->nullable();
+            $table->string('color');
             $table->year('year');
             $table->unsignedSmallInteger('seats');
             $table->string('photo')->nullable();

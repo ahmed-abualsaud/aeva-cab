@@ -90,6 +90,7 @@ type VehicleObj {
   car_model: String
   car_type: String
   car_type_id: ID
+  color: String
   license: String
   photo: String
   price: Float
