@@ -5,7 +5,7 @@ input CreateCarModelInput {
   seats: Int! @rules(apply: ["required"])
   photo: Upload
   ondemand: Boolean
-  order: Int! @rules(apply: ["required"])
+  order: Int
 }
 
 input UpdateCarModelInput {
