@@ -121,6 +121,7 @@ return [
     'trip_schedule_required' => 'Trip schedule required',
     'the_following_already_exists' => 'The following already exists',
     'user_exists' => 'User already exists',
+    'driver_documents_already_created' => 'Driver registration documents already created',
 
     // ============================== Qruz Cab ==============================
 

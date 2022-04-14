@@ -21,7 +21,8 @@ class CreateCabRatingsTable extends Migration
             $table->dateTime('trip_time');
             $table->decimal('user_rating', 4, 2)->nullable();
             $table->decimal('driver_rating', 4, 2)->nullable();
-            $table->string('comment')->nullable();
+            $table->string('user_comment')->nullable();
+            $table->string('driver_comment')->nullable();
             $table->timestamps();
 
             $table->index('request_id');

@@ -3,12 +3,16 @@
 namespace App\Repository\Eloquent\Mutations;
 
 use App\Driver;
+use App\Document;
 use App\DriverVehicle;
+use App\PartnerDriver;
+
 use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;
-use App\PartnerDriver;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Mutations\DriverRepositoryInterface;
 
@@ -182,6 +186,36 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
     public function destroy(array $args)
     {
         return $this->model->whereIn('id', $args['id'])->delete();
+    }
+
+    public function continueDriverRegistration(array $args) 
+    {
+        try {
+            $driver = $this->model->findOrFail($args['driver_id']);
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception(__('lang.driver_not_found'));
+        }
+
+        $documents = Document::where('documentable_id', $args['driver_id'])
+            ->where('documentable_type', 'App\\Driver')
+            ->where('status', 'Empty');
+
+        if (count($documents->get())) {
+            throw new \Exception(__('lang.driver_documents_already_created'));
+        }
+
+        $driver->update(['phone_verified_at' => date('Y-m-d H:i:s')]);
+
+        $row = [
+            'status' => 'Empty',
+            'documentable_id' => $args['driver_id'],
+            'documentable_type' =>'App\\Driver',
+        ];
+
+        for ($i = 0; $i < 8; $i++) {$rows[] = $row;}
+        Document::insert($rows);
+
+        return $documents->get();
     }
 
     protected function createPartnerDriver($partner_id, $driver_id)

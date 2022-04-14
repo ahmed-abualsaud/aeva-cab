@@ -21,4 +21,13 @@ class DocumentRepository extends BaseRepository implements MainRepositoryInterfa
 
         return $documents;
    }
+
+   public function driverEmptyDocuments(array $args) 
+   {
+          return $this->model
+               ->where('documentable_id', $args['driver_id'])
+               ->where('documentable_type', 'App\\Driver')
+               ->where('status', 'Empty')
+               ->get();
+   }
 }

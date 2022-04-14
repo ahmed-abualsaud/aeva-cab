@@ -21,4 +21,8 @@ class DocumentResolver
     {
         return $this->documentRepository->invoke($args);
     }
+
+    public function driverEmptyDocuments($_, array $args) {
+        return $this->documentRepository->driverEmptyDocuments($args);
+    }
 }

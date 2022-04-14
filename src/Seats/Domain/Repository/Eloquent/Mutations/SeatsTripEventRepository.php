@@ -113,7 +113,12 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
 
             $this->createUserRating($args);
             
-            $this->updateBooking($args, ['is_picked_up' => false, 'status' => 'COMPLETED']);
+            $this->updateBooking($args, [
+                'is_picked_up' => false, 
+                'status' => 'COMPLETED',
+                'paid' => $args['paid'],
+                'payable' => $args['payable']
+            ]);
 
             $this->createTransaction($args);
 

@@ -30,10 +30,14 @@ type Mutation {
     @field(resolver: "ManagerResolver@login")
 
   # Password Reset
-  userPhoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
+  phoneVerification(input: UserPhoneVerificationInput! @spread): UserPhoneVerifyPayload!
     @field(resolver: "UserResolver@phoneVerification")
   resetPasswordWithOtp(input: ResetPasswordWithOtpInput @spread): DefaultResponse 
     @field(resolver: "ResetPasswordResolver@withOtp")
+
+  # Continue Driver Registration
+  continueDriverRegistration(driver_id: ID!): [Document]
+    @field(resolver: "DriverResolver@continueDriverRegistration")
 }
 
 # Admin Guard
@@ -416,10 +420,17 @@ extend type Mutation @guard(with: ["user"]) {
     @field(resolver: "BusinessTripRatingResolver@update")
 }
 
-# -- QUERIES --
+
+# =============================================== QUERIES ===============================================
+
+type Query {
+  # Driver Empty Documents
+  driverEmptyDocuments(driver_id: ID!): [Document]
+    @field(resolver: "DocumentResolver@driverEmptyDocuments")
+}
 
 # Admin Guard
-type Query @guard(with: ["admin"]) {
+extend type Query @guard(with: ["admin"]) {
   # Authenticated Admin
   authAdmin: Admin @auth
 

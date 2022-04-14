@@ -15,8 +15,9 @@ class CreateDriversTable extends Migration
     {
         Schema::create('drivers', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
-            $table->string('name_ar')->nullable();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('full_name')->virtualAs('concat(first_name," ",last_name)');
             $table->string('email')->unique()->nullable();
             $table->string('password')->nullable();
             $table->string('phone')->unique()->nullable();
@@ -24,6 +25,7 @@ class CreateDriversTable extends Migration
             $table->string('avatar')->nullable();
             $table->string('city')->nullable();
             $table->string('vehicle')->nullable();
+            $table->unsignedDecimal('wallet', 12, 2)->default(0.00);
             $table->unsignedBigInteger('fleet_id')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
             $table->double('latitude', 15, 8)->nullable();
@@ -31,6 +33,8 @@ class CreateDriversTable extends Migration
             $table->decimal('rating', 4, 2)->default(5);
             $table->boolean('status')->default(0);
             $table->enum('cab_status', ['ONLINE', 'RIDING', 'OFFLINE'])->default('OFFLINE');
+            $table->boolean('register_complete')->default(0);
+            $table->timestamp('phone_verified_at')->nullable();
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
             $table->string('device_id')->nullable();

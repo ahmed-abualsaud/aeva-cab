@@ -121,6 +121,7 @@ return [
     'trip_schedule_required' => 'رجاء ادخال جدول للرحلة',
     'the_following_already_exists' => 'المتابعة موجودة بالفعل',
     'user_exists' => 'هذا المستخدم موجود بالفعل',
+    'driver_documents_already_created' => 'تم انشاء ملفات التسجيل لهذا السائق من قبل',
 
     // ============================== Qruz Cab ==============================
 

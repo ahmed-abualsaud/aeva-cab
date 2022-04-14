@@ -5,7 +5,8 @@ input UpdateCabRatingInput {
   user_rating: Float
   driver_rating: Float
   trip_time: String
-  comment: String
+  user_comment: String
+  driver_comment: String
 }
 
 type CabRating {
@@ -16,5 +17,6 @@ type CabRating {
   user_rating: Float
   driver_rating: Float
   trip_time: String
-  comment: String
+  user_comment: String
+  driver_comment: String
 }

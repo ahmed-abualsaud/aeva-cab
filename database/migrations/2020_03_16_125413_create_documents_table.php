@@ -16,10 +16,10 @@ class CreateDocumentsTable extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
-            $table->string('url');
+            $table->string('url')->nullable();
             $table->date('expires_on')->nullable();
             $table->morphs('documentable');
-            $table->enum('status', ['ASSESSING', 'ACTIVE'])->nullable();
+            $table->enum('status', ['In review', 'Accepted', 'Rejected'])->nullable();
             $table->timestamps();
         });
     }
