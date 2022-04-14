@@ -92,7 +92,7 @@ extend type Query @guard(with: ["driver"]) {
 extend type Query {#@guard(with: ["admin", "partner", "user", "manager"]) {
   # Cab Rating
   cabRating(request_id: ID! @eq): CabRating @find
-  unratedCabRequests(user_id: ID!): [CabRequest] 
+  unratedCabRequests(user_id: ID, driver_id: ID): [CabRequest] 
     @all(scopes: ["unrated"], model: "CabRating")
 }
 

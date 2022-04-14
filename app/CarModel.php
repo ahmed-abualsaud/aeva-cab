@@ -18,12 +18,6 @@ class CarModel extends Model
 
     protected static $flushCacheOnUpdate = true;
 
-    protected static function boot()
-    {
-        parent::boot();
-        static::addGlobalScope(new SortByOrderScope);
-    }
-
     public function type()
     {
         return $this->belongsTo(CarType::class);
@@ -37,7 +31,7 @@ class CarModel extends Model
     public function scopeIsPublic($query, $args) 
     {
         if (array_key_exists('is_public', $args) && $args['is_public']) {
-            return $query->where('ondemand', true);
+            return $query->where('is_public', true);
         }
         
         return $query;

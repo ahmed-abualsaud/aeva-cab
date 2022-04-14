@@ -23,7 +23,7 @@ class CreateCarTypesTable extends Migration
             $table->float('duration_price', 8, 3);
             $table->float('surge_factor', 3, 2);
             $table->unsignedSmallInteger('min_distance');
-            $table->boolean('ondemand')->default(1);
+            $table->boolean('is_public')->default(1);
             $table->smallInteger('order');
             $table->timestamps();
             $table->softDeletes();

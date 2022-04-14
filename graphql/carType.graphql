@@ -7,7 +7,7 @@ input CreateCarTypeInput {
   surge_factor: Float! @rules(apply: ["required"])
   min_distance: Float! @rules(apply: ["required"])
   photo: Upload
-  ondemand: Boolean
+  is_public: Boolean
   order: Int
 }
 
@@ -21,7 +21,7 @@ input UpdateCarTypeInput @validator {
   surge_factor: Float
   min_distance: Float
   photo: Upload
-  ondemand: Boolean
+  is_public: Boolean
 }
 
 type CarType {
@@ -34,6 +34,6 @@ type CarType {
   surge_factor: Float
   min_distance: Float
   photo: String
-  ondemand: Boolean
+  is_public: Boolean
   order: Int
 }

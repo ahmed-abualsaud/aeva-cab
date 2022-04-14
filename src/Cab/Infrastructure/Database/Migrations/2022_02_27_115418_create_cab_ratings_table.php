@@ -19,7 +19,8 @@ class CreateCabRatingsTable extends Migration
             $table->unsignedBigInteger('driver_id');
             $table->unsignedBigInteger('request_id');
             $table->dateTime('trip_time');
-            $table->decimal('rating', 4, 2)->nullable();
+            $table->decimal('user_rating', 4, 2)->nullable();
+            $table->decimal('driver_rating', 4, 2)->nullable();
             $table->string('comment')->nullable();
             $table->timestamps();
 

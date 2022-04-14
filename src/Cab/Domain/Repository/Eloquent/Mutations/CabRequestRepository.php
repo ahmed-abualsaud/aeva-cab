@@ -310,7 +310,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $args['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $args);
+
         $this->createCabRating($request);
+
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
             __('lang.ride_started_body'),

@@ -27,11 +27,18 @@ class CabRating extends Model
 
     public function scopeUnrated($query, $args) 
     {
-        return $query->select(
-            'cab_requests.id'
-            )
-            ->join('cab_requests', 'cab_ratings.request_id', '=', 'cab_requests.id')
-            ->where('cab_requests.user_id', $args['user_id'])
-            ->whereNull('rating');
+        if (array_key_exists('user_id', $args) && $args['user_id'] != null) 
+        {
+            return $query->join('cab_requests', 'cab_ratings.request_id', '=', 'cab_requests.id')
+                ->where('cab_requests.user_id', $args['user_id'])
+                ->whereNull('driver_rating');
+        }
+
+        if (array_key_exists('driver_id', $args) && $args['driver_id'] != null) 
+        {
+            return $query->join('cab_requests', 'cab_ratings.request_id', '=', 'cab_requests.id')
+                ->where('cab_requests.driver_id', $args['driver_id'])
+                ->whereNull('driver_rating');
+        }
     }
 }
