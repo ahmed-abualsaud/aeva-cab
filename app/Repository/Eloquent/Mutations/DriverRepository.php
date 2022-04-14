@@ -213,6 +213,16 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         ];
 
         for ($i = 0; $i < 8; $i++) {$rows[] = $row;}
+
+        $rows[0]['name'] = 'البطاقة الشخصية';
+        $rows[1]['name'] = 'رخصة قيادة مصرية سارية';
+        $rows[2]['name'] = 'رخصة سيارة سارية';
+        $rows[3]['name'] = 'الصورة الشخصية';
+        $rows[4]['name'] = 'صورة السيارة';
+        $rows[5]['name'] = 'سجل جنائي';
+        $rows[6]['name'] = 'اختبار المخدرات';
+        $rows[7]['name'] = 'فحص السيارة';
+
         Document::insert($rows);
 
         return $documents->get();
