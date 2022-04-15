@@ -198,7 +198,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
         $documents = Document::where('documentable_id', $args['driver_id'])
             ->where('documentable_type', 'App\\Driver')
-            ->where('status', 'Empty');
+            ->whereNull('status');
 
         if (count($documents->get())) {
             throw new \Exception(__('lang.driver_documents_already_created'));
@@ -207,9 +207,10 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         $driver->update(['phone_verified_at' => date('Y-m-d H:i:s')]);
 
         $row = [
-            'status' => 'Empty',
             'documentable_id' => $args['driver_id'],
             'documentable_type' =>'App\\Driver',
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
         ];
 
         for ($i = 0; $i < 8; $i++) {$rows[] = $row;}

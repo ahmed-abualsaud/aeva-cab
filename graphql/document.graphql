@@ -10,6 +10,9 @@ input UpdateDocumentInput {
   id: ID! @rules(apply: ["required"])
   name: String
   expires_on: String
+  status: String
+  note: String
+
 }
 
 type Document {
@@ -22,4 +25,5 @@ type Document {
   created_at: String
   updated_at: String
   status: String
+  note: String
 }
