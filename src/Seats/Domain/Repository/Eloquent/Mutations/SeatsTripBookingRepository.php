@@ -26,8 +26,11 @@ class SeatsTripBookingRepository extends BaseRepository
     {
         DB::beginTransaction();
         try {
-            // if ($args['bookable'])
-                // $this->checkSeats($args);
+            if ($this->model->where('user_id', $args['user_id'])
+            ->where('trip_time', '>=', $args['trip_time'])
+            ->where('status', 'CONFIRMED')->first()) {
+                throw new CustomException(__('lang.you_already_booked_the_trip'));
+            }
 
             $booking = $this->saveBooking($args);
 
