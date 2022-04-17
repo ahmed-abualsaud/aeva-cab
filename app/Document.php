@@ -15,4 +15,9 @@ class Document extends Model
     {
         return $this->morphTo();
     }
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class);
+    }
 }

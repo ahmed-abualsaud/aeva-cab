@@ -4,6 +4,8 @@ input UploadDocumentInput {
   documentable_id: ID! @rules(apply: ["required"])
   documentable_type: String! @rules(apply: ["required"])
   file: Upload! @rules(apply: ["required"])
+  status: String
+  notes: String
 }
 
 input UpdateDocumentInput {
@@ -11,8 +13,8 @@ input UpdateDocumentInput {
   name: String
   expires_on: String
   status: String
-  note: String
-
+  notes: String
+  admin_id: ID
 }
 
 type Document {
@@ -25,5 +27,6 @@ type Document {
   created_at: String
   updated_at: String
   status: String
-  note: String
+  notes: String
+  admin: Admin @BelongsTo
 }

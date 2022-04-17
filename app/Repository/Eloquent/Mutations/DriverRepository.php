@@ -52,6 +52,26 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         $driver = $this->model->create($input);
+
+        $row = [
+            'documentable_id' => $driver->id,
+            'documentable_type' =>'App\\Driver',
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ];
+
+        for ($i = 0; $i < 8; $i++) {$rows[] = $row;}
+
+        $rows[0]['name'] = 'البطاقة الشخصية';
+        $rows[1]['name'] = 'رخصة قيادة مصرية سارية';
+        $rows[2]['name'] = 'رخصة سيارة سارية';
+        $rows[3]['name'] = 'الصورة الشخصية';
+        $rows[4]['name'] = 'صورة السيارة';
+        $rows[5]['name'] = 'سجل جنائي';
+        $rows[6]['name'] = 'اختبار المخدرات';
+        $rows[7]['name'] = 'فحص السيارة';
+
+        Document::insert($rows);
         
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $this->createPartnerDriver($args['partner_id'], $driver->id);
@@ -83,14 +103,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
     public function login(array $args)
     {
-        $emailOrPhone = filter_var($args['emailOrPhone'], FILTER_VALIDATE_EMAIL);
-
-        if ($emailOrPhone) {
-            $credentials["email"] = $args['emailOrPhone'];
-        } else {
-            $credentials["phone"] = $args['emailOrPhone'];
-        } 
-
+        $credentials["phone"] = $args['phone'];
         $credentials["password"] = $args['password'];
 
         if (!$token = auth('driver')->attempt($credentials)) {
@@ -186,47 +199,6 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
     public function destroy(array $args)
     {
         return $this->model->whereIn('id', $args['id'])->delete();
-    }
-
-    public function continueDriverRegistration(array $args) 
-    {
-        try {
-            $driver = $this->model->findOrFail($args['driver_id']);
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.driver_not_found'));
-        }
-
-        $documents = Document::where('documentable_id', $args['driver_id'])
-            ->where('documentable_type', 'App\\Driver')
-            ->whereNull('status');
-
-        if (count($documents->get())) {
-            throw new \Exception(__('lang.driver_documents_already_created'));
-        }
-
-        $driver->update(['phone_verified_at' => date('Y-m-d H:i:s')]);
-
-        $row = [
-            'documentable_id' => $args['driver_id'],
-            'documentable_type' =>'App\\Driver',
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-        ];
-
-        for ($i = 0; $i < 8; $i++) {$rows[] = $row;}
-
-        $rows[0]['name'] = 'البطاقة الشخصية';
-        $rows[1]['name'] = 'رخصة قيادة مصرية سارية';
-        $rows[2]['name'] = 'رخصة سيارة سارية';
-        $rows[3]['name'] = 'الصورة الشخصية';
-        $rows[4]['name'] = 'صورة السيارة';
-        $rows[5]['name'] = 'سجل جنائي';
-        $rows[6]['name'] = 'اختبار المخدرات';
-        $rows[7]['name'] = 'فحص السيارة';
-
-        Document::insert($rows);
-
-        return $documents->get();
     }
 
     protected function createPartnerDriver($partner_id, $driver_id)

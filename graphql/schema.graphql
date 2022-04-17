@@ -18,7 +18,7 @@ type Mutation {
   # Driver Auth
   createDriver(input: CreateDriverInput! @spread): Driver 
     @field(resolver: "DriverResolver@create")
-  driverLogin(input: LoginInput! @spread): DriverAuthPayload! 
+  driverLogin(input: PhoneLoginInput! @spread): DriverAuthPayload! 
     @field(resolver: "DriverResolver@login")
 
   # Partner Auth
@@ -34,10 +34,6 @@ type Mutation {
     @field(resolver: "UserResolver@phoneVerification")
   resetPasswordWithOtp(input: ResetPasswordWithOtpInput @spread): DefaultResponse 
     @field(resolver: "ResetPasswordResolver@withOtp")
-
-  # Continue Driver Registration
-  continueDriverRegistration(driver_id: ID!): [Document]
-    @field(resolver: "DriverResolver@continueDriverRegistration")
 }
 
 # Admin Guard
@@ -423,10 +419,10 @@ extend type Mutation @guard(with: ["user"]) {
 
 # =============================================== QUERIES ===============================================
 
+
 type Query {
-  # Driver Empty Documents
-  driverEmptyDocuments(driver_id: ID!): [Document]
-    @field(resolver: "DocumentResolver@driverEmptyDocuments")
+  # Car Type
+  carTypes(is_public: Boolean): [CarType] @all(scopes: ["isPublic"])
 }
 
 # Admin Guard
@@ -645,9 +641,6 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user"]) {
   # Price Package
   pricePackages(city_id: ID, type: String, is_public: Boolean): [PricePackage] 
     @all(scopes: ["city", "ofType", "isPublic"])
-
-  # Car Type
-  carTypes(is_public: Boolean): [CarType] @all(scopes: ["isPublic"])
 
   # Vehicle Model
   vehicleTypeModels(type_id: ID!, is_public: Boolean): [CarModel]

@@ -17,11 +17,17 @@ class CreateDocumentsTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->nullable();
             $table->string('url')->nullable();
-            $table->string('note')->nullable();
+            $table->string('notes')->nullable();
             $table->date('expires_on')->nullable();
             $table->morphs('documentable');
             $table->enum('status', ['In review', 'Accepted', 'Rejected'])->nullable();
+            $table->unsignedBigInteger('admin_id')->nullable();
             $table->timestamps();
+
+            $table->foreign('admin_id')
+                ->references('id')
+                ->on('admins')
+                ->onDelete('set null');
         });
     }
 

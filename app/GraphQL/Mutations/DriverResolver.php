@@ -50,8 +50,4 @@ class DriverResolver
     {
         return $this->driverRepository->destroy($args);
     }
-
-    public function continueDriverRegistration($_, array $args) {
-        return $this->driverRepository->continueDriverRegistration($args);
-    }
 }
