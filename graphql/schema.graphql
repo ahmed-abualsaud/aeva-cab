@@ -242,9 +242,10 @@ extend type Mutation @guard(with: ["admin", "partner", "manager"]) {
   # Document
   uploadDocument(input: UploadDocumentInput @spread): Document
     @field(resolver: "DocumentResolver@create")
+  updateDocument(input: UpdateDocumentInput! @spread): Document
+    @field(resolver: "DocumentResolver@update")
   deleteDocument(id: ID!): String
     @field(resolver: "DocumentResolver@delete")
-  updateDocument(input: UpdateDocumentInput! @spread): Document @update
 
   # Supervisor
   createSupervisor(input: CreateSupervisorInput! @spread): Supervisor

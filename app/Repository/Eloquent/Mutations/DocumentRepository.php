@@ -33,6 +33,31 @@ class DocumentRepository extends BaseRepository
         return $document;
     }
 
+    public function update(array $args)
+    {
+        try {
+            $document = $this->model->findOrFail($args['id']);
+        } catch (ModelNotFoundException $e) {
+            throw new CustomException(__('lang.driver_not_found'));
+        }
+
+        $input = collect($args)->except(['file', 'directive'])->toArray();
+
+        if (array_key_exists('file', $args) && $args['file'] != null) {
+            $file = $args['file'];
+            $url = $this->uploadOneFile($file, 'documents');
+            $input['url'] = $url;
+            
+            if (!$input['name']) {
+                $input['name'] = $file->getClientOriginalName();
+            }
+        }
+
+        $document->update($input);
+
+        return $document;
+    }
+
     public function destroy(array $args)
     {
         try {

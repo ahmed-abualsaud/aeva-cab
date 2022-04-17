@@ -25,6 +25,11 @@ class DocumentResolver
         return $this->documentRepository->create($args);
     }
 
+    public function update($root, array $args)
+    {
+        return $this->documentRepository->update($args);
+    }
+
     public function delete($root, array $args)
     {
         return $this->documentRepository->destroy($args);
