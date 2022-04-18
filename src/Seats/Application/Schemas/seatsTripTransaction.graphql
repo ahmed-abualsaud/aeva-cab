@@ -4,7 +4,7 @@ input CreateSeatsTripAppTransactionInput {
   trip_id: ID! @rules(apply: ["required"])
   user_id: ID! @rules(apply: ["required"])
   amount: Float! @rules(apply: ["required"])
-  payment_method: String! @rules(apply: ["required","in:CASH,CARD,FAWRY"])
+  payment_method: String! @rules(apply: ["required","in:Cash,Card,Fawry"])
   notes: String
 }
 

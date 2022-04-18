@@ -27,7 +27,7 @@ type Admin {
   phone: String
   avatar: String
   employee_id: String
-  status: String
+  status: Boolean
   role: Role @belongsTo
   is_super_admin: Boolean
 }

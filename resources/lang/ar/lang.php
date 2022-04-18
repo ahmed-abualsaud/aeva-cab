@@ -122,7 +122,7 @@ return [
     'the_following_already_exists' => 'المتابعة موجودة بالفعل',
     'user_exists' => 'هذا المستخدم موجود بالفعل',
     'you_already_booked_the_trip' => 'لقد قمت بحجز تلك الرحلة من قبل',
-    'your_account_is_disabled' => 'لقد تم اغلاق حسابك',
+    'your_account_is_disabled' => 'لقد تم تعليق حسابك',
 
     // ============================== Qruz Cab ==============================
 

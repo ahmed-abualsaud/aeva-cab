@@ -22,7 +22,7 @@ class CreateSeatsLineStationsTable extends Migration
             $table->unsignedBigInteger('line_id');
             $table->integer('duration')->default(0);
             $table->integer('distance')->default(0);
-            $table->enum('state', ['START','PICKABLE','END'])->default('PICKABLE');
+            $table->enum('state', ['Start','Pickable','End'])->default('Pickable');
             $table->smallInteger('order')->nullable();
             $table->timestamps();
             $table->softDeletes();

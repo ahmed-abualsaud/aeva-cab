@@ -21,7 +21,7 @@ class CreateAdminsTable extends Migration
             $table->string('phone')->unique();
             $table->string('avatar')->nullable();
             $table->string('employee_id')->nullable();
-            $table->string('status')->nullable();
+            $table->boolean('status')->default(true);
             $table->unsignedBigInteger('role_id');
             $table->boolean('is_super_admin')->default(false);
             $table->timestamps();

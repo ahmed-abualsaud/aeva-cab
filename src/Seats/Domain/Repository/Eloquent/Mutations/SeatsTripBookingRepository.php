@@ -28,7 +28,7 @@ class SeatsTripBookingRepository extends BaseRepository
         try {
             if ($this->model->where('user_id', $args['user_id'])
             ->where('trip_time', '>=', $args['trip_time'])
-            ->where('status', 'CONFIRMED')->first()) {
+            ->where('status', 'Confirmed')->first()) {
                 throw new CustomException(__('lang.you_already_booked_the_trip'));
             }
 
@@ -37,7 +37,7 @@ class SeatsTripBookingRepository extends BaseRepository
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
-            if ($args['payment_method'] === 'CARD')
+            if ($args['payment_method'] === 'Card')
                 $this->updateWallet($args['user_id'], -abs($args['payable']));
             throw new CustomException($e->getMessage());
         }
@@ -52,12 +52,12 @@ class SeatsTripBookingRepository extends BaseRepository
 
             $booking = $this->model->findOrFail($args['id']);
 
-            if (array_key_exists('status', $args) && $booking->status == 'CONFIRMED') {
+            if (array_key_exists('status', $args) && $booking->status == 'Confirmed') {
                 switch($args['status']) {
-                    case 'MISSED':
+                    case 'Missed':
                         $this->userMissed($booking);
                     break;
-                    case 'CANCELLED':
+                    case 'Cancelled':
                         $this->userCancelled($booking);
                     break;
                 }
@@ -147,7 +147,7 @@ class SeatsTripBookingRepository extends BaseRepository
     {
         $bookedSeats = $this->model->where('trip_id', $args['trip_id'])
             ->where('trip_time', $args['trip_time'])
-            ->where('status', 'CONFIRMED')
+            ->where('status', 'Confirmed')
             ->sum('seats');
         
         $totalSeats = SeatsTrip::select('seats')
@@ -171,10 +171,10 @@ class SeatsTripBookingRepository extends BaseRepository
     protected function saveBooking(array $args)
     {
         switch($args['payment_method']) {
-            case 'CASH':
+            case 'Cash':
                 return $this->cashPay($args);
 
-            case 'CARD':
+            case 'Card':
                 return $this->cardPay($args);
         }
     }
@@ -207,7 +207,7 @@ class SeatsTripBookingRepository extends BaseRepository
                 ->toArray();
 
             $input['booking_id'] = $booking->id;
-            $input['created_by'] = 'USER';
+            $input['created_by'] = 'User';
             $input['amount'] = $args['paid'];
 
             return SeatsTripAppTransaction::create($input);

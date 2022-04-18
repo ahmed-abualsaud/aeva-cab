@@ -33,10 +33,10 @@ class CabRequestTransactionRepository extends BaseRepository
 
         switch($args['payment_method']) 
         {
-            case 'CARD':
+            case 'Card':
                 $this->cardPay($args, $request);
                 break;
-            case 'WALLET':
+            case 'Wallet':
                 $this->walletPay($args, $request);
         }
         $request->update(['paid' => true]);

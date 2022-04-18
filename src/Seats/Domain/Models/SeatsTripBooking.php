@@ -81,11 +81,11 @@ class SeatsTripBooking extends Model
         switch($args['time']) {
             case 'PAST':
                 $query = $query->where('pickup_time', '<', $now)
-                    ->orWhere('status', '<>', 'CONFIRMED');
+                    ->orWhere('status', '<>', 'Confirmed');
             break;
             default:
                 $query = $query->where('pickup_time', '>=', $now)
-                    ->where('status', 'CONFIRMED');
+                    ->where('status', 'Confirmed');
         }
 
         return $query->latest('pickup_time');

@@ -24,6 +24,7 @@ class AdminRepository extends BaseRepository
     {
         $input = collect($args)->except(['directive'])->toArray();
         $input['password'] = Hash::make($input['phone']);
+        $input['status'] = true;
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
@@ -83,6 +84,10 @@ class AdminRepository extends BaseRepository
         }
 
         $admin = auth('admin')->user();
+
+        if (!$admin->status) {
+            throw new CustomException(__('lang.your_account_is_disabled'));
+        }
 
         $this->handleAccessTokenCache('admin', $admin, $token);
 

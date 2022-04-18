@@ -64,7 +64,7 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
 
         Driver::updateLocation($args['latitude'], $args['longitude']);
         
-        $this->broadcastTripStatus($trip, ['status' => 'STARTED', 'log_id' => $trip['log_id']]);
+        $this->broadcastTripStatus($trip, ['status' => 'Started', 'log_id' => $trip['log_id']]);
         
         $trip->update(['starts_at' => $args['trip_time']]);
 
@@ -115,7 +115,7 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
             
             $this->updateBooking($args, [
                 'is_picked_up' => false, 
-                'status' => 'COMPLETED',
+                'status' => 'Completed',
                 'paid' => $args['paid'],
                 'payable' => $args['payable']
             ]);
@@ -220,7 +220,7 @@ class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventR
                 $ended['lat'] = $args['latitude'];
                 $ended['lng'] = $args['longitude'];
 
-                $this->broadcastTripStatus($trip, ['status' => 'ENDED', 'log_id' => null]);
+                $this->broadcastTripStatus($trip, ['status' => 'Ended', 'log_id' => null]);
             }
 
             $updatedData['content'] = array_merge($event->content, ['ended' => $ended]);

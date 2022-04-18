@@ -19,7 +19,7 @@ class SeatsTripRepository extends BaseRepository implements SeatsTripRepositoryI
         return $this->model->join('seats_trip_bookings as b', 'b.trip_id', '=', 'seats_trips.id')
             ->where('user_id', $args['user_id'])
             ->whereNotNull('log_id')
-            ->where('status', 'CONFIRMED')
+            ->where('status', 'Confirmed')
             ->get();
     }
     public function driverTrips(array $args)

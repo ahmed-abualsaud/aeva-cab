@@ -21,9 +21,9 @@ class CreateSeatsTripAppTransactionsTable extends Migration
             $table->dateTime('trip_time');
             $table->unsignedBigInteger('user_id');
             $table->float('amount', 8, 2);
-            $table->enum('payment_method', ['CASH', 'CARD', 'FAWRY'])->default('CASH');
+            $table->enum('payment_method', ['Cash', 'Card', 'Fawry'])->default('Cash');
             $table->string('notes')->nullable();
-            $table->enum('created_by', ['USER', 'DRIVER'])->default('DRIVER');
+            $table->enum('created_by', ['User', 'Driver'])->default('Driver');
             $table->timestamps();
             $table->softDeletes();
 

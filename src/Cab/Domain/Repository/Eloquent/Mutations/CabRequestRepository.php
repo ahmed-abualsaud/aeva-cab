@@ -66,7 +66,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         ];
 
         $input['history'] = $payload;
-        $input['status'] = 'SCHEDULED';
+        $input['status'] = 'Scheduled';
         $input['next_free_time'] = $args['next_free_time'];
 
         return $this->model->create($input); 
@@ -85,7 +85,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
 
-        if ( $request->status != 'SEARCHING' ) {
+        if ( $request->status != 'Searching' ) {
             throw new CustomException(__('lang.request_drivers_failed'));
         }
 
@@ -105,7 +105,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $input['status'] = 'SENDING';
+        $input['status'] = 'Sending';
         $input['costs'] = $filtered[0]['price'];
         $input['history'] = array_merge($request->history, $payload);
         
@@ -129,7 +129,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
 
-        if ( $request->status != 'SEARCHING' ) {
+        if ( $request->status != 'Searching' ) {
             throw new CustomException(__('lang.search_request_failed'));
         }
 
@@ -149,7 +149,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $input['status'] = 'SEARCHING';
+        $input['status'] = 'Searching';
         $input['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $input);
@@ -182,7 +182,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $input['status'] = 'SEARCHING';
+        $input['status'] = 'Searching';
         $input['history'] = $payload;
 
         $request = $this->model->create($input);
@@ -224,7 +224,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
         
-        if ( $request->status != 'SENDING' ) {
+        if ( $request->status != 'Sending' ) {
             throw new CustomException(__('lang.accept_request_failed'));
         }
 
@@ -234,7 +234,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $args['status'] = 'ACCEPTED';
+        $args['status'] = 'Accepted';
         $args['history'] = array_merge($request->history, $payload);
 
         if ( !array_key_exists('vehicle_id', $args) || $args['vehicle_id'] == null ) {
@@ -247,7 +247,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $request = $this->updateRequest($request, $args);
 
-        $this->updateDriverStatus($args['driver_id'], 'RIDING');
+        $this->updateDriverStatus($args['driver_id'], 'Riding');
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
@@ -265,7 +265,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
         
-        if ( $request->status != 'ACCEPTED' ) {
+        if ( $request->status != 'Accepted' ) {
             throw new CustomException(__('lang.update_request_status_failed'));
         }
 
@@ -275,7 +275,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $args['status'] = 'ARRIVED';
+        $args['status'] = 'Arrived';
         $args['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $args);
@@ -296,7 +296,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
         
-        if ( $request->status != 'ARRIVED' ) {
+        if ( $request->status != 'Arrived' ) {
             throw new CustomException(__('lang.start_ride_failed'));
         }
 
@@ -306,7 +306,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        $args['status'] = 'STARTED';
+        $args['status'] = 'Started';
         $args['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $args);
@@ -329,7 +329,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
         
-        if ( $request->status != 'STARTED' || $request->paid == false) {
+        if ( $request->status != 'Started' || $request->paid == false) {
             throw new CustomException(__('lang.end_ride_failed'));
         }
 
@@ -349,13 +349,13 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             , [$args['distance'], $args['duration']])
             ->where('id', $vehicle[0]['car_type_id'])->first()->costs;
 
-        $args['status'] = 'COMPLETED';
+        $args['status'] = 'Completed';
         $args['history'] = array_merge($request->history, $payload);
         $args['map_url'] = ResizableMapUrl::generatePolylines($request);
 
         $request = $this->updateRequest($request, $args);
 
-        $this->updateDriverStatus($request->driver_id, 'ONLINE');
+        $this->updateDriverStatus($request->driver_id, 'Online');
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
@@ -373,7 +373,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
         
-        if ( in_array($request->status, ['STARTED', 'COMPLETED']) ) {
+        if ( in_array($request->status, ['Started', 'Completed']) ) {
             throw new CustomException(__('lang.cancel_cab_request_failed'));
         }
 
@@ -386,24 +386,24 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         ];
         
         $args['history'] = array_merge($request->history, $payload);
-        $this->updateDriverStatus($request->driver_id, 'ONLINE');
+        $this->updateDriverStatus($request->driver_id, 'Online');
 
         $token = null;
         if (strtolower($args['cancelled_by']) == 'user') {
-            $args['status'] = 'CANCELLED';
+            $args['status'] = 'Cancelled';
             if ($request->driver_id) {
                 $token = $this->driverToken($request->driver_id);
             }
         }
 
         if (strtolower($args['cancelled_by']) == 'driver') {
-            $args['status'] = 'SEARCHING';
+            $args['status'] = 'Searching';
             $token = $this->userToken($request->user_id);
         }
 
         $request = $this->updateRequest($request, $args);
         $socketRequest = clone $request;
-        $socketRequest->status = 'CANCELLED';
+        $socketRequest->status = 'Cancelled';
 
         if ($token) {
             SendPushNotification::dispatch(
@@ -422,8 +422,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         return $this->model->where($args['issuer_type'].'_id', $args['issuer_id'])
             ->where(function ($query) {
-                $query->where('status', 'SEARCHING')
-                        ->orWhere('status', 'SENDING');
+                $query->where('status', 'Searching')
+                        ->orWhere('status', 'Sending');
             })
             ->delete();        
     }
@@ -461,7 +461,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ', [$lng, $lat]
             )
             ->having('distance', '<=', $radius)
-            ->where('cab_status', 'ONLINE')
+            ->where('cab_status', 'Online')
             ->orderBy('distance','asc')
             ->take(5)
             ->get();

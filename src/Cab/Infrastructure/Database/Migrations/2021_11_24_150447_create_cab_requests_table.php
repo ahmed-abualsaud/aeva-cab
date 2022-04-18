@@ -19,14 +19,14 @@ class CreateCabRequestsTable extends Migration
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->enum('status', [
-                'SCHEDULED',
-                'SEARCHING',
-                'SENDING',
-                'ACCEPTED', 
-                'ARRIVED',
-                'STARTED',
-                'COMPLETED',
-                'CANCELLED',
+                'Scheduled',
+                'Searching',
+                'Sending',
+                'Accepted', 
+                'Arrived',
+                'Started',
+                'Completed',
+                'Cancelled',
             ]);
             $table->json('history')->nullable();
             $table->text('route_key');

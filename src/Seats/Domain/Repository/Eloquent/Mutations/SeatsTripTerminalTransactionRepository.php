@@ -58,12 +58,12 @@ class SeatsTripTerminalTransactionRepository extends Controller
     protected function getStatus($obj)
     {
         if(!($obj->pending) && !($obj->success))
-    		return 'DECLINED';
+    		return 'Declined';
     	
         if (!($obj->pending) && ($obj->success))
-    		return 'SUCCESS';
+    		return 'Success';
     	
-        return 'PENDING';
+        return 'Pending';
     }
 
     protected function getSource($obj)

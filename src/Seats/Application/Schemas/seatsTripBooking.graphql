@@ -11,13 +11,13 @@ input CreateSeatsTripBookingInput {
   paid: Float! @rules(apply: ["required"])
   seats: Int! @rules(apply: ["required"])
   bookable: Boolean! @rules(apply: ["required"])
-  payment_method: String! @rules(apply: ["required","in:CASH,CARD,FAWRY"])
+  payment_method: String! @rules(apply: ["required","in:Cash,Card,Fawry"])
   promo_code_id: ID
 }
 
 input UpdateSeatsTripBookingInput {
   id: ID! @rules(apply: ["required"])
-  status: String @rules(apply: ["in:CONFIRMED,CANCELLED,MISSED,COMPLETED"])
+  status: String @rules(apply: ["in:Confirmed,Cancelled,Missed,Completed"])
   comment: String
   response: String
 }

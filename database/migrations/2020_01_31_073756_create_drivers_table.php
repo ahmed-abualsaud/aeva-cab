@@ -32,9 +32,8 @@ class CreateDriversTable extends Migration
             $table->double('latitude', 15, 8)->nullable();
             $table->double('longitude', 15, 8)->nullable();
             $table->decimal('rating', 4, 2)->default(5);
-            $table->boolean('status')->default(1);
-            $table->enum('cab_status', ['ONLINE', 'RIDING', 'OFFLINE'])->default('OFFLINE');
-            $table->boolean('register_complete')->default(0);
+            $table->boolean('status')->default(true);
+            $table->enum('cab_status', ['Online', 'Riding', 'Offline'])->default('Offline');
             $table->timestamp('phone_verified_at')->nullable();
             $table->string('provider')->nullable();
             $table->string('provider_id')->nullable();
@@ -48,7 +47,7 @@ class CreateDriversTable extends Migration
 
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->foreign('fleet_id')->references('id')->on('fleets')->onDelete('cascade');
-            $table->foreign('car_type_id')->references('id')->on('admins')->onDelete('set null');
+            $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('set null');
         });
     }
 

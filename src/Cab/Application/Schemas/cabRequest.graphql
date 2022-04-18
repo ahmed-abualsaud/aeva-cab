@@ -5,7 +5,7 @@ input CabRequestInput {
   driver_id: ID
   vehicle_id: ID
   car_type: String
-  cancelled_by: String
+  cancelled_by: String @rules(apply: ["in:user,driver"])
   cancel_reason: String
   schedule_time: String
   distance: Float

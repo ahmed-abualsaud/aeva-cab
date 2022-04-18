@@ -50,7 +50,7 @@ class CabRequest extends Model
 
     public function scopeLive($query)
     {
-        return $query->whereIn('status', ['ACCEPTED', 'STARTED']);
+        return $query->whereIn('status', ['Accepted', 'Started']);
     }
 
     public function scopeTime($query, $args)
@@ -58,10 +58,10 @@ class CabRequest extends Model
         if (array_key_exists('time', $args) && $args['time']) {
             switch($args['time']) {
                 case 'PAST':
-                    $query = $query->where('status', '<>', 'SCHEDULED');
+                    $query = $query->where('status', '<>', 'Scheduled');
                 break;
                 default:
-                    $query = $query->where('status', 'SCHEDULED');
+                    $query = $query->where('status', 'Scheduled');
             }
         }
         
@@ -71,13 +71,13 @@ class CabRequest extends Model
     public function scopeWherePending($query, $user_id)
     {
         return $query->where('user_id', $user_id)
-            ->whereNotIn('status' , ['SCHEDULED', 'CANCELLED', 'COMPLETED']);
+            ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed']);
     }
 
     public function scopeWhereScheduled($query, $user_id)
     {
         return $query->where('user_id', $user_id)
-            ->where('status', 'SCHEDULED');
+            ->where('status', 'Scheduled');
     }
 
     public function scopeSearch($query, $args) 
@@ -114,6 +114,6 @@ class CabRequest extends Model
     public function scopePending($query, $args)
     {
         return $query->where($args['issuer_type'].'_id', $args['issuer_id'])
-            ->whereNotIn('status' , ['SCHEDULED', 'CANCELLED', 'COMPLETED']);
+            ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed']);
     }
 }
