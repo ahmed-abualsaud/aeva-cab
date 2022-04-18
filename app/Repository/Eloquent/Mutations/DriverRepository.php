@@ -45,6 +45,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
     {
         $input = collect($args)->except(['directive', 'avatar'])->toArray();
         $input['password'] = Hash::make($input['phone']);
+        $input['status'] = true;
  
         if (array_key_exists('avatar', $args) && $args['avatar']) {
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
@@ -111,6 +112,10 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         $driver = auth('driver')->user();
+
+        if (!$driver->status) {
+            throw new CustomException(__('lang.your_account_is_disabled'));
+        }
 
         if (array_key_exists('device_id', $args) 
             && $args['device_id'] 

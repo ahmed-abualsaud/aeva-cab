@@ -32,7 +32,7 @@ class CreateDriversTable extends Migration
             $table->double('latitude', 15, 8)->nullable();
             $table->double('longitude', 15, 8)->nullable();
             $table->decimal('rating', 4, 2)->default(5);
-            $table->boolean('status')->default(0);
+            $table->boolean('status')->default(1);
             $table->enum('cab_status', ['ONLINE', 'RIDING', 'OFFLINE'])->default('OFFLINE');
             $table->boolean('register_complete')->default(0);
             $table->timestamp('phone_verified_at')->nullable();

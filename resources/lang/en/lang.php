@@ -122,6 +122,7 @@ return [
     'the_following_already_exists' => 'The following already exists',
     'user_exists' => 'User already exists',
     'you_already_booked_the_trip' => 'You already booked the trip',
+    'your_account_is_disabled' => 'Your account has been disabled',
 
     // ============================== Qruz Cab ==============================
 
