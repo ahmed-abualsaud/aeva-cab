@@ -11,6 +11,7 @@ input CreateDriverInput {
   vehicle: String
   status: Boolean
   partner_id: ID
+  car_type_id: ID! @rules(apply: ["required"])
   code: String
   wallet: Float
 }
@@ -33,6 +34,7 @@ input UpdateDriverInput @validator {
   longitude: Float
   wallet: Float
   register_complete: Boolean
+  car_type_id: ID 
 }
 
 input DriverVehicleInput {
@@ -72,4 +74,5 @@ type Driver {
   wallet: Float
   register_complete: Boolean
   phone_verified_at: String
+  car_type: CarType @BelongsTo
 }

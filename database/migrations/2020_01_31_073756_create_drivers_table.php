@@ -28,6 +28,7 @@ class CreateDriversTable extends Migration
             $table->unsignedDecimal('wallet', 12, 2)->default(0.00);
             $table->unsignedBigInteger('fleet_id')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
+            $table->unsignedBigInteger('car_type_id')->nullable();
             $table->double('latitude', 15, 8)->nullable();
             $table->double('longitude', 15, 8)->nullable();
             $table->decimal('rating', 4, 2)->default(5);
@@ -47,6 +48,7 @@ class CreateDriversTable extends Migration
 
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->foreign('fleet_id')->references('id')->on('fleets')->onDelete('cascade');
+            $table->foreign('car_type_id')->references('id')->on('admins')->onDelete('set null');
         });
     }
 

@@ -71,10 +71,17 @@ class Driver extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Vehicle::class, 'driver_vehicles');
     }
 
+    public function car_type()
+    {
+        return $this->belongsTo(CarType::class);
+    }
+
     public function documents()
     {
         return $this->morphMany(Document::class, 'documentable');
     }
+
+
 
     public function setNameAttribute($value)
     {
