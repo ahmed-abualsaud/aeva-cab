@@ -15,6 +15,7 @@ input UpdateDocumentInput {
   status: String
   notes: String
   admin_id: ID
+  file: Upload
 }
 
 type Document {

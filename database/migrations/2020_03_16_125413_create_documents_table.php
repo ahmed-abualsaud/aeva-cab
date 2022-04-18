@@ -20,7 +20,7 @@ class CreateDocumentsTable extends Migration
             $table->string('notes')->nullable();
             $table->date('expires_on')->nullable();
             $table->morphs('documentable');
-            $table->enum('status', ['In review', 'Accepted', 'Rejected'])->nullable();
+            $table->enum('status', ['In review', 'Approved', 'Rejected'])->nullable();
             $table->unsignedBigInteger('admin_id')->nullable();
             $table->timestamps();
 
