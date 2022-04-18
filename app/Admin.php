@@ -3,13 +3,17 @@
 namespace App;
 
 use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 
 class Admin extends Authenticatable implements JWTSubject
 {
     use Notifiable; 
+    use SoftDeletes;
 
     protected $guarded = [];
 

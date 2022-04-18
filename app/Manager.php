@@ -3,10 +3,14 @@
 namespace App;
 
 use Tymon\JWTAuth\Contracts\JWTSubject;
+
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Manager extends Authenticatable implements JWTSubject
 {
+    use SoftDeletes;
+
     protected $guarded = [];
 
     protected $hidden = ['password'];

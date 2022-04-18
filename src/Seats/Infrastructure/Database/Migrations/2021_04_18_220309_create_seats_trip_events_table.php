@@ -22,6 +22,7 @@ class CreateSeatsTripEventsTable extends Migration
             $table->json('content');
             $table->text('map_url')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->unique('log_id');
             $table->index('trip_id');

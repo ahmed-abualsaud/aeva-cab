@@ -23,6 +23,7 @@ class CreateDocumentsTable extends Migration
             $table->enum('status', ['In review', 'Approved', 'Rejected'])->nullable();
             $table->unsignedBigInteger('admin_id')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('admin_id')
                 ->references('id')

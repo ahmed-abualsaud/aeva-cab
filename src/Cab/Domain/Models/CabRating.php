@@ -5,9 +5,12 @@ namespace Qruz\Cab\Domain\Models;
 use App\Driver;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CabRating extends Model
 {
+    use SoftDeletes;
+
     protected $guarded = [];
 
     public function user()

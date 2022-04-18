@@ -6,12 +6,15 @@ use App\Partner;
 
 use App\Traits\Filterable;
 use App\Traits\Searchable;
+
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SeatsTripTerminalTransaction extends Model
 {
     use Filterable;
     use Searchable;
+    use SoftDeletes;
 
     protected $guarded = [];
     

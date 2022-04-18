@@ -24,6 +24,7 @@ class CreateSeatsTripPosTransactionsTable extends Migration
             $table->unsignedBigInteger('serial');
             $table->float('amount', 8, 2);
             $table->dateTime('created_at');
+            $table->softDeletes();
 
             $table->index('ticket_id');
             $table->index('partner_id');

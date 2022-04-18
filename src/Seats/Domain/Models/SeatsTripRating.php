@@ -6,9 +6,11 @@ use App\User;
 use App\Driver;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SeatsTripRating extends Model
 {
+    use SoftDeletes;
 
     protected $guarded = [];
 

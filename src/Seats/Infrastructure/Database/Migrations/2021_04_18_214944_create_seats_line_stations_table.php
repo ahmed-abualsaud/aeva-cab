@@ -25,6 +25,7 @@ class CreateSeatsLineStationsTable extends Migration
             $table->enum('state', ['START','PICKABLE','END'])->default('PICKABLE');
             $table->smallInteger('order')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index('line_id');
             

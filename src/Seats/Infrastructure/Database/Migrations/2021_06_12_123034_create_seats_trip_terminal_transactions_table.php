@@ -22,6 +22,7 @@ class CreateSeatsTripTerminalTransactionsTable extends Migration
             $table->float('amount', 8, 2);
             $table->enum('status', ['SUCCESS', 'PENDING', 'DECLINED']);
             $table->dateTime('created_at');
+            $table->softDeletes();
 
             $table->index('partner_id');
             $table->index('terminal_id');

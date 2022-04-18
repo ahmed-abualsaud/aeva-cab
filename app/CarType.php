@@ -4,14 +4,17 @@ namespace App;
 
 use App\Traits\Reorderable;
 use App\Scopes\SortByOrderScope;
+
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 use Rennokki\QueryCache\Traits\QueryCacheable;
 
 class CarType extends Model
 {
-    use QueryCacheable;
+    use SoftDeletes;
     use Reorderable;
-    
+    use QueryCacheable;
     protected $guarded = [];
 
     public $cacheFor = 3600;

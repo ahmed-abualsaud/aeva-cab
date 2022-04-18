@@ -7,11 +7,15 @@ use App\Vehicle;
 
 use App\Traits\Filterable;
 use App\Traits\Searchable;
+
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SeatsTripEvent extends Model
 {
-    use Searchable, Filterable;
+    use Searchable; 
+    use Filterable;
+    use SoftDeletes;
     
     protected $guarded = [];
 

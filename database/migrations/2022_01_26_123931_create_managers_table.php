@@ -22,6 +22,7 @@ class CreateManagersTable extends Migration
             $table->unsignedBigInteger('partner_id');
             $table->json('permissions');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index(['partner_id', 'phone']);
             $table->index('phone');

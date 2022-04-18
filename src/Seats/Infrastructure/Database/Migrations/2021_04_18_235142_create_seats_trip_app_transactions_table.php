@@ -25,6 +25,7 @@ class CreateSeatsTripAppTransactionsTable extends Migration
             $table->string('notes')->nullable();
             $table->enum('created_by', ['USER', 'DRIVER'])->default('DRIVER');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index('booking_id');
             $table->index(['trip_id', 'trip_time']);

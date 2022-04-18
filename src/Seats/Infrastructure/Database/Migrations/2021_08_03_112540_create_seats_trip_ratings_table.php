@@ -23,6 +23,7 @@ class CreateSeatsTripRatingsTable extends Migration
             $table->decimal('rating', 4, 2)->nullable();
             $table->string('comment')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index('log_id');
             $table->index(['user_id', 'trip_id']);

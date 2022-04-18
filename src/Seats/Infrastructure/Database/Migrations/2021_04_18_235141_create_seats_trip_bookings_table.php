@@ -34,6 +34,7 @@ class CreateSeatsTripBookingsTable extends Migration
             $table->boolean('is_picked_up')->default(false);
             $table->smallInteger('boarding_pass');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index(['user_id', 'pickup_time']);
             $table->index(['trip_id', 'trip_time']);

@@ -24,6 +24,7 @@ class CreateCabRatingsTable extends Migration
             $table->string('user_comment')->nullable();
             $table->string('driver_comment')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index('request_id');
             $table->index(['user_id', 'request_id']);

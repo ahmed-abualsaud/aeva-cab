@@ -4,16 +4,21 @@ namespace App;
 
 use App\PartnerDriver;
 use App\Traits\Searchable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Notifications\ResetPassword as ResetPasswordNotification;
+
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+use Tymon\JWTAuth\Contracts\JWTSubject;
+use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
 
 class Driver extends Authenticatable implements JWTSubject
 {
-    use Notifiable, Searchable;
-    
+    use Notifiable; 
+    use Searchable;
+    use SoftDeletes;
+
     protected $guarded = [];
 
     protected $hidden = ['password'];
