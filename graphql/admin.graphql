@@ -13,6 +13,7 @@ input UpdateAdminInput @validator {
   email: String
   phone: String
   avatar: Upload
+  status: Boolean
 }
 
 type AdminAuthPayload {
