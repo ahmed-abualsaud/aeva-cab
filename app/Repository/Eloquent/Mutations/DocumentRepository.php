@@ -16,7 +16,6 @@ class DocumentRepository extends BaseRepository
         parent::__construct($model);
     }
 
-
     public function create(array $args)
     {
         $file = $args['file'];
@@ -38,7 +37,7 @@ class DocumentRepository extends BaseRepository
         try {
             $document = $this->model->findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
-            throw new CustomException(__('lang.driver_not_found'));
+            throw new CustomException(__('lang.document_not_found'));
         }
 
         $input = collect($args)->except(['file', 'directive'])->toArray();
@@ -49,7 +48,7 @@ class DocumentRepository extends BaseRepository
             $url = $this->uploadOneFile($file, 'documents');
             $input['url'] = $url;
             
-            if (!$input['name']) {
+            if (array_key_exists('name', $args) && !$input['name']) {
                 $input['name'] = $file->getClientOriginalName();
             }
         }

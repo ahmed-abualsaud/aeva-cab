@@ -30,10 +30,13 @@ Route::group(['middleware' => ['auth:user'], 'namespace' => 'Mutations'], functi
 |--------------------------------------------------------------------------
 |
 */
+Route::post('/driver/upload/document', 'Mutations\DocumentController@uploadDocument');
+
 Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Mutations'], function () {
     Route::post('/driver/avatar/update', 'DriverController@handleAvatar');
     Route::post('/driver/update', 'DriverController@update');
     Route::post('/driver/update/password', 'DriverController@updatePassword');
+    //Route::post('/driver/upload/document', 'DocumentController@uploadDocument');
     Route::post('/business/trip/event/ready', 'BusinessTripEventController@ready');
     Route::post('/business/trip/event/start', 'BusinessTripEventController@start');
     Route::post('/business/trip/event/end', 'BusinessTripEventController@end');
