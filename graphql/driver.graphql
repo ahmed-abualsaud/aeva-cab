@@ -77,4 +77,5 @@ type Driver {
   register_complete: Boolean
   phone_verified_at: String
   car_type: CarType @BelongsTo
+  token: String
 }
