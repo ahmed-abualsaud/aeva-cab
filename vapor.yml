@@ -4,13 +4,20 @@ environments:
     production:
         memory: 1024
         cli-memory: 512
+        queue-memory: 1024
         runtime: 'php-8.1:al2'
         cache: 'mobility-cache'
         storage: 'aeva-mobility'
+        database: 'mobility-production-db'
+        queues:
+            - 'high'
+            - 'low'
         build:
             - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
             - 'php artisan event:cache'
             - 'npm ci && npm run prod && rm -rf node_modules'
+        deploy:
+            - 'php artisan lighthouse:clear-cache'
     staging:
         memory: 1024
         cli-memory: 512
