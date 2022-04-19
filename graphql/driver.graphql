@@ -11,7 +11,7 @@ input CreateDriverInput {
   vehicle: String
   status: Boolean
   partner_id: ID
-  car_type_id: ID! @rules(apply: ["required"])
+  car_type_id: ID
   code: String
   wallet: Float
 }
