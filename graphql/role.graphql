@@ -1,14 +1,14 @@
 input RolePermissionInput {
-  admins: PermissionActionInput! @rules(apply: ["required"])
-  users: PermissionActionInput! @rules(apply: ["required"])
-  drivers: PermissionActionInput! @rules(apply: ["required"])
-  vehicles: PermissionActionInput! @rules(apply: ["required"])
-  business: PermissionActionInput! @rules(apply: ["required"])
-  seats: PermissionActionInput! @rules(apply: ["required"])
-  cab: PermissionActionInput! @rules(apply: ["required"])
-  ondemand: PermissionActionInput! @rules(apply: ["required"])
-  settings: PermissionActionInput! @rules(apply: ["required"])
-  reports: PermissionActionInput! @rules(apply: ["required"])
+  admins: PermissionActionInput
+  users: PermissionActionInput
+  drivers: PermissionActionInput
+  vehicles: PermissionActionInput
+  business: PermissionActionInput
+  seats: PermissionActionInput
+  cab: PermissionActionInput
+  ondemand: PermissionActionInput
+  settings: PermissionActionInput
+  reports: PermissionActionInput
 }
 
 type RolePermission {

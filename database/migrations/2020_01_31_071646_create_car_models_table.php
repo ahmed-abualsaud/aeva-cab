@@ -21,7 +21,7 @@ class CreateCarModelsTable extends Migration
             $table->unsignedSmallInteger('seats')->nullable();
             $table->string('photo')->nullable();
             $table->boolean('is_public')->default(1);
-            $table->smallInteger('order');
+            $table->smallInteger('order')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
