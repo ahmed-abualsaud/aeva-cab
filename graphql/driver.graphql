@@ -35,6 +35,8 @@ input UpdateDriverInput @validator {
   wallet: Float
   register_complete: Boolean
   car_type_id: ID 
+  city: String
+  vehicle: String
 }
 
 input DriverVehicleInput {
