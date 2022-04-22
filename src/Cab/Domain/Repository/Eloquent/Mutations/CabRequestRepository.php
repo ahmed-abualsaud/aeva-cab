@@ -455,7 +455,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $radius = config('custom.seats_search_radius');
 
-        $drivers = Driver::selectRaw('id AS driver_id, name, phone, avatar,
+        $drivers = Driver::selectRaw('id AS driver_id, full_name, phone, avatar,
             ST_Distance_Sphere(point(longitude, latitude), point(?, ?))
             as distance
             ', [$lng, $lat]
