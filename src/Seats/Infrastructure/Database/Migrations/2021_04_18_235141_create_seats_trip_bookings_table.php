@@ -16,11 +16,11 @@ class CreateSeatsTripBookingsTable extends Migration
         Schema::create('seats_trip_bookings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('trip_id');
+            $table->unsignedBigInteger('trip_id')->nullable();
             $table->dateTime('trip_time');
-            $table->unsignedBigInteger('pickup_id');
+            $table->unsignedBigInteger('pickup_id')->nullable();
             $table->dateTime('pickup_time');
-            $table->unsignedBigInteger('dropoff_id');
+            $table->unsignedBigInteger('dropoff_id')->nullable();
             $table->dateTime('dropoff_time');
             $table->unsignedSmallInteger('seats');
             $table->unsignedBigInteger('promo_code_id')->nullable();
@@ -44,10 +44,9 @@ class CreateSeatsTripBookingsTable extends Migration
             $table->index('created_at');
             $table->index('status');
 
-            $table->foreign('trip_id')->references('id')->on('seats_trips')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('pickup_id')->references('id')->on('seats_line_stations')->onDelete('cascade');
-            $table->foreign('dropoff_id')->references('id')->on('seats_line_stations')->onDelete('cascade');
+            $table->foreign('trip_id')->references('id')->on('seats_trips')->onDelete('set null');
+            $table->foreign('pickup_id')->references('id')->on('seats_line_stations')->onDelete('set null');
+            $table->foreign('dropoff_id')->references('id')->on('seats_line_stations')->onDelete('set null');
             $table->foreign('promo_code_id')->references('id')->on('promo_codes')->onDelete('set null');
         });
     }

@@ -9,6 +9,7 @@ use App\Document;
 use App\DriverVehicle;
 use App\PartnerDriver;
 
+use App\Jobs\SendOtp;
 use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;
 
@@ -123,6 +124,18 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
         if (!$driver->status) {
             throw new CustomException(__('lang.your_account_is_disabled'));
+        }
+
+        if (!$driver->phone_verified_at) 
+        {
+            $verification_code = mt_rand(1000, 9999);
+
+            $message = __('lang.verification_code', [
+                'verification_code' => $verification_code,
+                'signature' => config('custom.otp_signature'),
+            ]);
+            
+            SendOtp::dispatch($args['phone'], $message);
         }
 
         if (array_key_exists('device_id', $args) 

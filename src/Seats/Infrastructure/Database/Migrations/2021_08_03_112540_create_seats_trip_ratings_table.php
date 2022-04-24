@@ -16,9 +16,9 @@ class CreateSeatsTripRatingsTable extends Migration
         Schema::create('seats_trip_ratings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->uuid('log_id');
-            $table->unsignedBigInteger('trip_id');
+            $table->unsignedBigInteger('trip_id')->nullable();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('driver_id');
+            $table->unsignedBigInteger('driver_id')->nullable();
             $table->dateTime('trip_time');
             $table->decimal('rating', 4, 2)->nullable();
             $table->string('comment')->nullable();
@@ -28,9 +28,8 @@ class CreateSeatsTripRatingsTable extends Migration
             $table->index('log_id');
             $table->index(['user_id', 'trip_id']);
             
-            $table->foreign('trip_id')->references('id')->on('seats_trips')->onDelete('cascade');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
+            $table->foreign('trip_id')->references('id')->on('seats_trips')->onDelete('set null');
+            $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('set null');
         });
     }
 

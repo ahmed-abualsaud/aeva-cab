@@ -37,6 +37,7 @@ input UpdateDriverInput @validator {
   car_type_id: ID 
   city: String
   vehicle: String
+  phone_verified_at: String
 }
 
 input DriverVehicleInput {

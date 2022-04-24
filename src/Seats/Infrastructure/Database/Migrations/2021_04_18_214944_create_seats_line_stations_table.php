@@ -19,7 +19,7 @@ class CreateSeatsLineStationsTable extends Migration
             $table->string('name_ar')->nullable();
             $table->double('latitude', 15, 8);
             $table->double('longitude', 15, 8); 
-            $table->unsignedBigInteger('line_id');
+            $table->unsignedBigInteger('line_id')->nullable();
             $table->integer('duration')->default(0);
             $table->integer('distance')->default(0);
             $table->enum('state', ['Start','Pickable','End'])->default('Pickable');
@@ -29,7 +29,7 @@ class CreateSeatsLineStationsTable extends Migration
 
             $table->index('line_id');
             
-            $table->foreign('line_id')->references('id')->on('seats_lines')->onDelete('cascade');
+            $table->foreign('line_id')->references('id')->on('seats_lines')->onDelete('set null');
         });
     }
 

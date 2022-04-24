@@ -20,8 +20,8 @@ class CreateSeatsTripsTable extends Migration
             $table->uuid('log_id')->nullable();
             $table->dateTime('ready_at')->nullable();
             $table->dateTime('starts_at')->nullable();
-            $table->unsignedBigInteger('line_id');
-            $table->unsignedBigInteger('partner_id');
+            $table->unsignedBigInteger('line_id')->nullable();
+            $table->unsignedBigInteger('partner_id')->nullable();
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->date('start_date');
@@ -42,8 +42,8 @@ class CreateSeatsTripsTable extends Migration
             $table->index(['start_date', 'end_date']);
             $table->index('created_at');
             
-            $table->foreign('line_id')->references('id')->on('seats_lines')->onDelete('cascade');
-            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
+            $table->foreign('line_id')->references('id')->on('seats_lines')->onDelete('set null');
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('set null');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('set null');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('set null');
         });

@@ -16,7 +16,7 @@ class CreateSeatsTripPosTransactionsTable extends Migration
         Schema::create('seats_trip_pos_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('ticket_id');
-            $table->unsignedBigInteger('partner_id');
+            $table->unsignedBigInteger('partner_id')->nullable();
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('vehicle_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
@@ -32,10 +32,9 @@ class CreateSeatsTripPosTransactionsTable extends Migration
             $table->index('driver_id');
             $table->index('created_at');
 
-            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('set null');
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('set null');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('set null');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
