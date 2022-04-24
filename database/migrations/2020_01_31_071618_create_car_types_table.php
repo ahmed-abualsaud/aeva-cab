@@ -15,7 +15,8 @@ class CreateCarTypesTable extends Migration
     {
         Schema::create('car_types', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->unique();
+            $table->string('name')->nullable();
+            $table->string('name_ar')->nullable();
             $table->string('photo')->nullable();
             $table->unsignedSmallInteger('seats');
             $table->float('base_fare', 8, 3);

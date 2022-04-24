@@ -15,7 +15,8 @@ class CreateCarModelsTable extends Migration
     {
         Schema::create('car_models', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name');
+            $table->string('name')->nullable();
+            $table->string('name_ar')->nullable();
             $table->unsignedBigInteger('type_id');
             $table->unsignedBigInteger('make_id');
             $table->unsignedSmallInteger('seats')->nullable();

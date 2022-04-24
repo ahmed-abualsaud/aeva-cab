@@ -1,14 +1,17 @@
 input CreateCarMakeInput {
-  name: String! @rules(apply: ["required", "unique:car_makes,name"])
+  name: String
+  name_ar: String
 }
 
 input UpdateCarMakeInput @validator {
   id: ID
   name: String
+  name_ar: String
 }
 
 type CarMake {
   id: ID
   name: String
+  name_ar: String
   models: [CarModel] @hasMany
 }

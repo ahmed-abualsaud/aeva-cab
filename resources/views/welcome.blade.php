@@ -4,20 +4,22 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Qruz</title>
+        <title>Aeva Mobility</title>
 
         <!-- Favicon -->
         <link rel="shortcut icon" type="image/png" href="/favicon.ico">
         
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        
         <!-- Styles -->
         <style>
             html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Nunito', sans-serif;
+                background-color: rgb(34, 33, 41);
+                color: #ffa86a;
+                font-family:'Montserrat', sans-serif;
                 font-weight: 200;
                 height: 100vh;
                 margin: 0;
@@ -48,7 +50,9 @@
             }
 
             .title {
-                font-size: 50px;
+                font-size: 60px;
+                font-weight: 500;
+
             }
 
             .m-b-md {
@@ -60,7 +64,7 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <div class="title m-b-md">
-                    Qruz v3
+                    Aeva Mobility
                 </div>
             </div>
         </div>

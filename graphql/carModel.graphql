@@ -1,5 +1,6 @@
 input CreateCarModelInput {
-  name: String! @rules(apply: ["required"])
+  name: String
+  name_ar: String
   type_id: ID! @rules(apply: ["required"])
   make_id: ID! @rules(apply: ["required"])
   seats: Int! @rules(apply: ["required"])
@@ -11,6 +12,7 @@ input CreateCarModelInput {
 input UpdateCarModelInput {
   id: ID! @rules(apply: ["required"])
   name: String
+  name_ar: String
   type_id: ID
   make_id: ID
   seats: Int
@@ -21,6 +23,7 @@ input UpdateCarModelInput {
 type CarModel {
   id: ID
   name: String
+  name_ar: String
   type: CarType @belongsTo
   make: CarMake @belongsTo
   seats: Int

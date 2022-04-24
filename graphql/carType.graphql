@@ -1,5 +1,6 @@
 input CreateCarTypeInput {
-  name: String! @rules(apply: ["required", "unique:car_types,name"])
+  name: String
+  name_ar: String
   seats: Int! @rules(apply: ["required"])
   base_fare: Float! @rules(apply: ["required"])
   distance_price: Float! @rules(apply: ["required"])
@@ -14,6 +15,7 @@ input CreateCarTypeInput {
 input UpdateCarTypeInput @validator {
   id: ID
   name: String
+  name_ar: String
   seats: Int
   base_fare: Float
   distance_price: Float
@@ -27,6 +29,7 @@ input UpdateCarTypeInput @validator {
 type CarType {
   id: ID
   name: String
+  name_ar: String
   seats: Int
   base_fare: Float
   distance_price: Float
