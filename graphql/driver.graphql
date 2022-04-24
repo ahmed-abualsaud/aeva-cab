@@ -79,4 +79,5 @@ type Driver {
   phone_verified_at: String
   car_type: CarType @BelongsTo
   token: String
+  verification_code: String
 }

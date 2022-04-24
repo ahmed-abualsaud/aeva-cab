@@ -63,6 +63,17 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $driver->token = JWTAuth::fromUser($driver);
         }
 
+        $verification_code = mt_rand(1000, 9999);
+
+        $message = __('lang.verification_code', [
+            'verification_code' => $verification_code,
+            'signature' => config('custom.otp_signature'),
+        ]);
+        
+        SendOtp::dispatch($args['phone'], $message);
+
+        $driver->verification_code = $verification_code;
+
         $row = [
             'documentable_id' => $driver->id,
             'documentable_type' =>'App\\Driver',
@@ -136,6 +147,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             ]);
             
             SendOtp::dispatch($args['phone'], $message);
+
+            $driver->verification_code = $verification_code;
         }
 
         if (array_key_exists('device_id', $args) 
