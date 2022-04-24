@@ -295,7 +295,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
   deleteOndemandRequest(id: [ID!]!): Boolean
     @field(resolver: "OndemandRequestResolver@destroy")
 
-  # Qruz To School
+  # Aeva To School
   createSchool(input: CreateSchoolInput! @spread): School
     @create
   createSchoolRequest(input: CreateSchoolRequestInput! @spread): SchoolRequest 
@@ -307,7 +307,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
   changeSchoolRequestStatus(input: ChangeSchoolRequestStatusInput! @spread): String
     @field(resolver: "SchoolRequestResolver@changeStatus")
 
-  # Qruz To Work
+  # Aeva To Work
   createWorkplace(input: CreateWorkplaceInput! @spread): Workplace 
     @create
   createWorkRequest(input: CreateWorkRequestInput! @spread): WorkRequest 

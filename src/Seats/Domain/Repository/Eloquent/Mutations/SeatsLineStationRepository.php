@@ -1,11 +1,11 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository\Eloquent\Mutations;
+namespace Aeva\Seats\Domain\Repository\Eloquent\Mutations;
 
 use Illuminate\Support\Facades\DB;
 
-use Qruz\Seats\Domain\Models\SeatsLine;
-use Qruz\Seats\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Seats\Domain\Models\SeatsLine;
+use Aeva\Seats\Domain\Repository\Eloquent\BaseRepository;
 
 class SeatsLineStationRepository extends BaseRepository
 {

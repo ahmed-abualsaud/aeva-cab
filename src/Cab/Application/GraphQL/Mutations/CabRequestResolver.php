@@ -1,8 +1,8 @@
 <?php
 
-namespace Qruz\Cab\Application\GraphQL\Mutations;
+namespace Aeva\Cab\Application\GraphQL\Mutations;
 
-use Qruz\Cab\Domain\Repository\Eloquent\Mutations\CabRequestRepository;
+use Aeva\Cab\Domain\Repository\Eloquent\Mutations\CabRequestRepository;
 
 class CabRequestResolver
 {

@@ -15,7 +15,7 @@ return [
     'db_name' => env('DB_DATABASE'),
     'db_user' => env('DB_USERNAME'),
     'db_pass' => env('DB_PASSWORD'),
-    'db_backup_path' => env('DB_BACKUP_DIRECTORY', '/var/www/qruz/backup'),
+    'db_backup_path' => env('DB_BACKUP_DIRECTORY', '/var/www/aeva/backup'),
     'telescope_token' => env('TELESCOPE_TOKEN'),
     
 ];

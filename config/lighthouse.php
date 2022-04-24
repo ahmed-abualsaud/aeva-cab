@@ -123,18 +123,18 @@ return [
     'namespaces' => [
         'models' => [
             'App', 'App\\Models', 
-            'Qruz\\Cab\\Domain\\Models', 
-            'Qruz\\Seats\\Domain\\Models'
+            'Aeva\\Cab\\Domain\\Models', 
+            'Aeva\\Seats\\Domain\\Models'
         ],
         'queries' => [
             'App\\GraphQL\\Queries', 
-            'Qruz\\Cab\\Application\\GraphQL\\Queries', 
-            'Qruz\\Seats\\Application\\GraphQL\\Queries'
+            'Aeva\\Cab\\Application\\GraphQL\\Queries', 
+            'Aeva\\Seats\\Application\\GraphQL\\Queries'
         ],
         'mutations' => [
             'App\\GraphQL\\Mutations', 
-            'Qruz\\Cab\\Application\\GraphQL\\Mutations', 
-            'Qruz\\Seats\\Application\\GraphQL\\Mutations'
+            'Aeva\\Cab\\Application\\GraphQL\\Mutations', 
+            'Aeva\\Seats\\Application\\GraphQL\\Mutations'
         ],
         'subscriptions' => 'App\\GraphQL\\Subscriptions',
         'interfaces' => 'App\\GraphQL\\Interfaces',

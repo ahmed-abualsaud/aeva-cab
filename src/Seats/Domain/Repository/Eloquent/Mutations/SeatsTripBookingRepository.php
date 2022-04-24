@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository\Eloquent\Mutations;
+namespace Aeva\Seats\Domain\Repository\Eloquent\Mutations;
 
 use Carbon\Carbon;
 
@@ -10,10 +10,10 @@ use App\Exceptions\CustomException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
-use Qruz\Seats\Domain\Models\SeatsTrip;
-use Qruz\Seats\Domain\Models\SeatsTripBooking;
-use Qruz\Seats\Domain\Models\SeatsTripAppTransaction;
-use Qruz\Seats\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Seats\Domain\Models\SeatsTrip;
+use Aeva\Seats\Domain\Models\SeatsTripBooking;
+use Aeva\Seats\Domain\Models\SeatsTripAppTransaction;
+use Aeva\Seats\Domain\Repository\Eloquent\BaseRepository;
 
 class SeatsTripBookingRepository extends BaseRepository
 {

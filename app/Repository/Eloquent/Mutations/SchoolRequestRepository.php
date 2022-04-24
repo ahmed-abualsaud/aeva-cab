@@ -101,7 +101,7 @@ class SchoolRequestRepository extends BaseRepository
                 SendPushNotification::dispatch(
                     $this->userToken($user['userId']), 
                     $responseMsg, 
-                    'Qruz to School',
+                    'Aeva to School',
                     ['view' => 'SchoolRequest', 'id' => $user['requestId']]
                 );
             }

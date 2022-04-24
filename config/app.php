@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Qruz'),
+    'name' => env('APP_NAME', 'Aeva Mobility'),
 
     /*
     |--------------------------------------------------------------------------
@@ -181,8 +181,8 @@ return [
         /*
          * Modules Service Providers...
          */
-        Qruz\Cab\Providers\CabServiceProvider::class,
-        Qruz\Seats\Providers\SeatsServiceProvider::class,
+        Aeva\Cab\Providers\CabServiceProvider::class,
+        Aeva\Seats\Providers\SeatsServiceProvider::class,
 
     ],
 

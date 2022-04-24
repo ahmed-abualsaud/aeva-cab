@@ -1,14 +1,14 @@
 <?php
 
-namespace Qruz\Cab\Domain\Repository\Eloquent\Mutations;
+namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 
 use App\Exceptions\CustomException;
 
-use Qruz\Cab\Domain\Models\User;
-use Qruz\Cab\Domain\Models\CabRequest;
-use Qruz\Cab\Domain\Models\CabRequestTransaction;
+use Aeva\Cab\Domain\Models\User;
+use Aeva\Cab\Domain\Models\CabRequest;
+use Aeva\Cab\Domain\Models\CabRequestTransaction;
 
-use Qruz\Cab\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

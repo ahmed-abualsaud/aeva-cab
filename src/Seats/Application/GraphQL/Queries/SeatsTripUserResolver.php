@@ -1,8 +1,8 @@
 <?php
 
-namespace Qruz\Seats\Application\GraphQL\Queries;
+namespace Aeva\Seats\Application\GraphQL\Queries;
 
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripUserRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripUserRepositoryInterface;
 
 class SeatsTripUserResolver
 {

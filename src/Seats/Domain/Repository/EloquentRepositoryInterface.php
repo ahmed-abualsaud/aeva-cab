@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository;
+namespace Aeva\Seats\Domain\Repository;
 
 /**
 * Interface EloquentRepositoryInterface

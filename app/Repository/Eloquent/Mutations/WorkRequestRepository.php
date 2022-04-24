@@ -102,7 +102,7 @@ class WorkRequestRepository extends BaseRepository
                 SendPushNotification::dispatch(
                     $this->userToken($user['userId']), 
                     $responseMsg, 
-                    'Qruz to Work',
+                    'Aeva to Work',
                     ['view' => 'WorkRequest', 'id' => $user['requestId']]
                 );
             }

@@ -1,5 +1,5 @@
 <?php
-namespace Qruz\Seats\Domain\Repository\Queries;
+namespace Aeva\Seats\Domain\Repository\Queries;
 
 interface SeatsTripUserRepositoryInterface
 {

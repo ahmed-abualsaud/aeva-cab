@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Seats\Domain\Models;
+namespace Aeva\Seats\Domain\Models;
 
 use App\User;
 use App\PromoCode;

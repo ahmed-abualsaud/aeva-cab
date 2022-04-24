@@ -1,14 +1,14 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository\Eloquent\Mutations;
+namespace Aeva\Seats\Domain\Repository\Eloquent\Mutations;
 
 use Illuminate\Http\Request;
 
 use App\Exceptions\CustomException;
 use App\Http\Controllers\Controller;
 
-use Qruz\Seats\Domain\Models\SeatsTripTerminalTransaction;
-use Qruz\Seats\Domain\Exports\SeatsTripTerminalTransactionExport;
+use Aeva\Seats\Domain\Models\SeatsTripTerminalTransaction;
+use Aeva\Seats\Domain\Exports\SeatsTripTerminalTransactionExport;
 
 class SeatsTripTerminalTransactionRepository extends Controller
 {

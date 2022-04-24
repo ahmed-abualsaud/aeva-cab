@@ -8,7 +8,7 @@ use Illuminate\Http\File;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 
-use Qruz\Seats\Domain\Models\SeatsTripTerminalTransaction;
+use Aeva\Seats\Domain\Models\SeatsTripTerminalTransaction;
 
 class TaskTakeDatabaseBackup extends Command
 {

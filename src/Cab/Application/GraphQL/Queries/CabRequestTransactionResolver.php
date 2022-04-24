@@ -1,8 +1,8 @@
 <?php
 
-namespace Qruz\Cab\Application\GraphQL\Queries;
+namespace Aeva\Cab\Application\GraphQL\Queries;
 
-use Qruz\Cab\Domain\Repository\Eloquent\Queries\CabRequestTransactionRepository;
+use Aeva\Cab\Domain\Repository\Eloquent\Queries\CabRequestTransactionRepository;
 
 class CabRequestTransactionResolver
 {

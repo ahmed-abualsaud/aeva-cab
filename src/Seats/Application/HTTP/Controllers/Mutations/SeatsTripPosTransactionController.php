@@ -1,11 +1,11 @@
 <?php
 
-namespace Qruz\Seats\Application\Http\Controllers\Mutations;
+namespace Aeva\Seats\Application\Http\Controllers\Mutations;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-use Qruz\Seats\Domain\Repository\Eloquent\Mutations\SeatsTripPosTransactionRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Mutations\SeatsTripPosTransactionRepository;
 
 class SeatsTripPosTransactionController 
 {

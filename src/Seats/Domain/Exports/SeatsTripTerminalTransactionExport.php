@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Seats\Domain\Exports;
+namespace Aeva\Seats\Domain\Exports;
 
 use App\Partner;
 use App\Traits\Filterable;
@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-use Qruz\Seats\Domain\Models\SeatsTripTerminalTransaction;
+use Aeva\Seats\Domain\Models\SeatsTripTerminalTransaction;
 
 class SeatsTripTerminalTransactionExport implements FromQuery, WithHeadings
 {

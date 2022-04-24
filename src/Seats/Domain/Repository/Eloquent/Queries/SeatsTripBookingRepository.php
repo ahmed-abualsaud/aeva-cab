@@ -1,10 +1,10 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository\Eloquent\Queries;
+namespace Aeva\Seats\Domain\Repository\Eloquent\Queries;
 
-use Qruz\Seats\Domain\Models\SeatsLineStation;
-use Qruz\Seats\Domain\Repository\Eloquent\BaseRepository;
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripBookingRepositoryInterface;
+use Aeva\Seats\Domain\Models\SeatsLineStation;
+use Aeva\Seats\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripBookingRepositoryInterface;
 
 class SeatsTripBookingRepository extends BaseRepository implements SeatsTripBookingRepositoryInterface
 {

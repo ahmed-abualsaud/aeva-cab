@@ -1,16 +1,16 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository\Eloquent\Mutations;
+namespace Aeva\Seats\Domain\Repository\Eloquent\Mutations;
 
 use Illuminate\Support\Facades\DB;
 
 use App\Exceptions\CustomException;
 
-use Qruz\Seats\Domain\Models\SeatsLine;
-use Qruz\Seats\Domain\Models\SeatsLineStation;
+use Aeva\Seats\Domain\Models\SeatsLine;
+use Aeva\Seats\Domain\Models\SeatsLineStation;
 
-use Qruz\Seats\Domain\Repository\Eloquent\BaseRepository;
-use Qruz\Seats\Domain\Repository\Mutations\SeatsLineRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Seats\Domain\Repository\Mutations\SeatsLineRepositoryInterface;
 
 class SeatsLineRepository extends BaseRepository implements SeatsLineRepositoryInterface
 {

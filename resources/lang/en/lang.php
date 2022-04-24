@@ -4,7 +4,7 @@ return [
 
     'admin_not_found'   => 'The provided admin ID is not found',
     'invalid_auth_credentials' => 'The provided authentication credentials are invalid',
-    'verification_code' => 'Your Qruz code is: :verification_code %0a :signature',
+    'verification_code' => 'Your Aeva Mobility code is: :verification_code %0a :signature',
     'password_missmatch' => 'Your current password does not matches with the password you provided',
     'type_new_password' => 'New Password cannot be same as your current password. Please choose a different password',
     'password_changed' => 'Password changed successfully',
@@ -14,7 +14,7 @@ return [
     'trip_already_started' => 'This Trip has already been started',
     'trip_started' => 'has been started',
     'driver_not_ready' => 'Driver is not ready',
-    'captain_arrived' => 'Qruz captain has arrived at your station and will leave after 1 min',
+    'captain_arrived' => 'Aeva Mobility captain has arrived at your station and will leave after 1 min',
     'notify_station_failed' => 'Could not notify selected station\'s users',
     'welcome_trip' => 'Welcome! May you be happy and safe throughout this trip',
     'bye_trip' => 'Bye! We can\'t wait to see you next time',
@@ -124,7 +124,7 @@ return [
     'you_already_booked_the_trip' => 'You already booked the trip',
     'your_account_is_disabled' => 'Your account has been suspended',
 
-    // ============================== Qruz Cab ==============================
+    // ============================== Aeva Cab ==============================
 
     'schedule_request_failed' => 'Schedule request failed',
     'search_request_failed' => 'Search request failed',

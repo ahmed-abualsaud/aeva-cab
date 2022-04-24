@@ -1,14 +1,14 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository\Eloquent\Queries;
+namespace Aeva\Seats\Domain\Repository\Eloquent\Queries;
 
 use App\Partner;
 use App\Traits\Filterable;
 
-use Qruz\Seats\Domain\Repository\Eloquent\BaseRepository;
-use Qruz\Seats\Domain\Models\SeatsTripTerminalTransaction;
-use Qruz\Seats\Domain\Exports\SeatsTripTerminalTransactionExport;
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripTerminalTransactionRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Seats\Domain\Models\SeatsTripTerminalTransaction;
+use Aeva\Seats\Domain\Exports\SeatsTripTerminalTransactionExport;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripTerminalTransactionRepositoryInterface;
 
 class SeatsTripTerminalTransactionRepository extends BaseRepository implements SeatsTripTerminalTransactionRepositoryInterface
 {

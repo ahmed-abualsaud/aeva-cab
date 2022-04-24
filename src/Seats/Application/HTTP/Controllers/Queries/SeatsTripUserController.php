@@ -1,12 +1,12 @@
 <?php
 
-namespace Qruz\Seats\Application\Http\Controllers\Queries;
+namespace Aeva\Seats\Application\Http\Controllers\Queries;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
-use Qruz\Seats\Domain\Repository\Eloquent\Queries\SeatsTripUserRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Queries\SeatsTripUserRepository;
 
 class SeatsTripUserController
 {

@@ -1,8 +1,8 @@
 <?php   
 
-namespace Qruz\Seats\Domain\Repository\Eloquent;   
+namespace Aeva\Seats\Domain\Repository\Eloquent;   
 
-use Qruz\Seats\Domain\Repository\EloquentRepositoryInterface; 
+use Aeva\Seats\Domain\Repository\EloquentRepositoryInterface; 
 use Illuminate\Database\Eloquent\Model;   
 
 class BaseRepository implements EloquentRepositoryInterface 

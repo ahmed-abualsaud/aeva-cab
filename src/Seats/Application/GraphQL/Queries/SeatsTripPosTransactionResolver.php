@@ -1,8 +1,8 @@
 <?php
 
-namespace Qruz\Seats\Application\GraphQL\Queries;
+namespace Aeva\Seats\Application\GraphQL\Queries;
 
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripPosTransactionRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripPosTransactionRepositoryInterface;
 
 class SeatsTripPosTransactionResolver
 {

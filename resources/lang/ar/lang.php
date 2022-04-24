@@ -4,7 +4,7 @@ return [
 
     'admin_not_found'   => 'لم يتم العثور على معرف المسؤول المقدم',
     'invalid_auth_credentials' => 'بيانات اعتماد المصادقة المقدمة غير صالحة',
-    'verification_code' => 'Your Qruz code is: :verification_code %0a :signature',
+    'verification_code' => 'Your Aeva Mobility code is: :verification_code %0a :signature',
     'password_missmatch' => 'كلمة المرور الحالية لا تتطابق مع كلمة المرور التي قدمتها',
     'type_new_password' => 'لا يمكن أن تكون كلمة المرور الجديدة هي نفسها كلمة مرورك الحالية. الرجاء اختيار كلمة مرور مختلفة',
     'password_changed' => 'تم تغيير كلمة المرور بنجاح',
@@ -124,7 +124,7 @@ return [
     'you_already_booked_the_trip' => 'لقد قمت بحجز تلك الرحلة من قبل',
     'your_account_is_disabled' => 'لقد تم تعليق حسابك',
 
-    // ============================== Qruz Cab ==============================
+    // ============================== Aeva Cab ==============================
 
     'schedule_request_failed' => 'فشل جدولة الطلب',
     'search_request_failed' => 'فشل عملية البحث',

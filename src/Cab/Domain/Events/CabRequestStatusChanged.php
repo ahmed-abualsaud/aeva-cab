@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Cab\Domain\Events;
+namespace Aeva\Cab\Domain\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;

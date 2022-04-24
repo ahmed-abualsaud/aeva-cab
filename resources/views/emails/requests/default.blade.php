@@ -8,5 +8,5 @@ View Request
 @endcomponent
 
 Regards,<br>
-Qruz Team
+Aeva Mobility Team
 @endcomponent

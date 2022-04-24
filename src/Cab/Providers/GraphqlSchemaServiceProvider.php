@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Cab\Providers;
+namespace Aeva\Cab\Providers;
 
 use Event;
 

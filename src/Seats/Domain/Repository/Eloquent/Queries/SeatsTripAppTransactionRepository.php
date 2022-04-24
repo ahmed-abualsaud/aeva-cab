@@ -1,12 +1,12 @@
 <?php 
 
-namespace Qruz\Seats\Domain\Repository\Eloquent\Queries;
+namespace Aeva\Seats\Domain\Repository\Eloquent\Queries;
 
 use App\Traits\Filterable;
 
-use Qruz\Seats\Domain\Models\SeatsTripAppTransaction;
-use Qruz\Seats\Domain\Repository\Eloquent\BaseRepository;
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripAppTransactionRepositoryInterface;
+use Aeva\Seats\Domain\Models\SeatsTripAppTransaction;
+use Aeva\Seats\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripAppTransactionRepositoryInterface;
 
 class SeatsTripAppTransactionRepository extends BaseRepository implements SeatsTripAppTransactionRepositoryInterface
 {

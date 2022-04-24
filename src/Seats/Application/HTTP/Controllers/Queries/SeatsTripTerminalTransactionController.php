@@ -1,10 +1,10 @@
 <?php
 
-namespace Qruz\Seats\Application\Http\Controllers\Queries;
+namespace Aeva\Seats\Application\Http\Controllers\Queries;
 
 use Illuminate\Http\Request;
 
-use Qruz\Seats\Domain\Repository\Eloquent\Mutations\SeatsTripTerminalTransactionRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Mutations\SeatsTripTerminalTransactionRepository;
 
 class SeatsTripTerminalTransactionController
 {

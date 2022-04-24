@@ -118,7 +118,7 @@ class OndemandRequestRepository extends BaseRepository
             SendPushNotification::dispatch(
                 $this->userToken($request->user_id), 
                 $responseMsg,
-                'Qruz On Demand',
+                'Aeva On Demand',
                 ['view' => 'OnDemandRequest', 'id' => $request->id]
             ); 
         }
@@ -142,7 +142,7 @@ class OndemandRequestRepository extends BaseRepository
 
     protected function mailRequest($request_id)
     {
-        $title = 'Qruz On Demand';
+        $title = 'Aeva On Demand';
         $msg = __('lang.request_submitted');
         $view = 'emails.requests.default';
         $url = config('custom.app_url')."/ondemand/".$request_id;

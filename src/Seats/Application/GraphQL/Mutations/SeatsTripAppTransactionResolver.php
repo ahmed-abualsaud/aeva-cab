@@ -1,8 +1,8 @@
 <?php
 
-namespace Qruz\Seats\Application\GraphQL\Mutations;
+namespace Aeva\Seats\Application\GraphQL\Mutations;
 
-use Qruz\Seats\Domain\Repository\Eloquent\Mutations\SeatsTripAppTransactionRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Mutations\SeatsTripAppTransactionRepository;
 
 class SeatsTripAppTransactionResolver
 {

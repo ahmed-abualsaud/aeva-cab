@@ -146,7 +146,7 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user"]) {
   # Seats Trip
   seatsNearbyStations(plat: String!, plng: String!, dlat: String!, dlng: String!, day: String!): 
     [SeatsNearbyStation] 
-    @paginate(builder: "Qruz\\Seats\\Application\\GraphQL\\Queries\\SeatsLineStationResolver@nearby", type: SIMPLE, defaultCount: 10)
+    @paginate(builder: "Aeva\\Seats\\Application\\GraphQL\\Queries\\SeatsLineStationResolver@nearby", type: SIMPLE, defaultCount: 10)
     @cache(maxAge: 300)
   seatsTripBooking(id: ID! @eq): SeatsTripBooking @find
   userSeatsTripBookings(user_id: ID! @eq, time: String!): [SeatsTripBooking] 

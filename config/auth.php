@@ -103,7 +103,7 @@ return [
 
         'users' => [
             'driver' => 'eloquent',
-            'model' => Qruz\Cab\Domain\Models\User::class,
+            'model' => Aeva\Cab\Domain\Models\User::class,
         ],
 
         'drivers' => [
@@ -128,7 +128,7 @@ return [
 
         'cached-users' => [
             'driver' => 'cached-user',
-            'model' => Qruz\Cab\Domain\Models\User::class,
+            'model' => Aeva\Cab\Domain\Models\User::class,
         ],
 
         'cached-drivers' => [

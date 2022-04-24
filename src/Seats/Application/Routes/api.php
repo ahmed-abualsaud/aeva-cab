@@ -9,7 +9,7 @@
 Route::group([
         'prefix' => 'rest',
         'middleware' => ['api'], 
-        'namespace' => 'Qruz\Seats\Application\HTTP\Controllers\Mutations'
+        'namespace' => 'Aeva\Seats\Application\HTTP\Controllers\Mutations'
     ], function () {
         Route::post('/seats/trip/terminal/transaction', 'SeatsTripTerminalTransactionController@create');
 });
@@ -23,7 +23,7 @@ Route::group([
 Route::group([
         'prefix' => 'rest',
         'middleware' => ['api', 'auth:driver'], 
-        'namespace' => 'Qruz\Seats\Application\HTTP\Controllers\Mutations'
+        'namespace' => 'Aeva\Seats\Application\HTTP\Controllers\Mutations'
     ], function () {
         Route::post('/seats/trip/event/ready', 'SeatsTripEventController@ready');
         Route::post('/seats/trip/event/start', 'SeatsTripEventController@start');
@@ -46,7 +46,7 @@ Route::group([
 Route::group([
         'prefix' => 'rest',
         'middleware' => ['api', 'auth:driver'], 
-        'namespace' => 'Qruz\Seats\Application\HTTP\Controllers\Queries'
+        'namespace' => 'Aeva\Seats\Application\HTTP\Controllers\Queries'
     ], function () {
         Route::get('/driver/{driver_id}/seats/trips', 'SeatsTripController@driverSeatsTrips');
         Route::get('/seats/trip/line/{line_id}/stations', 'SeatsTripController@seatsTripLineStations');
@@ -66,7 +66,7 @@ Route::group([
 Route::group([
         'prefix' => 'rest',
         'middleware' => ['api', 'auth:admin,partner'], 
-        'namespace' => 'Qruz\Seats\Application\HTTP\Controllers\Queries'
+        'namespace' => 'Aeva\Seats\Application\HTTP\Controllers\Queries'
     ], function () {
         Route::get('/seats/trip/terminal/transactions/export', 'SeatsTripTerminalTransactionController@export');
         Route::get('/seats/trip/pos/transactions/export', 'SeatsTripPosTransactionController@export');
@@ -81,7 +81,7 @@ Route::group([
 Route::group([
         'prefix' => 'rest',
         'middleware' => ['api', 'auth:manager'], 
-        'namespace' => 'Qruz\Seats\Application\HTTP\Controllers\Queries'
+        'namespace' => 'Aeva\Seats\Application\HTTP\Controllers\Queries'
     ], function () {
         Route::get('/seats/trip/driver/pos/transactions/report', 'SeatsTripPosTransactionController@driverReport');
 });

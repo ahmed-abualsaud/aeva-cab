@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository\Mutations;
+namespace Aeva\Seats\Domain\Repository\Mutations;
 
 interface SeatsTripEventRepositoryInterface
 {

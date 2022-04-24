@@ -1,12 +1,12 @@
 <?php
 
-namespace Qruz\Cab\Domain\Repository\Eloquent\Mutations;
+namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 
 use App\Driver;
 
-use Qruz\Cab\Domain\Models\CabRating;
+use Aeva\Cab\Domain\Models\CabRating;
 
-use Qruz\Cab\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 

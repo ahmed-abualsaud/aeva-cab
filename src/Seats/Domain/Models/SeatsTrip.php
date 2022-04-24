@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Seats\Domain\Models;
+namespace Aeva\Seats\Domain\Models;
 
 use App\Driver;
 use App\Partner;

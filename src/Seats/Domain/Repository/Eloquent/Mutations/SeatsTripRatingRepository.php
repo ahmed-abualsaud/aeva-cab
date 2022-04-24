@@ -1,13 +1,13 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository\Eloquent\Mutations;
+namespace Aeva\Seats\Domain\Repository\Eloquent\Mutations;
 
 use App\Driver;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-use Qruz\Seats\Domain\Models\SeatsTripRating;
-use Qruz\Seats\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Seats\Domain\Models\SeatsTripRating;
+use Aeva\Seats\Domain\Repository\Eloquent\BaseRepository;
 
 class SeatsTripRatingRepository extends BaseRepository
 {

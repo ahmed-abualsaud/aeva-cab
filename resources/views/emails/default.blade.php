@@ -4,5 +4,5 @@
 {{ $message }}
 
 Regards,<br>
-Qruz Team
+Aeva Mobility Team
 @endcomponent

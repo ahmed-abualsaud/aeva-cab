@@ -1,35 +1,35 @@
 <?php
 
-namespace Qruz\Seats\Providers;
+namespace Aeva\Seats\Providers;
 
 #----------------------------------- QUERIES --------------------------------
 
 # Interfaces
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripRepositoryInterface;
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripUserRepositoryInterface;
-use Qruz\Seats\Domain\Repository\Queries\SeatsLineStationRepositoryInterface;
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripBookingRepositoryInterface;
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripAppTransactionRepositoryInterface;
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripPosTransactionRepositoryInterface;
-use Qruz\Seats\Domain\Repository\Queries\SeatsTripTerminalTransactionRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripUserRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Queries\SeatsLineStationRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripBookingRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripAppTransactionRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripPosTransactionRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Queries\SeatsTripTerminalTransactionRepositoryInterface;
 
 # Repositories
-use Qruz\Seats\Domain\Repository\Eloquent\Queries\SeatsTripRepository;
-use Qruz\Seats\Domain\Repository\Eloquent\Queries\SeatsTripUserRepository;
-use Qruz\Seats\Domain\Repository\Eloquent\Queries\SeatsLineStationRepository;
-use Qruz\Seats\Domain\Repository\Eloquent\Queries\SeatsTripBookingRepository;
-use Qruz\Seats\Domain\Repository\Eloquent\Queries\SeatsTripAppTransactionRepository;
-use Qruz\Seats\Domain\Repository\Eloquent\Queries\SeatsTripPosTransactionRepository;
-use Qruz\Seats\Domain\Repository\Eloquent\Queries\SeatsTripTerminalTransactionRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Queries\SeatsTripRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Queries\SeatsTripUserRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Queries\SeatsLineStationRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Queries\SeatsTripBookingRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Queries\SeatsTripAppTransactionRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Queries\SeatsTripPosTransactionRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Queries\SeatsTripTerminalTransactionRepository;
 
 # ---------------------------------- MUTATIONS -----------------------------------
 # Interfaces
-use Qruz\Seats\Domain\Repository\Mutations\SeatsLineRepositoryInterface;
-use Qruz\Seats\Domain\Repository\Mutations\SeatsTripEventRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Mutations\SeatsLineRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Mutations\SeatsTripEventRepositoryInterface;
 
 # Repositories
-use Qruz\Seats\Domain\Repository\Eloquent\Mutations\SeatsLineRepository;
-use Qruz\Seats\Domain\Repository\Eloquent\Mutations\SeatsTripEventRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Mutations\SeatsLineRepository;
+use Aeva\Seats\Domain\Repository\Eloquent\Mutations\SeatsTripEventRepository;
 
 use Illuminate\Support\ServiceProvider;
 

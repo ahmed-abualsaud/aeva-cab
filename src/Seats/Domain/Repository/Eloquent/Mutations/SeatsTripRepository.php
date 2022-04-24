@@ -1,14 +1,14 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository\Eloquent\Mutations;
+namespace Aeva\Seats\Domain\Repository\Eloquent\Mutations;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
 use App\Exceptions\CustomException;
 
-use Qruz\Seats\Domain\Models\SeatsTrip;
-use Qruz\Seats\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Seats\Domain\Models\SeatsTrip;
+use Aeva\Seats\Domain\Repository\Eloquent\BaseRepository;
 
 class SeatsTripRepository extends BaseRepository
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Seats\Domain\Repository\Eloquent\Mutations;
+namespace Aeva\Seats\Domain\Repository\Eloquent\Mutations;
 
 use App\User;
 use App\Driver;
@@ -11,17 +11,17 @@ use App\Exceptions\CustomException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
-use Qruz\Seats\Domain\Models\SeatsTrip;
-use Qruz\Seats\Domain\Models\SeatsTripEntry;
-use Qruz\Seats\Domain\Models\SeatsTripEvent;
-use Qruz\Seats\Domain\Models\SeatsTripRating;
-use Qruz\Seats\Domain\Models\SeatsTripBooking;
-use Qruz\Seats\Domain\Models\SeatsTripAppTransaction;
+use Aeva\Seats\Domain\Models\SeatsTrip;
+use Aeva\Seats\Domain\Models\SeatsTripEntry;
+use Aeva\Seats\Domain\Models\SeatsTripEvent;
+use Aeva\Seats\Domain\Models\SeatsTripRating;
+use Aeva\Seats\Domain\Models\SeatsTripBooking;
+use Aeva\Seats\Domain\Models\SeatsTripAppTransaction;
 
-use Qruz\Seats\Domain\Events\SeatsTripStatusChanged;
+use Aeva\Seats\Domain\Events\SeatsTripStatusChanged;
 
-use Qruz\Seats\Domain\Repository\Eloquent\BaseRepository;
-use Qruz\Seats\Domain\Repository\Mutations\SeatsTripEventRepositoryInterface;
+use Aeva\Seats\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Seats\Domain\Repository\Mutations\SeatsTripEventRepositoryInterface;
 
 class SeatsTripEventRepository extends BaseRepository implements SeatsTripEventRepositoryInterface
 {

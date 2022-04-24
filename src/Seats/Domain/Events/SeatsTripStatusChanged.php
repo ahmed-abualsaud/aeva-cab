@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Seats\Domain\Events;
+namespace Aeva\Seats\Domain\Events;
 
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;

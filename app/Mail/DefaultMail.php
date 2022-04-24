@@ -21,7 +21,7 @@ class DefaultMail extends Mailable implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($message, $title = "Qruz", $url = null, $view = 'emails.default')
+    public function __construct($message, $title = "Aeva Mobility", $url = null, $view = 'emails.default')
     {
         $this->message = $message;
         $this->title = $title;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Seats\Providers;
+namespace Aeva\Seats\Providers;
 
 use Illuminate\Support\ServiceProvider;
 

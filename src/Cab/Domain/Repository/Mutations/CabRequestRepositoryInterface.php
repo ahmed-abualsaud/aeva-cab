@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Cab\Domain\Repository\Mutations;
+namespace Aeva\Cab\Domain\Repository\Mutations;
 
 interface CabRequestRepositoryInterface
 {

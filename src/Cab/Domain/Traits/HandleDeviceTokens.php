@@ -1,8 +1,8 @@
 <?php
 
-namespace Qruz\Cab\Domain\Traits;
+namespace Aeva\Cab\Domain\Traits;
 
-use Qruz\Cab\Domain\Models\User;
+use Aeva\Cab\Domain\Models\User;
 
 trait HandleDeviceTokens
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Qruz\Cab\Domain\Repository\Eloquent\Mutations;   
+namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;   
 
 use App\Driver;
 use App\Vehicle;
@@ -13,17 +13,17 @@ use App\Exceptions\CustomException;
 
 use App\Traits\HandleDriverAttributes;
 
-use Qruz\Cab\Domain\Models\CabRating;
-use Qruz\Cab\Domain\Models\CabRequest;
+use Aeva\Cab\Domain\Models\CabRating;
+use Aeva\Cab\Domain\Models\CabRequest;
 
-use Qruz\Cab\Domain\Traits\HandleDeviceTokens;
+use Aeva\Cab\Domain\Traits\HandleDeviceTokens;
 
-use Qruz\Cab\Domain\Events\AcceptCabRequest;
-use Qruz\Cab\Domain\Events\CabRequestCancelled;
-use Qruz\Cab\Domain\Events\CabRequestStatusChanged;
+use Aeva\Cab\Domain\Events\AcceptCabRequest;
+use Aeva\Cab\Domain\Events\CabRequestCancelled;
+use Aeva\Cab\Domain\Events\CabRequestStatusChanged;
 
-use Qruz\Cab\Domain\Repository\Eloquent\BaseRepository;
-use Qruz\Cab\Domain\Repository\Mutations\CabRequestRepositoryInterface;
+use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
+use Aeva\Cab\Domain\Repository\Mutations\CabRequestRepositoryInterface;
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\ModelNotFoundException;

@@ -1,9 +1,10 @@
 {
-    "name": "qruz/core",
+    "name": "aeva-mobility/core",
     "type": "project",
     "description": "Transportation Solution",
     "keywords": [
-        "qruz",
+        "aeva",
+        "aeva-mobility",
         "transportation"
     ],
     "require": {
@@ -56,8 +57,8 @@
     "autoload": {
         "psr-4": {
             "App\\": "app/",
-            "Qruz\\Cab\\": "src/Cab",
-            "Qruz\\Seats\\": "src/Seats"
+            "Aeva\\Cab\\": "src/Cab",
+            "Aeva\\Seats\\": "src/Seats"
         },
         "classmap": [
             "database/seeds",
