@@ -2,26 +2,28 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
+
 class Otp
 {
     public static function send($to, $message)
     {
-        $OTP_USERNAME = config('custom.otp_username');
-        $OTP_PASSWORD = config('custom.otp_password');
-        $OTP_SENDER_ID = config('custom.otp_sender_id');
-        
-        $ch = curl_init();
-        $msg = curl_escape($ch, $message);
-        $url = "https://smsmisr.com/api/webapi/?username=".$OTP_USERNAME."&password=".$OTP_PASSWORD."&language=1&sender=".$OTP_SENDER_ID."&mobile=".$to."&message=".$msg;
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Length: 0'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(array()));
-        $result = curl_exec($ch);
-        curl_close($ch);
+        $username = config('custom.victorylink_username');
+        $password = config('custom.victorylink_password');
+        $url = config('custom.victorylink_url');
+        $sender = config('custom.victorylink_sender');
 
-        return $result;
+        $request_body = [
+            'UserName'=> $username,
+            'Password'=> $password,
+            'SMSText'=> $message,
+            'SMSLang'=> 'A',
+            'SMSSender'=> $sender,
+            'SMSReceiver'=> $to,
+            'SMSID'=> Str::orderedUuid(),
+        ];
+
+        return Http::asJson()->post($url, $request_body);
     }
 }
