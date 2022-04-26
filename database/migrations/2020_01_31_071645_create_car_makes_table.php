@@ -15,7 +15,7 @@ class CreateCarMakesTable extends Migration
     {
         Schema::create('car_makes', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('name')->nullable();
+            $table->string('name')->unique();
             $table->string('name_ar')->nullable();
             $table->timestamps();
             $table->softDeletes();

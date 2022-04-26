@@ -1,5 +1,5 @@
 input CreateCarMakeInput {
-  name: String
+  name: String! @rules(apply: ["required", "unique:car_makes,name"])
   name_ar: String
 }
 

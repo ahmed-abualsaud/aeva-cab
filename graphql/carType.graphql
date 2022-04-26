@@ -1,5 +1,5 @@
 input CreateCarTypeInput {
-  name: String
+  name: String! @rules(apply: ["required", "unique:car_types,name"])
   name_ar: String
   seats: Int! @rules(apply: ["required"])
   base_fare: Float! @rules(apply: ["required"])

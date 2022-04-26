@@ -47,6 +47,7 @@ class DocumentRepository extends BaseRepository
             if ($document->url) $this->deleteOneFile($document->url, 'documents');
             $url = $this->uploadOneFile($file, 'documents');
             $input['url'] = $url;
+            $input['status'] = 'In review';
             
             if (array_key_exists('name', $args) && !$input['name']) {
                 $input['name'] = $file->getClientOriginalName();
