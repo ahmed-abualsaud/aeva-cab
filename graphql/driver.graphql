@@ -1,9 +1,9 @@
-input CreateDriverInput {
+input CreateDriverInput @validator {
   first_name: String! @rules(apply: ["required"])
   last_name: String! @rules(apply: ["required"])
   fleet_id: ID
-  email: String @rules(apply: ["email", "unique:drivers,email"])
-  phone: String @rules(apply: ["unique:drivers,phone"])
+  email: String
+  phone: String 
   password: String
   license_expires_on: String
   avatar: Upload
