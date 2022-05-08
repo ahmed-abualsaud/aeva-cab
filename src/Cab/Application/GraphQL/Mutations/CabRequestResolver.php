@@ -58,6 +58,11 @@ class CabRequestResolver
         return $this->cabRequestRepository->reset($args);
     }
 
+    public function redirect($_, array $args)
+    {
+        return $this->cabRequestRepository->redirect($args);
+    }
+
     public function updateDriverCabStatus($_, array $args)
     {
         return $this->cabRequestRepository->updateDriverCabStatus($args);

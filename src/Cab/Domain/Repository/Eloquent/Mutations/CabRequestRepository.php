@@ -74,11 +74,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     public function search(array $args)
     {
-        if (array_key_exists('id', $args) && $args['id']) {
-            return $this->searchCreatedRequest($args);
-        } else {
-            return $this->searchNewRequest($args);
-        }
+        return $this->searchNewRequest($args);
     }
 
     public function send(array $args) 
@@ -102,6 +98,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $payload = [
             'sending' => [
                 'at' => date("Y-m-d H:i:s"),
+                'chosen_car_type' => $args['car_type']
             ]
         ];
 
@@ -123,101 +120,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         broadcast(new AcceptCabRequest($driversIds, $request));
 
         return $request;
-    }
-
-    protected function searchCreatedRequest(array $args) 
-    {
-        $request = $this->findRequest($args['id']);
-
-        if ( $request->status != 'Searching' ) {
-            throw new CustomException(__('lang.search_request_failed'));
-        }
-
-        $args = $request->toArray();
-        $args['distance'] = $request->history['summary']['distance'];
-        $args['duration'] = $request->history['summary']['duration'];
-        $result = $this->checkPendingAndGetDrivers($args);
-
-        $payload = [
-            'summary' => [
-                'distance' => $args['distance'],
-                'duration' => $args['duration']
-            ],
-            'searching' => [
-                'at' => date("Y-m-d H:i:s"),
-                'result' => $result
-            ]
-        ];
-
-        $input['status'] = 'Searching';
-        $input['history'] = array_merge($request->history, $payload);
-
-        $request = $this->updateRequest($request, $input);
-        $request['result'] = $result;
-
-        return $request;
-    }
-
-    protected function searchNewRequest(array $args) 
-    {
-        $input = Arr::except($args, ['directive', 'user_name', 'distance', 'duration']);
-
-        $activeRequests = $this->model->wherePending($args['user_id'])->first();
-
-        if($activeRequests) {
-            throw new CustomException(__('lang.request_inprogress'));
-        }
-
-        $result = $this->checkPendingAndGetDrivers($args);
-
-        $payload = [
-            'summary' => [
-                'distance' => $args['distance'],
-                'duration' => $args['duration']
-            ],
-            'searching' => [
-                'at' => date("Y-m-d H:i:s"),
-                'user_name' => $args['user_name'],
-                'result' => $result
-            ]
-        ];
-
-        $input['status'] = 'Searching';
-        $input['history'] = $payload;
-
-        $request = $this->model->create($input);
-        $request['result'] = $result;
-
-        return $request;
-    }
-
-    protected function checkPendingAndGetDrivers(array $args)
-    {
-        $drivers = $this->getNearestDrivers($args['s_lat'], $args['s_lng']);
-
-        if (!count($drivers) ) {
-            throw new CustomException(__('lang.no_available_drivers'));
-        }
-
-        $vehicles = Vehicle::selectRaw('
-            driver_vehicles.vehicle_id,
-            driver_vehicles.driver_id,
-            car_models.name car_model,
-            car_types.id as car_type_id,
-            car_types.name as car_type,
-            (car_types.base_fare  + ((car_types.distance_price * ?) / 1000) + ((car_types.duration_price * car_types.surge_factor * ?) / 60)) as price,
-            vehicles.license_plate as license,
-            vehicles.color,
-            vehicles.photo'
-            , [$args['distance'], $args['duration']])
-            ->join('car_types', 'car_types.id', '=', 'vehicles.car_type_id')
-            ->join('car_models', 'car_models.id', '=', 'vehicles.car_model_id')
-            ->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
-            ->whereIn('driver_vehicles.driver_id', Arr::pluck($drivers, 'driver_id'))
-            ->where('driver_vehicles.active', true)
-            ->get();
-
-        return ['drivers' => $drivers, 'vehicles' => $vehicles];
     }
 
     public function accept(array $args)
@@ -344,10 +246,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             return $value['driver_id'] == $request->driver_id;
         });
 
-        $args['costs'] = CarType::selectRaw(
-            '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60)) as costs'
-            , [$args['distance'], $args['duration']])
-            ->where('id', $vehicle[0]['car_type_id'])->first()->costs;
+        $args['costs'] = $this->calculateCosts($args['distance'], $args['duration'], $vehicle[0]['car_type_id']);
 
         $args['status'] = 'Completed';
         $args['history'] = array_merge($request->history, $payload);
@@ -392,7 +291,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         if (strtolower($args['cancelled_by']) == 'user') {
             $args['status'] = 'Cancelled';
             if ($request->driver_id) {
-                $token = $this->driverToken($request->driver_id);
+                $token = $this->driversToken($request->driver_id);
             }
         }
 
@@ -431,6 +330,257 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function updateDriverCabStatus(array $args)
     {
         return $this->updateDriverStatus($args['driver_id'], $args['cab_status']);
+    }
+
+    public function redirect(array $args)
+    {
+        $request = $this->findRequest($args['id']);
+        
+        if ( $request->status == 'Searching' ) {
+            $request = $this->re_search($request, $args);
+        }
+
+        if ( $request->status == 'Sending' ) {
+            $request = $this->re_send($request, $args);
+        }
+
+        if ( $request->status == 'Accepted' ) {
+            $request = $this->re_accept($request, $args);
+        }
+
+        if ( $request->status == 'Arrived' ) {
+            $request = $this->re_arrived($request, $args);
+        }
+
+        if ( $request->status == 'Started' ) {
+            $request = $this->re_start($request, $args);
+        }
+
+        return $request;
+    }
+
+    protected function re_search($request, $args) 
+    {
+        $args['s_lat'] = $request->s_lat;
+        $args['s_lng'] = $request->s_lng;
+        $result = $this->getNearestDriversWithVehicles($args);
+
+        $payload = [
+            'summary' => [
+                'distance' => $args['distance'],
+                'duration' => $args['duration']
+            ],
+            'searching' => [
+                'at' => $request->history['searching']['at'],
+                'user_name' => $request->history['searching']['user_name'],
+                'result' => $result
+            ],
+            're_search' => [
+                'at' => date("Y-m-d H:i:s")
+            ]
+        ];
+
+        $input['d_lat'] = $args['d_lat'];
+        $input['d_lng'] = $args['d_lng'];
+        $input['history'] = array_merge($request->history, $payload);
+
+        $request = $this->updateRequest($request, $input);
+        $request['result'] = $result;
+
+        return $request;
+    }
+
+    protected function re_send($request, $args)
+    {
+        $args['s_lat'] = $request->s_lat;
+        $args['s_lng'] = $request->s_lng;
+        $result = $this->getNearestDriversWithVehicles($args);
+
+        $filtered = Arr::where($result['vehicles']->toArray(), function ($value, $key) use ($request){
+            return $value['car_type'] == $request->history['sending']['chosen_car_type'];
+        });
+
+        $payload = [
+            'summary' => [
+                'distance' => $args['distance'],
+                'duration' => $args['duration']
+            ],
+            'searching' => [
+                'at' => $request->history['searching']['at'],
+                'user_name' => $request->history['searching']['user_name'],
+                'result' => $result
+            ],
+            're_send' => [
+                'at' => date("Y-m-d H:i:s")
+            ]
+        ];
+
+        $input['d_lat'] = $args['d_lat'];
+        $input['d_lng'] = $args['d_lng'];
+        $input['costs'] = $filtered[0]['price']; 
+        $input['history'] = array_merge($request->history, $payload);
+        $request = $this->updateRequest($request, $input);
+
+        $driversIds = Arr::pluck($filtered, 'driver_id');
+
+        SendPushNotification::dispatch(
+            $this->driversToken($driversIds),
+            __('lang.accept_request_body'),
+            __('lang.accept_request'),
+            ['view' => 'AcceptRequest', 'id' => $args['id']]
+        );
+
+        broadcast(new AcceptCabRequest($driversIds, $request));
+
+        return $request;
+    }
+
+    protected function re_accept($request, $args)
+    {
+        return $this->refresh($request, $args, 'accept');
+    }
+
+    protected function re_arrived($request, $args) 
+    {
+        return $this->refresh($request, $args, 'arrive');
+    }
+
+    protected function re_start($request, $args) 
+    {
+        return $this->refresh($request, $args, 'start');
+    }
+
+    protected function refresh($request, $args, $action)
+    {
+        $result = $request->history['searching']['result'];
+        $prices = $this->calculateCosts($args['distance'], $args['duration'], Arr::pluck($result['vehicles'], 'car_type_id'));
+        $vehicles = collect($result['vehicles'])->keyBy('car_type_id')->toArray();
+
+        foreach ($vehicles as $carTypeId => $vehicle) {
+            $vehicles[$carTypeId]['price'] = $prices[$carTypeId]['costs'];
+        }
+
+        [$carTypeId, $vehicles] = Arr::divide($vehicles);
+        $result['vehicles'] = $vehicles;
+
+        $filtered = Arr::where($result['vehicles'], function ($value, $key) use ($request){
+            return $value['car_type'] == $request->history['sending']['chosen_car_type'];
+        });
+
+        $payload = [
+            'summary' => [
+                'distance' => $args['distance'],
+                'duration' => $args['duration']
+            ],
+            'searching' => [
+                'at' => $request->history['searching']['at'],
+                'user_name' => $request->history['searching']['user_name'],
+                'result' => $result
+            ],
+            're_'.$action => [
+                'at' => date("Y-m-d H:i:s")
+            ]
+        ];
+
+        $input['d_lat'] = $args['d_lat'];
+        $input['d_lng'] = $args['d_lng'];
+        $input['costs'] = ($action == 'start') ? $filtered[0]['price'] + $request->costs : $filtered[0]['price']; 
+        $input['history'] = array_merge($request->history, $payload);
+
+        $request = $this->updateRequest($request, $input);
+
+        SendPushNotification::dispatch(
+            $this->driversToken($request->driver_id),
+            __('lang.ride_redirection_body'),
+            __('lang.ride_redirection'),
+            ['view' => 'RideRedirection', 'id' => $args['id']]
+        );
+
+        $socketRequest = clone $request;
+        $socketRequest->status = 'Redirected';
+
+        broadcast(new CabRequestCancelled('user', $socketRequest));
+
+        return $request;
+    }
+
+    protected function searchNewRequest(array $args) 
+    {
+        $input = Arr::except($args, ['directive', 'user_name', 'distance', 'duration']);
+
+        $activeRequests = $this->model->wherePending($args['user_id'])->first();
+
+        if($activeRequests) {
+            throw new CustomException(__('lang.request_inprogress'));
+        }
+
+        $result = $this->getNearestDriversWithVehicles($args);
+
+        $payload = [
+            'summary' => [
+                'distance' => $args['distance'],
+                'duration' => $args['duration']
+            ],
+            'searching' => [
+                'at' => date("Y-m-d H:i:s"),
+                'user_name' => $args['user_name'],
+                'result' => $result
+            ]
+        ];
+
+        $input['status'] = 'Searching';
+        $input['history'] = $payload;
+
+        $request = $this->model->create($input);
+        $request['result'] = $result;
+
+        return $request;
+    }
+
+    protected function getNearestDriversWithVehicles(array $args)
+    {
+        $drivers = $this->getNearestDrivers($args['s_lat'], $args['s_lng']);
+
+        if (!count($drivers) ) {
+            throw new CustomException(__('lang.no_available_drivers'));
+        }
+
+        $vehicles = Vehicle::selectRaw('
+            driver_vehicles.vehicle_id,
+            driver_vehicles.driver_id,
+            car_models.name car_model,
+            car_types.id as car_type_id,
+            car_types.name as car_type,
+            (car_types.base_fare  + ((car_types.distance_price * ?) / 1000) + ((car_types.duration_price * car_types.surge_factor * ?) / 60)) as price,
+            vehicles.license_plate as license,
+            vehicles.color,
+            vehicles.photo'
+            , [$args['distance'], $args['duration']])
+            ->join('car_types', 'car_types.id', '=', 'vehicles.car_type_id')
+            ->join('car_models', 'car_models.id', '=', 'vehicles.car_model_id')
+            ->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
+            ->whereIn('driver_vehicles.driver_id', Arr::pluck($drivers, 'driver_id'))
+            ->where('driver_vehicles.active', true)
+            ->get();
+
+        return ['drivers' => $drivers, 'vehicles' => $vehicles];
+    }
+
+    protected function calculateCosts($distance, $duration, $carTypeId)
+    {
+        if (is_array($carTypeId)) {
+            $carTypes = CarType::selectRaw(
+                'id, (base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60)) as costs'
+                , [$distance, $duration])
+                ->whereIn('id', $carTypeId)
+                ->get();
+            return $carTypes->keyBy('id')->toArray();
+        }
+
+        return CarType::selectRaw(
+            '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60)) as costs'
+            , [$distance, $duration])
+            ->where('id', $carTypeId)->first()->costs;
     }
 
     protected function updateRequest($request, $args) 
@@ -499,3 +649,35 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return true;
     }
 }
+
+        /*$result = $request->history['searching']['result'];
+        $prices = $this->calculateCosts($args['distance'], $args['duration'], Arr::pluck($result['vehicles'], 'car_type_id'));
+        $vehicles = Arr::keyBy($result['vehicles'], 'car_type_id');
+
+        foreach ($vehicles as $carTypeId => $vehicle) {
+            $vehicle['price'] = $prices[$carTypeId]['costs'];
+        }
+
+        [$carTypeId, $vehicles] = Arr::divide($vehicles);
+        $result['vehicles'] = $vehicles;
+
+        $payload = [
+            'summary' => [
+                'distance' => $args['distance'],
+                'duration' => $args['duration']
+            ],
+            'redirected' => [
+                'at' => date("Y-m-d H:i:s"),
+                'notes' => $notes,
+                'result' => $result
+            ]
+        ];
+
+        $input['d_lat'] = $args['d_lat'];
+        $input['d_lng'] = $args['d_lng'];
+        $input['history'] = array_merge($request->history, $payload);
+
+        $request = $this->updateRequest($request, $input);
+        $request['result'] = $result;
+
+        return $request;*/

@@ -150,4 +150,6 @@ return [
     'request_cancelled' => 'Request Cancelled',
     'request_cancelled_body' => 'Your request successfully cancelled.',
     'request_not_found' => 'Request not found.',
+    'ride_redirection' => 'Ride Redirection',
+    'ride_redirection_body' => 'Ride destination location has been changed',
 ];

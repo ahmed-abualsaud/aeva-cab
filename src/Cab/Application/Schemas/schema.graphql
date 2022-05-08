@@ -12,6 +12,10 @@ extend type Mutation {#@guard(with: ["user"]) {
   # Cab Rating
   updateCabRating(input: UpdateCabRatingInput! @spread): [CabRating]
     @field(resolver: "CabRatingResolver@update")
+
+  # Cab Request
+  redirectCabRequest(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@redirect")
 }
 
 # Driver Guard

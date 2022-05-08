@@ -150,4 +150,6 @@ return [
     'request_cancelled' => 'تم الغاء الطلب',
     'request_cancelled_body' => 'تم الغاء الرحلة بنجاح',
     'request_not_found' => 'لم يتم العثور على الطلب',
+    'ride_redirection' => 'تغيير في وجهة الرحلة',
+    'ride_redirection_body' => 'لقد قام العميل بتغيير موقع الوصول',
 ];
