@@ -78,17 +78,17 @@ extend type Query @guard(with: ["admin"]) {
 # User Guard
 extend type Query {#@guard(with: ["user"]) {
   # Cab Request
-  userCabRequests(user_id: ID! @eq, time: String): [CabRequest] 
-    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
+  userCabRequests(user_id: ID!, first: Int, page:Int): [[CabRequest]]
+    @field(resolver: "CabRequestResolver@history")
   userLiveCabRequest(user_id: ID! @eq): CabRequest @first(scopes: ["live"])
   userScheduledCabRequests(user_id: ID! @eq): [CabRequest] @all(scopes: ["whereScheduled"])
 }
 
 # Driver Guard
-extend type Query @guard(with: ["driver"]) {
+extend type Query {#@guard(with: ["driver"]) {
   # Cab Request
-  driverCabRequests(driver_id: ID! @eq, time: String): [CabRequest] 
-    @paginate(type: SIMPLE, defaultCount: 10, scopes: ["time"])
+  driverCabRequests(driver_id: ID!, first: Int, page:Int): [[CabRequest]] 
+    @field(resolver: "CabRequestResolver@history")
   driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["live"])
 }
 

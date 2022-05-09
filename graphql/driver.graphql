@@ -80,4 +80,6 @@ type Driver {
   car_type: CarType @BelongsTo
   token: String
   verification_code: String
+  cab_request_count: Float
+  cab_request_earnings: Float
 }

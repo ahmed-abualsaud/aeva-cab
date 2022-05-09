@@ -53,21 +53,6 @@ class CabRequest extends Model
         return $query->whereIn('status', ['Accepted', 'Started']);
     }
 
-    public function scopeTime($query, $args)
-    {
-        if (array_key_exists('time', $args) && $args['time']) {
-            switch($args['time']) {
-                case 'PAST':
-                    $query = $query->where('status', '<>', 'Scheduled');
-                break;
-                default:
-                    $query = $query->where('status', 'Scheduled');
-            }
-        }
-        
-        return $query->latest();
-    }
-
     public function scopeWherePending($query, $user_id)
     {
         return $query->where('user_id', $user_id)

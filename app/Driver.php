@@ -4,7 +4,11 @@ namespace App;
 
 use App\PartnerDriver;
 use App\Traits\Searchable;
+
 use App\Notifications\ResetPassword as ResetPasswordNotification;
+
+use Aeva\Cab\Domain\Models\CabRequest;
+use Aeva\Cab\Domain\Models\CabRequestTransaction;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -22,6 +26,8 @@ class Driver extends Authenticatable implements JWTSubject
     protected $guarded = [];
 
     protected $hidden = ['password'];
+
+    protected $appends = ['cab_request_count', 'cab_request_earnings'];
 
     /**
      * Send the password reset notification.
@@ -81,8 +87,6 @@ class Driver extends Authenticatable implements JWTSubject
         return $this->morphMany(Document::class, 'documentable');
     }
 
-
-
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = ucwords($value);
@@ -125,5 +129,29 @@ class Driver extends Authenticatable implements JWTSubject
         } catch (UserNotDefinedException $e) {
             //
         }
+    }
+
+    public function getCabRequestCountAttribute()
+    {
+        return CabRequest::selectRaw('
+                driver_id,
+                COUNT(id) AS count
+            ')
+            ->where('driver_id', $this->id)
+            ->groupBy('driver_id')
+            ->first()
+            ->count;
+    }
+
+    public function getCabRequestEarningsAttribute()
+    {
+        return CabRequestTransaction::selectRaw('
+                driver_id,
+                ROUND(SUM(amount), 2) AS sum
+            ')
+            ->where('driver_id', $this->id)
+            ->groupBy('driver_id')
+            ->first()
+            ->sum;
     }
 } 

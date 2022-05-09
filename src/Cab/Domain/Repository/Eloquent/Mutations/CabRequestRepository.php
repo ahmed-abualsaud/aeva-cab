@@ -649,35 +649,3 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return true;
     }
 }
-
-        /*$result = $request->history['searching']['result'];
-        $prices = $this->calculateCosts($args['distance'], $args['duration'], Arr::pluck($result['vehicles'], 'car_type_id'));
-        $vehicles = Arr::keyBy($result['vehicles'], 'car_type_id');
-
-        foreach ($vehicles as $carTypeId => $vehicle) {
-            $vehicle['price'] = $prices[$carTypeId]['costs'];
-        }
-
-        [$carTypeId, $vehicles] = Arr::divide($vehicles);
-        $result['vehicles'] = $vehicles;
-
-        $payload = [
-            'summary' => [
-                'distance' => $args['distance'],
-                'duration' => $args['duration']
-            ],
-            'redirected' => [
-                'at' => date("Y-m-d H:i:s"),
-                'notes' => $notes,
-                'result' => $result
-            ]
-        ];
-
-        $input['d_lat'] = $args['d_lat'];
-        $input['d_lng'] = $args['d_lng'];
-        $input['history'] = array_merge($request->history, $payload);
-
-        $request = $this->updateRequest($request, $input);
-        $request['result'] = $result;
-
-        return $request;*/
