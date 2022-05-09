@@ -57,8 +57,9 @@ return [
         ],
 
         'user' => [
-            'driver' => 'jwt',
+            'driver' => 'remote-user',
             'provider' => 'users',
+            'hash' => false,
         ],
 
         'driver' => [
@@ -103,7 +104,7 @@ return [
 
         'users' => [
             'driver' => 'eloquent',
-            'model' => Aeva\Cab\Domain\Models\User::class,
+            'model' => App\User::class,
         ],
 
         'drivers' => [
@@ -128,7 +129,7 @@ return [
 
         'cached-users' => [
             'driver' => 'cached-user',
-            'model' => Aeva\Cab\Domain\Models\User::class,
+            'model' => App\User::class,
         ],
 
         'cached-drivers' => [

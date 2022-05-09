@@ -2,6 +2,7 @@
 
 namespace Aeva\Cab\Domain\Models;
 
+use App\User;
 use App\Driver;
 use App\Vehicle;
 

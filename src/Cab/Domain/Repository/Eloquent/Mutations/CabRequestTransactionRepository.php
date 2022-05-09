@@ -4,7 +4,8 @@ namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 
 use App\Exceptions\CustomException;
 
-use Aeva\Cab\Domain\Models\User;
+use App\User;
+
 use Aeva\Cab\Domain\Models\CabRequest;
 use Aeva\Cab\Domain\Models\CabRequestTransaction;
 

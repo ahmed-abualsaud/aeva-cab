@@ -2,20 +2,28 @@
 
 namespace App;
 
-use App\PartnerUser;
 use App\Traits\Searchable;
 use Illuminate\Support\Facades\Cache;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+
+//use Tymon\JWTAuth\Contracts\JWTSubject;
+
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+
+//use Illuminate\Foundation\Auth\User as Authenticatable;
+
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 
-class User extends Authenticatable implements JWTSubject
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model implements AuthenticatableContract
 {
     use Notifiable, Searchable;
     
     protected $guarded = [];
+
+    protected $connection = 'mysql2';
 
     protected $hidden = ['password'];
 
@@ -31,25 +39,47 @@ class User extends Authenticatable implements JWTSubject
         $this->notify(new ResetPasswordNotification($token, "users"));
     }
 
+    public function getAuthIdentifierName()
+    {
+        return 'id';
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->id;
+    }
+
+    public function getAuthPassword()
+    {
+        return null;
+    }
+
+    public function getRememberToken()
+    {
+        return null;
+    }
+
+    public function setRememberToken($value) {}
+    public function getRememberTokenName() {}
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
      */
-    public function getJWTIdentifier()
+    /*public function getJWTIdentifier()
     {
         return $this->getKey();
-    }
+    }*/
 
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *
      * @return array
      */
-    public function getJWTCustomClaims()
+    /*public function getJWTCustomClaims()
     {
         return [];
-    }
+    }*/
 
     public function partner()
     {
@@ -69,7 +99,15 @@ class User extends Authenticatable implements JWTSubject
         return $query->latest();
     }
 
-    public function scopeAssignedOrNot($query, $args) 
+    public function scopeUpdateWallet($query, $user_id, $balance)
+    {
+        Cache::forget('user.'.$user_id);
+
+        return $query->where('id', $user_id)
+            ->decrement('wallet_balance', $balance);
+    }
+
+    /*public function scopeAssignedOrNot($query, $args) 
     {
         if ($args['assigned']) {
             return $query->whereIn('id', PartnerUser::getIds($args));
@@ -117,14 +155,6 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
-    public function scopeUpdateWallet($query, $user_id, $balance)
-    {
-        Cache::forget('user.'.$user_id);
-
-        return $query->where('id', $user_id)
-            ->decrement('wallet_balance', $balance);
-    }
-
     public function scopeUpdateInsurance($query, $user_id, $balance)
     {
         Cache::forget('user.'.$user_id);
@@ -139,6 +169,6 @@ class User extends Authenticatable implements JWTSubject
 
         return $query->where('id', $user_id)
             ->decrement('nfc_balance', $balance);
-    }
+    }*/
 }
  

@@ -2,7 +2,7 @@
 
 namespace Aeva\Cab\Domain\Traits;
 
-use Aeva\Cab\Domain\Models\User;
+use App\User;
 
 trait HandleDeviceTokens
 {

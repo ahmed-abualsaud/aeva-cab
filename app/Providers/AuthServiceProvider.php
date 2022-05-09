@@ -10,6 +10,8 @@ use App\Extensions\CachingUserProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
+use App\Guards\JWTGuard;
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -73,6 +75,14 @@ class AuthServiceProvider extends ServiceProvider
                     $config['model']
                 );
             });
+
+        $this->app['auth']->extend('remote-user', 
+            function ($app, $name, array $config) {
+                $guard = new JWTGuard($app['tymon.jwt'],$app['request']);
+                $app->refresh('request', $guard, 'setRequest');
+                return $guard;
+            }
+        );
 
         // Gate::before(function ($user = null, $ability) {
         //     try {
