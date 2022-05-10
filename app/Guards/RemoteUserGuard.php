@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
 
-class JWTGuard implements Guard
+class RemoteUserGuard implements Guard
 {
     use GuardHelpers;
     /**
@@ -20,7 +20,7 @@ class JWTGuard implements Guard
      */
     protected Request $request;
     /**
-     * JWTGuard constructor.
+     * RemoteUserGuard constructor.
      * @param JWT $jwt
      * @param Request $request
      */

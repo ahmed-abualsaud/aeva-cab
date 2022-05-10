@@ -133,25 +133,35 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function getCabRequestCountAttribute()
     {
-        return CabRequest::selectRaw('
+        $count = CabRequest::selectRaw('
                 driver_id,
                 COUNT(id) AS count
             ')
             ->where('driver_id', $this->id)
             ->groupBy('driver_id')
-            ->first()
-            ->count;
+            ->first();
+        
+        if($count) {
+            return $count->count;
+        }
+
+        return 0;
     }
 
     public function getCabRequestEarningsAttribute()
     {
-        return CabRequestTransaction::selectRaw('
+        $sum = CabRequestTransaction::selectRaw('
                 driver_id,
                 ROUND(SUM(amount), 2) AS sum
             ')
             ->where('driver_id', $this->id)
             ->groupBy('driver_id')
-            ->first()
-            ->sum;
+            ->first();
+
+        if($sum) {
+            return $sum->sum;
+        }
+
+        return 0;
     }
 } 

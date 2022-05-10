@@ -16,11 +16,11 @@ class Document extends Model
      */
     public function documentable()
     {
-        return $this->morphTo();
+        return $this->setConnection('mysql')->morphTo();
     }
 
     public function admin()
     {
-        return $this->belongsTo(Admin::class);
+        return $this->setConnection('mysql2')->belongsTo(Admin::class);
     }
 }

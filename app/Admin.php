@@ -17,6 +17,8 @@ class Admin extends Authenticatable implements JWTSubject
 
     protected $guarded = [];
 
+    protected $connection = 'mysql2';
+
     protected $hidden = ['password'];
 
     /**

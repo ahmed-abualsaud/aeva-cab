@@ -42,8 +42,8 @@ return [
         ],
  
         'admin' => [
-            'driver' => 'jwt',
-            'provider' => 'cached-admins'
+            'driver' => 'remote-admin',
+            'provider' => 'cached-admins',
         ],
 
         'partner' => [
@@ -58,8 +58,7 @@ return [
 
         'user' => [
             'driver' => 'remote-user',
-            'provider' => 'users',
-            'hash' => false,
+            'provider' => 'cached-users',
         ],
 
         'driver' => [

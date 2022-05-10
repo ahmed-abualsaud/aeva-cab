@@ -35,6 +35,10 @@ class CabRequestRepository extends BaseRepository
             $ret = $this->model->where('driver_id', $args['driver_id']);
         }
 
+        if (array_key_exists('status', $args) && $args['status']) {
+            $ret = $ret->where('Status', $args['status']);
+        }
+
         $ret =  $ret->latest()
                     ->skip($first * $page)
                     ->take($first)

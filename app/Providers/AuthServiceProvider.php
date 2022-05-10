@@ -10,7 +10,8 @@ use App\Extensions\CachingUserProvider;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
-use App\Guards\JWTGuard;
+use App\Guards\RemoteUserGuard;
+use App\Guards\RemoteAdminGuard;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -78,7 +79,15 @@ class AuthServiceProvider extends ServiceProvider
 
         $this->app['auth']->extend('remote-user', 
             function ($app, $name, array $config) {
-                $guard = new JWTGuard($app['tymon.jwt'],$app['request']);
+                $guard = new RemoteUserGuard($app['tymon.jwt'],$app['request']);
+                $app->refresh('request', $guard, 'setRequest');
+                return $guard;
+            }
+        );
+
+        $this->app['auth']->extend('remote-admin', 
+            function ($app, $name, array $config) {
+                $guard = new RemoteAdminGuard($app['tymon.jwt'],$app['request']);
                 $app->refresh('request', $guard, 'setRequest');
                 return $guard;
             }

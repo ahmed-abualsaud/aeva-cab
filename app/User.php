@@ -5,19 +5,16 @@ namespace App;
 use App\Traits\Searchable;
 use Illuminate\Support\Facades\Cache;
 
-//use Tymon\JWTAuth\Contracts\JWTSubject;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
 
-//use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use App\Notifications\ResetPassword as ResetPasswordNotification;
 
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Database\Eloquent\Model;
-
-class User extends Model implements AuthenticatableContract
+class User extends Authenticatable implements JWTSubject
 {
     use Notifiable, Searchable;
     
@@ -39,47 +36,25 @@ class User extends Model implements AuthenticatableContract
         $this->notify(new ResetPasswordNotification($token, "users"));
     }
 
-    public function getAuthIdentifierName()
-    {
-        return 'id';
-    }
-
-    public function getAuthIdentifier()
-    {
-        return $this->id;
-    }
-
-    public function getAuthPassword()
-    {
-        return null;
-    }
-
-    public function getRememberToken()
-    {
-        return null;
-    }
-
-    public function setRememberToken($value) {}
-    public function getRememberTokenName() {}
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
      */
-    /*public function getJWTIdentifier()
+    public function getJWTIdentifier()
     {
         return $this->getKey();
-    }*/
+    }
 
     /**
      * Return a key value array, containing any custom claims to be added to the JWT.
      *
      * @return array
      */
-    /*public function getJWTCustomClaims()
+    public function getJWTCustomClaims()
     {
         return [];
-    }*/
+    }
 
     public function partner()
     {
