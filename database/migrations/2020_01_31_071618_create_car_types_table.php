@@ -22,6 +22,9 @@ class CreateCarTypesTable extends Migration
             $table->float('base_fare', 8, 3);
             $table->float('distance_price', 8, 3);
             $table->float('duration_price', 8, 3);
+            $table->float('min_fees', 8, 3);
+            $table->float('cancel_fees', 8, 3);
+            $table->float('waiting_fees', 8, 3);
             $table->float('surge_factor', 3, 2);
             $table->unsignedSmallInteger('min_distance');
             $table->boolean('is_public')->default(1);

@@ -570,7 +570,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         if (is_array($carTypeId)) {
             $carTypes = CarType::selectRaw(
-                'id, (base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60)) as costs'
+                'id, (base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + min_fees + cancel_fees + waiting_fees) as costs'
                 , [$distance, $duration])
                 ->whereIn('id', $carTypeId)
                 ->get();
@@ -578,7 +578,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         return CarType::selectRaw(
-            '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60)) as costs'
+            '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + min_fees + cancel_fees + waiting_fees) as costs'
             , [$distance, $duration])
             ->where('id', $carTypeId)->first()->costs;
     }

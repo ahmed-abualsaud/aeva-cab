@@ -5,6 +5,9 @@ input CreateCarTypeInput {
   base_fare: Float! @rules(apply: ["required"])
   distance_price: Float! @rules(apply: ["required"])
   duration_price: Float! @rules(apply: ["required"])
+  min_fees: Float! @rules(apply: ["required"])
+  cancel_fees: Float! @rules(apply: ["required"])
+  waiting_fees: Float! @rules(apply: ["required"])
   surge_factor: Float! @rules(apply: ["required"])
   min_distance: Float! @rules(apply: ["required"])
   photo: Upload
@@ -20,6 +23,9 @@ input UpdateCarTypeInput @validator {
   base_fare: Float
   distance_price: Float
   duration_price: Float
+  min_fees: Float
+  cancel_fees: Float
+  waiting_fees: Float
   surge_factor: Float
   min_distance: Float
   photo: Upload
@@ -34,6 +40,9 @@ type CarType {
   base_fare: Float
   distance_price: Float
   duration_price: Float
+  min_fees: Float
+  cancel_fees: Float
+  waiting_fees: Float
   surge_factor: Float
   min_distance: Float
   photo: String
