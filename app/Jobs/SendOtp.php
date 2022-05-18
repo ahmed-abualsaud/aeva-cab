@@ -35,6 +35,6 @@ class SendOtp implements ShouldQueue
      */
     public function handle()
     {
-        Otp::send($this->to, $this->message);
+        //Otp::send($this->to, $this->message);
     }
 }

@@ -60,7 +60,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $driver->token = auth('driver')->fromUser($driver);
         }
 
-        $verification_code = mt_rand(1000, 9999);
+        //$verification_code = mt_rand(1000, 9999);
+        $verification_code = '0000';
 
         $message = __('lang.verification_code', [
             'verification_code' => $verification_code,
