@@ -2,8 +2,6 @@
 
 namespace App\Repository\Eloquent\Mutations;
 
-use JWTAuth;
-
 use App\Driver;
 use App\Document;
 use App\DriverVehicle;
@@ -13,7 +11,6 @@ use App\Jobs\SendOtp;
 use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -59,8 +56,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         $driver = $this->model->create($input);
 
         if (array_key_exists('car_type_id', $args) && $args['car_type_id']) {
-            Auth::onceUsingId($driver->id);
-            $driver->token = JWTAuth::fromUser($driver);
+            auth('driver')->onceUsingId($driver->id);
+            $driver->token = auth('driver')->fromUser($driver);
         }
 
         $verification_code = mt_rand(1000, 9999);

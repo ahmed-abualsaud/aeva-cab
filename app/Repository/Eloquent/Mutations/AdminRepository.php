@@ -2,7 +2,6 @@
 
 namespace App\Repository\Eloquent\Mutations;
 
-use JWTAuth;
 use App\Admin;
 use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;

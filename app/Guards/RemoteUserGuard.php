@@ -55,6 +55,16 @@ class RemoteUserGuard implements Guard
         return $this;
     }
 
+    public function onceUsingId($user_id)
+    {
+        return $this->jwt->onceUsingId($user_id);
+    }
+
+    public function fromUser($user)
+    {
+        return $this->jwt->fromUser($user);
+    }
+
     public function validate(array $credentials = []) 
     {
     }

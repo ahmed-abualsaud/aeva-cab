@@ -2,7 +2,6 @@
 
 namespace App\Repository\Eloquent\Mutations;
 
-use JWTAuth;
 use App\User;
 use App\PartnerUser;
 use App\Jobs\SendOtp;
@@ -13,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use Vinkla\Hashids\Facades\Hashids;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
 use Laravel\Socialite\Facades\Socialite;
@@ -98,8 +96,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             if (array_key_exists('trip_id', $args) && $args['trip_id'])
                 $this->createSubscription($args, $user->id);
         } else {
-            Auth::onceUsingId($user->id);
-            $token = JWTAuth::fromUser($user);
+            auth('user')->onceUsingId($user->id);
+            $token = auth('user')->fromUser($user);
         }
 
         return [
@@ -234,9 +232,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         if ($updateData) $user->update($updateData);
 
-        Auth::onceUsingId($user->id);
+        auth('user')->onceUsingId($user->id);
 
-        $token = JWTAuth::fromUser($user);
+        $token = auth('user')->fromUser($user);
 
         return [
             'access_token' => $token,
