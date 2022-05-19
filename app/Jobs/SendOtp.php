@@ -25,7 +25,7 @@ class SendOtp implements ShouldQueue
     {
         $this->to = $to;
         $this->message = $message;
-        $this->queue = 'high';
+        $this->queue = 'dev-high';
     }
 
     /**
@@ -35,6 +35,8 @@ class SendOtp implements ShouldQueue
      */
     public function handle()
     {
+        info('Processing.a.podcast');
+
         //Otp::send($this->to, $this->message);
     }
 }
