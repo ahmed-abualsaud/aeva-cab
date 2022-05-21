@@ -69,6 +69,7 @@ type HistoryObj {
   user_name: String
   result: DriverVehicle
   chosen_car_type: String
+  driver: Driver
 }
 
 type Summary {

@@ -102,6 +102,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
+        $filtered = array_values($filtered);
+        
         $input['status'] = 'Sending';
         $input['costs'] = $filtered[0]['price'];
         $input['history'] = array_merge($request->history, $payload);
@@ -133,6 +135,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $payload = [
             'accepted' => [
                 'at' => date("Y-m-d H:i:s"),
+                'driver' => Driver::find($args['driver_id'])
             ]
         ];
 
@@ -415,6 +418,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
+        $filtered = array_values($filtered);
+
         $input['d_lat'] = $args['d_lat'];
         $input['d_lng'] = $args['d_lng'];
         $input['costs'] = $filtered[0]['price']; 
@@ -481,6 +486,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'at' => date("Y-m-d H:i:s")
             ]
         ];
+
+        $filtered = array_values($filtered);
 
         $input['d_lat'] = $args['d_lat'];
         $input['d_lng'] = $args['d_lng'];
