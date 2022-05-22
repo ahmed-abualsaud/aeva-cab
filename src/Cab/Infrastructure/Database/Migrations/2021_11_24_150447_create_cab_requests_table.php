@@ -25,6 +25,7 @@ class CreateCabRequestsTable extends Migration
                 'Accepted', 
                 'Arrived',
                 'Started',
+                'Ended',
                 'Completed',
                 'Cancelled',
             ]);

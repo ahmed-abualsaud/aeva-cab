@@ -52,7 +52,7 @@ type CabRequestHistory {
   accepted: HistoryObj
   arrived: HistoryObj
   started: HistoryObj
-  completed: HistoryObj
+  ended: HistoryObj
   cancelled: HistoryObj
   re_search: HistoryObj
   re_send: HistoryObj
@@ -70,6 +70,7 @@ type HistoryObj {
   result: DriverVehicle
   chosen_car_type: String
   driver: Driver
+  vehicle: Vehicle
 }
 
 type Summary {

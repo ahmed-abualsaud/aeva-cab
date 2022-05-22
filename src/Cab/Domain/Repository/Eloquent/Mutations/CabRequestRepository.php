@@ -132,23 +132,25 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.accept_request_failed'));
         }
 
-        $payload = [
-            'accepted' => [
-                'at' => date("Y-m-d H:i:s"),
-                'driver' => Driver::find($args['driver_id'])
-            ]
-        ];
-
-        $args['status'] = 'Accepted';
-        $args['history'] = array_merge($request->history, $payload);
-
         if ( !array_key_exists('vehicle_id', $args) || $args['vehicle_id'] == null ) {
             $vehicles = $request->history['searching']['result']['vehicles'];
             $vehicle = Arr::where($vehicles, function ($value, $key) use ($args){
                 return $value['driver_id'] == $args['driver_id'];
             });
+            $vehicle = array_values($vehicle);
             $args['vehicle_id'] = $vehicle[0]['vehicle_id'];
         }
+
+        $payload = [
+            'accepted' => [
+                'at' => date("Y-m-d H:i:s"),
+                'driver' => Driver::find($args['driver_id']),
+                'vehicle' => $vehicle
+            ]
+        ];
+
+        $args['status'] = 'Accepted';
+        $args['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $args);
 
@@ -234,12 +236,12 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
         
-        if ( $request->status != 'Started' || $request->paid == false) {
+        if ( $request->status != 'Started') {
             throw new CustomException(__('lang.end_ride_failed'));
         }
 
         $payload = [
-            'completed' => [
+            'Ended' => [
                 'at' => date("Y-m-d H:i:s"),
             ]
         ];
@@ -249,9 +251,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             return $value['driver_id'] == $request->driver_id;
         });
 
+        $vehicle = array_values($vehicle);
+
         $args['costs'] = $this->calculateCosts($args['distance'], $args['duration'], $vehicle[0]['car_type_id']);
 
-        $args['status'] = 'Completed';
+        $args['status'] = 'Ended';
         $args['history'] = array_merge($request->history, $payload);
         $args['map_url'] = ResizableMapUrl::generatePolylines($request);
 
@@ -275,7 +279,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
         
-        if ( in_array($request->status, ['Started', 'Completed']) ) {
+        if ( in_array($request->status, ['Started', 'Ended', 'Completed']) ) {
             throw new CustomException(__('lang.cancel_cab_request_failed'));
         }
 

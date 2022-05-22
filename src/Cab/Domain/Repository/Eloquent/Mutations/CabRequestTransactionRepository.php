@@ -40,7 +40,7 @@ class CabRequestTransactionRepository extends BaseRepository
             case 'Wallet':
                 $this->walletPay($args, $request);
         }
-        $request->update(['paid' => true]);
+        $request->update([ 'status' => 'Completed', 'paid' => true]);
         return $this->model->create($input);
     }
 
