@@ -70,7 +70,7 @@ type HistoryObj {
   result: DriverVehicle
   chosen_car_type: String
   driver: Driver
-  vehicle: Vehicle
+  vehicle: VehicleObj
 }
 
 type Summary {

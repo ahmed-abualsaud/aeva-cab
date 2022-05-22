@@ -132,20 +132,26 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.accept_request_failed'));
         }
 
+        $vehicles = $request->history['searching']['result']['vehicles'];
+
         if ( !array_key_exists('vehicle_id', $args) || $args['vehicle_id'] == null ) {
-            $vehicles = $request->history['searching']['result']['vehicles'];
             $vehicle = Arr::where($vehicles, function ($value, $key) use ($args){
                 return $value['driver_id'] == $args['driver_id'];
             });
-            $vehicle = array_values($vehicle);
-            $args['vehicle_id'] = $vehicle[0]['vehicle_id'];
+        } else {
+            $vehicle = Arr::where($vehicles, function ($value, $key) use ($args){
+                return $value['vehicle_id'] == $args['vehicle_id'];
+            });
         }
+
+        $vehicle = array_values($vehicle);
+        $args['vehicle_id'] = $vehicle[0]['vehicle_id'];
 
         $payload = [
             'accepted' => [
                 'at' => date("Y-m-d H:i:s"),
                 'driver' => Driver::find($args['driver_id']),
-                'vehicle' => $vehicle
+                'vehicle' => $vehicle[0]
             ]
         ];
 
@@ -297,17 +303,17 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $token = null;
         if (strtolower($args['cancelled_by']) == 'user') {
             $args['status'] = 'Cancelled';
+            $request = $this->updateRequest($request, $args);
             if ($request->driver_id) {
                 $token = $this->driversToken($request->driver_id);
             }
         }
 
         if (strtolower($args['cancelled_by']) == 'driver') {
-            $args['status'] = 'Searching';
+            $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);
         }
 
-        $request = $this->updateRequest($request, $args);
         $socketRequest = clone $request;
         $socketRequest->status = 'Cancelled';
 
@@ -548,6 +554,42 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $request;
     }
 
+    protected function searchExistedRequest(array $args) 
+    {
+        $request = $this->findRequest($args['id']);
+
+        if ( !($request->status == 'Searching' || $request->status == 'Sending') ) {
+            throw new CustomException(__('lang.search_request_failed'));
+        }
+
+        $result = $this->getNearestDriversWithVehicles([
+            's_lat' => $request->s_lat,
+            's_lng' => $request->s_lng,
+            'distance' => $request->history['summary']['distance'],
+            'duration' => $request->history['summary']['duration'],
+        ]);
+
+        $payload = [
+            'summary' => [
+                'distance' => $request->history['summary']['distance'],
+                'duration' => $request->history['summary']['duration']
+            ],
+            'searching' => [
+                'at' => date("Y-m-d H:i:s"),
+                'user_name' => $request->history['searching']['user_name'],
+                'result' => $result
+            ]
+        ];
+
+        $input['status'] = 'Searching';
+        $input['history'] = array_merge($request->history, $payload);
+
+        $request = $this->updateRequest($request, $input);
+        $request['result'] = $result;
+
+        return $request;
+    }
+
     protected function getNearestDriversWithVehicles(array $args)
     {
         $drivers = $this->getNearestDrivers($args['s_lat'], $args['s_lng']);
@@ -616,7 +658,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $radius = config('custom.seats_search_radius');
 
-        $drivers = Driver::selectRaw('id AS driver_id, full_name, phone, avatar,
+        $drivers = Driver::selectRaw('id AS driver_id, full_name as name, phone, avatar,
             ST_Distance_Sphere(point(longitude, latitude), point(?, ?))
             as distance
             ', [$lng, $lat]
