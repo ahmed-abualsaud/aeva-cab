@@ -214,12 +214,19 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.start_ride_failed'));
         }
 
+        $add_waiting_fees = false;
+        if (array_key_exists('add_waiting_fees', $args) && $args['add_waiting_fees']) {
+            $add_waiting_fees = true;
+        }
+
         $payload = [
             'started' => [
                 'at' => date("Y-m-d H:i:s"),
+                'add_waiting_fees' => $add_waiting_fees
             ]
         ];
 
+        unset($args['add_waiting_fees']);
         $args['status'] = 'Started';
         $args['history'] = array_merge($request->history, $payload);
 
@@ -247,8 +254,14 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.end_ride_failed'));
         }
 
+        $duration = (time() - strtotime($request->history['started']['at']));
+
         $payload = [
-            'Ended' => [
+            'summary' => [
+                'distance' => $args['distance'],
+                'duration' => $duration
+            ],
+            'ended' => [
                 'at' => date("Y-m-d H:i:s"),
             ]
         ];
@@ -260,7 +273,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $vehicle = array_values($vehicle);
 
-        $args['costs'] = $this->calculateCosts($args['distance'], $args['duration'], $vehicle[0]['car_type_id']);
+        $args['costs'] = $this->calculateCosts($args['distance'], $duration, $vehicle[0]['car_type_id'], $request->history['started']['add_waiting_fees']);
 
         $args['status'] = 'Ended';
         $args['history'] = array_merge($request->history, $payload);
@@ -311,6 +324,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         if (strtolower($args['cancelled_by']) == 'driver') {
+            $this->applyCancelFees($request);
             $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);
         }
@@ -559,7 +573,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
 
-        if ( !($request->status == 'Searching' || $request->status == 'Sending') ) {
+        if (in_array($request->status, ['Started', 'Ended', 'Completed', 'Cancelled'])) {
             throw new CustomException(__('lang.search_request_failed'));
         }
 
@@ -591,6 +605,18 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $request;
     }
 
+    protected function applyCancelFees($request) 
+    {
+        if ($request->status == 'Accepted') {
+            $cancel_fees = CarType::select('cancel_fees')
+                ->where('name', $request->history['sending']['chosen_car_type'])
+                ->first()->cancel_fees;
+
+            // decrement cancel_fees from user wallet
+            Driver::where('id', $request->driver_id)->increment('balance', $cancel_fees);
+        }
+    }
+
     protected function getNearestDriversWithVehicles(array $args)
     {
         $drivers = $this->getNearestDrivers($args['s_lat'], $args['s_lng']);
@@ -620,19 +646,26 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return ['drivers' => $drivers, 'vehicles' => $vehicles];
     }
 
-    protected function calculateCosts($distance, $duration, $carTypeId)
+    protected function calculateCosts($distance, $duration, $carTypeId, $add_waiting_fees = false)
     {
         if (is_array($carTypeId)) {
             $carTypes = CarType::selectRaw(
-                'id, (base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + min_fees + cancel_fees + waiting_fees) as costs'
+                'id, (base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + min_fees) as costs'
                 , [$distance, $duration])
                 ->whereIn('id', $carTypeId)
                 ->get();
             return $carTypes->keyBy('id')->toArray();
         }
 
+        if ($add_waiting_fees) {
+            return CarType::selectRaw(
+                '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + min_fees + waiting_fees) as costs'
+                , [$distance, $duration])
+                ->where('id', $carTypeId)->first()->costs;
+        }
+
         return CarType::selectRaw(
-            '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + min_fees + cancel_fees + waiting_fees) as costs'
+            '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + min_fees) as costs'
             , [$distance, $duration])
             ->where('id', $carTypeId)->first()->costs;
     }
