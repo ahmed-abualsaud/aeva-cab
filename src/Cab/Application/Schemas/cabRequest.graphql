@@ -1,7 +1,6 @@
 input CabRequestInput {
   id: ID
   user_id: ID
-  user_name: String
   driver_id: ID
   vehicle_id: ID
   car_type: String
@@ -66,9 +65,9 @@ type HistoryObj {
   at: String
   by: String
   reason: String
-  user_name: String
   result: DriverVehicle
   chosen_car_type: String
+  user: User
   driver: Driver
   vehicle: VehicleObj
 }

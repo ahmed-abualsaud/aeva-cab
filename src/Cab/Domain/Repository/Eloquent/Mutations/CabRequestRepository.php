@@ -2,6 +2,7 @@
 
 namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;   
 
+use App\User;
 use App\Driver;
 use App\Vehicle;
 use App\CarType;
@@ -46,7 +47,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     public function schedule(array $args)
     {
-        $input = Arr::except($args, ['directive', 'user_name', 'distance', 'total_eta']);
+        $input = Arr::except($args, ['directive', 'distance', 'total_eta']);
         $args['next_free_time'] = date('Y-m-d H:i:s', 
             strtotime('+'.($args['total_eta'] + 300).' seconds', strtotime($args['schedule_time'])));
 
@@ -61,7 +62,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ],
             'scheduled' => [
                 'at' => date("Y-m-d H:i:s"),
-                'user_name' => $args['user_name']
+                'user' => User::find($args['user_id'])
             ]
         ];
 
@@ -385,7 +386,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ],
             'searching' => [
                 'at' => $request->history['searching']['at'],
-                'user_name' => $request->history['searching']['user_name'],
+                'user' => $request->history['searching']['user'],
                 'result' => $result
             ],
             're_search' => [
@@ -420,7 +421,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ],
             'searching' => [
                 'at' => $request->history['searching']['at'],
-                'user_name' => $request->history['searching']['user_name'],
+                'user' => $request->history['searching']['user'],
                 'result' => $result
             ],
             're_send' => [
@@ -489,7 +490,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ],
             'searching' => [
                 'at' => $request->history['searching']['at'],
-                'user_name' => $request->history['searching']['user_name'],
+                'user' => $request->history['searching']['user'],
                 'result' => $result
             ],
             're_'.$action => [
@@ -523,7 +524,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     protected function searchNewRequest(array $args) 
     {
-        $input = Arr::except($args, ['directive', 'user_name', 'distance', 'duration']);
+        $input = Arr::except($args, ['directive', 'distance', 'duration']);
 
         $activeRequests = $this->model->wherePending($args['user_id'])->first();
 
@@ -540,7 +541,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ],
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
-                'user_name' => $args['user_name'],
+                'user' => User::find($args['user_id']),
                 'result' => $result
             ]
         ];
@@ -576,7 +577,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ],
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
-                'user_name' => $request->history['searching']['user_name'],
+                'user' => $request->history['searching']['user'],
                 'result' => $result
             ]
         ];
