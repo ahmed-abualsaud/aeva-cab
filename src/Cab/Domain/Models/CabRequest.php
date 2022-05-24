@@ -49,7 +49,7 @@ class CabRequest extends Model
         return $this->setConnection('mysql')->hasOne(CabRequestTransaction::class, 'request_id');
     }
 
-    public function scopeLive($query, array $args)
+    public function scopeLive($query)
     {
         return $query->whereIn('status', ['Searching', 'Sending', 'Accepted', 'Arrived', 'Started']);
     }
