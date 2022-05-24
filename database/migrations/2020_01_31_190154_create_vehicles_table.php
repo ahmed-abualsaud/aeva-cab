@@ -28,16 +28,17 @@ class CreateVehiclesTable extends Migration
             $table->unsignedBigInteger('terminal_id')->nullable();
             $table->unsignedBigInteger('device_id')->nullable();
             $table->string('code')->nullable();
+            $table->string('text')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
             $table->index('partner_id');
             $table->index('terminal_id');
             
-            $table->foreign('car_make_id')->references('id')->on('car_makes')->onDelete('cascade');
-            $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('cascade');
-            $table->foreign('car_model_id')->references('id')->on('car_models')->onDelete('cascade');
-            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
+            $table->foreign('car_make_id')->references('id')->on('car_makes')->onDelete('set null');
+            $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('set null');
+            $table->foreign('car_model_id')->references('id')->on('car_models')->onDelete('set null');
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('set null');
         });
     }
 

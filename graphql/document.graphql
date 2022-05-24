@@ -1,8 +1,8 @@
 input UploadDocumentInput {
   name: String
   expires_on: String
-  documentable_id: ID! @rules(apply: ["required"])
-  documentable_type: String! @rules(apply: ["required"])
+  documentable_id: ID
+  documentable_type: String
   file: Upload! @rules(apply: ["required"])
   status: String
   notes: String

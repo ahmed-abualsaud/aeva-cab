@@ -186,8 +186,6 @@ extend type Mutation @guard(with: ["admin", "partner", "manager"]) {
     @field(resolver: "ManagerResolver@destroy")
 
   # Vehicle
-  createVehicle(input: CreateVehicleInput! @spread): Vehicle 
-    @field(resolver: "VehicleResolver@create")
   updateVehicle(input: UpdateVehicleInput! @spread): Vehicle 
     @field(resolver: "VehicleResolver@update")
   deleteVehicle(id: ID!): Vehicle @delete
@@ -393,6 +391,10 @@ extend type Mutation @guard(with: ["admin", "partner", "manager", "driver"]) {
   # Business Trip Event
   endBusinessTrip(input: EndTripInput! @spread): Boolean
     @field(resolver: "BusinessTripEventResolver@end")
+
+  # Vehicle
+  createVehicle(input: CreateVehicleInput! @spread): Vehicle 
+    @field(resolver: "VehicleResolver@create")
 }
 
 # Admin,Partner,Manager,User,Driver Guard

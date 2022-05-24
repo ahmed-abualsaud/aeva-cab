@@ -3,6 +3,9 @@
 namespace App\Repository\Eloquent\Mutations;
 
 use App\Vehicle;
+use App\Document;
+use App\DriverVehicle;
+
 use App\Traits\HandleUpload;
 use App\Repository\Eloquent\BaseRepository;
 
@@ -20,14 +23,52 @@ class VehicleRepository extends BaseRepository
 
     public function create(array $args)
     {
-        $input = collect($args)->except(['directive', 'photo'])->toArray();
+        $input = collect($args)->except(['directive', 'photo', 'driver_id', 'car_image_document', 'car_check_document', 'back_car_license_document', 'front_car_license_document'])->toArray();
 
         if (array_key_exists('photo', $args) && $args['photo']) {
           $url = $this->uploadOneFile($args['photo'], 'images');
           $input['photo'] = $url;
         }
-        
+
         $vehicle = $this->model->create($input);
+
+        $status = 'Approved';
+        if (array_key_exists('driver_id', $args) && $args['driver_id']) {
+            DriverVehicle::create([
+                'vehicle_id' => $vehicle->id,
+                'driver_id' => $args['driver_id'],
+                'active' => false
+            ]);
+            $status = null;
+        }
+
+        $row = [
+            'status' => $status,
+            'documentable_id' => $vehicle->id,
+            'documentable_type' =>'App\\Vehicle',
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+
+
+        for ($i = 0; $i < 4; $i++) {$rows[] = $row;}
+
+        $rows[0]['name'] = 'فحص السيارة';
+        $rows[1]['name'] = 'صورة السيارة';
+        $rows[2]['name'] = 'رخصة سيارة سارية:اﻷمام';
+        $rows[3]['name'] = 'رخصة سيارة سارية:الخلف';
+        
+        $rows[0]['url'] = $this->uploadOneFile($args['car_check_document']['file'], 'documents');
+        $rows[1]['url'] = $this->uploadOneFile($args['car_image_document']['file'], 'documents');
+        $rows[2]['url'] = $this->uploadOneFile($args['front_car_license_document']['file'], 'documents');
+        $rows[3]['url'] = $this->uploadOneFile($args['back_car_license_document']['file'], 'documents');
+
+        $rows[0]['expires_on'] = $args['car_check_document']['expires_on'];
+        $rows[1]['expires_on'] = $args['car_image_document']['expires_on'];
+        $rows[2]['expires_on'] = $args['front_car_license_document']['expires_on'];
+        $rows[3]['expires_on'] = $args['back_car_license_document']['expires_on'];
+
+        Document::insert($rows);
 
         return $vehicle;
     }
