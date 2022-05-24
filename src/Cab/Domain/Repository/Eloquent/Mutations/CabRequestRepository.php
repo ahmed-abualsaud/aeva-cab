@@ -303,6 +303,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.cancel_cab_request_failed'));
         }
 
+        $add_waiting_fees = false;
+        if (array_key_exists('add_waiting_fees', $args) && $args['add_waiting_fees']) {
+            $add_waiting_fees = true;
+        }
+
         $payload = [
             'cancelled' => [
                 'at' => date("Y-m-d H:i:s"),
@@ -310,9 +315,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'reason' => array_key_exists('cancel_reason', $args) ? $args['cancel_reason'] : "Unknown",
             ]
         ];
-        
+
+        unset($args['add_waiting_fees']);
         $args['history'] = array_merge($request->history, $payload);
         $this->updateDriverStatus($request->driver_id, 'Online');
+        $this->applyCancelFees($request, $add_waiting_fees);
 
         $token = null;
         if (strtolower($args['cancelled_by']) == 'user') {
@@ -324,7 +331,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         if (strtolower($args['cancelled_by']) == 'driver') {
-            $this->applyCancelFees($request);
             $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);
         }
@@ -606,15 +612,19 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $request;
     }
 
-    protected function applyCancelFees($request) 
+    protected function applyCancelFees($request, $add_waiting_fees = false) 
     {
-        if ($request->status == 'Accepted') {
-            $cancel_fees = CarType::select('cancel_fees')
+        if (in_array($request->status, ['Accepted', 'Arrived'])) {
+            $fees = CarType::select('cancel_fees', 'waiting_fees')
                 ->where('name', $request->history['sending']['chosen_car_type'])
-                ->first()->cancel_fees;
+                ->first();
 
-            // decrement cancel_fees from user wallet
-            Driver::where('id', $request->driver_id)->increment('balance', $cancel_fees);
+            
+            $total_fees = $fees->cancel_fees;
+            if ($add_waiting_fees) {$total_fees += $fees->waiting_fees;}
+
+            // decrement total_fees from user wallet
+            Driver::where('id', $request->driver_id)->increment('balance', $total_fees);
         }
     }
 
