@@ -339,8 +339,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 __('lang.request_cancelled'),
                 ['view' => 'CancelRequest', 'id' => $args['id']]
             );
-            broadcast(new CabRequestCancelled(strtolower($args['cancelled_by']), $socketRequest));
         }
+
+        broadcast(new CabRequestCancelled(strtolower($args['cancelled_by']), $socketRequest));
 
         return $request;
     }
