@@ -152,4 +152,5 @@ return [
     'request_not_found' => 'Request not found.',
     'ride_redirection' => 'Ride Redirection',
     'ride_redirection_body' => 'Ride destination location has been changed',
+    'request_already_cancelled' => 'Request already cancelled',
 ];

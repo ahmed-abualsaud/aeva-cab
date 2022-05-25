@@ -17,7 +17,6 @@ input CabRequestInput {
   d_address: String
   d_lat: Float
   d_lng: Float
-  add_waiting_fees: Boolean
 }
 
 type CabRequest {
@@ -71,7 +70,7 @@ type HistoryObj {
   user: User
   driver: Driver
   vehicle: VehicleObj
-  add_waiting_fees: Boolean
+  waiting_time: Float
 }
 
 type Summary {
