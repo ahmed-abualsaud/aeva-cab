@@ -14,10 +14,10 @@ input CreateVehicleInput @validator {
   driver_id: ID
   text: String
   code: String
-  car_image_document: UploadDocumentInput! @rules(apply: ["required"])
-  car_check_document: UploadDocumentInput! @rules(apply: ["required"])
-  back_car_license_document: UploadDocumentInput! @rules(apply: ["required"])
-  front_car_license_document: UploadDocumentInput! @rules(apply: ["required"])
+  car_image_document: Upload! @rules(apply: ["required"])
+  car_check_document: Upload! @rules(apply: ["required"])
+  back_car_license_document: Upload! @rules(apply: ["required"])
+  front_car_license_document: Upload! @rules(apply: ["required"])
 }
 
 input UpdateVehicleInput @validator {

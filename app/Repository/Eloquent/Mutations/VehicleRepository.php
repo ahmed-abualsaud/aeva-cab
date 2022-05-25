@@ -58,15 +58,10 @@ class VehicleRepository extends BaseRepository
         $rows[2]['name'] = 'رخصة سيارة سارية:اﻷمام';
         $rows[3]['name'] = 'رخصة سيارة سارية:الخلف';
         
-        $rows[0]['url'] = $this->uploadOneFile($args['car_check_document']['file'], 'documents');
-        $rows[1]['url'] = $this->uploadOneFile($args['car_image_document']['file'], 'documents');
-        $rows[2]['url'] = $this->uploadOneFile($args['front_car_license_document']['file'], 'documents');
-        $rows[3]['url'] = $this->uploadOneFile($args['back_car_license_document']['file'], 'documents');
-
-        $rows[0]['expires_on'] = $args['car_check_document']['expires_on'];
-        $rows[1]['expires_on'] = $args['car_image_document']['expires_on'];
-        $rows[2]['expires_on'] = $args['front_car_license_document']['expires_on'];
-        $rows[3]['expires_on'] = $args['back_car_license_document']['expires_on'];
+        $rows[0]['url'] = $this->uploadOneFile($args['car_check_document'], 'documents');
+        $rows[1]['url'] = $this->uploadOneFile($args['car_image_document'], 'documents');
+        $rows[2]['url'] = $this->uploadOneFile($args['front_car_license_document'], 'documents');
+        $rows[3]['url'] = $this->uploadOneFile($args['back_car_license_document'], 'documents');
 
         Document::insert($rows);
 
