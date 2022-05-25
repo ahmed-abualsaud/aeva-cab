@@ -419,6 +419,13 @@ extend type Mutation @guard(with: ["user"]) {
     @field(resolver: "BusinessTripRatingResolver@update")
 }
 
+# Driver Guard
+extend type Mutation @guard(with: ["driver"]) {
+  # Add Vehicle Documents
+  addVehicleWithDocuments(car_type_id: ID!, text: String!): [Document]
+    @field(resolver: "DocumentResolver@addVehicleWithDocuments")
+}
+
 
 # =============================================== QUERIES ===============================================
 

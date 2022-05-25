@@ -15,14 +15,14 @@ class CreateVehiclesTable extends Migration
     {
         Schema::create('vehicles', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('license_plate')->unique();
+            $table->string('license_plate')->unique()->nullable();
             $table->unsignedBigInteger('car_type_id');
-            $table->unsignedBigInteger('car_model_id');
-            $table->unsignedBigInteger('car_make_id');
+            $table->unsignedBigInteger('car_model_id')->nullable();
+            $table->unsignedBigInteger('car_make_id')->nullable();
             $table->date('license_expires_on')->nullable();
-            $table->string('color');
-            $table->year('year');
-            $table->unsignedSmallInteger('seats');
+            $table->string('color')->nullable();
+            $table->year('year')->nullable();
+            $table->unsignedSmallInteger('seats')->nullable();
             $table->string('photo')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
             $table->unsignedBigInteger('terminal_id')->nullable();

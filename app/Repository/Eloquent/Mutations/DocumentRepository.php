@@ -2,8 +2,9 @@
 
 namespace App\Repository\Eloquent\Mutations;
 
-use \App\Document;
-use \App\Traits\HandleUpload;
+use App\Vehicle;
+use App\Document;
+use App\Traits\HandleUpload;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repository\Eloquent\BaseRepository;
 
@@ -70,5 +71,15 @@ class DocumentRepository extends BaseRepository
         }
 
         return __('lang.document_deleted');
+    }
+
+    public function addVehicleWithDocuments(array $args)
+    {
+        $vehicle = Vehicle::create([
+            'text' => $args['text'],
+            'car_type_id' => $args['car_type_id']
+        ]);
+
+        return Document::createVehicleDocuments($vehicle->id);
     }
 }

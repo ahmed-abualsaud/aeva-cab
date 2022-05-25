@@ -34,4 +34,9 @@ class DocumentResolver
     {
         return $this->documentRepository->destroy($args);
     }
+
+    public function addVehicleWithDocuments($root, array $args)
+    {
+        return $this->documentRepository->addVehicleWithDocuments($args);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Mutations;
 
 use App\Driver;
+use App\Vehicle;
 use App\Document;
 use App\DriverVehicle;
 use App\PartnerDriver;
@@ -44,7 +45,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
     public function create(array $args)
     {
-        $input = collect($args)->except(['directive', 'avatar'])->toArray();
+        $input = collect($args)->except(['directive', 'avatar', 'text'])->toArray();
         $input['password'] = Hash::make($input['phone']);
         $input['status'] = true;
  
@@ -72,32 +73,19 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
         $driver->verification_code = $verification_code;
 
-        $row = [
-            'documentable_id' => $driver->id,
-            'documentable_type' =>'App\\Driver',
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-        ];
+        $vehicle = Vehicle::create([
+            'text' => $args['text'],
+            'car_type_id' => $args['car_type_id'],
+        ]);
 
-        for ($i = 0; $i < 10; $i++) {$rows[] = $row;}
-
-        $rows[0]['name'] = 'البطاقة الشخصية:اﻷمام';
-        $rows[1]['name'] = 'البطاقة الشخصية:الخلف';
-        $rows[2]['name'] = 'رخصة قيادة مصرية سارية';
-        $rows[3]['name'] = 'رخصة سيارة سارية:اﻷمام';
-        $rows[4]['name'] = 'رخصة سيارة سارية:الخلف';
-        $rows[5]['name'] = 'الصورة الشخصية';
-        $rows[6]['name'] = 'صورة السيارة';
-        $rows[7]['name'] = 'سجل جنائي';
-        $rows[8]['name'] = 'اختبار المخدرات';
-        $rows[9]['name'] = 'فحص السيارة';
-
-        Document::insert($rows);
+        Document::createDriverDocuments($driver->id);
+        Document::createVehicleDocuments($vehicle->id);
         
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $this->createPartnerDriver($args['partner_id'], $driver->id);
         }
 
+        $driver->vehicle_id = $vehicle->id;
         return $driver;
     }
 
