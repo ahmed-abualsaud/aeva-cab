@@ -84,4 +84,6 @@ type Driver {
   cab_request_count: Float
   cab_request_earnings: Float
   vehicle_id: ID
+  balance: Float
+  earnings: Float
 }

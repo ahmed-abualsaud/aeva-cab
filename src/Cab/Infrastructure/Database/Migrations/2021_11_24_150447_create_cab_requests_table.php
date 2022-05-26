@@ -18,6 +18,7 @@ class CreateCabRequestsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('vehicle_id')->nullable();
+            $table->unsignedBigInteger('promo_code_id')->nullable();
             $table->enum('status', [
                 'Scheduled',
                 'Searching',
@@ -47,6 +48,7 @@ class CreateCabRequestsTable extends Migration
 
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('set null');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('set null');
+            $table->foreign('promo_code_id')->references('id')->on('promo_codes')->onDelete('set null');
         });
     }
 

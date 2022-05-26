@@ -17,10 +17,12 @@ class CreatePromoCodesTable extends Migration
             $table->bigIncrements('id');
             $table->string('name')->unique();
             $table->string('description')->nullable();
-            $table->float('amount', 10, 2);
-            $table->smallInteger('usage')->default(1);
+            $table->float('max_discount', 10, 2);
+            $table->float('percentage', 4, 2);
+            $table->bigInteger('max_users');
+            $table->bigInteger('max_trips');
             $table->date('expires_on');
-            $table->enum('type', ['TOSCHOOL','TOWORK','SEATS','ONDEMAND']);
+            $table->enum('type', ['TOSCHOOL','TOWORK','SEATS','ONDEMAND', 'CAB']);
             $table->softDeletes();
             $table->timestamps();
 

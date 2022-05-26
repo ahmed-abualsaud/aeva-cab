@@ -654,8 +654,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ->where('driver_vehicles.active', true)
             ->get();
 
-        if ($vehicles->price < $vehicle->min_fees) {$vehicles->price = $vehicle->min_fees;}
-        unset($vehicle->min_fees);
+        foreach ($vehicles as $vehicle) {
+            if ($vehicle->price < $vehicle->min_fees) {$vehicles->price = $vehicle->min_fees;}
+            unset($vehicle->min_fees);
+        }
 
         return ['drivers' => $drivers, 'vehicles' => $vehicles];
     }

@@ -5,6 +5,7 @@ namespace Aeva\Cab\Domain\Models;
 use App\User;
 use App\Driver;
 use App\Vehicle;
+use App\PromoCode;
 
 use App\Traits\Filterable;
 use App\Traits\Searchable;
@@ -19,6 +20,8 @@ class CabRequest extends Model
     use SoftDeletes;
 
     protected $guarded = [];
+
+    protected $appends = ['costs_after_discount'];
 
     protected $casts = [
         'history' => 'json',
@@ -47,6 +50,11 @@ class CabRequest extends Model
     public function transaction()
     {
         return $this->setConnection('mysql')->hasOne(CabRequestTransaction::class, 'request_id');
+    }
+
+    public function promoCode()
+    {
+        return $this->belongsTo(PromoCode::class, 'promo_code_id');
     }
 
     public function scopeLive($query)
@@ -101,5 +109,20 @@ class CabRequest extends Model
     {
         return $query->where($args['issuer_type'].'_id', $args['issuer_id'])
             ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Ended', 'Completed']);
+    }
+
+    public function getCostsAfterDiscountAttribute()
+    {
+        $promoCode = $this->promoCode;
+
+        if ( !($promoCode && $this->costs) ) {return $this->costs;}
+
+        $discount_rate = ($this->costs * $promoCode->percentage / 100);
+
+        if ($discount_rate > $promoCode->max_discount) {
+            $discount_rate = $promoCode->max_discount;
+        }
+
+        return ($this->costs - $discount_rate);
     }
 }

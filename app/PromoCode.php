@@ -14,6 +14,8 @@ class PromoCode extends Model
      */
     protected $guarded = [];
 
+    protected $appends = ['max_usage'];
+
     public function promoCodeUsage()
     {
         return $this->hasMany(PromoCodeUsage::class, 'promo_code_id');
@@ -33,8 +35,12 @@ class PromoCode extends Model
         if (array_key_exists('is_valid', $args) && $args['is_valid']) {
             return $query->where('expires_on', '>', date('Y-m-d'));
         }
- 
+
         return $query;
     }
 
+    public function getMaxUsageAttribute()
+    {
+        return ($this->max_users * $this->max_trips);
+    }
 }

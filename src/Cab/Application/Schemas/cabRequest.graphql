@@ -17,6 +17,7 @@ input CabRequestInput {
   d_address: String
   d_lat: Float
   d_lng: Float
+  promo_code_id: ID
 }
 
 type CabRequest {
@@ -25,6 +26,7 @@ type CabRequest {
   driver: Driver @BelongsTo
   vehicle: Vehicle @BelongsTo
   rating: CabRating @HasOne
+  promo_code: PromoCode @belongsTo(relation: "promoCode")
   transaction: CabRequestTransaction @HasOne
   result: DriverVehicle
   status: String
@@ -42,6 +44,7 @@ type CabRequest {
   d_lat: Float
   d_lng: Float
   created_at: String
+  costs_after_discount: Float
 }
 
 type CabRequestHistory {

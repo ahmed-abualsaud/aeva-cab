@@ -123,6 +123,8 @@ return [
     'user_exists' => 'User already exists',
     'you_already_booked_the_trip' => 'You already booked the trip',
     'your_account_is_disabled' => 'Your account has been suspended',
+    'permitted_number_of_trips_exceeded' => 'Permitted number of trips exceeded',
+    'permitted_number_of_users_exceeded' => 'Permitted number of users exceeded',
 
     // ============================== Aeva Cab ==============================
 

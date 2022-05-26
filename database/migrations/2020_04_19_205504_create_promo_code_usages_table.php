@@ -19,7 +19,6 @@ class CreatePromoCodeUsagesTable extends Migration
 
             $table->index(['promo_code_id', 'user_id']);
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('promo_code_id')->references('id')->on('promo_codes')->onDelete('cascade');
         });
     }
