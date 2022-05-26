@@ -15,6 +15,8 @@ input CreateDriverInput @validator {
   code: String
   wallet: Float
   text: String
+  balance: Float
+  earnings: Float
 }
 
 input UpdateDriverInput @validator {
@@ -39,6 +41,8 @@ input UpdateDriverInput @validator {
   city: String
   vehicle: String
   phone_verified_at: String
+  balance: Float
+  earnings: Float
 }
 
 input DriverVehicleInput {
@@ -86,4 +90,9 @@ type Driver {
   vehicle_id: ID
   balance: Float
   earnings: Float
+  received_cab_requests: Float
+  accepted_cab_requests: Float
+  cancelled_cab_requests: Float
+  acceptance_rate: Float
+  cancellation_rate: Float
 }

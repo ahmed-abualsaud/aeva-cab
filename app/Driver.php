@@ -27,7 +27,12 @@ class Driver extends Authenticatable implements JWTSubject
 
     protected $hidden = ['password'];
 
-    protected $appends = ['cab_request_count', 'cab_request_earnings'];
+    protected $appends = [
+        'acceptance_rate', 
+        'cancellation_rate', 
+        'cab_request_count', 
+        'cab_request_earnings'
+    ];
 
     /**
      * Send the password reset notification.
@@ -129,6 +134,16 @@ class Driver extends Authenticatable implements JWTSubject
         } catch (UserNotDefinedException $e) {
             //
         }
+    }
+
+    public function getAcceptanceRateAttribute()
+    {
+        return ($this->accepted_cab_requests / $this->received_cab_requests);
+    }
+
+    public function getCancellationRateAttribute()
+    {
+        return ($this->cancelled_cab_requests / $this->accepted_cab_requests);
     }
 
     public function getCabRequestCountAttribute()

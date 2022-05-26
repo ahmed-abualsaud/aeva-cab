@@ -40,6 +40,9 @@ class CreateDriversTable extends Migration
             $table->string('provider_id')->nullable();
             $table->string('device_id')->nullable();
             $table->string('code')->nullable();
+            $table->bigInteger('received_cab_requests')->default(0);
+            $table->bigInteger('accepted_cab_requests')->default(0);
+            $table->bigInteger('cancelled_cab_requests')->default(0);
             $table->timestamps();
             $table->softDeletes();
 

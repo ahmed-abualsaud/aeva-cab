@@ -113,6 +113,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $driversIds = Arr::pluck($filtered, 'driver_id');
 
+        Driver::whereIn('id', $driversIds)->increment('received_cab_requests', 1);
+
         SendPushNotification::dispatch(
             $this->driversToken($driversIds),
             __('lang.accept_request_body'),
@@ -128,7 +130,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function accept(array $args)
     {
         $request = $this->findRequest($args['id']);
-        
+        Driver::where('id', $args['driver_id'])->increment('accepted_cab_requests', 1);
+
         if ( $request->status != 'Sending' ) {
             throw new CustomException(__('lang.accept_request_failed'));
         }
@@ -324,6 +327,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         if (strtolower($args['cancelled_by']) == 'driver') {
+            if ($request->driver_id) {
+                Driver::where('id', $request->driver_id)->increment('cancelled_cab_requests', 1);
+            }
             $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);
         }
