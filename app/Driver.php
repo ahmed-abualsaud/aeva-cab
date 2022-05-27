@@ -138,11 +138,13 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function getAcceptanceRateAttribute()
     {
+        if ($this->received_cab_requests == 0) {return 0;}
         return ($this->accepted_cab_requests / $this->received_cab_requests);
     }
 
     public function getCancellationRateAttribute()
     {
+        if ($this->accepted_cab_requests == 0) {return 0;}
         return ($this->cancelled_cab_requests / $this->accepted_cab_requests);
     }
 
