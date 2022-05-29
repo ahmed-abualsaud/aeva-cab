@@ -79,7 +79,8 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function vehicles()
     {
-        return $this->belongsToMany(Vehicle::class, 'driver_vehicles');
+        return $this->belongsToMany(Vehicle::class, 'driver_vehicles')
+                    ->withPivot('active');
     }
 
     public function car_type()

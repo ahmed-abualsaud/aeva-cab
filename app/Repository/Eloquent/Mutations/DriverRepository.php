@@ -74,8 +74,15 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         $driver->verification_code = $verification_code;
 
         $vehicle = Vehicle::create([
+            'approved' => false,
             'text' => $args['text'],
             'car_type_id' => $args['car_type_id'],
+        ]);
+
+        DriverVehicle::create([
+            'vehicle_id' => $vehicle->id,
+            'driver_id' => $driver->id,
+            'active' => false
         ]);
 
         Document::createDriverDocuments($driver->id);
@@ -85,7 +92,6 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $this->createPartnerDriver($args['partner_id'], $driver->id);
         }
 
-        $driver->vehicle_id = $vehicle->id;
         return $driver;
     }
 

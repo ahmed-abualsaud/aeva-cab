@@ -36,7 +36,7 @@ input UpdateVehicleInput @validator {
   device_id: ID
   code: String
   text: String
-
+  approved: Boolean
 }
 
 type Vehicle {
@@ -56,4 +56,10 @@ type Vehicle {
   code: String
   text: String
   documents: [Document] @morphMany
+  approved: Boolean
+  pivot: DriverVehiclePivot
+}
+
+type DriverVehiclePivot {
+  active: Boolean
 }

@@ -37,12 +37,14 @@ class Vehicle extends Model
 
     public function scopeAssigned($query, $args) 
     {
-        return $query->whereIn('id', DriverVehicle::getIds($args));
+        return $query->whereIn('id', DriverVehicle::getIds($args))
+                     ->where('approved', true);
     }
 
     public function scopeNotAssigned($query, $args) 
     {
-        return $query->whereNotIn('id', DriverVehicle::getIds($args));
+        return $query->whereIn('id', DriverVehicle::getIds($args))
+                     ->where('approved', false);
     }
 
     public function scopePartner($query, $args) 

@@ -422,7 +422,7 @@ extend type Mutation @guard(with: ["user"]) {
 # Driver Guard
 extend type Mutation @guard(with: ["driver"]) {
   # Add Vehicle Documents
-  addVehicleWithDocuments(car_type_id: ID!, text: String!): [Document]
+  addVehicleWithDocuments(driver_id: ID!, car_type_id: ID!, text: String!): Vehicle
     @field(resolver: "DocumentResolver@addVehicleWithDocuments")
 }
 

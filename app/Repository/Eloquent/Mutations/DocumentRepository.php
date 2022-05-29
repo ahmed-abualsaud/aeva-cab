@@ -4,9 +4,13 @@ namespace App\Repository\Eloquent\Mutations;
 
 use App\Vehicle;
 use App\Document;
+use App\DriverVehicle;
+
 use App\Traits\HandleUpload;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repository\Eloquent\BaseRepository;
+
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class DocumentRepository extends BaseRepository
 {
@@ -57,6 +61,8 @@ class DocumentRepository extends BaseRepository
 
         $document->update($input);
 
+        $this->checkVehicleDocumentsApproved($document);
+
         return $document;
     }
 
@@ -76,10 +82,40 @@ class DocumentRepository extends BaseRepository
     public function addVehicleWithDocuments(array $args)
     {
         $vehicle = Vehicle::create([
+            'approved' => false,
             'text' => $args['text'],
             'car_type_id' => $args['car_type_id']
         ]);
 
-        return Document::createVehicleDocuments($vehicle->id);
+        DriverVehicle::create([
+            'vehicle_id' => $vehicle->id,
+            'driver_id' => $args['driver_id'],
+            'active' => false
+        ]);
+
+        Document::createVehicleDocuments($vehicle->id);
+
+        return $vehicle;
+    }
+
+    protected function checkVehicleDocumentsApproved($document)
+    {
+        $docsNames = [
+            'فحص السيارة', 
+            'صورة السيارة', 
+            'رخصة سيارة سارية:اﻷمام', 
+            'رخصة سيارة سارية:الخلف'
+        ];
+
+        $approvedDocs = $this->model
+            ->where('documentable_id', $document->documentable_id)
+            ->whereIn('name', $docsNames)
+            ->where('status', 'Approved')
+            ->count();
+
+        if  (in_array($document->name, $docsNames) && ($approvedDocs == 4)) 
+        {
+            Vehicle::where('id', $document->documentable_id)->update(['approved' => true]);
+        }
     }
 }

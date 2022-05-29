@@ -29,6 +29,7 @@ class CreateVehiclesTable extends Migration
             $table->unsignedBigInteger('device_id')->nullable();
             $table->string('code')->nullable();
             $table->string('text')->nullable();
+            $table->boolean('approved')->default(false);
             $table->timestamps();
             $table->softDeletes();
 

@@ -93,7 +93,8 @@ class VehicleRepository extends BaseRepository
     {
         $vehicle = $this->model->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
             ->where('driver_vehicles.driver_id', $args['driver_id'])
-            ->where('driver_vehicles.vehicle_id', $args['vehicle_id']);
+            ->where('driver_vehicles.vehicle_id', $args['vehicle_id'])
+            ->where('vehicles.approved', true);
 
         $ret = $vehicle->first();
         if ($ret) {
