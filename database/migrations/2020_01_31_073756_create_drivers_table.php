@@ -30,6 +30,7 @@ class CreateDriversTable extends Migration
             $table->unsignedBigInteger('fleet_id')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
             $table->unsignedBigInteger('car_type_id')->nullable();
+            $table->unsignedBigInteger('referrer_id')->nullable();
             $table->double('latitude', 15, 8)->nullable();
             $table->double('longitude', 15, 8)->nullable();
             $table->decimal('rating', 4, 2)->default(5);
@@ -40,6 +41,7 @@ class CreateDriversTable extends Migration
             $table->string('provider_id')->nullable();
             $table->string('device_id')->nullable();
             $table->string('code')->nullable();
+            $table->string('ref_code')->nullable();
             $table->bigInteger('received_cab_requests')->default(0);
             $table->bigInteger('accepted_cab_requests')->default(0);
             $table->bigInteger('cancelled_cab_requests')->default(0);
@@ -52,6 +54,7 @@ class CreateDriversTable extends Migration
             $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
             $table->foreign('fleet_id')->references('id')->on('fleets')->onDelete('cascade');
             $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('set null');
+            $table->foreign('referrer_id')->references('id')->on('drivers')->onDelete('set null');
         });
     }
 

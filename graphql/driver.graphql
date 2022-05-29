@@ -17,6 +17,7 @@ input CreateDriverInput @validator {
   text: String
   balance: Float
   earnings: Float
+  ref_code: String
 }
 
 input UpdateDriverInput @validator {
@@ -84,10 +85,10 @@ type Driver {
   phone_verified_at: String
   car_type: CarType @BelongsTo
   token: String
+  ref_code: String
   verification_code: String
   cab_request_count: Float
   cab_request_earnings: Float
-  vehicle_id: ID
   balance: Float
   earnings: Float
   received_cab_requests: Float

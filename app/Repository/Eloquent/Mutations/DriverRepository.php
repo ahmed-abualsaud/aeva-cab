@@ -12,6 +12,8 @@ use App\Jobs\SendOtp;
 use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;
 
+use Vinkla\Hashids\Facades\Hashids;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -55,6 +57,19 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         $driver = $this->model->create($input);
+
+        $driver->update(["ref_code" => Hashids::encode($driver->id)]);
+
+        if (array_key_exists('ref_code', $args) && $args['ref_code']) {
+            $referrer_id = Hashids::decode($args['ref_code']);
+            if ($referrer_id && isset($referrer_id[0]) && is_int($referrer_id[0])) {
+                $referrer = $this->model->find($referrer_id[0]);
+                if ($referrer) {
+                    $driver->referrer_id = $referrer->id;
+                    $driver->save();
+                }
+            }
+        }
 
         if (array_key_exists('car_type_id', $args) && $args['car_type_id']) {
             auth('driver')->onceUsingId($driver->id);

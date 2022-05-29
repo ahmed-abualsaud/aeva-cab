@@ -18,8 +18,12 @@ return [
     'db_backup_path' => env('DB_BACKUP_DIRECTORY', '/var/www/aeva/backup'),
     'telescope_token' => env('TELESCOPE_TOKEN'),
 
-    'victorylink_username'=> env('VICTORY_LINK_USERNAME'),
-    'victorylink_password'=> env('VICTORY_LINK_PASSWORD'),
-    'victorylink_url'=> env('VICTORY_LINK_URL'),
-    'victorylink_sender'=> env('VICTORY_LINK_SENDER'),
+    'victorylink_username' => env('VICTORY_LINK_USERNAME'),
+    'victorylink_password' => env('VICTORY_LINK_PASSWORD'),
+    'victorylink_url' => env('VICTORY_LINK_URL'),
+    'victorylink_sender' => env('VICTORY_LINK_SENDER'),
+
+    'referral_count' => env('REFERRAL_COUNT'),
+    'referral_bonus' => env('REFERRAL_BONUS'),
+    'waiting_time' => env('WAITING_TIME'),
 ];

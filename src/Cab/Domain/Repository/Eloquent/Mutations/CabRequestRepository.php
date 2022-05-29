@@ -277,6 +277,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $request = $this->updateRequest($request, $args);
 
+        $this->addReferralBonus($request->driver_id);
         $this->updateDriverStatus($request->driver_id, 'Online');
 
         SendPushNotification::dispatch(

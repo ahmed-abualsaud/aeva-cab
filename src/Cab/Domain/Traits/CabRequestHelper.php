@@ -17,6 +17,19 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 trait CabRequestHelper
 {
+    protected function addReferralBonus($driver_id)
+    {
+        $referral_count = config('custom.referral_count');
+        $referral_bonus = config('custom.referral_bonus');
+
+        $driver = Driver::find($driver_id);
+        if($driver) {
+            if (($driver->accepted_cab_requests - $driver->cancelled_cab_requests) == $referral_count) {
+                Driver::where('id', $driver->referrer_id)->increment('balance', $referral_bonus);
+            }
+        }
+    }
+
     protected function applyCancelFees($cancelled_by, $request) 
     {
         if ($request->status == 'Arrived' && $cancelled_by == 'user') {
@@ -24,7 +37,7 @@ trait CabRequestHelper
         }
 
         if ($request->status == 'Arrived' && $cancelled_by == 'driver') {
-            if ((time() - strtotime($request->history['arrived']['at'])) >= 300) {
+            if ((time() - strtotime($request->history['arrived']['at'])) >= config('custom.waiting_time')) {
                 $this->flushCancelFees($request);
             }
         }
@@ -95,7 +108,7 @@ trait CabRequestHelper
             return collect($carTypes)->keyBy('id')->toArray();
         }
 
-        if ($waiting_time >= 300) {
+        if ($waiting_time >= config('custom.waiting_time')) {
             $fees = CarType::selectRaw(
                 '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + (waiting_fees * ? / 60)) as costs, min_fees'
                 , [$distance, $duration, ($waiting_time - 299)])
