@@ -23,8 +23,6 @@ extend type Mutation @guard(with: ["driver", "user"]) {
   # Cab Request
   createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
     @field(resolver: "CabRequestTransactionResolver@create")
-  confirmCabRequestCashPayment(request_id: ID!): Boolean
-    @field(resolver: "CabRequestTransactionResolver@confirmCashPayment")
   updateDriverCabStatus(driver_id: ID!, cab_status: String!): Boolean 
     @field(resolver: "CabRequestResolver@updateDriverCabStatus")
 }

@@ -18,11 +18,6 @@ class CabRequestTransactionResolver
         return $this->cabRequestTransactionRepository->create($args);
     }
 
-    public function confirmCashPayment($_, array $args)
-    {
-        return $this->cabRequestTransactionRepository->confirmCashPayment($args);
-    }
-
     public function destroy($_, array $args)
     {
         return $this->cabRequestTransactionRepository->destroy($args);

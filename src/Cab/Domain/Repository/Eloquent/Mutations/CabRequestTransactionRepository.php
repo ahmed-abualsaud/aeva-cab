@@ -5,6 +5,7 @@ namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 use App\Exceptions\CustomException;
 
 use App\User;
+use App\Driver;
 
 use Aeva\Cab\Domain\Models\CabRequest;
 use Aeva\Cab\Domain\Models\CabRequestTransaction;
@@ -31,26 +32,20 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         $input =  Arr::except($args, ['directive', 'paid']);
+        $input['user_id'] = $request->user_id;
+        $input['driver_id'] = $request->driver_id;
 
         switch($args['payment_method']) 
         {
-            case 'Card':
-                $this->cardPay($args, $request);
+            case 'Cash':
+                $this->cashPay($args, $request);
                 break;
             case 'Wallet':
                 $this->walletPay($args, $request);
         }
+
         $request->update([ 'status' => 'Completed', 'paid' => true]);
         return $this->model->create($input);
-    }
-
-    public function confirmCashPayment(array $args)
-    {
-        try {
-            return CabRequest::findOrFail($args['request_id'])->update(['paid' => true]);
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.request_not_found'));
-        }
     }
 
     public function destroy(array $args)
@@ -58,22 +53,20 @@ class CabRequestTransactionRepository extends BaseRepository
         return $this->model->whereIn('id', $args['id'])->delete();
     }
 
-    protected function cardPay($args, $request)
+    protected function cashPay($args, $request)
     {
-        $extra = $args['amount'] - $args['paid'];
-        if ($extra) {
-            $this->updateWallet($args['user_id'], $extra);
-        }
-        //$request->update(['paid' => true]);
+        $wallet_money = $args['costs'] - $args['paid'];
+        $this->updateUserWallet($request->user_id, $wallet_money, '-');
+        $this->updateDriverWallet($request->driver_id, $args['costs'], $wallet_money);
     }
 
     protected function walletPay($args, $request)
     {
-        $this->updateWallet($args['user_id'], $args['amount']);
-        //$request->update(['paid' => true]);
+        $this->updateUserWallet($request->user_id, $args['costs'], '-');
+        $this->updateDriverWallet($request->driver_id, $args['costs'], $args['costs']);
     }
 
-    protected function updateWallet($user_id, $amount)
+    protected function updateUserWallet($user_id, $costs, $sign)
     {
         try {
             $user = User::findOrFail($user_id);
@@ -81,9 +74,27 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.user_not_found'));
         }
 
-        if ( $user->wallet < $amount ) {
-            throw new CustomException(__('lang.insufficient_balance'));
+        if($sign == '-') {
+            // if ( $user->wallet < $costs ) {
+            //     throw new CustomException(__('lang.insufficient_balance'));
+            // }
+            // decrement the user wallet by $costs
         }
-        //$user->updateWallet($user_id, $amount);
+        
+        if($sign == '+') {
+            // increment the user wallet by $costs
+        }
+    }
+
+    protected function updateDriverWallet($driver_id, $costs, $balance)
+    {
+        try {
+            $driver = Driver::findOrFail($driver_id);
+        } catch (\Exception $e) {
+            throw new CustomException(__('lang.driver_not_found'));
+        }
+        
+        $driver->increment('earnings', $costs);
+        $driver->increment('balance', $balance);
     }
 }

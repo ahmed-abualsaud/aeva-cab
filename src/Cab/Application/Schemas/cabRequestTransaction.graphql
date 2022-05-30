@@ -1,8 +1,6 @@
 input CabRequestTransactionInput {
-  user_id: ID! @rules(apply: ["required"])
-  driver_id: ID! @rules(apply: ["required"])
   request_id: ID! @rules(apply: ["required"])
-  amount:Float! @rules(apply: ["required"])
+  costs:Float! @rules(apply: ["required"])
   paid:Float
   payment_method: String! @rules(apply: ["required", "in:Cash,Card,Wallet"])
 }
@@ -12,7 +10,7 @@ type CabRequestTransaction {
   request: CabRequest @BelongsTo
   user: CabUser @BelongsTo(relation: "user")
   driver: Driver @BelongsTo
-  amount:Float
+  costs:Float
   payment_method: String @rules(apply: ["in:Cash,Card,Wallet"])
   created_at: String
 }
