@@ -30,6 +30,7 @@ class VehicleRepository extends BaseRepository
           $input['photo'] = $url;
         }
 
+        $input['approved'] = true;
         $vehicle = $this->model->create($input);
 
         $status = 'Approved';
