@@ -38,12 +38,14 @@ class Vehicle extends Model
     public function scopeAssigned($query, $args) 
     {
         return $query->whereIn('id', DriverVehicle::getIds($args))
+                     ->whereNotNull(['license_plate', 'car_model_id', 'car_make_id'])
                      ->where('approved', true);
     }
 
     public function scopeNotAssigned($query, $args) 
     {
         return $query->whereIn('id', DriverVehicle::getIds($args))
+                     ->whereNotNull(['license_plate', 'car_model_id', 'car_make_id'])
                      ->where('approved', false);
     }
 
@@ -68,6 +70,6 @@ class Vehicle extends Model
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
 
-        return $query;
+        return $query->whereNotNull(['license_plate', 'car_model_id', 'car_make_id']);
     }
 }
