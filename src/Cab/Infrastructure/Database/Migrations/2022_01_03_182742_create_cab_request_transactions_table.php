@@ -18,7 +18,7 @@ class CreateCabRequestTransactionsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('request_id')->nullable();
-            $table->float('amount', 8, 2);
+            $table->float('costs', 8, 2);
             $table->enum('payment_method', ['Cash', 'Card', 'Wallet']);
             $table->timestamps();
             $table->softDeletes();
