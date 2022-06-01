@@ -30,7 +30,6 @@ class VehicleRepository extends BaseRepository
           $input['photo'] = $url;
         }
 
-        $input['approved'] = true;
         $vehicle = $this->model->create($input);
 
         $status = 'Approved';
@@ -87,6 +86,8 @@ class VehicleRepository extends BaseRepository
 
         $vehicle->update($input);
 
+        $this->checkVehicleAndDocumentsApproved($vehicle);
+
         return $vehicle;
     }
 
@@ -108,5 +109,28 @@ class VehicleRepository extends BaseRepository
         }
 
         return $ret;
+    }
+
+    protected function checkVehicleAndDocumentsApproved($vehicle)
+    {
+        $docsNames = [
+            'فحص السيارة', 
+            'صورة السيارة', 
+            'رخصة سيارة سارية:اﻷمام', 
+            'رخصة سيارة سارية:الخلف'
+        ];
+
+        $approvedDocs = Document::where('documentable_type', 'App\\Vehicle')
+            ->where('documentable_id', $vehicle->id)
+            ->whereIn('name', $docsNames)
+            ->where('status', 'Approved')
+            ->count();
+
+        $dataFilled = $vehicle->license_plate && $vehicle->car_make_id && $vehicle->car_model_id;
+        
+        if  ($dataFilled && ($approvedDocs == 4)) 
+        {
+            $vehicle->update(['approved' => true]);
+        }
     }
 }

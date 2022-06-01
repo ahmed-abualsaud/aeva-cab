@@ -7,6 +7,7 @@ use App\Document;
 use App\DriverVehicle;
 
 use App\Traits\HandleUpload;
+use App\Exceptions\CustomException;
 use App\Repository\Eloquent\BaseRepository;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -61,7 +62,7 @@ class DocumentRepository extends BaseRepository
 
         $document->update($input);
 
-        $this->checkVehicleDocumentsApproved($document);
+        $this->checkVehicleAndDocumentsApproved($document);
 
         return $document;
     }
@@ -98,7 +99,7 @@ class DocumentRepository extends BaseRepository
         return $vehicle;
     }
 
-    protected function checkVehicleDocumentsApproved($document)
+    protected function checkVehicleAndDocumentsApproved($document)
     {
         $docsNames = [
             'فحص السيارة', 
@@ -115,7 +116,9 @@ class DocumentRepository extends BaseRepository
 
         if  (in_array($document->name, $docsNames) && ($approvedDocs == 4)) 
         {
-            Vehicle::where('id', $document->documentable_id)->update(['approved' => true]);
+            Vehicle::where('id', $document->documentable_id)
+                    ->whereNotNull(['license_plate', 'car_model_id', 'car_make_id'])
+                    ->update(['approved' => true]);
         }
     }
 }
