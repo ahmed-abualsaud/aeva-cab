@@ -540,6 +540,8 @@ extend type Query @guard(with: ["admin", "partner", "manager"]) {
     @all(scopes: ["assigned"])
 
   # Driver Vehicle
+  driverPendingVehicles(driver_id: ID!): [Vehicle] 
+    @all(scopes: ["pending"])
   driverAssignedVehicles(driver_id: ID!): [Vehicle] 
     @all(scopes: ["assigned"])
   driverNotAssignedVehicles(partner_id: ID, driver_id: ID!, searchFor: String, searchQuery: String): [Vehicle] 

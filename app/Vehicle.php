@@ -35,6 +35,15 @@ class Vehicle extends Model
         return $this->morphMany(Document::class, 'documentable');
     }
 
+    public function scopePending($query, $args) 
+    {
+        return $query->whereIn('id', DriverVehicle::getIds($args))
+                    ->where(function ($query) {
+                        $query->whereNull(['license_plate', 'car_model_id', 'car_make_id'])
+                            ->orWhere('approved', false);
+                    });
+    }
+
     public function scopeAssigned($query, $args) 
     {
         return $query->whereIn('id', DriverVehicle::getIds($args))
