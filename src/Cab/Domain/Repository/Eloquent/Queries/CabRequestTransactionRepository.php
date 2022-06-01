@@ -27,7 +27,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
         $transactionGroup = $this->model->selectRaw('
             DATE_FORMAT(created_at, "%d %b %Y") as x,
-            ROUND(SUM(amount), 2) as y
+            ROUND(SUM(costs), 2) as y
         ');
 
         if (array_key_exists('period', $args) && $args['period']) {
@@ -36,7 +36,7 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         $transactionCount = $transactions->count();
-        $transactionSum = $transactions->sum('amount');
+        $transactionSum = $transactions->sum('costs');
         $transactionGroup = $transactionGroup->groupBy('x')->get();
 
         $response = [
