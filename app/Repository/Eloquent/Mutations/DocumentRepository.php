@@ -2,6 +2,7 @@
 
 namespace App\Repository\Eloquent\Mutations;
 
+use App\Driver;
 use App\Vehicle;
 use App\Document;
 use App\DriverVehicle;
@@ -82,6 +83,12 @@ class DocumentRepository extends BaseRepository
 
     public function addVehicleWithDocuments(array $args)
     {
+        try {
+            $driver = Driver::findOrFail($args['driver_id']);
+        } catch (ModelNotFoundException $e) {
+            throw new CustomException(__('lang.driver_not_found'));
+        }
+
         $vehicle = Vehicle::create([
             'approved' => false,
             'text' => $args['text'],
@@ -96,7 +103,7 @@ class DocumentRepository extends BaseRepository
 
         Document::createVehicleDocuments($vehicle->id);
 
-        return $vehicle;
+        return $driver;
     }
 
     protected function checkVehicleAndDocumentsApproved($document)
