@@ -170,7 +170,7 @@ class Driver extends Authenticatable implements JWTSubject
     {
         $sum = CabRequestTransaction::selectRaw('
                 driver_id,
-                ROUND(SUM(amount), 2) AS sum
+                ROUND(SUM(costs), 2) AS sum
             ')
             ->where('driver_id', $this->id)
             ->groupBy('driver_id')
