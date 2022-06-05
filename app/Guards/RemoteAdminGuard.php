@@ -47,6 +47,18 @@ class RemoteAdminGuard implements Guard
         return null;
     }
 
+    public function attempt($credentials) 
+    {
+        $id = $this->jwt->payload()->get('sub');
+        $user = Admin::find($id);
+        //$user = $this->provider->retrieveByCredentials($credentials);
+        $token = $this->jwt->fromUser($user);
+        $this->jwt->setToken($token);
+        //$this->setUser($user);
+
+        return $token;
+    }
+
     public function setToken($token) 
     {
         $this->jwt->setToken($token);
