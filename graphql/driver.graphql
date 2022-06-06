@@ -98,4 +98,5 @@ type Driver {
   cancellation_rate: Float
   total_working_time: Float
   activity_updated_at: String
+  pivot: DriverVehiclePivot
 }

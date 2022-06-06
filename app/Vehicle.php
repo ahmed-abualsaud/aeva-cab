@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Driver;
 use App\DriverVehicle;
 use App\Traits\Searchable;
 
@@ -33,6 +34,12 @@ class Vehicle extends Model
     public function documents()
     {
         return $this->morphMany(Document::class, 'documentable');
+    }
+
+    public function drivers()
+    {
+        return $this->belongsToMany(Driver::class, 'driver_vehicles')
+                    ->withPivot('active');
     }
 
     public function scopePending($query, $args) 

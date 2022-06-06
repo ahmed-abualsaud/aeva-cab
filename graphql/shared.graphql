@@ -68,3 +68,7 @@ type chartObject {
   x: String
   y: Float
 }
+
+type DriverVehiclePivot {
+  active: Boolean
+}

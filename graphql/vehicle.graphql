@@ -58,8 +58,5 @@ type Vehicle {
   documents: [Document] @morphMany
   approved: Boolean
   pivot: DriverVehiclePivot
-}
-
-type DriverVehiclePivot {
-  active: Boolean
+  drivers: [Driver] @hasMany
 }

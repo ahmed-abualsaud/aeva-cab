@@ -18,7 +18,7 @@ class CreatePromoCodesTable extends Migration
             $table->string('name')->unique();
             $table->string('description')->nullable();
             $table->float('max_discount', 10, 2);
-            $table->float('percentage', 4, 2);
+            $table->float('percentage', 5, 2);
             $table->bigInteger('max_users');
             $table->bigInteger('max_trips');
             $table->date('expires_on');
