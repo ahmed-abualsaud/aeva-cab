@@ -56,7 +56,9 @@ class CabRatingRepository extends BaseRepository
     private function updateDriversTotalRatings() 
     {
         $avgs = $this->model->selectRaw('driver_id, AVG(driver_rating) as rating_avg')
-            ->whereNotNull('driver_rating')->groupBy('driver_id')->get();
+            ->whereNotNull('driver_id')
+            ->whereNotNull('driver_rating')
+            ->groupBy('driver_id')->get();
 
         foreach ($avgs as $avg) {
             Driver::find($avg['driver_id'])->update(['rating' => $avg['rating_avg']]);

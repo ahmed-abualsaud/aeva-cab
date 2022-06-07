@@ -16,8 +16,8 @@ class CreateCabRatingsTable extends Migration
         Schema::create('cab_ratings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('driver_id')->nullable();
-            $table->unsignedBigInteger('request_id')->nullable();
+            $table->unsignedBigInteger('driver_id');
+            $table->unsignedBigInteger('request_id');
             $table->dateTime('trip_time');
             $table->decimal('user_rating', 4, 2)->nullable();
             $table->decimal('driver_rating', 4, 2)->nullable();
