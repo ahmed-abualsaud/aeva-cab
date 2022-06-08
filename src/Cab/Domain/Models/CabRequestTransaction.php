@@ -40,8 +40,6 @@ class CabRequestTransaction extends Model
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
-
-        return $query;
     }
 
     public function scopeFilter($query, $args) 
@@ -49,7 +47,10 @@ class CabRequestTransaction extends Model
         if (array_key_exists('period', $args) && $args['period']) {
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
+    }
 
+    public function scopeLatest($query, $args) 
+    {
         return $query->latest();
     }
 }

@@ -80,8 +80,6 @@ class CabRequest extends Model
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
-
-        return $query->latest();
     }
 
     public function scopeFilter($query, $args) 
@@ -101,14 +99,17 @@ class CabRequest extends Model
         if (array_key_exists('period', $args) && $args['period']) {
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
-
-        return $query->latest();
     }
 
     public function scopePending($query, $args)
     {
         return $query->where($args['issuer_type'].'_id', $args['issuer_id'])
             ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Ended', 'Completed']);
+    }
+
+    public function scopeLatest($query, $args) 
+    {
+        return $query->latest();
     }
 
     public function getCostsAfterDiscountAttribute()

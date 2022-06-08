@@ -45,4 +45,9 @@ class CabRating extends Model
                 ->whereNull('driver_rating');
         }
     }
+
+    public function scopeLatest($query, $args) 
+    {
+        return $query->latest();
+    }
 }

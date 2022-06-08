@@ -450,7 +450,7 @@ extend type Query @guard(with: ["admin"]) {
 
   # Driver
   drivers(fleet_id: ID, searchFor: String, searchQuery: String): [Driver] 
-    @paginate(scopes: ["fleet", "search"])
+    @paginate(scopes: ["fleet", "search", "latest"])
 
   # Fleet
   fleets: [Fleet] @all
@@ -474,7 +474,7 @@ extend type Query @guard(with: ["admin"]) {
 
   # Partner Driver
   partnerNotAssignedDrivers(partner_id: ID!, searchFor: String, searchQuery: String): [Driver] 
-    @paginate(scopes: ["notAssigned", "search"])
+    @paginate(scopes: ["notAssigned", "search", "latest"])
 
   # To School
   allSchools(searchFor: String, searchQuery: String): [School] 
@@ -537,20 +537,20 @@ extend type Query @guard(with: ["admin", "partner", "manager"]) {
 
   # Partner Driver 
   partnerAssignedDrivers(partner_id: ID!): [Driver] 
-    @all(scopes: ["assigned"])
+    @all(scopes: ["assigned", "latest"])
 
   # Driver Vehicle
   driverPendingVehicles(driver_id: ID!): [Vehicle] 
-    @all(scopes: ["pending"])
+    @all(scopes: ["pending", "latest"])
   driverAssignedVehicles(driver_id: ID!): [Vehicle] 
-    @all(scopes: ["assigned"])
+    @all(scopes: ["assigned", "latest"])
   driverNotAssignedVehicles(partner_id: ID, driver_id: ID!, searchFor: String, searchQuery: String): [Vehicle] 
-    @paginate(scopes: ["notAssigned", "partner", "search"])
+    @paginate(scopes: ["notAssigned", "partner", "search", "latest"])
 
   # Vehicle
   vehicles(partner_id: ID, searchFor: String, searchQuery: String): [Vehicle] 
-    @paginate(scopes: ["search", "partner"])
-  vehiclesHaveTerminals(partner_id: ID): [Vehicle] @all(scopes: ["partner", "haveTerminal"])
+    @paginate(scopes: ["search", "partner", "latest"])
+  vehiclesHaveTerminals(partner_id: ID): [Vehicle] @all(scopes: ["partner", "haveTerminal", "latest"])
 
   # Car Make
   carMakes: [CarMake] @all
