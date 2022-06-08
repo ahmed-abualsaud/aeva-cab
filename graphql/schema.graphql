@@ -370,7 +370,7 @@ extend type Mutation @guard(with: ["admin", "partner", "manager", "user"]) {
     @field(resolver: "UserTransactionResolver@create")
   
   # Promo codes
-  applyPromoCode(name: String!, user_id: ID!): PromoCode
+  applyPromoCode(name: String!, user_id: ID!, request_id: ID): PromoCode
     @field(resolver: "PromoCodeResolver@apply")
 
   # Business Trip Followers

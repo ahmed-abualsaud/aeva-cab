@@ -125,6 +125,7 @@ return [
     'your_account_is_disabled' => 'Your account has been suspended',
     'permitted_number_of_trips_exceeded' => 'Permitted number of trips exceeded',
     'permitted_number_of_users_exceeded' => 'Permitted number of users exceeded',
+    'promocode_has_already_been_applied' => 'Promocode has already been applied',
 
     // ============================== Aeva Cab ==============================
 

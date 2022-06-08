@@ -125,6 +125,7 @@ return [
     'your_account_is_disabled' => 'لقد تم تعليق حسابك',
     'permitted_number_of_trips_exceeded' => 'تم تجاوز عدد الرحلات المسموح بها لتطبيق هذا الخصم ',
     'permitted_number_of_users_exceeded' => 'تم تجاوز عدد المستخدمين المسموح بهم لتطبيق هذا الخصم',
+    'promocode_has_already_been_applied' => 'هذا الرمز الترويجي مطبق بالفعل',
 
     // ============================== Aeva Cab ==============================
 

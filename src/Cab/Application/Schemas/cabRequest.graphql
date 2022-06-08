@@ -17,7 +17,6 @@ input CabRequestInput {
   d_address: String
   d_lat: Float
   d_lng: Float
-  promo_code_id: ID
 }
 
 type CabRequest {
