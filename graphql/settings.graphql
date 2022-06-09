@@ -1,0 +1,19 @@
+input CreateSettingsInput {
+  name: String! @rules(apply: ["required"])
+  value: Float! @rules(apply: ["required"])
+  description: String
+}
+
+input UpdateSettingsInput {
+  id: ID! @rules(apply: ["required"])
+  name: String
+  value: Float
+  description: String
+}
+
+type Settings {
+  id: ID
+  name: String
+  value: Float
+  description: String
+}

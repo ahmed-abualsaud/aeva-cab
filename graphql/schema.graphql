@@ -155,6 +155,11 @@ extend type Mutation @guard(with: ["admin"]) {
   createDevice(input: CreateDeviceInput! @spread): Device @create
   updateDevice(input: UpdateDeviceInput! @spread): Device @update
   deleteDevice(id: ID!): Device @delete
+
+  # Settings
+  createSettings(input: CreateSettingsInput! @spread): Settings @create
+  updateSettings(input: UpdateSettingsInput! @spread): Settings @update
+  deleteSettings(id: ID!): Settings @delete
 } 
 
 # Admin,Partner,Manager Guard
@@ -433,6 +438,9 @@ extend type Mutation @guard(with: ["driver"]) {
 type Query {
   # Car Type
   carTypes(is_public: Boolean): [CarType] @all(scopes: ["isPublic"])
+
+  # Settings
+  settings: [Settings] @all
 }
 
 # Admin Guard
@@ -774,3 +782,4 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user", "driver"]
 #import supervisor.graphql
 #import businessTripRating.graphql
 #import follower.graphql
+#import settings.graphql

@@ -5,6 +5,7 @@ namespace Aeva\Cab\Domain\Traits;
 use App\Driver;
 use App\CarType;
 use App\Vehicle;
+use App\Settings;
 
 use Aeva\Cab\Domain\Models\CabRating;
 use Aeva\Cab\Domain\Models\CabRequest;
@@ -19,8 +20,9 @@ trait CabRequestHelper
 {
     protected function addReferralBonus($driver_id)
     {
-        $referral_count = config('custom.referral_count');
-        $referral_bonus = config('custom.referral_bonus');
+        $settings = $this->settings(['Referral Count', 'Referral Bonus']);
+        $referral_count = $settings['Referral Count'];
+        $referral_bonus = $settings['Referral Bonus'];
 
         $driver = Driver::find($driver_id);
         if($driver) {
@@ -37,7 +39,7 @@ trait CabRequestHelper
         }
 
         if ($request->status == 'Arrived' && $cancelled_by == 'driver') {
-            if ((time() - strtotime($request->history['arrived']['at'])) >= config('custom.waiting_time')) {
+            if ((time() - strtotime($request->history['arrived']['at'])) >= $this->settings('Waiting Time')) {
                 $this->flushCancelFees($request);
             }
         }
@@ -108,7 +110,7 @@ trait CabRequestHelper
             return collect($carTypes)->keyBy('id')->toArray();
         }
 
-        if ($waiting_time >= config('custom.waiting_time')) {
+        if ($waiting_time >= $this->settings('Waiting Time')) {
             $fees = CarType::selectRaw(
                 '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + (waiting_fees * ? / 60)) as costs, min_fees'
                 , [$distance, $duration, ($waiting_time - 299)])
@@ -144,7 +146,7 @@ trait CabRequestHelper
 
     protected function getNearestDrivers($lat, $lng) 
     {
-        $radius = config('custom.seats_search_radius');
+        $radius = $this->settings('Search Radius');
 
         $drivers = Driver::selectRaw('id AS driver_id, full_name as name, phone, avatar,
             ST_Distance_Sphere(point(longitude, latitude), point(?, ?))
@@ -187,5 +189,20 @@ trait CabRequestHelper
             return false;
         }
         return true;
+    }
+
+    protected function settings($name) 
+    {
+        if(is_array($name)) {
+            $ret = Settings::select('name', 'value')->whereIn('name', $name)->get()->keyBy('name');
+            return  array_map(function (array $arr) {
+                $arr = $arr['value'];
+                return $arr;
+            }, $ret->toArray());
+        }
+
+        $ret = Settings::select('name', 'value')->where('name', $name)->first();
+        if($ret) {return $ret->value;}
+        return null;
     }
 }

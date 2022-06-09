@@ -10,7 +10,6 @@ return [
     'otp_username' => env('OTP_USERNAME'),
     'otp_password' => env('OTP_PASSWORD'),
     'otp_sender_id' => env('OTP_SENDER_ID'),
-    'seats_search_radius' => env('SEATS_SEARCH_RADIUS'),
     'otp_signature' => env('OTP_SIGNATURE'),
     'db_name' => env('DB_DATABASE'),
     'db_user' => env('DB_USERNAME'),
@@ -22,8 +21,4 @@ return [
     'victorylink_password' => env('VICTORY_LINK_PASSWORD'),
     'victorylink_url' => env('VICTORY_LINK_URL'),
     'victorylink_sender' => env('VICTORY_LINK_SENDER'),
-
-    'referral_count' => env('REFERRAL_COUNT'),
-    'referral_bonus' => env('REFERRAL_BONUS'),
-    'waiting_time' => env('WAITING_TIME'),
 ];
