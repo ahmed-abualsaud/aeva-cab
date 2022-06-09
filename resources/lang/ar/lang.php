@@ -156,4 +156,5 @@ return [
     'ride_redirection' => 'تغيير في وجهة الرحلة',
     'ride_redirection_body' => 'لقد قام العميل بتغيير موقع الوصول',
     'request_already_cancelled' => 'تم الغاء هذا الطلب من قبل',
+    'out_of_coverage_area' => 'خارج منطقة التغطية',
 ];

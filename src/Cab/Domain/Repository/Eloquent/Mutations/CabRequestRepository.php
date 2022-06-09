@@ -551,6 +551,15 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.request_inprogress'));
         }
 
+        $settings = $this->settings(['Coverage Radius', 'Coverage Center Latitude', 'Coverage Center Longitude']);
+        $cov_rds = $settings['Coverage Radius'];
+        $cov_lat = $settings['Coverage Center Latitude'];
+        $cov_lng = $settings['Coverage Center Longitude'];
+        $radius = $this->sphereDistance($args['s_lat'], $args['s_lng'], $cov_lat, $cov_lng);
+        if( $radius > $cov_rds) {
+            throw new CustomException(__('lang.out_of_coverage_area'));
+        }
+
         $result = $this->getNearestDriversWithVehicles($args);
 
         $payload = [
