@@ -1,7 +1,6 @@
 input CabRequestTransactionInput {
   request_id: ID! @rules(apply: ["required"])
   costs: Float! @rules(apply: ["required"])
-  paid: Float
   payment_method: String! @rules(apply: ["required", "in:Cash,Card,Wallet"])
 }
 
