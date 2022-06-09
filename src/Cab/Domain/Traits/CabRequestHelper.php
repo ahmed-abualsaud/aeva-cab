@@ -57,7 +57,12 @@ trait CabRequestHelper
 
     protected function getNearestDriversWithVehicles(array $args)
     {
-        $drivers = $this->getNearestDrivers($args['s_lat'], $args['s_lng']);
+        $cancelled_drivers = [];
+        if (array_key_exists('cancelled_drivers', $args)) {
+            $cancelled_drivers = $args['cancelled_drivers'];
+        }
+
+        $drivers = $this->getNearestDrivers($args['s_lat'], $args['s_lng'], $cancelled_drivers);
 
         if (!count($drivers) ) {
             throw new CustomException(__('lang.no_available_drivers'));
@@ -144,7 +149,7 @@ trait CabRequestHelper
         }
     }
 
-    protected function getNearestDrivers($lat, $lng) 
+    protected function getNearestDrivers($lat, $lng, $except = []) 
     {
         $radius = $this->settings('Search Radius');
 
@@ -153,6 +158,7 @@ trait CabRequestHelper
             as distance
             ', [$lng, $lat]
             )
+            ->whereNotIn('id', $except)
             ->having('distance', '<=', $radius)
             ->where('cab_status', 'Online')
             ->orderBy('distance','asc')

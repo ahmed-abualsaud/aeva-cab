@@ -73,6 +73,7 @@ type HistoryObj {
   driver: Driver
   vehicle: VehicleObj
   waiting_time: Float
+  cancelled_drivers: [ID]
 }
 
 type Summary {

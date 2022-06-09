@@ -591,13 +591,17 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.search_request_failed'));
         }
 
+        $cancelled_drivers = array_key_exists('cancelled_drivers', $request->history['searching']) ? $request->history['searching']['cancelled_drivers'] : [];
+        array_push($cancelled_drivers, $request->driver_id);
+
         $result = $this->getNearestDriversWithVehicles([
             's_lat' => $request->s_lat,
             's_lng' => $request->s_lng,
             'distance' => $request->history['summary']['distance'],
             'duration' => $request->history['summary']['duration'],
+            'cancelled_drivers' => $cancelled_drivers
         ]);
-
+    
         $payload = [
             'summary' => [
                 'distance' => $request->history['summary']['distance'],
@@ -606,7 +610,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
                 'user' => $request->history['searching']['user'],
-                'result' => $result
+                'result' => $result,
+                'cancelled_drivers' => $cancelled_drivers
             ]
         ];
 
