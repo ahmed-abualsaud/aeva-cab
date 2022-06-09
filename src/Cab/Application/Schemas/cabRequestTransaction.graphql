@@ -12,6 +12,7 @@ type CabRequestTransaction {
   costs: Float
   payment_method: String @rules(apply: ["in:Cash,Card,Wallet"])
   created_at: String
+  debt: Float
 }
 
 type TransactionStats {

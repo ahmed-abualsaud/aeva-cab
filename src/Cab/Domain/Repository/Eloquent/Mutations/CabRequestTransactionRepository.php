@@ -38,7 +38,9 @@ class CabRequestTransactionRepository extends BaseRepository
         if ($args['payment_method'] == 'Cash') {
             $this->cashPay($args, $request);
             $request->update([ 'status' => 'Completed', 'paid' => true]);
-            return $this->model->create($input);
+            $trx = $this->model->create($input);
+            $trx->debt = 0;
+            return $trx;
         }
 
         if ($args['payment_method'] == 'Wallet') {
@@ -46,7 +48,9 @@ class CabRequestTransactionRepository extends BaseRepository
             if ($paid < $args['costs']) {
                 $input['costs'] = $paid;
             }
-            return $this->model->create($input);
+            $trx = $this->model->create($input);
+            $trx->debt = $args['costs'] - $paid;
+            return $trx;
         }
     }
 
@@ -57,6 +61,10 @@ class CabRequestTransactionRepository extends BaseRepository
 
     protected function cashPay($args, $request)
     {
+        if($args['costs'] > $request->costs) {
+            $this->updateUserWallet($request->user_id, ($args['costs'] - $request->costs), '+');
+        }
+
         $this->updateDriverWallet($request->driver_id, $args['costs'], 0);
     }
 
@@ -75,16 +83,23 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.user_not_found'));
         }
 
-        $paid = $costs;
-        if ($user->wallet < $costs) {
-            $paid = $user->wallet;
-        }
-
         if ($sign == '-') {
+            $paid = $costs;
+            if ($user->wallet < $costs) {
+                $paid = $user->wallet;
+            }
+
             // decrement the user wallet by $paid
+
+            return $paid;
         }
 
-        return $paid;
+        if ($sign == '+') {
+
+            // increment the user wallet by $costs
+
+            return $costs;
+        }
     }
 
     protected function updateDriverWallet($driver_id, $costs, $balance)
