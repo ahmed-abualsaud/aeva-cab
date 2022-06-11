@@ -89,7 +89,7 @@ class Vehicle extends Model
         return $query->whereNotNull(['license_plate', 'car_model_id', 'car_make_id']);
     }
 
-    public function scopeLatest($query, $args) 
+    public function scopeGetLatest($query, $args) 
     {
         return $query->latest();
     }

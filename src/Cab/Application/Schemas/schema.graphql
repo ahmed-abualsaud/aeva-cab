@@ -66,9 +66,9 @@ extend type Mutation @guard(with: ["admin", "partner", "manager", "user", "drive
 extend type Query @guard(with: ["admin"]) {
   # Cab Request
   cabRequests(driver_id: ID, user_id: ID, status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
-    @paginate(scopes: ["filter", "search", "latest"])
+    @paginate(scopes: ["filter", "search", "getLatest"])
   cabRequestTransactions(period: String, searchFor: String, searchQuery: String): [CabRequestTransaction]
-    @paginate(scopes: ["filter", "search", "latest"])
+    @paginate(scopes: ["filter", "search", "getLatest"])
   cabRequestTransactionsStats(period: String): TransactionStats
     @field(resolver: "CabRequestTransactionResolver@stats")
 }
@@ -80,7 +80,7 @@ extend type Query @guard(with: ["user"]) {
     @field(resolver: "CabRequestResolver@history")
   userLiveCabRequest(user_id: ID! @eq): CabRequest @first(scopes: ["live"])
   userScheduledCabRequests(user_id: ID! @eq): [CabRequest] 
-    @all(scopes: ["whereScheduled", "latest"])
+    @all(scopes: ["whereScheduled", "getLatest"])
 }
 
 # Driver Guard
@@ -96,7 +96,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "manager"]) {
   # Cab Rating
   cabRating(request_id: ID! @eq): CabRating @find
   unratedCabRequests(user_id: ID, driver_id: ID): [CabRequest] 
-    @all(scopes: ["unrated", "latest"], model: "CabRating")
+    @all(scopes: ["unrated", "getLatest"], model: "CabRating")
 }
 
 # Admin,User,Driver Guard
@@ -104,7 +104,7 @@ extend type Query @guard(with: ["admin", "user", "driver"]) {
   # Cab Request
   cabRequest(id: ID! @eq): CabRequest @findOrFail
   pendingCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest] 
-    @all(scopes: ["pending", "latest"])
+    @all(scopes: ["pending", "getLatest"])
 }
 
 #import cabUser.graphql

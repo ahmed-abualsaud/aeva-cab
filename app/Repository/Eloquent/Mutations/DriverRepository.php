@@ -206,18 +206,13 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
     }
 
     public function assignVehicle(array $args)
-    {
-        $data = [];
-        $arr = [];
-
-        foreach($args['vehicle_id'] as $val) {
-            $arr['driver_id'] = $args['driver_id'];
-            $arr['vehicle_id'] = $val;
-            array_push($data, $arr);
-        } 
-
+    { 
         try {
-            DriverVehicle::insert($data);
+            DriverVehicle::create([
+                'vehicle_id' => $args['vehicle_id'],
+                'driver_id' => $args['driver_id'],
+                'active' => false
+            ]);
         } catch (\Exception $e) {
             throw new CustomException(__('lang.assignment_failed'));
         }
@@ -232,7 +227,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
     {
         try {
             DriverVehicle::where('driver_id', $args['driver_id'])
-                ->whereIn('vehicle_id', $args['vehicle_id'])
+                ->where('vehicle_id', $args['vehicle_id'])
                 ->delete();
         } catch (\Exception $e) {
             throw new CustomException(__('lang.assign_cancel_failed') . $e->getMessage());

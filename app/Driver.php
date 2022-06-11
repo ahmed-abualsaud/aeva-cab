@@ -124,7 +124,7 @@ class Driver extends Authenticatable implements JWTSubject
         }
     }
 
-    public function scopeLatest($query, $args) 
+    public function scopeGetLatest($query, $args) 
     {
         return $query->latest();
     }

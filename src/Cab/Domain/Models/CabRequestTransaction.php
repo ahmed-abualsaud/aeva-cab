@@ -49,7 +49,7 @@ class CabRequestTransaction extends Model
         }
     }
 
-    public function scopeLatest($query, $args) 
+    public function scopeGetLatest($query, $args) 
     {
         return $query->latest();
     }

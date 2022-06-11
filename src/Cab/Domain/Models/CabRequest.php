@@ -107,7 +107,7 @@ class CabRequest extends Model
             ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Ended', 'Completed']);
     }
 
-    public function scopeLatest($query, $args) 
+    public function scopeGetLatest($query, $args) 
     {
         return $query->latest();
     }
