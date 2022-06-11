@@ -488,7 +488,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     protected function refresh($request, $args, $action)
     {
         $result = $request->history['searching']['result'];
-        $prices = $this->calculateCosts($args['distance'], $args['duration'], Arr::pluck($result['vehicles'], 'car_type_id'));
+        $waiting_time = ($action == 'start') ? (time() - strtotime($request->history['arrived']['at'])) : 0;
+        $prices = $this->calculateCosts($args['distance'], $args['duration'], Arr::pluck($result['vehicles'], 'car_type_id'), $waiting_time);
         $vehicles = collect($result['vehicles'])->keyBy('car_type_id')->toArray();
 
         foreach ($vehicles as $carTypeId => $vehicle) {
