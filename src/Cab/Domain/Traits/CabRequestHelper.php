@@ -143,7 +143,7 @@ trait CabRequestHelper
     protected function findRequest($id) 
     {
         try {
-            return CabRequest::findOrFail($id);
+            return CabRequest::with('promoCode:id,percentage')->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             throw new \Exception(__('lang.request_not_found'));
         }
