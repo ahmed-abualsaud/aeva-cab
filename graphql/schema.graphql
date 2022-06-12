@@ -157,9 +157,7 @@ extend type Mutation @guard(with: ["admin"]) {
   deleteDevice(id: ID!): Device @delete
 
   # Settings
-  createSettings(input: CreateSettingsInput! @spread): Settings @create
   updateSettings(input: UpdateSettingsInput! @spread): Settings @update
-  deleteSettings(id: ID!): Settings @delete
 } 
 
 # Admin,Partner,Manager Guard
