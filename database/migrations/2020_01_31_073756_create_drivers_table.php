@@ -25,8 +25,6 @@ class CreateDriversTable extends Migration
             $table->string('avatar')->nullable();
             $table->string('city')->nullable();
             $table->string('vehicle')->nullable();
-            $table->unsignedDecimal('balance', 12, 2)->default(0.00);
-            $table->unsignedDecimal('earnings', 12, 2)->default(0.00);
             $table->unsignedBigInteger('fleet_id')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
             $table->unsignedBigInteger('car_type_id')->nullable();
@@ -42,11 +40,6 @@ class CreateDriversTable extends Migration
             $table->string('device_id')->nullable();
             $table->string('code')->nullable();
             $table->string('ref_code')->nullable();
-            $table->bigInteger('received_cab_requests')->default(0);
-            $table->bigInteger('accepted_cab_requests')->default(0);
-            $table->bigInteger('cancelled_cab_requests')->default(0);
-            $table->bigInteger('total_working_time')->default(0);
-            $table->timestamp('activity_updated_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

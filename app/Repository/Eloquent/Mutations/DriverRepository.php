@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent\Mutations;
 use App\Driver;
 use App\Vehicle;
 use App\Document;
+use App\DriverStats;
 use App\DriverVehicle;
 use App\PartnerDriver;
 
@@ -57,6 +58,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         $driver = $this->model->create($input);
+        DriverStats::create(['driver_id' => $driver->id]);
 
         $driver->update(["ref_code" => Hashids::encode($driver->id)]);
 

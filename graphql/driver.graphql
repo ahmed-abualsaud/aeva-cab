@@ -67,7 +67,6 @@ type Driver {
   avatar: String
   latitude: Float
   longitude: Float
-  rating: Float
   status: Boolean
   cab_status: String
   city: String
@@ -87,16 +86,6 @@ type Driver {
   token: String
   ref_code: String
   verification_code: String
-  cab_request_count: Float
-  cab_request_earnings: Float
-  balance: Float
-  earnings: Float
-  received_cab_requests: Float
-  accepted_cab_requests: Float
-  cancelled_cab_requests: Float
-  acceptance_rate: Float
-  cancellation_rate: Float
-  total_working_time: Float
-  activity_updated_at: String
   pivot: DriverVehiclePivot
+  stats: DriverStats @hasOne
 }

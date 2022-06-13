@@ -2,7 +2,7 @@
 
 namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 
-use App\Driver;
+use App\DriverStats;
 
 use Aeva\Cab\Domain\Models\CabRating;
 
@@ -61,7 +61,7 @@ class CabRatingRepository extends BaseRepository
             ->groupBy('driver_id')->get();
 
         foreach ($avgs as $avg) {
-            Driver::find($avg['driver_id'])->update(['rating' => $avg['rating_avg']]);
+            DriverStats::where('driver_id', $avg['driver_id'])->update(['rating' => $avg['rating_avg']]);
         }
     }
 }

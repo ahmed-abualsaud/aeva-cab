@@ -6,6 +6,8 @@ use App\Driver;
 use App\CarType;
 use App\Vehicle;
 use App\Settings;
+use App\DriverLog;
+use App\DriverStats;
 
 use Aeva\Cab\Domain\Models\CabRating;
 use Aeva\Cab\Domain\Models\CabRequest;
@@ -18,6 +20,45 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 trait CabRequestHelper
 {
+    protected function updateDriverStatus($driver_id, $cab_status)
+    {
+        try {
+            $driver = Driver::findOrFail($driver_id);
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception(__('lang.request_not_found'));
+        }
+
+        if (strtolower($cab_status) == 'riding') {
+            return $driver->update([
+                'cab_status' => $cab_status
+            ]);
+        }
+
+        $activity_updated_at = date('Y-m-d H:i:s');
+
+        $driverStats = DriverStats::where('driver_id', $driver->id)->first();
+
+        if (strtolower($cab_status) == 'offline' && $driver->cab_status == 'Online') {
+            $total_working_time = strtotime($activity_updated_at) - strtotime($driverStats->activity_updated_at);
+            DriverLog::log([
+                'driver_id' => $driver->id, 
+                'total_working_time' => ($total_working_time / 60)
+            ]);
+
+            $total_working_time = $total_working_time / 60 + $driver->total_working_time;
+            $driverStats->update([
+                'total_working_time' => $total_working_time,
+                'activity_updated_at'=> $activity_updated_at
+            ]);
+            return $driver->update(['cab_status' => $cab_status]);
+        }
+
+        if (strtolower($cab_status) == 'online') {
+            $driverStats->update(['activity_updated_at' => $activity_updated_at]);
+            return $driver->update(['cab_status' => $cab_status]);
+        }
+    }
+
     protected function addReferralBonus($driver_id)
     {
         $settings = $this->settings(['Referral Count', 'Referral Bonus']);
