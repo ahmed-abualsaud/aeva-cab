@@ -47,9 +47,9 @@ class CabRequest extends Model
         return $this->setConnection('mysql')->hasOne(CabRating::class, 'request_id');
     }
 
-    public function transaction()
+    public function transactions()
     {
-        return $this->setConnection('mysql')->hasOne(CabRequestTransaction::class, 'request_id');
+        return $this->setConnection('mysql')->hasMany(CabRequestTransaction::class, 'request_id');
     }
 
     public function promoCode()

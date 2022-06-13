@@ -56,6 +56,9 @@ class DriverLog extends Model
                 foreach ($inputs as $key => $value) {
                     if (in_array($key, $inc_keys)) {
                         $inputs[$key] = $last_log->{$key} + $value;
+                        if($key == 'cash' || $key == 'wallet') {
+                            $inputs['cab_transactions'] = $last_log->cab_transactions + 1;
+                        }
                     }
                 }
 
