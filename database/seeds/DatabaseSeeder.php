@@ -2,6 +2,9 @@
 
 use Illuminate\Database\Seeder;
 
+use Database\Seeders\SettingsSeeder;
+use Database\Seeders\DriverStatsSeeder;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -11,6 +14,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $this->call([
+            SettingsSeeder::class,
+            DriverStatsSeeder::class
+        ]);
         // $this->call(UsersTableSeeder::class);
     }
 }
