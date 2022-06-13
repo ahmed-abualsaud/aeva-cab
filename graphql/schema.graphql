@@ -707,6 +707,7 @@ extend type Query @guard(with: ["admin", "partner", "manager", "driver"]) {
   driverBusinessTrips(driver_id: ID! @eq): [BusinessTrip] @all
   driverActiveVehicle(driver_id: ID!): Vehicle 
     @field(resolver: "VehicleResolver@activeVehicle")
+  driverLogs(driver_id: ID, from: String, to: String): [DriverLog] @paginate(scopes: ["logs"])
 }
 
 # Admin,Partner,Manager,User,Driver Guard
@@ -781,3 +782,4 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user", "driver"]
 #import businessTripRating.graphql
 #import follower.graphql
 #import settings.graphql
+#import driverLog.graphql

@@ -1,0 +1,15 @@
+type DriverLog {
+  id: ID
+  driver: Driver @belongsTo
+  cash: Float
+  wallet: Float
+  earnings: Float
+  received_cab_requests: Float
+  accepted_cab_requests: Float
+  cancelled_cab_requests: Float
+  acceptance_rate: Float
+  cancellation_rate: Float
+  total_working_time: Float
+  created_at: String
+  updated_at: String
+}

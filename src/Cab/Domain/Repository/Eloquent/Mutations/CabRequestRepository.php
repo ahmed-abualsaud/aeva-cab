@@ -4,6 +4,7 @@ namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 
 use App\User;
 use App\Driver;
+use App\DriverLog;
 
 use App\Helpers\ResizableMapUrl;
 
@@ -113,6 +114,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $driversIds = Arr::pluck($filtered, 'driver_id');
 
         Driver::whereIn('id', $driversIds)->increment('received_cab_requests', 1);
+        DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);
 
         SendPushNotification::dispatch(
             $this->driversToken($driversIds),
@@ -130,6 +132,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
         Driver::where('id', $args['driver_id'])->increment('accepted_cab_requests', 1);
+        DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
 
         if ( $request->status != 'Sending' ) {
             throw new CustomException(__('lang.accept_request_failed'));
@@ -329,6 +332,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         if (strtolower($args['cancelled_by']) == 'driver') {
             if ($request->driver_id) {
                 Driver::where('id', $request->driver_id)->increment('cancelled_cab_requests', 1);
+                DriverLog::log(['driver_id' => $request->driver_id, 'cancelled_cab_requests' => 1]);
             }
             $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);

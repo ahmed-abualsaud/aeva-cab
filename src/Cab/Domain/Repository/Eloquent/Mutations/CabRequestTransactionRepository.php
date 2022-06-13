@@ -6,6 +6,7 @@ use App\Exceptions\CustomException;
 
 use App\User;
 use App\Driver;
+use App\DriverLog;
 
 use Aeva\Cab\Domain\Models\CabRequest;
 use Aeva\Cab\Domain\Models\CabRequestTransaction;
@@ -66,12 +67,23 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         $this->updateDriverWallet($request->driver_id, $args['costs'], 0);
+        DriverLog::log([
+            'driver_id' => $request->driver_id, 
+            'cash' => $args['costs'], 
+            'earnings' => $args['costs']
+        ]);
+
     }
 
     protected function walletPay($args, $request)
     {
         $paid = $this->updateUserWallet($request->user_id, $args['costs'], '-');
         $this->updateDriverWallet($request->driver_id, $paid, $paid);
+        DriverLog::log([
+            'driver_id' => $request->driver_id, 
+            'wallet' => $paid, 
+            'earnings' => $paid
+        ]);
         return $paid;
     }
 

@@ -48,7 +48,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
     public function create(array $args)
     {
         $input = collect($args)->except(['directive', 'avatar', 'text'])->toArray();
-        $input['password'] = Hash::make($input['phone']);
+        $input['password'] = Hash::make($input['password']);
         $input['status'] = true;
  
         if (array_key_exists('avatar', $args) && $args['avatar']) {

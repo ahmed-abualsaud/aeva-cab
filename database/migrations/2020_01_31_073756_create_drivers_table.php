@@ -53,8 +53,8 @@ class CreateDriversTable extends Migration
             $table->index('fleet_id');
             $table->index('created_at');
 
-            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('cascade');
-            $table->foreign('fleet_id')->references('id')->on('fleets')->onDelete('cascade');
+            $table->foreign('partner_id')->references('id')->on('partners')->onDelete('set null');
+            $table->foreign('fleet_id')->references('id')->on('fleets')->onDelete('set null');
             $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('set null');
             $table->foreign('referrer_id')->references('id')->on('drivers')->onDelete('set null');
         });
