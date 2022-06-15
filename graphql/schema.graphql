@@ -709,7 +709,11 @@ extend type Query @guard(with: ["admin", "partner", "manager", "driver"]) {
     @field(resolver: "VehicleResolver@activeVehicle")
 
   # Driver Logs
-  driverLogs(driver_id: ID, from: String, to: String): [DriverLog] @paginate(scopes: ["logs"])
+  driverLogs(driver_id: ID, period: String): [DriverLog] @paginate(scopes: ["logs"])
+
+  # Driver Summary
+  driverSummary(driver_id: ID!, period: String): DriverLog @first(scopes: ["summary"])
+  driversSummary(period: String): [DriverLog] @paginate(scopes: ["summary"])
 
   # Driver Stats
   driverStats(driver_id: ID! @eq): DriverStats @first

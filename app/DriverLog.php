@@ -2,11 +2,15 @@
 
 namespace App;
 
+use App\Traits\Filterable;
+
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 
 class DriverLog extends Model
 {
+    use Filterable;
+
     protected $guarded = [];
 
     protected $appends = [
@@ -25,15 +29,28 @@ class DriverLog extends Model
             $query = $query->where('driver_id', $args['driver_id']);
         }
 
-        if (array_key_exists('from', $args)) {
-            $query = $query->whereDate('created_at', '>=', $args['from']);
-        }
-
-        if (array_key_exists('to', $args)) {
-            $query = $query->whereDate('created_at', '<=', $args['to']);
+        if (array_key_exists('period', $args) && $args['period']) {
+            $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
 
         return $query;
+    }
+
+    public function scopeSummary($query, array $args) 
+    {
+        $query = $this->scopeLogs($query, $args);
+
+        return $query->selectRaw('
+            sum(cash) as cash,
+            sum(wallet) wallet,
+            sum(earnings) as earnings,
+            sum(received_cab_requests) as received_cab_requests,
+            sum(accepted_cab_requests) as accepted_cab_requests,
+            sum(cancelled_cab_requests) as cancelled_cab_requests,
+            sum(cab_transactions) as cab_transactions,
+            sum(total_working_time) as total_working_time
+        ')
+        ->groupBy('driver_id');
     }
 
     public static function log(array $args)
