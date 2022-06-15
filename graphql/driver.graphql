@@ -4,6 +4,8 @@ input CreateDriverInput @validator {
   fleet_id: ID
   email: String
   phone: String 
+  secondary_phone: String
+  title: String @rules(apply: ["in:Normal,AevaX"])
   password: String
   license_expires_on: String
   avatar: Upload
@@ -88,4 +90,5 @@ type Driver {
   verification_code: String
   pivot: DriverVehiclePivot
   stats: DriverStats @hasOne
+  password: String
 }

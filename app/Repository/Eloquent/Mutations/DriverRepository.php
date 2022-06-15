@@ -49,7 +49,13 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
     public function create(array $args)
     {
         $input = collect($args)->except(['directive', 'avatar', 'text'])->toArray();
-        $input['password'] = Hash::make($input['password']);
+
+        if (array_key_exists('password', $input) && $input['password']) {
+            $password = $input['password'];
+        } else {
+            $password = Hashids::encode(rand(10000000000,1000000000000));
+        }
+        $input['password'] = Hash::make($password);
         $input['status'] = true;
  
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -109,6 +115,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $this->createPartnerDriver($args['partner_id'], $driver->id);
         }
 
+        $driver->password = $password;
         return $driver;
     }
 

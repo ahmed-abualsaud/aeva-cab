@@ -21,6 +21,8 @@ class CreateDriversTable extends Migration
             $table->string('email')->unique()->nullable();
             $table->string('password')->nullable();
             $table->string('phone')->unique()->nullable();
+            $table->string('secondary_phone')->unique()->nullable();
+            $table->enum('title', ['Normal', 'AevaX'])->default('Normal');
             $table->date('license_expires_on')->nullable();
             $table->string('avatar')->nullable();
             $table->string('city')->nullable();
