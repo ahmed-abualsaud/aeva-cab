@@ -98,8 +98,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
         $vehicle = Vehicle::create([
             'approved' => false,
-            'text' => $args['text'],
-            'car_type_id' => $args['car_type_id'],
+            'text' => $args['text']
         ]);
 
         DriverVehicle::create([
