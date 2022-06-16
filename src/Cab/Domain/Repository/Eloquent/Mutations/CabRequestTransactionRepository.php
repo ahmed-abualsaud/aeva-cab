@@ -9,9 +9,13 @@ use App\Driver;
 use App\DriverLog;
 use App\DriverStats;
 
+use App\Jobs\SendPushNotification;
+
 use Aeva\Cab\Domain\Models\CabRequest;
 use Aeva\Cab\Domain\Models\CabRequestTransaction;
 
+use Aeva\Cab\Domain\Traits\HandleDeviceTokens;
+use Aeva\Cab\Domain\Events\CabRequestStatusChanged;
 use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 
 use Illuminate\Support\Arr;
@@ -21,6 +25,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class CabRequestTransactionRepository extends BaseRepository
 {
+    use HandleDeviceTokens;
+
     public function __construct(CabRequestTransaction $model)
     {
         parent::__construct($model);
@@ -34,19 +40,26 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new \Exception(__('lang.request_not_found'));
         }
 
+        $request->refund = 0;
+        if ($args['costs'] < $request->costs) {
+            throw new CustomException(__('lang.amount_paid_less_than_amount_requested'));
+        }
+
         $input =  Arr::except($args, ['directive']);
         $input['user_id'] = $request->user_id;
         $input['driver_id'] = $request->driver_id;
 
-        if ($args['payment_method'] == 'Cash') {
+        $payment_method = strtolower($request->history['sending']['payment_method']);
+        if ($args['payment_method'] == 'Cash' && $payment_method == 'cash') {
             $this->cashPay($args, $request);
             $request->update(['status' => 'Completed', 'paid' => true]);
             $trx = $this->model->create($input);
             $trx->debt = 0;
+            $this->notifyUserOfPayment($request);
             return $trx;
         }
 
-        if ($args['payment_method'] == 'Wallet') {
+        if ($args['payment_method'] == 'Wallet' && $payment_method == 'wallet') {
             $paid = $this->walletPay($args, $request);
             if ($paid < $args['costs']) {
                 $input['costs'] = $paid;
@@ -58,8 +71,11 @@ class CabRequestTransactionRepository extends BaseRepository
 
             $trx = $this->model->create($input);
             $trx->debt = $args['costs'] - $paid;
+            $this->notifyUserOfPayment($request);
             return $trx;
         }
+        
+        throw new CustomException(__('lang.payment_method_does_not_match'));
     }
 
     public function destroy(array $args)
@@ -71,8 +87,9 @@ class CabRequestTransactionRepository extends BaseRepository
     {
         if($args['costs'] > $request->costs) {
             $this->updateUserWallet($request->user_id, ($args['costs'] - $request->costs), '+');
+            $request->refund = ($args['costs'] - $request->costs);
         }
-        $this->updateDriverWallet($request->driver_id, $args['costs'], $args['costs'], 0);
+        $this->updateDriverWallet($request->driver_id, $args['costs'], $args['costs'], ($request->costs - $args['costs']));
     }
 
     protected function walletPay($args, $request)
@@ -124,5 +141,17 @@ class CabRequestTransactionRepository extends BaseRepository
             'wallet' => $wallet, 
             'earnings' => $earnings
         ]);
+    }
+
+    protected function notifyUserOfPayment($request)
+    {
+        SendPushNotification::dispatch(
+            $this->userToken($request->user_id),
+            __('lang.ride_completed_body'),
+            __('lang.ride_completed'),
+            ['view' => 'RideCompleted', 'id' => $request->id]
+        );
+
+        broadcast(new CabRequestStatusChanged($request));
     }
 }

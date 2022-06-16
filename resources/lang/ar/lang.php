@@ -126,6 +126,8 @@ return [
     'permitted_number_of_trips_exceeded' => 'تم تجاوز عدد الرحلات المسموح بها لتطبيق هذا الخصم ',
     'permitted_number_of_users_exceeded' => 'تم تجاوز عدد المستخدمين المسموح بهم لتطبيق هذا الخصم',
     'promocode_has_already_been_applied' => 'هذا الرمز الترويجي مطبق بالفعل',
+    'payment_method_does_not_match' => 'طريقة الدفع المطبقة لا تتطابق مع طريقة الدفع المطلوبة',
+    'amount_paid_less_than_amount_requested' => 'المبلغ المدفوع أقل من المبلغ المطلوب',
 
     // ============================== Aeva Cab ==============================
 
@@ -157,4 +159,6 @@ return [
     'ride_redirection_body' => 'لقد قام العميل بتغيير موقع الوصول',
     'request_already_cancelled' => 'تم الغاء هذا الطلب من قبل',
     'out_of_coverage_area' => 'خارج منطقة التغطية',
+    'ride_completed' => 'تم اكمال الرحلة',
+    'ride_completed_body' => 'تم اكمال الرحلة بنجاح',
 ];

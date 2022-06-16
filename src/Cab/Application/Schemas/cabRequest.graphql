@@ -12,6 +12,7 @@ input CabRequestInput {
   total_eta: Float
   route_key: String
   s_address: String
+  payment_method: String
   s_lat: Float
   s_lng: Float
   d_address: String
@@ -69,6 +70,7 @@ type HistoryObj {
   reason: String
   result: DriverVehicle
   chosen_car_type: String
+  payment_method: String
   user: User
   driver: Driver
   vehicle: VehicleObj

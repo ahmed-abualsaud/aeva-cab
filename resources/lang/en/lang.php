@@ -126,6 +126,8 @@ return [
     'permitted_number_of_trips_exceeded' => 'Permitted number of trips exceeded',
     'permitted_number_of_users_exceeded' => 'Permitted number of users exceeded',
     'promocode_has_already_been_applied' => 'Promocode has already been applied',
+    'payment_method_does_not_match' => 'The applied payment method does not match the requested payment method',
+    'amount_paid_less_than_amount_requested' => 'The amount paid is less than the amount requested',
 
     // ============================== Aeva Cab ==============================
 
@@ -157,4 +159,6 @@ return [
     'ride_redirection_body' => 'Ride destination location has been changed',
     'request_already_cancelled' => 'Request already cancelled',
     'out_of_coverage_area' => 'Out of coverage area',
+    'ride_completed' => 'Ride Completed',
+    'ride_completed_body' => 'Ride Completed successfully.',
 ];

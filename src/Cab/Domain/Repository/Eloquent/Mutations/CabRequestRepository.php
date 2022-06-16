@@ -100,7 +100,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $payload = [
             'sending' => [
                 'at' => date("Y-m-d H:i:s"),
-                'chosen_car_type' => $args['car_type']
+                'chosen_car_type' => $args['car_type'],
+                'payment_method' => $args['payment_method']
             ]
         ];
 
