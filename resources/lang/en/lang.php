@@ -160,5 +160,5 @@ return [
     'request_already_cancelled' => 'Request already cancelled',
     'out_of_coverage_area' => 'Out of coverage area',
     'ride_completed' => 'Ride Completed',
-    'ride_completed_body' => 'Ride Completed successfully.',
+    'ride_completed_body' => 'Ride completed successfully.',
 ];
