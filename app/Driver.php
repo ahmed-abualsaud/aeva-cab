@@ -123,6 +123,16 @@ class Driver extends Authenticatable implements JWTSubject
         }
     }
 
+    public function scopeCabStatus($query, $args)
+    {
+        return $query->where('cab_status', $args['cab_status']);
+    }
+    
+    public function scopeTitle($query, $args)
+    {
+        return $query->where('title', $args['title']);
+    }
+
     public function scopeNearby($query, $args)
     {
         $radius = Settings::where('name', 'Search Radius')->first()->value;
