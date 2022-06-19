@@ -7,7 +7,6 @@ type DriverLog {
   received_cab_requests: Float
   accepted_cab_requests: Float
   cancelled_cab_requests: Float
-  cab_transactions: Float
   acceptance_rate: Float
   cancellation_rate: Float
   total_working_time: Float

@@ -47,7 +47,6 @@ class DriverLog extends Model
             sum(received_cab_requests) as received_cab_requests,
             sum(accepted_cab_requests) as accepted_cab_requests,
             sum(cancelled_cab_requests) as cancelled_cab_requests,
-            sum(cab_transactions) as cab_transactions,
             sum(total_working_time) as total_working_time
         ')
         ->groupBy('driver_id');
@@ -73,9 +72,6 @@ class DriverLog extends Model
                 foreach ($inputs as $key => $value) {
                     if (in_array($key, $inc_keys)) {
                         $inputs[$key] = $last_log->{$key} + $value;
-                        if($key == 'cash' || $key == 'wallet') {
-                            $inputs['cab_transactions'] = $last_log->cab_transactions + 1;
-                        }
                     }
                 }
 

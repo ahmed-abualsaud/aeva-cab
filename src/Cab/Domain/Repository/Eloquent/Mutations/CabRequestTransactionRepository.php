@@ -40,7 +40,6 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new \Exception(__('lang.request_not_found'));
         }
 
-        $request->refund = 0;
         if ($args['costs'] < $request->costs) {
             throw new CustomException(__('lang.amount_paid_less_than_amount_requested'));
         }
@@ -51,10 +50,11 @@ class CabRequestTransactionRepository extends BaseRepository
 
         $payment_method = strtolower($request->history['sending']['payment_method']);
         if ($args['payment_method'] == 'Cash' && $payment_method == 'cash') {
-            $this->cashPay($args, $request);
+            $refund = $this->cashPay($args, $request);
             $request->update(['status' => 'Completed', 'paid' => true]);
             $trx = $this->model->create($input);
             $trx->debt = 0;
+            $request->refund = $refund;
             $this->notifyUserOfPayment($request);
             return $trx;
         }
@@ -71,6 +71,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
             $trx = $this->model->create($input);
             $trx->debt = $args['costs'] - $paid;
+            $request->refund = 0;
             $this->notifyUserOfPayment($request);
             return $trx;
         }
@@ -85,11 +86,13 @@ class CabRequestTransactionRepository extends BaseRepository
 
     protected function cashPay($args, $request)
     {
+        $refund = 0;
         if($args['costs'] > $request->costs) {
             $this->updateUserWallet($request->user_id, ($args['costs'] - $request->costs), '+');
-            $request->refund = ($args['costs'] - $request->costs);
+            $refund = ($args['costs'] - $request->costs);
         }
         $this->updateDriverWallet($request->driver_id, $args['costs'], $args['costs'], ($request->costs - $args['costs']));
+        return $refund;
     }
 
     protected function walletPay($args, $request)
@@ -131,8 +134,7 @@ class CabRequestTransactionRepository extends BaseRepository
         DriverStats::where('driver_id', $driver_id)->update([
             'cash' => DB::raw('cash + '.$cash), 
             'wallet' => DB::raw('wallet + '.$wallet), 
-            'earnings' => DB::raw('earnings + '.$earnings),
-            'cab_transactions' => DB::raw('cab_transactions + 1')
+            'earnings' => DB::raw('earnings + '.$earnings)
         ]);
 
         DriverLog::log([
