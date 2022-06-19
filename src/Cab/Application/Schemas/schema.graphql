@@ -97,6 +97,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "manager"]) {
   cabRating(request_id: ID! @eq): CabRating @find
   unratedCabRequests(user_id: ID, driver_id: ID): [CabRequest] 
     @all(scopes: ["unrated", "getLatest"], model: "CabRating")
+  nearestDrivers(lat: Float!, lng: Float): [Driver] @all(scopes: ["nearby"])
 }
 
 # Admin,User,Driver Guard

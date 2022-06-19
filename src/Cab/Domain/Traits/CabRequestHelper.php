@@ -194,7 +194,8 @@ trait CabRequestHelper
     {
         $radius = $this->settings('Search Radius');
 
-        $drivers = Driver::selectRaw('id AS driver_id, full_name as name, phone, avatar,
+        $drivers = Driver::selectRaw('id AS driver_id, 
+            full_name as name, phone, avatar, latitude, longitude,
             ST_Distance_Sphere(point(longitude, latitude), point(?, ?))
             as distance
             ', [$lng, $lat]

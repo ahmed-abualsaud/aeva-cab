@@ -95,6 +95,8 @@ type DriverObj {
   phone: String
   avatar: String
   distance: Float
+  latitude: Float
+  longitude: Float
 }
 
 type VehicleObj {

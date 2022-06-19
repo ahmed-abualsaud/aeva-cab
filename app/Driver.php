@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Settings;
 use App\PartnerDriver;
 use App\Traits\Searchable;
 
@@ -120,6 +121,23 @@ class Driver extends Authenticatable implements JWTSubject
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
+    }
+
+    public function scopeNearby($query, $args)
+    {
+        $radius = Settings::where('name', 'Search Radius')->first()->value;
+
+        $query = $query->selectRaw('id, 
+            full_name, phone, avatar, latitude, longitude,
+            ST_Distance_Sphere(point(longitude, latitude), point(?, ?))
+            as distance
+            ', [$args['lng'], $args['lat']]
+            )
+            ->having('distance', '<=', $radius)
+            ->where('cab_status', 'Online')
+            ->orderBy('distance','asc');
+
+        return $query;
     }
 
     public function scopeGetLatest($query, $args) 

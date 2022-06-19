@@ -91,4 +91,6 @@ type Driver {
   pivot: DriverVehiclePivot
   stats: DriverStats @hasOne
   password: String
+  secondary_phone: String
+  title: String
 }
