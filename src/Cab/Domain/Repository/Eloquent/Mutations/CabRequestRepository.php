@@ -319,7 +319,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         ];
         $args['history'] = array_merge($request->history, $payload);
 
-        $this->updateDriverStatus($request->driver_id, 'Online');
+        if($request->driver_id) {
+            $this->updateDriverStatus($request->driver_id, 'Online');
+        }
         $this->applyCancelFees($args['cancelled_by'], $request);
 
         $token = null;

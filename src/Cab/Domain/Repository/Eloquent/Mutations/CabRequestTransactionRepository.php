@@ -49,7 +49,7 @@ class CabRequestTransactionRepository extends BaseRepository
         $input['driver_id'] = $request->driver_id;
 
         $payment_method = strtolower($request->history['sending']['payment_method']);
-        if ($args['payment_method'] == 'Cash' && $payment_method == 'cash') {
+        if ($args['payment_method'] == 'Cash' && str_contains($payment_method, 'cash')) {
             $refund = $this->cashPay($args, $request);
             $request->update(['status' => 'Completed', 'paid' => true]);
             $trx = $this->model->create($input);
@@ -59,7 +59,7 @@ class CabRequestTransactionRepository extends BaseRepository
             return $trx;
         }
 
-        if ($args['payment_method'] == 'Wallet' && $payment_method == 'wallet') {
+        if ($args['payment_method'] == 'Wallet' && str_contains($payment_method, 'wallet')) {
             $paid = $this->walletPay($args, $request);
             if ($paid < $args['costs']) {
                 $input['costs'] = $paid;

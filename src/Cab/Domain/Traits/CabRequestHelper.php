@@ -25,7 +25,7 @@ trait CabRequestHelper
         try {
             $driver = Driver::findOrFail($driver_id);
         } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.request_not_found'));
+            throw new \Exception(__('lang.driver_not_found'));
         }
 
         if (strtolower($cab_status) == 'riding') {
@@ -93,7 +93,6 @@ trait CabRequestHelper
                 ->first()->cancel_fees;
         
         // decrement cancel_fees from user wallet
-        Driver::where('id', $request->driver_id)->increment('balance', $cancel_fees);
     }
 
     protected function getNearestDriversWithVehicles(array $args)
