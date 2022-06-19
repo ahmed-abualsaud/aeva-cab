@@ -333,8 +333,15 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         if (strtolower($args['cancelled_by']) == 'driver') {
             if ($request->driver_id) {
-                DriverStats::where('id', $request->driver_id)->increment('cancelled_cab_requests', 1);
-                DriverLog::log(['driver_id' => $request->driver_id, 'cancelled_cab_requests' => 1]);
+                DriverStats::where('id', $request->driver_id)->update([
+                    'accepted_cab_requests' => DB::raw('accepted_cab_requests - 1'), 
+                    'cancelled_cab_requests' => DB::raw('cancelled_cab_requests + 1')
+                ]);
+                DriverLog::log([
+                    'driver_id' => $request->driver_id, 
+                    'cancelled_cab_requests' => 1,
+                    'accepted_cab_requests' => -1
+                ]);
             }
             $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);
