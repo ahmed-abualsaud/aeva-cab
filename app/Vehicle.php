@@ -60,7 +60,7 @@ class Vehicle extends Model
 
     public function scopeNotAssigned($query, $args) 
     {
-        return $query->whereIn('id', DriverVehicle::getIds($args))
+        return $query->whereNotIn('id', DriverVehicle::getIds($args))
                      ->whereNotNull(['license_plate', 'car_model_id', 'car_make_id'])
                      ->where('approved', false);
     }
