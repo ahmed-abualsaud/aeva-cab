@@ -63,6 +63,11 @@ class CabRequestResolver
         return $this->cabRequestRepository->redirect($args);
     }
 
+    public function pickCarType($_, array $args)
+    {
+        return $this->cabRequestRepository->pickCarType($args);
+    }
+
     public function updateDriverCabStatus($_, array $args)
     {
         return $this->cabRequestRepository->updateDriverCabStatus($args);

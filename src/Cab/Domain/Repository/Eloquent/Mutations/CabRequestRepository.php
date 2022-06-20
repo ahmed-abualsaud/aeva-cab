@@ -79,6 +79,23 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $this->searchNewRequest($args);
     }
 
+    public function pickCarType(array $args)
+    {
+        $request = $this->findRequest($args['id']);
+
+        if ( $request->status != 'Searching' ) {
+            throw new CustomException(__('lang.request_drivers_failed'));
+        }
+
+        $input['history'] = array_merge($request->history, [
+            'sending' => [
+                'chosen_car_type' => $args['car_type'],
+            ]
+        ]);
+        $request = $this->updateRequest($request, $input);
+        return $request;
+    }
+
     public function send(array $args) 
     {
         $request = $this->findRequest($args['id']);
@@ -87,30 +104,40 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.request_drivers_failed'));
         }
 
+        if(array_key_exists('car_type', $args) && $args['car_type']) {
+            $car_type = $args['car_type'];
+        } else {
+            $car_type = $request->history['sending']['chosen_car_type'];
+        }
+
         $vehicles = $request->history['searching']['result']['vehicles'];
 
-        $filtered = Arr::where($vehicles, function ($value, $key) use ($args){
-            return $value['car_type'] == $args['car_type'];
+        $filtered = Arr::where($vehicles, function ($value, $key) use ($args, $car_type){
+            return $value['car_type'] == $car_type;
         });
 
         if ( $filtered == null ) {
             throw new CustomException(__('lang.unavailable_car_type'));
         }
 
+        $filtered = array_values($filtered);
         $payload = [
             'sending' => [
                 'at' => date("Y-m-d H:i:s"),
-                'chosen_car_type' => $args['car_type'],
+                'chosen_car_type' => $car_type,
                 'payment_method' => $args['payment_method']
             ]
         ];
-
-        $filtered = array_values($filtered);
         
         $input['status'] = 'Sending';
         $input['costs'] = $filtered[0]['price'];
         $input['history'] = array_merge($request->history, $payload);
         
+        if ((array_key_exists('s_lat', $args) || array_key_exists('s_lng', $args)) && 
+            ($args['s_lat'] != $request->s_lat || $args['s_lng'] != $request->s_lng)) {
+                $input['costs'] = $this->calculateCosts($args['distance'], $args['duration'], $filtered[0]['car_type_id']);
+        }
+
         $request = $this->updateRequest($request, $input);
 
         $driversIds = Arr::pluck($filtered, 'driver_id');
@@ -560,6 +587,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     protected function searchNewRequest(array $args) 
     {
         $input = Arr::except($args, ['directive', 'distance', 'duration']);
+
+        if ($args['user_id'] == 0 || is_null($args['user_id'])) {
+            throw new CustomException("Invalid user id");
+        }
 
         $activeRequests = $this->model->wherePending($args['user_id'])->first();
 

@@ -34,6 +34,8 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "CabRequestResolver@schedule")
   searchCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@search")
+  pickCabRequestCarType(input: CabRequestInput! @spread): CabRequest
+    @field(resolver: "CabRequestResolver@pickCarType")
   sendCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@send")
 } 

@@ -135,7 +135,7 @@ trait CabRequestHelper
         return ['drivers' => $drivers, 'vehicles' => $vehicles];
     }
 
-    protected function calculateCosts($distance, $duration, $carTypeId, $waiting_time)
+    protected function calculateCosts($distance, $duration, $carTypeId, $waiting_time = 0)
     {
         if (is_array($carTypeId)) {
             $carTypes = CarType::selectRaw(

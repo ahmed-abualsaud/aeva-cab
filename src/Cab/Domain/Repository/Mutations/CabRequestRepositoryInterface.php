@@ -13,4 +13,5 @@ interface CabRequestRepositoryInterface
     public function end(array $args);
     public function cancel(array $args);
     public function reset(array $args);
+    public function pickCarType(array $args);
 }
