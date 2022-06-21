@@ -17,12 +17,12 @@ class DriverLocationUpdated implements ShouldBroadcast
      *
      * @return void
      */
-    protected $channel;
+    protected $driverId;
     public $location;
 
-    public function __construct($channel, $location)
+    public function __construct($driverId, $location)
     {
-        $this->channel = $channel;
+        $this->driverId = $driverId;
         $this->location = $location;
     }
 
@@ -33,7 +33,7 @@ class DriverLocationUpdated implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel($this->channel);
+        return new PrivateChannel('Update.Driver.Location.'.$this->driverId);
     }
 
     /**
@@ -43,6 +43,16 @@ class DriverLocationUpdated implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'client-driver.location';
+        return 'client-update.driver.location';
+    }
+
+     /**
+     * Get the data to broadcast.
+     *
+     * @return array
+     */
+    public function broadcastWith()
+    {
+        return ['location' => $this->location];
     }
 }

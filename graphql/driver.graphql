@@ -46,6 +46,8 @@ input UpdateDriverInput @validator {
   phone_verified_at: String
   balance: Float
   earnings: Float
+  secondary_phone: String
+  title: String
 }
 
 input DriverVehicleInput {

@@ -12,6 +12,7 @@ use App\PartnerDriver;
 use App\Jobs\SendOtp;
 use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;
+use App\Events\DriverLocationUpdated;
 
 use Vinkla\Hashids\Facades\Hashids;
 
@@ -64,7 +65,13 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         $driver = $this->model->create($input);
-        DriverStats::create(['driver_id' => $driver->id]);
+
+        $wallet = 0;
+        if(array_key_exists('wallet', $args) && $args['wallet']) {
+            $wallet = $args['wallet'];
+        }
+
+        DriverStats::create(['driver_id' => $driver->id, 'wallet' => $wallet]);
 
         $driver->update(["ref_code" => Hashids::encode($driver->id)]);
 
@@ -115,6 +122,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         $driver->password = $password;
+        $driver->wallet = $wallet;
+        $driver->cab_status = 'Offline';
         return $driver;
     }
 
@@ -135,6 +144,14 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         $driver->update($input);
+
+        if ((array_key_exists('latitude', $args) && $args['latitude']) &&
+        (array_key_exists('longitude', $args) && $args['longitude'])) {
+            broadcast(new DriverLocationUpdated($args['id'], [
+                'lat' => $args['latitude'], 
+                'lng' => $args['longitude']
+            ]));
+        }
 
         return $driver;
     }
