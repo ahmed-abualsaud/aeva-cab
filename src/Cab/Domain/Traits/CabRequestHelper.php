@@ -15,6 +15,8 @@ use Aeva\Cab\Domain\Models\CabRequest;
 use App\Exceptions\CustomException;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
@@ -92,7 +94,12 @@ trait CabRequestHelper
                 ->where('name', $request->history['sending']['chosen_car_type'])
                 ->first()->cancel_fees;
         
-        // decrement cancel_fees from user wallet
+        $this->pay([
+            'user_id' => $request->user_id,
+            'amount' => $cancel_fees,
+            'type' => 'Aevapay User Wallet',
+            'uuid' => Str::orderedUuid()
+        ]);
     }
 
     protected function getNearestDriversWithVehicles(array $args)
@@ -259,5 +266,28 @@ trait CabRequestHelper
         $theta = $longitudeFrom - $longitudeTo;
         $dist = sin($latitudeFrom * $rad) * sin($latitudeTo * $rad) +  cos($latitudeFrom * $rad) * cos($latitudeTo * $rad) * cos($theta * $rad);
         return acos($dist) / $rad * 60 * 1853;
+    }
+
+    public function pay($args) 
+    {
+        $url = 'https://'.$this->settings('Aevapay Staging Server').'/pay';
+        return Http::withHeaders([
+            'x-api-key' => $this->getXAPIKey($args['user_id'])
+        ])
+        ->post($url, [
+            'user_id' => $args['user_id'],
+            'amount' => $args['amount'],
+            'type' => $args['type'],
+            'provider_transaction_reference' => $args['uuid']
+        ])
+        ->throw();
+    }
+
+    protected function getXAPIKey($input)
+    {
+        $server_key = $this->settings('Aevapay Server Key');
+        $str = $server_key.$input;
+        $hashed_str = hash("sha256",$str,true);
+        return base64_encode($hashed_str);
     }
 }

@@ -22,7 +22,6 @@ use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
@@ -42,6 +41,14 @@ class CabRequestTransactionRepository extends BaseRepository
             $request = CabRequest::findOrFail($args['request_id']);
         } catch (ModelNotFoundException $e) {
             throw new \Exception(__('lang.request_not_found'));
+        }
+
+        $sum = $this->model->where('request_id', $request->id)
+            ->selectRaw('request_id, sum(costs) as amount')
+            ->groupBy('request_id')->first();
+
+        if (!is_null($sum) && $sum->amount >= $request->costs) {
+            throw new CustomException(__('lang.request_already_paid'));
         }
 
         if ($args['costs'] < $request->costs) {
@@ -162,28 +169,5 @@ class CabRequestTransactionRepository extends BaseRepository
         );
 
         broadcast(new CabRequestStatusChanged($request));
-    }
-
-    public function pay($args) 
-    {
-        $url = 'https://'.$this->settings('Aevapay Staging Server').'/pay';
-        return Http::withHeaders([
-            'x-api-key' => $this->getXAPIKey($args['user_id'])
-        ])
-        ->post($url, [
-            'user_id' => $args['user_id'],
-            'amount' => $args['amount'],
-            'type' => $args['type'],
-            'provider_transaction_reference' => $args['uuid']
-        ])
-        ->throw();
-    }
-
-    protected function getXAPIKey($input)
-    {
-        $server_key = $this->settings('Aevapay Server Key');
-        $str = $server_key.$input;
-        $hashed_str = hash("sha256",$str,true);
-        return base64_encode($hashed_str);
     }
 }
