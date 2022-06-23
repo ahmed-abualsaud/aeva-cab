@@ -28,6 +28,7 @@ use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 use Aeva\Cab\Domain\Repository\Mutations\CabRequestRepositoryInterface;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 
 class CabRequestRepository extends BaseRepository implements CabRequestRepositoryInterface

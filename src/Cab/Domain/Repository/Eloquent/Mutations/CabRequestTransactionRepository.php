@@ -14,17 +14,21 @@ use App\Jobs\SendPushNotification;
 use Aeva\Cab\Domain\Models\CabRequest;
 use Aeva\Cab\Domain\Models\CabRequestTransaction;
 
+use Aeva\Cab\Domain\Traits\CabRequestHelper;
 use Aeva\Cab\Domain\Traits\HandleDeviceTokens;
 use Aeva\Cab\Domain\Events\CabRequestStatusChanged;
 use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
 class CabRequestTransactionRepository extends BaseRepository
 {
+    use CabRequestHelper;
     use HandleDeviceTokens;
 
     public function __construct(CabRequestTransaction $model)
@@ -44,6 +48,7 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.amount_paid_less_than_amount_requested'));
         }
 
+        $args['uuid'] = Str::orderedUuid();
         $input =  Arr::except($args, ['directive']);
         $input['user_id'] = $request->user_id;
         $input['driver_id'] = $request->driver_id;
@@ -87,22 +92,26 @@ class CabRequestTransactionRepository extends BaseRepository
     protected function cashPay($args, $request)
     {
         $refund = 0;
+        $costs = $args['costs'];
         if($args['costs'] > $request->costs) {
-            $this->updateUserWallet($request->user_id, ($args['costs'] - $request->costs), '+');
             $refund = ($args['costs'] - $request->costs);
+            $costs = $request->costs;
+            $this->updateUserWallet($request->user_id, $refund, 'Refund', $args['uuid'].'-refund');
         }
+
+        $this->updateUserWallet($request->user_id, $costs, 'Cash', $args['uuid']);
         $this->updateDriverWallet($request->driver_id, $args['costs'], $args['costs'], ($request->costs - $args['costs']));
         return $refund;
     }
 
     protected function walletPay($args, $request)
     {
-        $paid = $this->updateUserWallet($request->user_id, $args['costs'], '-');
+        $paid = $this->updateUserWallet($request->user_id, $args['costs'], 'Aevapay User Wallet', $args['uuid']);
         $this->updateDriverWallet($request->driver_id, $paid, 0, $paid);
         return $paid;
     }
 
-    protected function updateUserWallet($user_id, $costs, $sign)
+    protected function updateUserWallet($user_id, $costs, $type, $uuid)
     {
         try {
             $user = User::findOrFail($user_id);
@@ -110,23 +119,21 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.user_not_found'));
         }
 
-        if ($sign == '-') {
-            $paid = $costs;
+        $paid = $costs;
+        if ($type == 'Aevapay User Wallet') {
             if ($user->wallet < $costs) {
                 $paid = $user->wallet;
             }
-
-            // decrement the user wallet by $paid
-
-            return $paid;
         }
 
-        if ($sign == '+') {
+        $this->pay([
+            'user_id' => $user_id,
+            'amount' => $paid,
+            'type' => $type,
+            'uuid' => $uuid
+        ]);
 
-            // increment the user wallet by $costs
-
-            return $costs;
-        }
+        return $paid;
     }
 
     protected function updateDriverWallet($driver_id, $earnings, $cash, $wallet)
@@ -155,5 +162,28 @@ class CabRequestTransactionRepository extends BaseRepository
         );
 
         broadcast(new CabRequestStatusChanged($request));
+    }
+
+    public function pay($args) 
+    {
+        $url = 'https://'.$this->settings('Aevapay Staging Server').'/pay';
+        return Http::withHeaders([
+            'x-api-key' => $this->getXAPIKey($args['user_id'])
+        ])
+        ->post($url, [
+            'user_id' => $args['user_id'],
+            'amount' => $args['amount'],
+            'type' => $args['type'],
+            'provider_transaction_reference' => $args['uuid']
+        ])
+        ->throw();
+    }
+
+    protected function getXAPIKey($input)
+    {
+        $server_key = $this->settings('Aevapay Server Key');
+        $str = $server_key.$input;
+        $hashed_str = hash("sha256",$str,true);
+        return base64_encode($hashed_str);
     }
 }
