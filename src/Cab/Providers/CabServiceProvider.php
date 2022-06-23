@@ -13,6 +13,7 @@ class CabServiceProvider extends ServiceProvider
      */
     public function boot() 
     {
+        $this->loadRoutesFrom(__DIR__.'/../Application/Routes/api.php');
         $this->loadMigrationsFrom(__DIR__.'/../Infrastructure/Database/Migrations');
     }
 

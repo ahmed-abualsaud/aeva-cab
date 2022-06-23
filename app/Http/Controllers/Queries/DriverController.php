@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Queries;
 
 use App\Driver;
+use App\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -18,6 +19,38 @@ class DriverController
     {
        try {
             $data = Driver::findOrFail($id);
+            $response = [
+                'success' => true,
+                'message' => 'Driver Details',
+                'data' => $data
+            ];
+            return $response;
+       } catch (ModelNotFoundException $e) {
+            $response = [
+                'success' => false,
+                'message' => 'Not Found'
+            ];
+            return response()->json($response, 404);
+       } 
+    }
+
+    public function getByPhone($phone, Request $req)
+    {
+        $server_key = Settings::select('name', 'value')->where('name', 'Aeva Mobility Server Key')->first()->value;
+        $str = $server_key.$phone;
+        $hashed_str = hash("sha256",$str,true);
+        $encoded_str = base64_encode($hashed_str);
+
+        if($req->header('x-api-key') != $encoded_str) {
+            $response = [
+                'success' => false,
+                'message' => 'Unauthorized'
+            ];
+            return response()->json($response, 401);
+        }
+
+       try {
+            $data = Driver::where('phone', $phone)->firstOrFail();
             $response = [
                 'success' => true,
                 'message' => 'Driver Details',

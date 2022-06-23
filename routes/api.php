@@ -72,3 +72,5 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Queries'], functi
     Route::get('/driver/{driver_id}/device/id', 'DriverController@driverDeviceId');
     Route::get('/drivers/device/id', 'DriverController@driversDeviceId');
 });
+
+Route::get('/driver/by/phone/{phone}', 'Queries\DriverController@getByPhone');

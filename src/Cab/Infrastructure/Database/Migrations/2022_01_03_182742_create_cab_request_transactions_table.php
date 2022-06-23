@@ -15,11 +15,11 @@ class CreateCabRequestTransactionsTable extends Migration
     {
         Schema::create('cab_request_transactions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('request_id')->nullable();
             $table->float('costs', 8, 2);
-            $table->enum('payment_method', ['Cash', 'Card', 'Wallet']);
+            $table->enum('payment_method', ['Cash', 'Card', 'Wallet', 'Cashout']);
             $table->timestamps();
             $table->softDeletes();
 
