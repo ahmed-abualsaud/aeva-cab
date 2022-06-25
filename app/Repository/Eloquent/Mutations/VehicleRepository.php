@@ -131,6 +131,8 @@ class VehicleRepository extends BaseRepository
         if  ($dataFilled && ($approvedDocs == 4)) 
         {
             $vehicle->update(['approved' => true]);
+        } else {
+            $vehicle->update(['approved' => false]);
         }
     }
 }

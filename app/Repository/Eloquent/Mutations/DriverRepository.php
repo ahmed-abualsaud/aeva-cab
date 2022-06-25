@@ -10,7 +10,10 @@ use App\DriverVehicle;
 use App\PartnerDriver;
 
 use App\Jobs\SendOtp;
+
 use App\Traits\HandleUpload;
+use App\Traits\HandleAccessTokenCache;
+
 use App\Exceptions\CustomException;
 use App\Events\DriverLocationUpdated;
 
@@ -25,6 +28,7 @@ use App\Repository\Mutations\DriverRepositoryInterface;
 class DriverRepository extends BaseRepository implements DriverRepositoryInterface
 {
     use HandleUpload;
+    use HandleAccessTokenCache;
 
     public function __construct(Driver $model)
     {
@@ -158,6 +162,17 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
     public function login(array $args)
     {
+        try {
+            $driver = Driver::where('phone', $args['phone'])->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception(__('lang.driver_not_found'));
+        }
+
+        $token = $this->getCachedToken('driver', $driver->id);
+        if ($token) {
+            $this->invalidateToken('driver', $token);
+        }
+
         $credentials["phone"] = $args['phone'];
         $credentials["password"] = $args['password'];
 
