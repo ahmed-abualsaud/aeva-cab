@@ -60,6 +60,31 @@ class SettingsSeeder extends Seeder
                 'name' => 'Coverage Center Longitude',
                 'value' => 29.918740737703292,
                 'description' => 'coverage center longitude'
+            ],
+            [
+                'name' => 'Show Acceptance Dialog',
+                'value' => 30,
+                'description' => 'show acceptance dialog duration in seconds for the driver'
+            ],
+            [
+                'name' => 'Aevapay Server Key',
+                'value' => '$2y$10$PoO5Gfl4PAezsMeI0LPbKul5Kes4Ee06pIGGsMVV36Zy6BXne/Lom',
+                'description' => 'aevapay staging server key'
+            ],
+            [
+                'name' => 'Aevapay Staging Server',
+                'value' => 'staging.aevapay.net/api/v1/aevacab-in',
+                'description' => 'aevapay staging server domain name'
+            ],
+            [
+                'name' => 'Aevapay Production Server',
+                'value' => 'production.aevapay.net/api/v1/aevacab-in',
+                'description' => 'aevapay production server domain name'
+            ],
+            [
+                'name' => 'Aeva Mobility Server Key',
+                'value' => '!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ',
+                'description' => 'aeva mobility server key'
             ]
         ]);
     }

@@ -8,6 +8,6 @@ input UpdateSettingsInput {
 type Settings {
   id: ID
   name: String
-  value: Float
+  value: String
   description: String
 }
