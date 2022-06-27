@@ -717,7 +717,7 @@ extend type Query @guard(with: ["admin", "partner", "manager", "driver"]) {
   driversStats: [DriverStats] @paginate
 
   # Driver Transaction
-  driverTransactions(driver_id: ID! @eq): [DriverTransaction] @all
+  driverTransactions(driver_id: ID! @eq): [DriverTransaction] @paginate(defaultCount: 50)
 }
 
 # Admin,Partner,Manager,User,Driver Guard
