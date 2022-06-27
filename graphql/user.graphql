@@ -74,6 +74,7 @@ type User {
   latitude: Float
   longitude: Float
   wallet_balance: Float
+  wallet: Float
   insurance_balance: Float
   nfc_balance: Float
   rating: Float

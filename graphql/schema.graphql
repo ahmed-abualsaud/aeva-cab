@@ -367,10 +367,6 @@ extend type Mutation @guard(with: ["admin", "partner", "manager", "user"]) {
   # Business Trip Schedule
   rescheduleUserBusinessTrip(input: BusinessTripScheduleInput! @spread): Boolean
     @field(resolver: "BusinessTripScheduleResolver@reschedule")
-
-  # User Transaction
-  createUserTransaction(input: CreateUserTransactionInput! @spread): UserTransaction
-    @field(resolver: "UserTransactionResolver@create")
   
   # Promo codes
   applyPromoCode(name: String!, user_id: ID!, request_id: ID): PromoCode
@@ -398,6 +394,10 @@ extend type Mutation @guard(with: ["admin", "partner", "manager", "driver"]) {
   # Vehicle
   createVehicle(input: CreateVehicleInput! @spread): Vehicle 
     @field(resolver: "VehicleResolver@create")
+
+  # Driver Transaction
+  createDriverTransaction(input: CreateDriverTransactionInput! @spread): DriverTransaction
+    @field(resolver: "DriverTransactionResolver@create")
 }
 
 # Admin,Partner,Manager,User,Driver Guard
@@ -614,9 +614,9 @@ extend type Query @guard(with: ["admin", "partner", "manager"]) {
   # Supervisor
   supervisors(partner_id: ID): [Supervisor] @all(scopes: ["partner"])
 
-  # Fund Transactions
-  fundTransactions(partner_id: ID, service: String, searchFor: String, searchQuery: String, period: String): [UserTransaction]
-    @paginate(scopes: ["period", "search", "partner", "service"], defaultCount: 50)
+  # Driver Transactions
+  driversTransactions(searchFor: String, searchQuery: String, period: String): [DriverTransaction]
+    @paginate(scopes: ["period", "search"], defaultCount: 50)
 
   # Payment Categories
   paymentCategories(partner_id: ID @eq): [PaymentCategory] @all
@@ -680,9 +680,6 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user"]) {
   businessTripSchedule(trip_id: ID!, user_id: ID!): BusinessTripSchedule
     @field(resolver: "BusinessTripScheduleResolver")
 
-  # User Transaction
-  userFundTransactions(user_id: ID! @eq): [UserTransaction] @all
-
   # Business Trip Rating
   businessTripRatings(log_id: String! @eq): [BusinessTripRating] @all
   unratedBusinessTrips(user_id: ID!): [BusinessTrip] 
@@ -718,6 +715,9 @@ extend type Query @guard(with: ["admin", "partner", "manager", "driver"]) {
   # Driver Stats
   driverStats(driver_id: ID! @eq): DriverStats @first
   driversStats: [DriverStats] @paginate
+
+  # Driver Transaction
+  driverTransactions(driver_id: ID! @eq): [DriverTransaction] @all
 }
 
 # Admin,Partner,Manager,User,Driver Guard
@@ -787,7 +787,7 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user", "driver"]
 #import terminal.graphql
 #import device.graphql
 #import paymentCategory.graphql
-#import userTransaction.graphql
+#import driverTransaction.graphql
 #import supervisor.graphql
 #import businessTripRating.graphql
 #import follower.graphql

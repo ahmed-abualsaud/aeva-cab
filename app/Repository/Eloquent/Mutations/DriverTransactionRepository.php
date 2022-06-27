@@ -2,15 +2,15 @@
 
 namespace App\Repository\Eloquent\Mutations;
 
-use App\User;
-use App\UserTransaction;
+use App\DriverStats;
+use App\DriverTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use App\Repository\Eloquent\BaseRepository;
 
-class UserTransactionRepository extends BaseRepository
+class DriverTransactionRepository extends BaseRepository
 {
-    public function __construct(UserTransaction $model)
+    public function __construct(DriverTransaction $model)
     {
         parent::__construct($model);
     }
@@ -43,18 +43,12 @@ class UserTransactionRepository extends BaseRepository
     {
         try {
             switch($args['type']) {
-                case 'WALLET_DEPOSIT':
-                    return User::updateWallet($args['user_id'], -abs($args['amount']));
-                case 'WALLET_WITHDRAW':
-                    return User::updateWallet($args['user_id'], abs($args['amount'])); 
-                case 'INSURANCE_DEPOSIT':
-                    return User::updateInsurance($args['user_id'], -abs($args['amount']));
-                case 'INSURANCE_WITHDRAW':
-                    return User::updateInsurance($args['user_id'], abs($args['amount'])); 
-                case 'NFC_DEPOSIT':
-                    return User::updateNfcBalance($args['user_id'], -abs($args['amount']));
-                case 'NFC_WITHDRAW':
-                    return User::updateNfcBalance($args['user_id'], abs($args['amount'])); 
+                case 'Wallet Deposit':
+                    return DriverStats::where('driver_id', $args['driver_id'])->increment('wallet', $args['amount']);
+                case 'Wallet Withdraw':
+                    return DriverStats::where('driver_id', $args['driver_id'])->decrement('wallet', $args['amount']);
+                case 'Cashout':
+                    return DriverStats::where('driver_id', $args['driver_id'])->decrement('wallet', $args['amount']);
             }
         } catch (\Exception $e) {
             throw new CustomException($e->getMessage());

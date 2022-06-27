@@ -1,0 +1,15 @@
+input CreateDriverTransactionInput {
+  driver_id: ID! @rules(apply: ["required"])
+  amount: Float! @rules(apply: ["required"])
+  type: String! @rules(apply: ["required", "in:Wallet Deposit,Wallet Withdraw,Cashout"])
+  notes: String
+}
+
+type DriverTransaction {
+  id: ID
+  driver: Driver @belongsTo
+  amount: Float
+  type: String
+  created_at: String
+  notes: String
+}
