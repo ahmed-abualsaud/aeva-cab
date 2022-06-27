@@ -90,10 +90,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             }
         }
 
-        if (array_key_exists('car_type_id', $args) && $args['car_type_id']) {
-            auth('driver')->onceUsingId($driver->id);
-            $driver->token = auth('driver')->fromUser($driver);
-        }
+        auth('driver')->onceUsingId($driver->id);
+        $driver->token = auth('driver')->fromUser($driver);
 
         //$verification_code = mt_rand(1000, 9999);
         $verification_code = '0000';

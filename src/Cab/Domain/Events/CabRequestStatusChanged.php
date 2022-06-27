@@ -15,6 +15,7 @@ class CabRequestStatusChanged implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $request;
+    public $channel;
 
     /**
      * Create a new event instance.
@@ -24,6 +25,13 @@ class CabRequestStatusChanged implements ShouldBroadcast
     public function __construct($request)
     {
         $this->request = $request;
+
+        if ($this->request->status == 'Redirected') {
+            $this->channel = 'App.CapTrip.Redirected.'.$this->request->id;
+        } else {
+            $this->channel = 'App.CapTrip.'.$this->request->id;
+        }
+
     }
 
     /**
@@ -33,7 +41,7 @@ class CabRequestStatusChanged implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('App.CapTrip.'.$this->request->id);
+        return new PrivateChannel($this->channel);
     }
 
     /**

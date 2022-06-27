@@ -311,7 +311,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request = $this->updateRequest($request, $args);
 
         $this->addReferralBonus($request->driver_id);
-        $this->updateDriverStatus($request->driver_id, 'Online');
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
@@ -467,6 +466,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $input['d_lat'] = $args['d_lat'];
         $input['d_lng'] = $args['d_lng'];
+        $input['d_address'] = $args['d_address'];
         $input['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $input);
@@ -504,6 +504,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $input['d_lat'] = $args['d_lat'];
         $input['d_lng'] = $args['d_lng'];
+        $input['d_address'] = $args['d_address'];
         $input['costs'] = $filtered[0]['price']; 
         $input['history'] = array_merge($request->history, $payload);
         $request = $this->updateRequest($request, $input);
@@ -542,13 +543,12 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $result = $request->history['searching']['result'];
         $waiting_time = ($action == 'start') ? (time() - strtotime($request->history['arrived']['at'])) : 0;
         $prices = $this->calculateCosts($args['distance'], $args['duration'], Arr::pluck($result['vehicles'], 'car_type_id'), $waiting_time);
-        $vehicles = collect($result['vehicles'])->keyBy('car_type_id')->toArray();
+        $vehicles = $result['vehicles'];
 
-        foreach ($vehicles as $carTypeId => $vehicle) {
-            $vehicles[$carTypeId]['price'] = $prices[$carTypeId]['costs'];
+        foreach ($vehicles as $vehicle) {
+            $vehicle['price'] = $prices[$vehicle['car_type_id']]['costs'];
         }
 
-        [$carTypeId, $vehicles] = Arr::divide($vehicles);
         $result['vehicles'] = $vehicles;
 
         $filtered = Arr::where($result['vehicles'], function ($value, $key) use ($request){
@@ -574,6 +574,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $input['d_lat'] = $args['d_lat'];
         $input['d_lng'] = $args['d_lng'];
+        $input['d_address'] = $args['d_address'];
         $input['costs'] = ($action == 'start') ? $filtered[0]['price'] + $request->costs : $filtered[0]['price']; 
         $input['history'] = array_merge($request->history, $payload);
 
@@ -589,7 +590,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $socketRequest = clone $request;
         $socketRequest->status = 'Redirected';
 
-        broadcast(new CabRequestCancelled('user', $socketRequest));
+        broadcast(new CabRequestStatusChanged($socketRequest));
 
         return $request;
     }

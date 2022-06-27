@@ -60,6 +60,7 @@ class CabRequestTransactionRepository extends BaseRepository
         $input['user_id'] = $request->user_id;
         $input['driver_id'] = $request->driver_id;
 
+        $this->updateDriverStatus($request->driver_id, 'Online');
         $payment_method = strtolower($request->history['sending']['payment_method']);
         if ($args['payment_method'] == 'Cash' && str_contains($payment_method, 'cash')) {
             $refund = $this->cashPay($args, $request);
