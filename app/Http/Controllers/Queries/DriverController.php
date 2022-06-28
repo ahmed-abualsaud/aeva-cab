@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Queries;
 
 use App\Driver;
-use App\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -36,8 +35,7 @@ class DriverController
 
     public function getByPhone($phone, Request $req)
     {
-        $server_key = Settings::select('name', 'value')->where('name', 'Aeva Mobility Server Key')->first()->value;
-        $str = $server_key.$phone;
+        $str = config('custom.aevacab_staging_server_key').$phone;
         $hashed_str = hash("sha256",$str,true);
         $encoded_str = base64_encode($hashed_str);
 

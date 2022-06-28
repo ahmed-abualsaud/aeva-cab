@@ -3,7 +3,6 @@
 namespace Aeva\Cab\Application\Http\Controllers\Mutations;
 
 use App\Driver;
-use App\Settings;
 use App\DriverStats;
 
 use Aeva\Cab\Domain\Models\CabRequestTransaction;
@@ -18,8 +17,7 @@ class CabRequestTransactionController
     public function confirmCashout(Request $req) 
     {
         $params = $req->all();
-        $server_key = Settings::select('name', 'value')->where('name', 'Aeva Mobility Server Key')->first()->value;
-        $str = $server_key.$params['phone'];
+        $str = config('custom.aevacab_staging_server_key').$params['phone'];
         $hashed_str = hash("sha256",$str,true);
         $encoded_str = base64_encode($hashed_str);
 

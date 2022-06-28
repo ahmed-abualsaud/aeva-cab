@@ -270,7 +270,7 @@ trait CabRequestHelper
 
     public function pay($args) 
     {
-        $url = 'https://'.$this->settings('Aevapay Staging Server').'/pay';
+        $url = 'https://'.config('custom.aevapay_staging_server_domain').'/api/v1/aevacab-in/pay';
         return Http::withHeaders([
             'x-api-key' => $this->getXAPIKey($args['user_id'])
         ])
@@ -285,7 +285,7 @@ trait CabRequestHelper
 
     protected function getXAPIKey($input)
     {
-        $server_key = $this->settings('Aevapay Server Key');
+        $server_key = config('custom.aevapay_staging_server_key');
         $str = $server_key.$input;
         $hashed_str = hash("sha256",$str,true);
         return base64_encode($hashed_str);
