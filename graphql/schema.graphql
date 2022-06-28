@@ -615,8 +615,8 @@ extend type Query @guard(with: ["admin", "partner", "manager"]) {
   supervisors(partner_id: ID): [Supervisor] @all(scopes: ["partner"])
 
   # Driver Transactions
-  driversTransactions(searchFor: String, searchQuery: String, period: String): [DriverTransaction]
-    @paginate(scopes: ["period", "search"], defaultCount: 50)
+  driversTransactions(searchFor: String, searchQuery: String, period: String, type: String): [DriverTransaction]
+    @paginate(scopes: ["type", "period", "search"], defaultCount: 50)
 
   # Payment Categories
   paymentCategories(partner_id: ID @eq): [PaymentCategory] @all
@@ -717,7 +717,7 @@ extend type Query @guard(with: ["admin", "partner", "manager", "driver"]) {
   driversStats: [DriverStats] @paginate
 
   # Driver Transaction
-  driverTransactions(driver_id: ID! @eq): [DriverTransaction] @paginate(defaultCount: 50)
+  driverTransactions(type: String, driver_id: ID! @eq, period: String): [DriverTransaction] @paginate(defaultCount: 50, scopes: ["type", "period"])
 }
 
 # Admin,Partner,Manager,User,Driver Guard

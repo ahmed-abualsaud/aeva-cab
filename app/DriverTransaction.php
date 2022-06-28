@@ -19,6 +19,11 @@ class DriverTransaction extends Model
         return $this->belongsTo(Driver::class);
     }
 
+    public function admin()
+    {
+        return $this->morphTo();
+    }
+
     public function scopeSearch($query, $args) 
     {
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
@@ -35,5 +40,14 @@ class DriverTransaction extends Model
         }
 
         return $query->latest();
+    }
+
+    public function scopeType($query, $args) 
+    {
+        if (array_key_exists('type', $args) && $args['type']) {
+            return $query->where('type', $args['type']);
+        }
+ 
+        return $query;
     }
 }

@@ -16,6 +16,7 @@ class CreateDriverTransactionsTable extends Migration
         Schema::create('driver_transactions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('driver_id');
+            $table->nullableMorphs('admin');
             $table->float('amount', 8, 2);
             $table->enum('type', ['Wallet Deposit','Wallet Withdraw', 'Cashout']);
             $table->string('notes')->nullable();

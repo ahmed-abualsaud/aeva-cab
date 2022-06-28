@@ -49,6 +49,15 @@ class CabRequestTransaction extends Model
         }
     }
 
+    public function scopeDriver($query, $args) 
+    {
+        if (array_key_exists('driver_id', $args) && $args['driver_id']) {
+            return $query->where('driver_id', $args['driver_id']);
+        }
+ 
+        return $query;
+    }
+
     public function scopeGetLatest($query, $args) 
     {
         return $query->latest();

@@ -2,12 +2,15 @@ input CreateDriverTransactionInput {
   driver_id: ID! @rules(apply: ["required"])
   amount: Float! @rules(apply: ["required"])
   type: String! @rules(apply: ["required", "in:Wallet Deposit,Wallet Withdraw,Cashout"])
+  admin_id: ID
+  admin_type: String @rules(apply: ["in:App\\Admin,App\\Partner,App\\Manager"])
   notes: String
 }
 
 type DriverTransaction {
   id: ID
   driver: Driver @belongsTo
+  admin: AdminType @morphTo
   amount: Float
   type: String
   created_at: String
