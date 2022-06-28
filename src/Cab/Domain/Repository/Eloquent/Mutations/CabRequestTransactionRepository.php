@@ -43,13 +43,13 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new \Exception(__('lang.request_not_found'));
         }
 
-        $sum = $this->model->where('request_id', $request->id)
-            ->selectRaw('request_id, sum(costs) as amount')
-            ->groupBy('request_id')->first();
+        // $sum = $this->model->where('request_id', $request->id)
+        //     ->selectRaw('request_id, sum(costs) as amount')
+        //     ->groupBy('request_id')->first();
 
-        if (!is_null($sum) && $sum->amount >= $request->costs) {
-            throw new CustomException(__('lang.request_already_paid'));
-        }
+        // if (!is_null($sum) && $sum->amount >= $request->costs) {
+        //     throw new CustomException(__('lang.request_already_paid'));
+        // }
 
         if ($args['costs'] < $request->costs) {
             throw new CustomException(__('lang.amount_paid_less_than_amount_requested'));
@@ -104,7 +104,7 @@ class CabRequestTransactionRepository extends BaseRepository
         if($args['costs'] > $request->costs) {
             $refund = ($args['costs'] - $request->costs);
             $costs = $request->costs;
-            $this->updateUserWallet($request->user_id, $refund, 'Refund', $args['uuid'].'-refund');
+            $this->updateUserWallet($request->user_id, $refund, 'Aevacab Refund', $args['uuid'].'-refund');
         }
 
         $this->updateUserWallet($request->user_id, $costs, 'Cash', $args['uuid']);

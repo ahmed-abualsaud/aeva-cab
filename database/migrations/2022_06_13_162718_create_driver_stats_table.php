@@ -17,8 +17,8 @@ class CreateDriverStatsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('driver_id');
             $table->unsignedDecimal('cash', 12, 2)->default(0.00);
-            $table->unsignedDecimal('wallet', 12, 2)->default(0.00);
-            $table->unsignedDecimal('earnings', 12, 2)->default(0.00);
+            $table->decimal('wallet', 12, 2)->default(0.00);
+            $table->decimal('earnings', 12, 2)->default(0.00);
             $table->decimal('rating', 4, 2)->default(5.00);
             $table->bigInteger('received_cab_requests')->default(0);
             $table->bigInteger('accepted_cab_requests')->default(0);
