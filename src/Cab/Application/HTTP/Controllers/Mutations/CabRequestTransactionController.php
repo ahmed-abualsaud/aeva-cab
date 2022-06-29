@@ -2,51 +2,45 @@
 
 namespace Aeva\Cab\Application\Http\Controllers\Mutations;
 
-use App\Driver;
-use App\DriverStats;
+use Aeva\Cab\Domain\Repository\Eloquent\Mutations\CabRequestTransactionRepository;
 
-use Aeva\Cab\Domain\Models\CabRequestTransaction;
-
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class CabRequestTransactionController 
 {
+    private $cabRequestTransactionRepository;
+
+    public function __construct(CabRequestTransactionRepository $cabRequestTransactionRepository)
+    {
+        $this->cabRequestTransactionRepository = $cabRequestTransactionRepository;
+    }
+
     public function confirmCashout(Request $req) 
     {
-        $params = $req->all();
-        $str = config('custom.aevacab_staging_server_key').$params['phone'];
-        $hashed_str = hash("sha256",$str,true);
-        $encoded_str = base64_encode($hashed_str);
+        $validator = Validator::make($req->all(), [
+            'driver_id' => ['required'],
+            'amount' => ['required']
+        ]);
 
-        if($req->header('x-api-key') != $encoded_str) {
+        if ($validator->fails()) {
             $response = [
                 'success' => false,
-                'message' => 'Unauthorized'
+                'message' => $validator->errors()->first(),
             ];
-            return response()->json($response, 401);
+            return response()->json($response, 400);
         }
 
         try {
-            $driver = Driver::where('phone', $params['phone'])->firstOrFail();
-            CabRequestTransaction::create([
-                'driver_id' => $driver->id, 
-                'costs' => $params['amount'],
-                'payment_method' => 'Cashout',
-                'uuid' => Str::orderedUuid()
-            ]);
-
-            DriverStats::where('driver_id', $driver->id)->update([
-                'wallet' => DB::raw('wallet - '.$params['amount']), 
-                'earnings' => DB::raw('earnings - '.$params['amount'])
-            ]);
-
+            $data = $this->cabRequestTransactionRepository->confirmCashout($req->all());
             $response = [
                 'success' => true,
+                'data' => $data,
                 'message' => 'Cashout Process Confirmed Successfully'
             ];
+
             return $response;
        } catch (ModelNotFoundException $e) {
             $response = [
