@@ -8,5 +8,5 @@ View Request
 @endcomponent
 
 Regards,<br>
-Aeva Mobility Team
+Aeva Cab Team
 @endcomponent

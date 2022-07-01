@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Aeva Mobility</title>
+        <title>Aeva Cab</title>
 
         <!-- Favicon -->
         <link rel="shortcut icon" type="image/png" href="/favicon.ico">
@@ -64,7 +64,7 @@
         <div class="flex-center position-ref full-height">
             <div class="content">
                 <div class="title m-b-md">
-                    Aeva Mobility
+                    Aeva Cab
                 </div>
             </div>
         </div>

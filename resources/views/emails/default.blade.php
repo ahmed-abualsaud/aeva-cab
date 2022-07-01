@@ -4,5 +4,5 @@
 {{ $message }}
 
 Regards,<br>
-Aeva Mobility Team
+Aeva Cab Team
 @endcomponent

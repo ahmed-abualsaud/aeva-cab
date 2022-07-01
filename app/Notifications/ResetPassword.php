@@ -45,7 +45,7 @@ class ResetPassword extends ResetPasswordNotification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Aeva Mobility password reset link')
+            ->subject('Aeva Cab password reset link')
             ->greeting('Hello, here\'s how to reset your password.')
             ->line('We have received a request to have your password reset.')
             ->action('Reset Your Password', url(config('app.url').route('password.reset', [$this->type, $this->token, urlencode($notifiable->email)], false)))

@@ -1,10 +1,10 @@
 {
-    "name": "aeva-mobility/core",
+    "name": "aeva-cab/core",
     "type": "project",
     "description": "Transportation Solution",
     "keywords": [
         "aeva",
-        "aeva-mobility",
+        "aeva-cab",
         "transportation"
     ],
     "require": {
@@ -20,7 +20,8 @@
         "laravel/socialite": "^5.2",
         "laravel/tinker": "^2.6",
         "laravel/ui": "^3.3",
-        "laravel/vapor-core": "^2.21",
+        "laravel/vapor-cli": "^1.39",
+        "laravel/vapor-core": "^2.22",
         "laravel/vapor-ui": "^1.5",
         "league/flysystem-aws-s3-v3": "~1.0",
         "maatwebsite/excel": "^3.1",
