@@ -29,8 +29,8 @@ class CreateCabRatingsTable extends Migration
             $table->index('request_id');
             $table->index(['user_id', 'request_id']);
             
-            $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('set null');
-            $table->foreign('request_id')->references('id')->on('cab_requests')->onDelete('set null');
+            $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
+            $table->foreign('request_id')->references('id')->on('cab_requests')->onDelete('cascade');
         });
     }
 

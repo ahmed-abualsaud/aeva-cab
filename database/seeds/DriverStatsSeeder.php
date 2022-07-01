@@ -25,6 +25,8 @@ class DriverStatsSeeder extends Seeder
             return $arr;
         }, $ids->toArray());
 
-        DriverStats::insert($ids);
+        if($ids) {
+            DriverStats::insert($ids);
+        }
     }
 }

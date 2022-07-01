@@ -11,6 +11,7 @@ environments:
         cache: mobility-cache
         storage: aeva-mobility
         database: mobility-production-db
+        domain: cab.aevapay.net
         queues:
             - prod-high
             - prod-low
@@ -30,6 +31,7 @@ environments:
         cache: mobility-cache
         storage: aeva-mobility
         database: mobility-testing-db
+        domain: cab-staging.aevapay.net
         queues:
             - dev-high
             - dev-low
