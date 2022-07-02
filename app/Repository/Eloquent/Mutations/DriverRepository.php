@@ -131,7 +131,11 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
     public function update(array $args)
     {
-        $input = collect($args)->except(['id', 'directive', 'avatar'])->toArray();
+        $input = collect($args)->except(['id', 'directive', 'avatar', 'secondary_phone'])->toArray();
+
+        if (array_key_exists('secondary_phone', $args) && $args['secondary_phone']) {
+            $input['secondary_phone'] = $args['secondary_phone'];
+        }
 
         try {
             $driver = $this->model->findOrFail($args['id']);
