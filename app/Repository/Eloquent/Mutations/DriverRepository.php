@@ -93,8 +93,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         auth('driver')->onceUsingId($driver->id);
         $driver->token = auth('driver')->fromUser($driver);
 
-        //$verification_code = mt_rand(1000, 9999);
-        $verification_code = '0000';
+        $verification_code = mt_rand(1000, 9999);
+        //$verification_code = '0000';
 
         $message = __('lang.verification_code', [
             'verification_code' => $verification_code,
@@ -190,8 +190,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
         if (!$driver->phone_verified_at) 
         {
-            //$verification_code = mt_rand(1000, 9999);
-            $verification_code = '0000';
+            $verification_code = mt_rand(1000, 9999);
+            //$verification_code = '0000';
 
             $message = __('lang.verification_code', [
                 'verification_code' => $verification_code,
@@ -284,8 +284,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
     public function phoneVerification(array $args)
     {
-        //$verification_code = mt_rand(1000, 9999);
-        $verification_code = '0000';
+        $verification_code = mt_rand(1000, 9999);
+        //$verification_code = '0000';
 
         $message = __('lang.verification_code', [
             'verification_code' => $verification_code,
