@@ -36,6 +36,11 @@ class DriverResolver
         return $this->driverRepository->updatePassword($args);
     }
 
+    public function phoneVerification($_, array $args)
+    {
+        return $this->driverRepository->phoneVerification($args);
+    }
+
     public function assignVehicle($_, array $args)
     {
         return $this->driverRepository->assignVehicle($args);

@@ -282,6 +282,27 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         ];
     }
 
+    public function phoneVerification(array $args)
+    {
+        //$verification_code = mt_rand(1000, 9999);
+        $verification_code = '0000';
+
+        $message = __('lang.verification_code', [
+            'verification_code' => $verification_code,
+            'signature' => config('custom.otp_signature'),
+        ]);
+
+        if (!$this->model->where('phone', $args['phone'])->exists()) {
+                throw new CustomException( __('lang.driver_not_found'));        
+        }
+
+        SendOtp::dispatch($args['phone'], $message);
+
+        return [
+            "verificationCode" => $verification_code
+        ];
+    }
+
     public function destroy(array $args)
     {
         return $this->model->whereIn('id', $args['id'])->delete();

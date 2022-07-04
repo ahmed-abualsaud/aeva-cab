@@ -21,6 +21,9 @@ type Mutation {
   driverLogin(input: PhoneLoginInput! @spread): DriverAuthPayload! 
     @field(resolver: "DriverResolver@login")
 
+  driverPhoneVerification(input: DriverPhoneVerificationInput! @spread): DriverPhoneVerifyPayload!
+    @field(resolver: "DriverResolver@phoneVerification")
+
   # Partner Auth
   partnerLogin(input: LoginInput! @spread): PartnerAuthPayload! 
     @field(resolver: "PartnerResolver@login")

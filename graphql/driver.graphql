@@ -96,3 +96,11 @@ type Driver {
   secondary_phone: String
   title: String
 }
+
+input DriverPhoneVerificationInput {
+  phone: String! @rules(apply: ["required"])
+}
+
+type DriverPhoneVerifyPayload {
+  verificationCode: String
+}
