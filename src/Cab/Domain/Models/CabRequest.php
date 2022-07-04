@@ -57,9 +57,10 @@ class CabRequest extends Model
         return $this->belongsTo(PromoCode::class, 'promo_code_id');
     }
 
-    public function scopeLive($query)
+    public function scopeLive($query, $user_id)
     {
-        return $query->whereIn('status', ['Searching', 'Sending', 'Accepted', 'Arrived', 'Started', 'Ended']);
+        return $query->where('user_id', $user_id)
+            ->whereIn('status', ['Searching', 'Sending', 'Accepted', 'Arrived', 'Started', 'Ended']);
             // ->orWhere(function ($query) {
             //     $query->where('status', 'Completed')
             //             ->where('rated', false);
