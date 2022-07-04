@@ -8,7 +8,7 @@
 */
 Route::group([
         'prefix' => 'rest',
-        'middleware' => ['api'], 
+        'middleware' => ['api', 'auth:driver'], 
         'namespace' => 'Aeva\Cab\Application\HTTP\Controllers\Mutations'
     ], function () {
         Route::post('/confirm/cashout', 'CabRequestTransactionController@confirmCashout');
