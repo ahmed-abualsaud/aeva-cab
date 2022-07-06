@@ -161,4 +161,5 @@ return [
     'out_of_coverage_area' => 'Out of coverage area',
     'ride_completed' => 'Ride Completed',
     'ride_completed_body' => 'Ride completed successfully.',
+    'request_already_accepted_by_another_driver' => 'Request already accepted by another driver',
 ];

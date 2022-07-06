@@ -161,4 +161,5 @@ return [
     'out_of_coverage_area' => 'خارج منطقة التغطية',
     'ride_completed' => 'تم اكمال الرحلة',
     'ride_completed_body' => 'تم اكمال الرحلة بنجاح',
+    'request_already_accepted_by_another_driver' => 'تم قبول الرحلة بواسطة سائق اخر',
 ];

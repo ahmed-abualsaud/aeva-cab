@@ -16,7 +16,9 @@ use App\Exceptions\CustomException;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+
 use Illuminate\Support\Facades\Http;
+
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
@@ -281,6 +283,28 @@ trait CabRequestHelper
             'provider_transaction_reference' => $args['uuid']
         ])
         ->throw();
+    }
+
+    public function cashout($args) 
+    {
+        $url = 'http://45.76.88.186/backend/api/v1/aevacab/cashout';
+        return Http::withHeaders([
+            'x-access-token' => $this->getXAccessToken()
+        ])
+        ->post($url, [
+            'referenceNumber' => $args['reference_number']
+        ])
+        ->throw();
+    }
+
+    protected function getXAccessToken()
+    {
+        $response = Http::post('http://45.76.88.186/backend/api/users/confirm', [
+            'phone'=> '01286308351',
+            'passcode'=> '000000'
+        ])
+        ->throw();
+        return $response['token'];
     }
 
     protected function getXAPIKey($input)
