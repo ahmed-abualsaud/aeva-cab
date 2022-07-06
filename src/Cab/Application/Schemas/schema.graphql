@@ -76,7 +76,7 @@ extend type Query @guard(with: ["admin"]) {
 }
 
 # User Guard
-extend type Query {#@guard(with: ["user"]) {
+extend type Query @guard(with: ["user"]) {
   # Cab Request
   userCabRequests(user_id: ID!, status: String, first: Int, page:Int): [[CabRequest]]
     @field(resolver: "CabRequestResolver@history")
