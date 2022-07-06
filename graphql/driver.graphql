@@ -52,7 +52,7 @@ input UpdateDriverInput @validator {
 
 input DriverVehicleInput {
   driver_id: ID! @rules(apply: ["required"])
-  vehicle_id: [ID!]! @rules(apply: ["required"])
+  vehicle_id: ID! @rules(apply: ["required"])
 }
 
 type DriverAuthPayload {

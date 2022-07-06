@@ -62,7 +62,7 @@ class Vehicle extends Model
     {
         return $query->whereNotIn('id', DriverVehicle::getIds($args))
                      ->whereNotNull(['license_plate', 'car_model_id', 'car_make_id'])
-                     ->where('approved', false);
+                     ->where('approved', true);
     }
 
     public function scopePartner($query, $args) 

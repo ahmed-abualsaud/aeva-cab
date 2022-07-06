@@ -161,12 +161,17 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function accept(array $args)
     {
         $request = $this->findRequest($args['id']);
-        DriverStats::where('id', $args['driver_id'])->increment('accepted_cab_requests', 1);
-        DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
 
         if ( $request->status != 'Sending' ) {
             throw new CustomException(__('lang.accept_request_failed'));
         }
+
+        if ( $request->status == 'Accepted' && $request->driver_id ) {
+            throw new CustomException(__('lang.request_already_accepted_by_another_driver'));
+        }
+
+        DriverStats::where('id', $args['driver_id'])->increment('accepted_cab_requests', 1);
+        DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
 
@@ -675,6 +680,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $input['status'] = 'Searching';
         $input['history'] = array_merge($request->history, $payload);
+        $input['driver_id'] = null;
 
         $request = $this->updateRequest($request, $input);
         $request['result'] = $result;

@@ -5,6 +5,7 @@ namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 use App\Exceptions\CustomException;
 
 use App\User;
+use App\Driver;
 use App\DriverLog;
 use App\DriverStats;
 
@@ -99,28 +100,38 @@ class CabRequestTransactionRepository extends BaseRepository
     public function confirmCashout(array $args) 
     {
         try {
-            $stats = DriverStats::where('driver_id', $args['driver_id'])->firstOrFail();
-
-            if($stats->wallet < $args['amount']) {
-                throw new CustomException(__('lang.insufficient_balance'));
-            }
-
-            $cashout = $this->model->create([
-                'driver_id' => $args['driver_id'], 
-                'costs' => $args['amount'],
-                'payment_method' => 'Cashout',
-                'uuid' => Str::orderedUuid()
-            ]);
-
-            $stats->update([
-                'wallet' => DB::raw('wallet - '.$args['amount']), 
-                'earnings' => DB::raw('earnings - '.$args['amount'])
-            ]);
-
-            return $cashout;
-       } catch (ModelNotFoundException $e) {
+            $driver = Driver::findOrFail($args['driver_id']);
+        } catch (ModelNotFoundException $e) {
             throw new CustomException(__('lang.driver_not_found'));
-       }
+        }
+
+        try {
+            $this->cashout([
+                'reference_number' => $args['reference_number']
+            ]);
+        } catch (\Exception $e) {
+            throw new CustomException($e->getMessage());
+        }
+
+        $stats = DriverStats::where('driver_id', $args['driver_id'])->first();
+
+        if($stats->wallet < $args['amount']) {
+            throw new CustomException(__('lang.insufficient_balance'));
+        }
+
+        $cashout = $this->model->create([
+            'driver_id' => $args['driver_id'], 
+            'costs' => $args['amount'],
+            'payment_method' => 'Cashout',
+            'uuid' => Str::orderedUuid()
+        ]);
+
+        $stats->update([
+            'wallet' => DB::raw('wallet - '.$args['amount']), 
+            'earnings' => DB::raw('earnings - '.$args['amount'])
+        ]);
+
+        return $cashout;
     }
 
     protected function cashPay($args, $request)
