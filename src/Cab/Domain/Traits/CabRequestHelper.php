@@ -148,7 +148,7 @@ trait CabRequestHelper
     {
         if (is_array($carTypeId)) {
             $carTypes = CarType::selectRaw(
-                'id, (base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60)) as costs, min_fees'
+                'id, CEILING(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60)) as costs, min_fees'
                 , [$distance, $duration])
                 ->whereIn('id', $carTypeId)
                 ->get();
@@ -166,12 +166,12 @@ trait CabRequestHelper
 
         if ($waiting_time >= $this->settings('Waiting Time')) {
             $fees = CarType::selectRaw(
-                '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + (waiting_fees * ? / 60)) as costs, min_fees'
+                'CEILING(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + (waiting_fees * ? / 60)) as costs, min_fees'
                 , [$distance, $duration, ($waiting_time - 299)])
                 ->where('id', $carTypeId)->first();
         } else {
             $fees = CarType::selectRaw(
-                '(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60)) as costs, min_fees'
+                'CEILING(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60)) as costs, min_fees'
                 , [$distance, $duration])
                 ->where('id', $carTypeId)->first();
         }
