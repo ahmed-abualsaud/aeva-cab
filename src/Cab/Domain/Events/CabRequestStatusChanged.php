@@ -22,14 +22,14 @@ class CabRequestStatusChanged implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($request)
+    public function __construct(array $request)
     {
         $this->request = $request;
 
-        if ($this->request->status == 'Redirected') {
-            $this->channel = 'App.CapTrip.Redirected.'.$this->request->id;
+        if ($this->request['status'] == 'Redirected') {
+            $this->channel = 'App.CapTrip.Redirected.'.$this->request['id'];
         } else {
-            $this->channel = 'App.CapTrip.'.$this->request->id;
+            $this->channel = 'App.CapTrip.'.$this->request['id'];
         }
 
     }

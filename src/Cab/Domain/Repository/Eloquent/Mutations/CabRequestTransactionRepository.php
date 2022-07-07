@@ -67,8 +67,9 @@ class CabRequestTransactionRepository extends BaseRepository
             $request->update(['status' => 'Completed', 'paid' => true]);
             $trx = $this->model->create($input);
             $trx->debt = 0;
-            $request->refund = $refund;
-            $this->notifyUserOfPayment($request);
+            $socket_request = $request->toArray();
+            $socket_request['refund'] = $refund;
+            $this->notifyUserOfPayment($socket_request);
             return $trx;
         }
 
@@ -84,8 +85,9 @@ class CabRequestTransactionRepository extends BaseRepository
 
             $trx = $this->model->create($input);
             $trx->debt = $args['costs'] - $paid;
-            $request->refund = 0;
-            $this->notifyUserOfPayment($request);
+            $socket_request = $request->toArray();
+            $socket_request['refund'] = 0;
+            $this->notifyUserOfPayment($socket_request);
             return $trx;
         }
         
@@ -200,10 +202,10 @@ class CabRequestTransactionRepository extends BaseRepository
     protected function notifyUserOfPayment($request)
     {
         SendPushNotification::dispatch(
-            $this->userToken($request->user_id),
+            $this->userToken($request['user_id']),
             __('lang.ride_completed_body'),
             __('lang.ride_completed'),
-            ['view' => 'RideCompleted', 'id' => $request->id]
+            ['view' => 'RideCompleted', 'id' => $request['id']]
         );
 
         broadcast(new CabRequestStatusChanged($request));
