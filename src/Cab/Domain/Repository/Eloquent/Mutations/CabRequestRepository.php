@@ -7,8 +7,6 @@ use App\Driver;
 use App\DriverLog;
 use App\DriverStats;
 
-use App\Helpers\ResizableMapUrl;
-
 use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
 
@@ -16,6 +14,7 @@ use App\Traits\HandleDriverAttributes;
 
 use Aeva\Cab\Domain\Models\CabRating;
 use Aeva\Cab\Domain\Models\CabRequest;
+use Aeva\Cab\Domain\Models\CabRequestEntry;
 
 use Aeva\Cab\Domain\Traits\CabRequestHelper;
 use Aeva\Cab\Domain\Traits\HandleDeviceTokens;
@@ -210,7 +209,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ['view' => 'RequestAccepted', 'id' => $args['id']]
         );
 
-        broadcast(new CabRequestStatusChanged($request));
+        broadcast(new CabRequestStatusChanged($request->toArray()));
 
         return $request;
     }
@@ -241,7 +240,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ['view' => 'StartRide', 'id' => $args['id']]
         );
 
-        broadcast(new CabRequestStatusChanged($request));
+        broadcast(new CabRequestStatusChanged($request->toArray()));
 
         return $request;
     }
@@ -275,7 +274,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ['view' => 'RideStarted', 'id' => $args['id']]
         );
 
-        broadcast(new CabRequestStatusChanged($request));
+        broadcast(new CabRequestStatusChanged($request->toArray()));
 
         return $request;
     }
@@ -288,11 +287,15 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.end_ride_failed'));
         }
 
+        $distance = 0;
+        $last_location =  CabRequestEntry::getLastLocation($args['id']);
+        if($last_location) { $distance = $last_location->distance; }
+
         $duration = (time() - strtotime($request->history['started']['at']));
 
         $payload = [
             'summary' => [
-                'distance' => $args['distance'],
+                'distance' => $distance,
                 'duration' => $duration
             ],
             'ended' => [
@@ -307,11 +310,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $vehicle = array_values($vehicle);
 
-        $args['costs'] = $this->calculateCosts($args['distance'], $duration, $vehicle[0]['car_type_id'], $request->history['started']['waiting_time']);
+        $args['costs'] = $this->calculateCosts($distance, $duration, $vehicle[0]['car_type_id'], $request->history['started']['waiting_time']);
 
         $args['status'] = 'Ended';
         $args['history'] = array_merge($request->history, $payload);
-        $args['map_url'] = ResizableMapUrl::generatePolylines($request);
+        $args['map_url'] = CabRequestEntry::removeEntriesAndBuildMapURL($args['id']);
 
         $request = $this->updateRequest($request, $args);
 
@@ -324,7 +327,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ['view' => 'RideEnded', 'id' => $args['id']]
         );
 
-        broadcast(new CabRequestStatusChanged($request));
+        broadcast(new CabRequestStatusChanged($request->toArray()));
 
         return $request;
     }
@@ -592,8 +595,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ['view' => 'RideRedirection', 'id' => $args['id']]
         );
 
-        $socketRequest = clone $request;
-        $socketRequest->status = 'Redirected';
+        $socketRequest = $request->toArray();
+        $socketRequest['status'] = 'Redirected';
 
         broadcast(new CabRequestStatusChanged($socketRequest));
 
