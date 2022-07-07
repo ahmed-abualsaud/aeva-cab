@@ -121,6 +121,7 @@ trait CabRequestHelper
             driver_vehicles.vehicle_id,
             driver_vehicles.driver_id,
             car_models.name car_model,
+            car_makes.name car_make,
             car_types.id as car_type_id,
             car_types.name as car_type,
             car_types.min_fees,
@@ -131,6 +132,7 @@ trait CabRequestHelper
             , [$args['distance'], $args['duration']])
             ->join('car_types', 'car_types.id', '=', 'vehicles.car_type_id')
             ->join('car_models', 'car_models.id', '=', 'vehicles.car_model_id')
+            ->join('car_makes', 'car_makes.id', '=', 'vehicles.car_make_id')
             ->join('driver_vehicles', 'driver_vehicles.vehicle_id', '=', 'vehicles.id')
             ->whereIn('driver_vehicles.driver_id', Arr::pluck($drivers, 'driver_id'))
             ->where('driver_vehicles.active', true)

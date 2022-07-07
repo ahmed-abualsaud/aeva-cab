@@ -5,6 +5,7 @@ extend type Mutation @guard(with: ["admin"]) {
   # Cab Request
   deleteCabRequestTransaction(id: [ID!]!): Boolean
     @field(resolver: "CabRequestTransactionResolver@destroy")
+  addCabRequestNotes(id: ID @eq, notes: String): CabRequest @update
 }
 
 # User Guard
