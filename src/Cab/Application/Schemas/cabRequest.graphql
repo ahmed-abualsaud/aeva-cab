@@ -18,6 +18,7 @@ input CabRequestInput {
   d_address: String
   d_lat: Float
   d_lng: Float
+  notes: String
 }
 
 type CabRequest {
@@ -45,6 +46,7 @@ type CabRequest {
   d_lng: Float
   created_at: String
   costs_after_discount: Float
+  notes: String
 }
 
 type CabRequestHistory {
@@ -103,6 +105,7 @@ type VehicleObj {
   driver_id: ID
   vehicle_id: ID
   car_model: String
+  car_make: String
   car_type: String
   car_type_id: ID
   color: String

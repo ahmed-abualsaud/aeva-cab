@@ -44,6 +44,7 @@ class CreateCabRequestsTable extends Migration
             $table->string('d_address')->nullable();
             $table->double('d_lat', 15, 8);
             $table->double('d_lng', 15, 8);
+            $table->string('notes')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
