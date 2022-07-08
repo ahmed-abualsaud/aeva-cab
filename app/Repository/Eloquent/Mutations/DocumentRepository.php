@@ -64,6 +64,7 @@ class DocumentRepository extends BaseRepository
         $document->update($input);
 
         $this->checkVehicleAndDocumentsApproved($document);
+        $this->checkDriverAndDocumentsApproved($document);
 
         return $document;
     }
@@ -114,17 +115,44 @@ class DocumentRepository extends BaseRepository
             'رخصة سيارة سارية:الخلف'
         ];
 
-        $approvedDocs = $this->model
-            ->where('documentable_id', $document->documentable_id)
-            ->whereIn('name', $docsNames)
-            ->where('status', 'Approved')
-            ->count();
+        if (in_array($document->name, $docsNames)) {
+            $approvedDocs = $this->model
+                ->where('documentable_id', $document->documentable_id)
+                ->whereIn('name', $docsNames)
+                ->where('status', 'Approved')
+                ->count();
 
-        if  (in_array($document->name, $docsNames) && ($approvedDocs == 4)) 
-        {
-            Vehicle::where('id', $document->documentable_id)
+            if ($approvedDocs == 4) {
+                return Vehicle::where('id', $document->documentable_id)
                     ->whereNotNull(['license_plate', 'car_model_id', 'car_make_id'])
                     ->update(['approved' => true]);
+            } 
+            return Vehicle::where('id', $document->documentable_id)->update(['approved' => false]);
+        }
+    }
+
+    protected function checkDriverAndDocumentsApproved($document)
+    {
+        $docsNames = [
+            'سجل جنائي', 
+            'الصورة الشخصية', 
+            'اختبار المخدرات', 
+            'البطاقة الشخصية:اﻷمام',
+            'البطاقة الشخصية:الخلف',
+            'رخصة قيادة مصرية سارية'
+        ];
+
+        if (in_array($document->name, $docsNames)) {
+            $approvedDocs = $this->model
+                ->where('documentable_id', $document->documentable_id)
+                ->whereIn('name', $docsNames)
+                ->where('status', 'Approved')
+                ->count();
+
+            if ($approvedDocs == 6) {
+                return Driver::where('id', $document->documentable_id)->update(['approved' => true]);
+            } 
+            return Driver::where('id', $document->documentable_id)->update(['approved' => false]);
         }
     }
 }

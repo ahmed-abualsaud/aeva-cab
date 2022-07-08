@@ -42,6 +42,7 @@ class CreateDriversTable extends Migration
             $table->string('device_id')->nullable();
             $table->string('code')->nullable();
             $table->string('ref_code')->nullable();
+            $table->boolean('approved')->default(false);
             $table->timestamps();
             $table->softDeletes();
 
