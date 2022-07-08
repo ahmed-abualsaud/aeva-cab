@@ -162,4 +162,5 @@ return [
     'ride_completed' => 'Ride Completed',
     'ride_completed_body' => 'Ride completed successfully.',
     'request_already_accepted_by_another_driver' => 'Request already accepted by another driver',
+    'update_status_failed' => 'Update status failed, a trip is in progress that you have to finish first',
 ];

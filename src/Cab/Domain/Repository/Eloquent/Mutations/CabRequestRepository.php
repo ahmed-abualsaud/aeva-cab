@@ -448,6 +448,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     public function updateDriverCabStatus(array $args)
     {
+        $active_requests = $this->model->live()->where('driver_id', $args['driver_id'])->first();
+        if($active_requests && in_array($args['cab_status'], ['Offline', 'Online'])) {
+            throw new CustomException(__('lang.update_status_failed').' id = '.$active_requests->id);
+        }
         return $this->updateDriverStatus($args['driver_id'], $args['cab_status']);
     }
 
@@ -611,9 +615,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException("Invalid user id");
         }
 
-        $activeRequests = $this->model->wherePending($args['user_id'])->first();
+        $active_requests = $this->model->wherePending($args['user_id'])->first();
 
-        if($activeRequests) {
+        if($active_requests) {
             throw new CustomException(__('lang.request_inprogress'));
         }
 
