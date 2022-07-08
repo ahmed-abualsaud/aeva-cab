@@ -59,7 +59,7 @@ class CabRequest extends Model
 
     public function scopeLive($query)
     {
-        return $query->whereIn('status', ['Searching', 'Sending', 'Accepted', 'Arrived', 'Started', 'Ended']);
+        return $query->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed']);
             // ->orWhere(function ($query) {
             //     $query->where('status', 'Completed')
             //             ->where('rated', false);
@@ -69,7 +69,7 @@ class CabRequest extends Model
     public function scopeWherePending($query, $user_id)
     {
         return $query->where('user_id', $user_id)
-            ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Ended', 'Completed']);
+            ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed']);
     }
 
     public function scopeWhereScheduled($query, $user_id)
