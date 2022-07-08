@@ -458,8 +458,8 @@ extend type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["search"])
 
   # Driver
-  drivers(fleet_id: ID, searchFor: String, searchQuery: String, title: String, cabStatus: String): [Driver] 
-    @paginate(scopes: ["fleet", "search", "title", "cabStatus", "getLatest"])
+  drivers(fleet_id: ID, searchFor: String, searchQuery: String, title: String, cabStatus: String, approved: Boolean): [Driver] 
+    @paginate(scopes: ["approved", "fleet", "search", "title", "cabStatus", "getLatest"])
 
   # Fleet
   fleets: [Fleet] @all

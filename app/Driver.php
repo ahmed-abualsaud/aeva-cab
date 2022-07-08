@@ -156,6 +156,14 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
+    public function scopeApproved($query, $args) 
+    {
+        if (array_key_exists('approved', $args) && !is_null($args['approved'])) {
+            $query = $query->where('approved', $args['approved']);
+        }
+        return $query;
+    }
+
     public function scopeGetLatest($query, $args) 
     {
         return $query->latest();
