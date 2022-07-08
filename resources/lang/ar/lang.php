@@ -133,7 +133,7 @@ return [
 
     'schedule_request_failed' => 'فشل جدولة الطلب',
     'search_request_failed' => 'فشل عملية البحث',
-    'request_inprogress' => 'الطلب قيد التنفيذ',
+    'request_inprogress' => 'هناك طلب قيد التنفيذ',
     'request_drivers_failed' => 'فشل ارسال الطلب للسائقين',
     'unavailable_car_type' => 'نوع السيارة غير متاح',
     'no_available_drivers' => 'لا يوجد سائق متاح',
@@ -162,4 +162,5 @@ return [
     'ride_completed' => 'تم اكمال الرحلة',
     'ride_completed_body' => 'تم اكمال الرحلة بنجاح',
     'request_already_accepted_by_another_driver' => 'تم قبول الرحلة بواسطة سائق اخر',
+    'update_status_failed' => 'لا يمكن تحديث حالتك, هناك رحلة جارية الان يجب أكمالها أولا',
 ];
