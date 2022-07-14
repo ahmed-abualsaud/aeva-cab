@@ -46,6 +46,7 @@ class TaskTakeDatabaseBackup extends Command
         $dbName = config('custom.db_name');
         $dbUser = config('custom.db_user');
         $dbPass = config('custom.db_pass');
+        $dbHost = config('custom.db_host');
         $dbPath = config('custom.db_backup_path');
 
 
@@ -57,11 +58,13 @@ class TaskTakeDatabaseBackup extends Command
             $dbPath .= '/';
         }
 
+        system('rm '.$dbPath.'backup_*.sql');
+
         $fileName = 'backup_'.date('Y-m-dTH:i:s').'.sql';
 
         $dbPath .= $fileName;
 
-        $executeCmd = 'mysqldump -u'.$dbUser.' -p'.$dbPass.' '.$dbName.' -r '.$dbPath;
+        $executeCmd = 'mysqldump --single-transaction --flush-logs --delete-source-logs -h '.$dbHost.' -u'.$dbUser.' -p'.$dbPass.' '.$dbName.' -r '.$dbPath;
 
         system($executeCmd);
 
