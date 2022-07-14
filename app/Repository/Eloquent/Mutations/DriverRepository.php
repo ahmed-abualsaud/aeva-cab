@@ -15,15 +15,11 @@ use App\Traits\HandleUpload;
 use App\Traits\HandleAccessTokenCache;
 
 use App\Exceptions\CustomException;
-use App\Events\DriverLocationUpdated;
 
 use Vinkla\Hashids\Facades\Hashids;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
-use Aeva\Cab\Domain\Models\CabRequestEntry;
 
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Mutations\DriverRepositoryInterface;
@@ -153,21 +149,6 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         $driver->update($input);
-
-        if ((array_key_exists('latitude', $args) && $args['latitude']) &&
-        (array_key_exists('longitude', $args) && $args['longitude'])) {
-
-            if (array_key_exists('request_id', $args) && $args['request_id']) {
-                $input = Arr::only($args, ['request_id', 'latitude', 'longitude']);
-                $input['distance'] = CabRequestEntry::calculateDistance($args);
-                CabRequestEntry::create($input);
-            }
-
-            broadcast(new DriverLocationUpdated($args['id'], [
-                'lat' => $args['latitude'], 
-                'lng' => $args['longitude']
-            ]));
-        }
 
         return $driver;
     }
