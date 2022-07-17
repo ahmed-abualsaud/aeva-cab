@@ -46,7 +46,7 @@ class Vehicle extends Model
     {
         return $query->whereIn('id', DriverVehicle::getIds($args))
                     ->where(function ($query) {
-                        $query->whereNull(['license_plate', 'car_model_id', 'car_make_id'])
+                        $query->whereNull(['license_plate', 'car_type_id', 'car_model_id', 'car_make_id'])
                             ->orWhere('approved', false);
                     });
     }
@@ -54,14 +54,14 @@ class Vehicle extends Model
     public function scopeAssigned($query, $args) 
     {
         return $query->whereIn('id', DriverVehicle::getIds($args))
-                     ->whereNotNull(['license_plate', 'car_model_id', 'car_make_id'])
+                     ->whereNotNull(['license_plate', 'car_type_id', 'car_model_id', 'car_make_id'])
                      ->where('approved', true);
     }
 
     public function scopeNotAssigned($query, $args) 
     {
         return $query->whereNotIn('id', DriverVehicle::getIds($args))
-                     ->whereNotNull(['license_plate', 'car_model_id', 'car_make_id'])
+                     ->whereNotNull(['license_plate', 'car_type_id', 'car_model_id', 'car_make_id'])
                      ->where('approved', true);
     }
 
