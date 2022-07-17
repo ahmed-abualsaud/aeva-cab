@@ -26,7 +26,7 @@ class CabRequestController
 
         try {
             User::findOrFail($user_id);
-            $data = CabRequest::live($user_id)->first();
+            $data = CabRequest::wherePending($user_id)->first();
             $response = [
                 'success' => true,
                 'data' => $data,
