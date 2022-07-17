@@ -59,6 +59,10 @@ class DocumentRepository extends BaseRepository
             if (array_key_exists('name', $args) && !$input['name']) {
                 $input['name'] = $file->getClientOriginalName();
             }
+
+            if ($document->name == 'صورة السيارة') {
+                Vehicle::where('id', $document->documentable_id)->update(['photo' => $url]);
+            }
         }
 
         $document->update($input);
