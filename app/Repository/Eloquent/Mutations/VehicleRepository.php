@@ -86,7 +86,7 @@ class VehicleRepository extends BaseRepository
 
         $vehicle->update($input);
 
-        if (!($vehicle->license_plate && $vehicle->car_make_id && $vehicle->car_model_id)) {
+        if (!($vehicle->license_plate && $vehicle->car_make_id && $vehicle->car_model_id && $vehicle->car_type_id)) {
             $vehicle->update(['approved' => false]);
         }
 
