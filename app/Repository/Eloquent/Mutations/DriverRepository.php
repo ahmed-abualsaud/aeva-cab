@@ -24,10 +24,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Repository\Eloquent\BaseRepository;
 use App\Repository\Mutations\DriverRepositoryInterface;
 
-use Illuminate\Support\Arr;
-use App\Events\DriverLocationUpdated;
-use Aeva\Cab\Domain\Models\CabRequestEntry;
-
 class DriverRepository extends BaseRepository implements DriverRepositoryInterface
 {
     use HandleUpload;
@@ -153,21 +149,6 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         $driver->update($input);
-
-        if ((array_key_exists('latitude', $args) && $args['latitude']) &&
-        (array_key_exists('longitude', $args) && $args['longitude'])) {
-
-            if (array_key_exists('request_id', $args) && $args['request_id']) {
-                $input = Arr::only($args, ['request_id', 'latitude', 'longitude']);
-                $input['distance'] = CabRequestEntry::calculateDistance($args);
-                CabRequestEntry::create($input);
-            }
-
-            broadcast(new DriverLocationUpdated($args['id'], [
-                'lat' => $args['latitude'], 
-                'lng' => $args['longitude']
-            ]));
-        }
 
         return $driver;
     }
