@@ -180,11 +180,6 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             throw new \Exception(__('lang.driver_not_found'));
         }
 
-        $token = $this->getCachedToken('driver', $driver->id);
-        if ($token) {
-            $this->invalidateToken('driver', $token);
-        }
-
         $credentials["phone"] = $args['phone'];
         $credentials["password"] = $args['password'];
 
@@ -219,6 +214,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         {
             $driver->update(['device_id' => $args['device_id']]);
         }
+
+        $this->handleAccessTokenCache('driver', $driver, $token);
 
         return [
             'access_token' => $token,
