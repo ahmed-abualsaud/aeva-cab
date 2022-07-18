@@ -65,7 +65,17 @@ class CabRequestTransactionRepository extends BaseRepository
         if ($args['payment_method'] == 'Cash' && str_contains($payment_method, 'cash')) {
             $refund = $this->cashPay($args, $request);
             $request->update(['status' => 'Completed', 'paid' => true]);
-            $trx = $this->model->create($input);
+
+            if ($refund > 0) {
+                $input['costs'] = $request->costs;
+                $trx = $this->model->create($input);
+                $input['costs'] = $refund;
+                $input['payment_method'] = 'Refund';
+                $this->model->create($input);
+            } else { 
+                $trx = $this->model->create($input); 
+            } 
+
             $trx->debt = 0;
             $socket_request = $request->toArray();
             $socket_request['refund'] = $refund;
