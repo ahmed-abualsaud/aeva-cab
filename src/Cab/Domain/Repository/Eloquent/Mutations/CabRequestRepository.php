@@ -351,7 +351,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request = $this->findRequest($args['id']);
         $args['cancelled_by'] = strtolower($args['cancelled_by']);
 
-        if ($request->status == 'Sending') {
+        if ($request->status == 'Sending' && strtolower($args['cancelled_by']) == 'user') {
             $drivers = $request->history['searching']['result']['drivers'];
             $drivers_ids = Arr::pluck($drivers, 'driver_id');
             broadcast(new DismissCabRequest($drivers_ids));

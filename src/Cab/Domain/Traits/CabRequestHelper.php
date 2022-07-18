@@ -289,7 +289,7 @@ trait CabRequestHelper
 
     public function cashout($args) 
     {
-        $url = 'http://45.76.88.186/backend/api/v1/aevacab/cashout';
+        $url = 'http://165.227.124.123/backend/api/v1/aevacab/cashout';
         return Http::withHeaders([
             'x-access-token' => $this->getXAccessToken()
         ])
@@ -301,7 +301,7 @@ trait CabRequestHelper
 
     protected function getXAccessToken()
     {
-        $response = Http::post('http://45.76.88.186/backend/api/users/confirm', [
+        $response = Http::post('http://165.227.124.123/backend/api/users/confirm', [
             'phone'=> '01286308351',
             'passcode'=> '000000'
         ])
