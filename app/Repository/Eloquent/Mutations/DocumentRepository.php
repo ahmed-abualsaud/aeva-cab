@@ -126,7 +126,7 @@ class DocumentRepository extends BaseRepository
                 ->where('status', 'Approved')
                 ->count();
 
-            if ($approvedDocs >= 4) {
+            if ($approvedDocs == 4) {
                 return Vehicle::where('id', $document->documentable_id)
                     ->whereNotNull(['license_plate', 'car_type_id', 'car_model_id', 'car_make_id'])
                     ->update(['approved' => true]);
@@ -153,7 +153,7 @@ class DocumentRepository extends BaseRepository
                 ->where('status', 'Approved')
                 ->count();
 
-            if ($approvedDocs >= 6) {
+            if ($approvedDocs == 6) {
                 return Driver::where('id', $document->documentable_id)->update(['approved' => true]);
             } 
             return Driver::where('id', $document->documentable_id)->update(['approved' => false]);

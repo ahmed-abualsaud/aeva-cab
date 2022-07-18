@@ -20,6 +20,7 @@ use Aeva\Cab\Domain\Traits\CabRequestHelper;
 use Aeva\Cab\Domain\Traits\HandleDeviceTokens;
 
 use Aeva\Cab\Domain\Events\AcceptCabRequest;
+use Aeva\Cab\Domain\Events\DismissCabRequest;
 use Aeva\Cab\Domain\Events\CabRequestCancelled;
 use Aeva\Cab\Domain\Events\CabRequestStatusChanged;
 
@@ -211,6 +212,19 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         broadcast(new CabRequestStatusChanged($request->toArray()));
 
+        $drivers = $request->history['searching']['result']['drivers'];
+        $drivers_ids = Arr::pluck($drivers, 'driver_id');
+
+        $count = count($drivers_ids);
+        for ($i = 0; $i < $count; $i++) {
+            if ($drivers_ids[$i] == $args['driver_id']) {
+                $drivers_ids[$i] = null;
+                break;
+            }
+        }
+
+        broadcast(new DismissCabRequest($drivers_ids));
+
         return $request;
     }
 
@@ -337,6 +351,12 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request = $this->findRequest($args['id']);
         $args['cancelled_by'] = strtolower($args['cancelled_by']);
 
+        if ($request->status == 'Sending') {
+            $drivers = $request->history['searching']['result']['drivers'];
+            $drivers_ids = Arr::pluck($drivers, 'driver_id');
+            broadcast(new DismissCabRequest($drivers_ids));
+        }
+
         if ( $request->status == 'Cancelled' ) {
             throw new CustomException(__('lang.request_already_cancelled'));
         }
@@ -404,8 +424,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $socketRequest = clone $request;
         $socketRequest->status = 'Cancelled';
-        broadcast(new CabRequestCancelled($args['cancelled_by'], $socketRequest));
 
+        broadcast(new CabRequestCancelled($args['cancelled_by'], $socketRequest));
         return $request;
     }
 
@@ -611,8 +631,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $input = Arr::except($args, ['directive', 'distance', 'duration']);
 
-        if ($args['user_id'] == 0 || is_null($args['user_id'])) {
-            throw new CustomException("Invalid user id");
+        if ($args['user_id'] == 0 || is_null($args['user_id']) || !User::where('id', $args['user_id'])->exists()) {
+            throw new CustomException(__('lang.user_not_found'));
         }
 
         $active_requests = $this->model->wherePending($args['user_id'])->first();

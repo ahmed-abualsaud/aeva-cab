@@ -41,3 +41,23 @@ environments:
             - 'npm ci && npm run dev && rm -rf node_modules'
         deploy:
             - 'php artisan lighthouse:clear-cache'
+    uat:
+        memory: 1024
+        cli-memory: 512
+        queue-memory: 1024
+        queue-timeout: 300
+        queue-concurrency: 300
+        runtime: 'php-8.1:al2'
+        cache: mobility-cache
+        storage: aeva-mobility
+        database: mobility-uat-db
+        domain: cab-uat.aevapay.net
+        queues:
+            - uat-high
+            - uat-low
+        build:
+            - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install'
+            - 'php artisan event:cache'
+            - 'npm ci && npm run dev && rm -rf node_modules'
+        deploy:
+            - 'php artisan lighthouse:clear-cache'
