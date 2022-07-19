@@ -28,4 +28,10 @@ return [
     'aevapay_staging_server_key' => env('AEVAPAY_STAGING_SERVER_KEY', '$2y$10$PoO5Gfl4PAezsMeI0LPbKul5Kes4Ee06pIGGsMVV36Zy6BXne/Lom'),
     'aevacab_staging_server_key' => env('AEVACAB_STAGING_SERVER_KEY', '!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ'),
     'aevacab_production_server_key' => env('AEVACAB_STAGING_SERVER_KEY', '!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ'),
+
+    'credit_go_staging_server_domain'=> env('CREDIT_GO_URL','https://creditgo.app/api/'), 
+    'credit_go_phone'=> env('CREDIT_GO_PHONE','01000000099'), 
+    'credit_go_pin_code' => env('CREDIT_GO_PIN_CODE','0000'),
+
+    'default_verification_code' => env('DEFAULT_VERIFICATION_CODE', 6254),
 ];
