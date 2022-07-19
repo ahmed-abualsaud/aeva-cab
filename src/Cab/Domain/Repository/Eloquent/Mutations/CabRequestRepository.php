@@ -191,7 +191,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $payload = [
             'accepted' => [
                 'at' => date("Y-m-d H:i:s"),
-                'driver' => Driver::find($args['driver_id']),
+                'driver' => Driver::with('stats')->find($args['driver_id']),
                 'vehicle' => $vehicle[0]
             ]
         ];
