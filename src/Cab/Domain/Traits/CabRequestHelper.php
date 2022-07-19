@@ -80,21 +80,19 @@ trait CabRequestHelper
     protected function applyCancelFees($cancelled_by, $request) 
     {
         if ($request->status == 'Arrived' && $cancelled_by == 'user') {
-            $this->flushCancelFees($request);
+            $this->flushCancelFees();
         }
 
         if ($request->status == 'Arrived' && $cancelled_by == 'driver') {
             if ((time() - strtotime($request->history['arrived']['at'])) >= $this->settings('Waiting Time')) {
-                $this->flushCancelFees($request);
+                $this->flushCancelFees();
             }
         }
     }
 
-    protected function flushCancelFees($request)
+    protected function flushCancelFees()
     {
-        $cancel_fees = CarType::select('cancel_fees')
-                ->where('name', $request->history['sending']['chosen_car_type'])
-                ->first()->cancel_fees;
+        $cancel_fees = $this->settings('Cancelation Fees');
         
         $this->pay([
             'user_id' => $request->user_id,
@@ -166,10 +164,11 @@ trait CabRequestHelper
             return collect($carTypes)->keyBy('id')->toArray();
         }
 
-        if ($waiting_time >= $this->settings('Waiting Time')) {
+        $actual_waiting_time = $this->settings('Waiting Time');
+        if ($waiting_time >= $actual_waiting_time) {
             $fees = CarType::selectRaw(
                 'CEILING(base_fare  + ((distance_price * ?) / 1000) + ((duration_price * surge_factor * ?) / 60) + (waiting_fees * ? / 60)) as costs, min_fees'
-                , [$distance, $duration, ($waiting_time - 299)])
+                , [$distance, $duration, ($waiting_time - $actual_waiting_time - 1)])
                 ->where('id', $carTypeId)->first();
         } else {
             $fees = CarType::selectRaw(
