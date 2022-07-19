@@ -63,6 +63,10 @@ class DocumentRepository extends BaseRepository
             if ($document->name == 'صورة السيارة') {
                 Vehicle::where('id', $document->documentable_id)->update(['photo' => $url]);
             }
+
+            if ($document->name == 'الصورة الشخصية') {
+                Driver::where('id', $document->documentable_id)->update(['avatar' => $url]);
+            }
         }
 
         $document->update($input);
