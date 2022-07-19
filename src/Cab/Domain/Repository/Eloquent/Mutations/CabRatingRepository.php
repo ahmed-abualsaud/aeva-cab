@@ -5,6 +5,7 @@ namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 use App\DriverStats;
 
 use Aeva\Cab\Domain\Models\CabRating;
+use Aeva\Cab\Domain\Models\CabRequest;
 
 use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 
@@ -26,6 +27,7 @@ class CabRatingRepository extends BaseRepository
         if (array_key_exists('request_id', $args) && $args['request_id'] != null) 
         {
             $rating = $this->model->where('request_id', $args['request_id']);
+            CabRequest::where('id', $args['request_id'])->update(['rated' => true]);
         }
 
         if (array_key_exists('user_id', $args) && $args['user_id'] != null &&
