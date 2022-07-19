@@ -22,7 +22,7 @@ class CreateVehiclesTable extends Migration
             $table->date('license_expires_on')->nullable();
             $table->string('color')->nullable();
             $table->year('year')->nullable();
-            $table->unsignedSmallInteger('seats')->nullable();
+            $table->unsignedSmallInteger('seats')->default(4);
             $table->string('photo')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
             $table->unsignedBigInteger('terminal_id')->nullable();
