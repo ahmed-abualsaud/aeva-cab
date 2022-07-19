@@ -80,17 +80,17 @@ trait CabRequestHelper
     protected function applyCancelFees($cancelled_by, $request) 
     {
         if ($request->status == 'Arrived' && $cancelled_by == 'user') {
-            $this->flushCancelFees();
+            $this->flushCancelFees($request);
         }
 
         if ($request->status == 'Arrived' && $cancelled_by == 'driver') {
             if ((time() - strtotime($request->history['arrived']['at'])) >= $this->settings('Waiting Time')) {
-                $this->flushCancelFees();
+                $this->flushCancelFees($request);
             }
         }
     }
 
-    protected function flushCancelFees()
+    protected function flushCancelFees($request)
     {
         $cancel_fees = $this->settings('Cancelation Fees');
         
