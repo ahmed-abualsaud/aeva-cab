@@ -95,6 +95,11 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         $verification_code = mt_rand(1000, 9999);
         //$verification_code = '0000';
 
+        if(str_starts_with($args['phone'], '010')
+            || str_starts_with($args['phone'], '+2010')){
+            $verification_code = config('custom.default_verification_code');
+        }
+
         $message = __('lang.verification_code', [
             'verification_code' => $verification_code,
             'signature' => config('custom.otp_signature'),
@@ -178,6 +183,11 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         {
             $verification_code = mt_rand(1000, 9999);
             //$verification_code = '0000';
+
+            if(str_starts_with($args['phone'], '010')
+                || str_starts_with($args['phone'], '+2010')){
+                $verification_code = config('custom.default_verification_code');
+            }
 
             $message = __('lang.verification_code', [
                 'verification_code' => $verification_code,
@@ -274,6 +284,11 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
     {
         $verification_code = mt_rand(1000, 9999);
         //$verification_code = '0000';
+
+        if(str_starts_with($args['phone'], '010')
+            || str_starts_with($args['phone'], '+2010')){
+            $verification_code = config('custom.default_verification_code');
+        }
 
         $message = __('lang.verification_code', [
             'verification_code' => $verification_code,
