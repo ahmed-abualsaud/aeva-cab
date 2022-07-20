@@ -25,13 +25,21 @@ return [
 
     'aevapay_staging_server_domain' => env('AEVAPAY_STAGING_SERVER_DOMAIN', 'staging.aevapay.net'),
     'aevapay_production_server_domain' => env('AEVAPAY_PRODUCTION_SERVER_DOMAIN', 'production.aevapay.net'),
+    
     'aevapay_staging_server_key' => env('AEVAPAY_STAGING_SERVER_KEY', '$2y$10$PoO5Gfl4PAezsMeI0LPbKul5Kes4Ee06pIGGsMVV36Zy6BXne/Lom'),
+    'aevapay_production_server_key' => env('AEVAPAY_PRODUCTION_SERVER_KEY', '$2y$10$PoO5Gfl4PAezsMeI0LPbKul5Kes4Ee06pIGGsMVV36Zy6BXne/Lom'),
+    
     'aevacab_staging_server_key' => env('AEVACAB_STAGING_SERVER_KEY', '!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ'),
-    'aevacab_production_server_key' => env('AEVACAB_STAGING_SERVER_KEY', '!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ'),
+    'aevacab_production_server_key' => env('AEVACAB_PRODUCTION_SERVER_KEY', '!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ'),
 
-    'credit_go_staging_server_domain'=> env('CREDIT_GO_URL','https://creditgo.app/api/'), 
-    'credit_go_phone'=> env('CREDIT_GO_PHONE','01000000099'), 
-    'credit_go_pin_code' => env('CREDIT_GO_PIN_CODE','0000'),
+    'credit_go_staging_server_domain'=> env('CREDIT_GO_STAGING_SERVER_DOMAIN','165.227.124.123'), 
+    'credit_go_production_server_domain'=> env('CREDIT_GO_PRODUCTION_SERVER_DOMAIN','creditgo.app'), 
+    
+    'credit_go_staging_phone'=> env('CREDIT_GO_STAGING_SERVER_PHONE','01286308351'), 
+    'credit_go_production_phone'=> env('CREDIT_GO_PRODUCTION_SERVER_PHONE','01126999840'), 
+    
+    'credit_go_staging_pass_code' => env('CREDIT_GO_STAGING_SERVER_PIN_CODE','000000'),
+    'credit_go_production_pass_code' => env('CREDIT_GO_PRODUCTION_SERVER_PIN_CODE','246810'),
 
     'default_verification_code' => env('DEFAULT_VERIFICATION_CODE', 6254),
 ];

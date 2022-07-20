@@ -288,7 +288,7 @@ trait CabRequestHelper
 
     public function cashout($args) 
     {
-        $url = 'http://165.227.124.123/backend/api/v1/aevacab/cashout';
+        $url = 'http://'.config('custom.credit_go_staging_server_domain').'/backend/api/v1/aevacab/cashout';
         return Http::withHeaders([
             'x-access-token' => $this->getXAccessToken()
         ])
@@ -300,9 +300,9 @@ trait CabRequestHelper
 
     protected function getXAccessToken()
     {
-        $response = Http::post('http://165.227.124.123/backend/api/users/confirm', [
-            'phone'=> '01286308351',
-            'passcode'=> '000000'
+        $response = Http::post('http://'.config('custom.credit_go_staging_server_domain').'/backend/api/users/confirm', [
+            'phone'=> config('custom.credit_go_staging_phone'),
+            'passcode'=> config('custom.credit_go_staging_pass_code')
         ])
         ->throw();
         return $response['token'];
