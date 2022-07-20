@@ -213,7 +213,7 @@ trait CabRequestHelper
             ->having('distance', '<=', $radius)
             ->where('cab_status', 'Online')
             ->orderBy('distance','asc')
-            ->take(5)
+            ->take(15)
             ->get();
         
         return $drivers;
