@@ -16,7 +16,8 @@ class CreateCabRequestEntriesTable extends Migration
         Schema::create('cab_request_entries', function (Blueprint $table) {
             $table->unsignedBigInteger('request_id');
             $table->double('latitude', 15, 8);
-            $table->double('longitude', 15, 8); 
+            $table->double('longitude', 15, 8);
+            $table->text('path', 200000);
             $table->double('distance', 15, 2)->default(0); 
             $table->timestamp('created_at')->useCurrent();
 

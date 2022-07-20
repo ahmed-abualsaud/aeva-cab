@@ -17,18 +17,13 @@ class CabRequestEntry extends Model
         return  self::where('request_id', $request_id)->latest()->first();
     }
 
-    public static function removeEntriesAndBuildMapURL($request_id)
+    public static function buildMapURL($request_id)
     {
-        $locations = self::select('latitude', 'longitude')
-                ->where('request_id', $request_id)
-                ->get();
+        $path = self::select('path')->where('request_id', $request_id)->first();
 
-        if ($locations->isNotEmpty()) {
-            foreach($locations as $loc) {
-                $path[] = $loc->latitude.','.$loc->longitude;
-            }
+        if ($path) {
             self::where('request_id', $request_id)->delete();
-            return ResizableMapUrl::generatePath(implode('|', $path));
+            return ResizableMapUrl::generatePath($path->path);
         }
         return null;
     }
