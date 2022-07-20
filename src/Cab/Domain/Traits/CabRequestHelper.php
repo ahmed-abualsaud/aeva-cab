@@ -273,7 +273,7 @@ trait CabRequestHelper
 
     public function pay($args) 
     {
-        $url = 'https://'.config('custom.aevapay_staging_server_domain').'/api/v1/aevacab-in/pay';
+        $url = 'https://'.config('custom.aevapay_production_server_domain').'/api/v1/aevacab-in/pay';
         return Http::withHeaders([
             'x-api-key' => $this->getXAPIKey($args['user_id'])
         ])
@@ -288,7 +288,7 @@ trait CabRequestHelper
 
     public function cashout($args) 
     {
-        $url = 'http://165.227.124.123/backend/api/v1/aevacab/cashout';
+        $url = 'https://'.config('custom.credit_go_production_server_domain').'/api/v1/aevacab/cashout';
         return Http::withHeaders([
             'x-access-token' => $this->getXAccessToken()
         ])
@@ -300,9 +300,9 @@ trait CabRequestHelper
 
     protected function getXAccessToken()
     {
-        $response = Http::post('http://165.227.124.123/backend/api/users/confirm', [
-            'phone'=> '01286308351',
-            'passcode'=> '000000'
+        $response = Http::post('https://'.config('custom.credit_go_production_server_domain').'/api/users/confirm', [
+            'phone'=> config('custom.credit_go_production_phone'),
+            'passcode'=> config('custom.credit_go_production_pass_code')
         ])
         ->throw();
         return $response['token'];
@@ -310,7 +310,7 @@ trait CabRequestHelper
 
     protected function getXAPIKey($input)
     {
-        $server_key = config('custom.aevapay_staging_server_key');
+        $server_key = config('custom.aevapay_production_server_key');
         $str = $server_key.$input;
         $hashed_str = hash("sha256",$str,true);
         return base64_encode($hashed_str);
