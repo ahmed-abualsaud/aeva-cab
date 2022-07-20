@@ -328,7 +328,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $args['status'] = 'Ended';
         $args['history'] = array_merge($request->history, $payload);
-        $args['map_url'] = CabRequestEntry::removeEntriesAndBuildMapURL($args['id']);
+        $args['map_url'] = CabRequestEntry::buildMapURL($args['id']);
 
         $request = $this->updateRequest($request, $args);
 
