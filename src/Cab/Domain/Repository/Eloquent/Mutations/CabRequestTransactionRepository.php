@@ -113,8 +113,14 @@ class CabRequestTransactionRepository extends BaseRepository
     {
         try {
             $driver = Driver::findOrFail($args['driver_id']);
-        } catch (ModelNotFoundException $e) {
+        } catch (\Exception $e) {
             throw new CustomException(__('lang.driver_not_found'));
+        }
+
+        $stats = DriverStats::where('driver_id', $args['driver_id'])->first();
+
+        if($stats->wallet < $args['amount']) {
+            throw new CustomException(__('lang.insufficient_balance'));
         }
 
         try {
@@ -122,13 +128,13 @@ class CabRequestTransactionRepository extends BaseRepository
                 'reference_number' => $args['reference_number']
             ]);
         } catch (\Exception $e) {
-            throw new CustomException($e->getMessage());
-        }
-
-        $stats = DriverStats::where('driver_id', $args['driver_id'])->first();
-
-        if($stats->wallet < $args['amount']) {
-            throw new CustomException(__('lang.insufficient_balance'));
+            $err_mesg = $e->getMessage();
+            $index = strpos($err_mesg, 'success');
+            if($index) {
+                $err_mesg = substr($err_mesg, $index - 2);
+                $err_mesg = json_decode($err_mesg);
+            }
+            throw new CustomException($err_mesg->message);
         }
 
         $cashout = $this->model->create([

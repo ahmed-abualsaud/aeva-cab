@@ -42,12 +42,12 @@ class CabRequestTransactionController
             ];
 
             return $response;
-       } catch (ModelNotFoundException $e) {
+       } catch (\Exception $e) {
             $response = [
                 'success' => false,
-                'message' => 'Not Found'
+                'message' => $e->getMessage()
             ];
-            return response()->json($response, 404);
+            return response()->json($response, 400);
        }
     }
 }
