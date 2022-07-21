@@ -67,6 +67,9 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $input['avatar'] = $url;
         }
 
+        $verification_code = mt_rand(1000, 9999);
+        $input['otp'] = $verification_code;
+
         $driver = $this->model->create($input);
 
         $wallet = 0;
@@ -91,14 +94,6 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
         auth('driver')->onceUsingId($driver->id);
         $driver->token = auth('driver')->fromUser($driver);
-
-        $verification_code = mt_rand(1000, 9999);
-        //$verification_code = '0000';
-
-        // if(str_starts_with($args['phone'], '010')
-        //     || str_starts_with($args['phone'], '+2010')){
-        //     $verification_code = config('custom.default_verification_code');
-        // }
 
         $message = __('lang.verification_code', [
             'verification_code' => $verification_code,
@@ -147,6 +142,10 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             throw new CustomException(__('lang.driver_not_found'));
         }
 
+        if (array_key_exists('phone', $args) && $args['phone'] && is_null($driver->phone)) {
+            $input['phone_verified_at'] = date('Y-m-d H:i:s');
+        }
+
         if (array_key_exists('avatar', $args) && $args['avatar']) {
             if ($driver->avatar) $this->deleteOneFile($driver->avatar, 'avatars');
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
@@ -182,12 +181,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         if (!$driver->phone_verified_at) 
         {
             $verification_code = mt_rand(1000, 9999);
-            //$verification_code = '0000';
-
-            // if(str_starts_with($args['phone'], '010')
-            //     || str_starts_with($args['phone'], '+2010')){
-            //     $verification_code = config('custom.default_verification_code');
-            // }
+            $driver->update(['otp' => $verification_code]);
 
             $message = __('lang.verification_code', [
                 'verification_code' => $verification_code,
@@ -282,22 +276,19 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
     public function phoneVerification(array $args)
     {
+        try {
+            $driver = $this->model->where('phone', $args['phone'])->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception(__('lang.driver_not_found'));
+        }
+        
         $verification_code = mt_rand(1000, 9999);
-        //$verification_code = '0000';
-
-        // if(str_starts_with($args['phone'], '010')
-        //     || str_starts_with($args['phone'], '+2010')){
-        //     $verification_code = config('custom.default_verification_code');
-        // }
+        $driver->update(['otp' => $verification_code]);
 
         $message = __('lang.verification_code', [
             'verification_code' => $verification_code,
             'signature' => config('custom.otp_signature'),
         ]);
-
-        if (!$this->model->where('phone', $args['phone'])->exists()) {
-                throw new CustomException( __('lang.driver_not_found'));        
-        }
 
         SendOtp::dispatch($args['phone'], $message);
 
