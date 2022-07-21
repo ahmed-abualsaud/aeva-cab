@@ -133,8 +133,9 @@ class CabRequestTransactionRepository extends BaseRepository
             if($index) {
                 $err_mesg = substr($err_mesg, $index - 2);
                 $err_mesg = json_decode($err_mesg);
+                $err_mesg = $err_mesg->message;
             }
-            throw new CustomException($err_mesg->message);
+            throw new CustomException($err_mesg);
         }
 
         $cashout = $this->model->create([
