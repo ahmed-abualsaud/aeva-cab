@@ -26,28 +26,24 @@ class CabRequestTransactionController
         ]);
 
         if ($validator->fails()) {
-            $response = [
+            return [
                 'success' => false,
                 'message' => $validator->errors()->first(),
             ];
-            return response()->json($response, 400);
         }
 
         try {
             $data = $this->cabRequestTransactionRepository->confirmCashout($req->all());
-            $response = [
+            return [
                 'success' => true,
                 'data' => $data,
                 'message' => 'Cashout Process Confirmed Successfully'
             ];
-
-            return $response;
        } catch (\Exception $e) {
-            $response = [
+            return [
                 'success' => false,
                 'message' => $e->getMessage()
             ];
-            return response()->json($response, 400);
        }
     }
 }
