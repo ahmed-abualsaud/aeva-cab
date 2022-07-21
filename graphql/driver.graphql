@@ -98,6 +98,7 @@ type Driver {
   secondary_phone: String
   title: String
   approved: Boolean
+  otp: String
 }
 
 input DriverPhoneVerificationInput {

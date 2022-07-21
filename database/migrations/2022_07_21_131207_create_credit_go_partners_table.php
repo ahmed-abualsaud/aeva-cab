@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePartnersTable extends Migration
+class CreateCreditGoPartnersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreatePartnersTable extends Migration
      */
     public function up()
     {
-        Schema::create('partners', function (Blueprint $table) {
+        Schema::create('credit_go_partners', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
             $table->string('shop_name');
             $table->string('address');
-            $table->string('phone');
+            $table->string('phone')->unique();
             $table->string('area')->nullable();
             $table->double('lat', 15, 8)->nullable();
             $table->double('lng', 15, 8)->nullable();
@@ -34,6 +34,6 @@ class CreatePartnersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('partners');
+        Schema::dropIfExists('credit_go_partners');
     }
 }

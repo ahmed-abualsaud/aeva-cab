@@ -24,10 +24,6 @@ type Mutation {
   driverPhoneVerification(input: DriverPhoneVerificationInput! @spread): DriverPhoneVerifyPayload!
     @field(resolver: "DriverResolver@phoneVerification")
 
-  # Partner Auth
-  partnerLogin(input: LoginInput! @spread): PartnerAuthPayload! 
-    @field(resolver: "PartnerResolver@login")
-
   # Manager Auth
   managerLogin(input: LoginInput! @spread): ManagerAuthPayload! 
     @field(resolver: "ManagerResolver@login")
@@ -91,22 +87,9 @@ extend type Mutation @guard(with: ["admin"]) {
 
 
   # Partner
-  createPartner(input: CreatePartnerInput! @spread): Partner
-    @field(resolver: "PartnerResolver@create")
-  deletePartner(id: ID!): Partner
-    @field(resolver: "PartnerResolver@destroy")
-
-  # Partner User
-  createPartnerUser(input: PartnerUserInput! @spread): DefaultResponse
-    @field(resolver: "PartnerResolver@assignUser")
-  deletePartnerUser(input: PartnerUserInput! @spread): DefaultResponse
-    @field(resolver: "PartnerResolver@unassignUser")
-
-  # Partner Driver
-  createPartnerDriver(input: PartnerDriverInput! @spread): DefaultResponse
-    @field(resolver: "PartnerResolver@assignDriver")
-  deletePartnerDriver(input: PartnerDriverInput! @spread): DefaultResponse
-    @field(resolver: "PartnerResolver@unassignDriver")
+  createPartner(input: CreatePartnerInput! @spread): Partner @create
+  updatePartner(input: UpdatePartnerInput! @spread): Partner @update
+  deletePartner(id: ID!): Partner @delete
 
   # Business Trip Request
   createBusinessTripFromRequest(input: CreateBusinessTripFromRequestInput! @spread): Boolean 
@@ -174,12 +157,6 @@ extend type Mutation @guard(with: ["admin", "partner", "manager"]) {
     @field(resolver: "UserResolver@createMultipleUsers")
   deleteUser(id: [ID!]!): Boolean
     @field(resolver: "UserResolver@destroy")
-
-  # Partner
-  changePartnerPassword(input: ChangePasswordInput @spread): PartnerAuthPayload 
-    @field(resolver: "PartnerResolver@updatePassword")
-  updatePartner(input: UpdatePartnerInput! @spread): Partner 
-    @field(resolver: "PartnerResolver@update")
 
   # Manager
   createManager(input: CreateManagerInput! @spread): Manager
@@ -478,12 +455,6 @@ extend type Query @guard(with: ["admin"]) {
   ondemandRequestsStats(status: String period: String): OndemandRequestStats
     @field(resolver: "OndemandRequestResolver@stats")
 
-  # Partner
-  partners(type: String): [Partner] @all(scopes: ["ofType"])
-
-  # Partner Driver
-  partnerNotAssignedDrivers(partner_id: ID!, searchFor: String, searchQuery: String): [Driver] 
-    @paginate(scopes: ["notAssigned", "search", "getLatest"])
 
   # To School
   allSchools(searchFor: String, searchQuery: String): [School] 
@@ -506,12 +477,6 @@ extend type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["archived", "period", "search"])
 }
 
-# Partner Guard
-extend type Query @guard(with: ["partner"]) {
-  # Authenticated Partner
-  authPartner: Partner @auth
-}
-
 # Manager Guard
 extend type Query @guard(with: ["manager"]) {
   # Authenticated Manager
@@ -532,21 +497,9 @@ extend type Query @guard(with: ["driver"]) {
 
 # Admin,Partner,Manager Guard
 extend type Query @guard(with: ["admin", "partner", "manager"]) {
-  # Partner User
-  partnerAssignedUsers(partner_id: ID!, searchFor: String, searchQuery: String): [User] 
-    @paginate(scopes: ["assigned", "search"], defaultCount: 50)
-  partnerNotAssignedUsers(partner_id: ID!, searchFor: String, searchQuery: String): [User] 
-    @paginate(scopes: ["notAssigned", "search"], defaultCount: 50)
-
-  # Partner
-  partner(id: ID @eq): Partner @findOrFail
 
   # Manager
   managers(partner_id: ID): [Manager] @all(scopes: ["partner"])
-
-  # Partner Driver 
-  partnerAssignedDrivers(partner_id: ID!): [Driver] 
-    @all(scopes: ["assigned", "getLatest"])
 
   # Driver Vehicle
   driverPendingVehicles(driver_id: ID!): [Vehicle] 
@@ -695,6 +648,10 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user"]) {
 
 # Admin,Partner,Manager,Driver Guard
 extend type Query @guard(with: ["admin", "partner", "manager", "driver"]) {
+  # Partner
+  partner(id: ID @eq): Partner @findOrFail
+  partners(searchFor: String, searchQuery: String): [Partner] @paginate(scopes: ["search"], defaultCount: 50)
+
   # Business Trip Attendance
   businessTripAttendance(trip_id: ID!, date: String): [BusinessTripAttendance]
     @field(resolver: "BusinessTripAttendanceResolver")

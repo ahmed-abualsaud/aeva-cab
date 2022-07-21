@@ -1,28 +1,22 @@
 input CreatePartnerInput {
   name: String! @rules(apply: ["required"])
-  email: String @rules(apply: ["email", "unique:partners,email"])
-  phone1: String! @rules(apply: ["required", "unique:partners,phone1"])
-  phone2: String
-  classification: String
-  logo: Upload
-  type: String! @rules(apply: ["in:PLAYGROUND,TOSCHOOL,TOWORK,SEATS"])
-  license_expires_on: String
-  paymob_id: ID
-  create_telescope_account: Boolean
+  shop_name: String! @rules(apply: ["required"])
+  address: String! @rules(apply: ["required"])
+  phone: String! @rules(apply: ["required"])
+  area: String
+  lat: Float
+  lng: Float
 }
 
 input UpdatePartnerInput @validator {
   id: ID
   name: String
-  email: String
-  classification: String
-  size: String
-  phone1: String
-  phone2: String
-  logo: Upload
-  license_expires_on: String
-  paymob_id: ID
-  telescope_id: ID
+  shop_name: String
+  address: String
+  phone: String
+  area: String
+  lat: Float
+  lng: Float
 }
 
 input PartnerDriverInput {
@@ -43,18 +37,10 @@ type PartnerAuthPayload {
 type Partner {
   id: ID
   name: String
-  email: String
-  classification: String
-  phone1: String
-  phone2: String
-  logo: String
-  license_expires_on: String
-  paymob_id: ID
-  telescope_id: ID
-  type: String
-  users: [User] @hasMany
-  drivers: [Driver] @belongsToMany
-  documents: [Document] @morphMany
-  created_at: String
-  updated_at: String
+  shop_name: String
+  address: String
+  phone: String
+  area: String
+  lat: Float
+  lng: Float
 }

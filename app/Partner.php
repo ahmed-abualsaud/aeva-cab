@@ -4,6 +4,8 @@ namespace App;
  
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
+use App\Traits\Searchable;
+
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,9 +15,12 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
 class Partner extends Authenticatable implements JWTSubject
 {
     use Notifiable;
+    use Searchable;
     use SoftDeletes;
 
     protected $guarded = [];
+
+    protected $table = 'credit_go_partners';
 
     protected $hidden = ['password'];
 
@@ -90,5 +95,12 @@ class Partner extends Authenticatable implements JWTSubject
         return $query->select('paymob_id')
             ->find($id)
             ->paymob_id;
+    }
+
+    public function scopeSearch($query, $args) 
+    {   
+        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+            $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
+        }
     }
 }
