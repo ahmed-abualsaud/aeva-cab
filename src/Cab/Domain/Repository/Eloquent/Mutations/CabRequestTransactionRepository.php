@@ -128,14 +128,7 @@ class CabRequestTransactionRepository extends BaseRepository
                 'reference_number' => $args['reference_number']
             ]);
         } catch (\Exception $e) {
-            $err_mesg = $e->getMessage();
-            $index = strpos($err_mesg, 'success');
-            if($index) {
-                $err_mesg = substr($err_mesg, $index - 2);
-                $err_mesg = json_decode($err_mesg);
-                $err_mesg = $err_mesg->message;
-            }
-            throw new CustomException($err_mesg);
+            throw new CustomException($this->parseErrorMessage($e->getMessage(), 'success'));
         }
 
         $cashout = $this->model->create([
@@ -191,12 +184,16 @@ class CabRequestTransactionRepository extends BaseRepository
             }
         }
 
-        $this->pay([
-            'user_id' => $user_id,
-            'amount' => $paid,
-            'type' => $type,
-            'uuid' => $uuid
-        ]);
+        try {
+            $this->pay([
+                'user_id' => $user_id,
+                'amount' => $paid,
+                'type' => $type,
+                'uuid' => $uuid
+            ]);
+        } catch (\Exception $e) {
+            throw new CustomException($this->parseErrorMessage($e->getMessage(), 'status"'));
+        }
 
         return $paid;
     }
@@ -227,5 +224,14 @@ class CabRequestTransactionRepository extends BaseRepository
         );
 
         broadcast(new CabRequestStatusChanged($request));
+    }
+
+    protected function parseErrorMessage($err_mesg, $needle) 
+    {
+        $index = strpos($err_mesg, $needle);
+        if($index) {
+            return json_decode(substr($err_mesg, $index - 2))->message;
+        }
+        return $err_mesg;
     }
 }

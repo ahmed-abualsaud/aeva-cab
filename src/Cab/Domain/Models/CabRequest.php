@@ -57,9 +57,14 @@ class CabRequest extends Model
         return $this->belongsTo(PromoCode::class, 'promo_code_id');
     }
 
-    public function scopeLive($query)
+    public function scopeLive($query, $args)
     {
-        return $query->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed'])
+        $not_in  = ['Scheduled', 'Cancelled', 'Completed'];
+        if (array_key_exists('user_id', $args) && $args['user_id']) {
+            $not_in[] = 'Ended';
+        }
+
+        return $query->whereNotIn('status' , $not_in)
             ->orWhere(function ($query) {
                 $query->where('status', 'Completed')
                         ->where('rated', false);
