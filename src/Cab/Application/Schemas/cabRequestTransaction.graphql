@@ -2,6 +2,7 @@ input CabRequestTransactionInput {
   request_id: ID! @rules(apply: ["required"])
   costs: Float! @rules(apply: ["required"])
   payment_method: String! @rules(apply: ["required", "in:Cash,Card,Wallet"])
+  merchant_id: Float
 }
 
 type CabRequestTransaction {
@@ -13,6 +14,7 @@ type CabRequestTransaction {
   payment_method: String @rules(apply: ["in:Cash,Card,Wallet"])
   created_at: String
   debt: Float
+  merchant_id: Float
 }
 
 type TransactionStats {
