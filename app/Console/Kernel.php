@@ -45,7 +45,7 @@ class Kernel extends ConsoleKernel
                 $dt = Carbon::now();
                 $x=60/10;
                 do{
-                    $locations = Driver::select('latitude', 'longitude')->get()->toArray();
+                    $locations = Driver::select('full_name', 'phone', 'latitude', 'longitude')->get()->toArray();
                     broadcast(new AllDriversLocations($locations));
                     time_sleep_until($dt->addSeconds(10)->timestamp);
                 } while($x-- > 1);
