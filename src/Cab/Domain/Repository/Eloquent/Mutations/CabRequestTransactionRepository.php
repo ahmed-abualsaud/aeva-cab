@@ -140,6 +140,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
         $cashout = $this->model->create([
             'driver_id' => $args['driver_id'], 
+            'merchant_id' => $args['merchant_id'],
             'costs' => $args['amount'],
             'payment_method' => 'Cashout',
             'uuid' => Str::orderedUuid()
