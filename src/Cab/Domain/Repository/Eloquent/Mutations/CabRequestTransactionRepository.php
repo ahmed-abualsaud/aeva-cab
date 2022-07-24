@@ -47,11 +47,11 @@ class CabRequestTransactionRepository extends BaseRepository
             ->selectRaw('request_id, sum(costs) as amount')
             ->groupBy('request_id')->first();
 
-        if (!is_null($sum) && $sum->amount >= $request->costs) {
+        if (!is_null($sum) && $sum->amount >= $request->costs_after_discount) {
             throw new CustomException(__('lang.request_already_paid'));
         }
 
-        if ($args['costs'] < $request->costs) {
+        if ($args['costs'] < $request->costs_after_discount) {
             throw new CustomException(__('lang.amount_paid_less_than_amount_requested'));
         }
 
@@ -67,7 +67,7 @@ class CabRequestTransactionRepository extends BaseRepository
             $request->update(['status' => 'Completed', 'paid' => true]);
 
             if ($refund > 0) {
-                $input['costs'] = $request->costs;
+                $input['costs'] = $request->costs_after_discount;
                 $trx = $this->model->create($input);
                 $input['costs'] = $refund;
                 $input['payment_method'] = 'Refund';
@@ -133,8 +133,8 @@ class CabRequestTransactionRepository extends BaseRepository
 
         $cashout = $this->model->create([
             'driver_id' => $args['driver_id'], 
-            'merchant_id' => $args['merchant_id'],
-            'merchant_name' => $args['merchant_name'],
+            //'merchant_id' => $args['merchant_id'],
+            //'merchant_name' => $args['merchant_name'],
             'costs' => $args['amount'],
             'payment_method' => 'Cashout',
             'uuid' => Str::orderedUuid()
@@ -152,21 +152,22 @@ class CabRequestTransactionRepository extends BaseRepository
     {
         $refund = 0;
         $costs = $args['costs'];
-        if($args['costs'] > $request->costs) {
-            $refund = ($args['costs'] - $request->costs);
-            $costs = $request->costs;
+        if($args['costs'] > $request->costs_after_discount) {
+            $refund = ($args['costs'] - $request->costs_after_discount);
+            $costs = $request->costs_after_discount;
             $this->updateUserWallet($request->user_id, $refund, 'Aevacab Refund', $args['uuid'].'-refund');
         }
 
         $this->updateUserWallet($request->user_id, $costs, 'Cash', $args['uuid']);
-        $this->updateDriverWallet($request->driver_id, $args['costs'], $args['costs'], ($request->costs - $args['costs']));
+        $this->updateDriverWallet($request->driver_id, $args['costs'], $args['costs'], ($request->costs_after_discount - $args['costs']));
         return $refund;
     }
 
     protected function walletPay($args, $request)
     {
         $paid = $this->updateUserWallet($request->user_id, $args['costs'], 'Aevapay User Wallet', $args['uuid']);
-        $this->updateDriverWallet($request->driver_id, $paid, 0, $paid);
+        $driver_cash = $request->costs - $request->costs_after_discount + $paid;
+        $this->updateDriverWallet($request->driver_id, $driver_cash, 0, $driver_cash);
         return $paid;
     }
 
