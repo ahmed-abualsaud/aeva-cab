@@ -6,6 +6,8 @@ input UploadDocumentInput {
   file: Upload! @rules(apply: ["required"])
   status: String
   notes: String
+  url: String
+  national_id: String
 }
 
 input UpdateDocumentInput {
@@ -16,6 +18,8 @@ input UpdateDocumentInput {
   notes: String
   admin_id: ID
   file: Upload
+  url: String
+  national_id: String
 }
 
 type Document {

@@ -17,7 +17,6 @@ trait HandleUpload
         } catch(\Exception $e) {
             throw new \Exception(__('lang.upload_file_failed'));
         }
-
         return $url;
     }
 
@@ -31,5 +30,4 @@ trait HandleUpload
             // Do nothing. Simply, file does not exist.
         }
     }
-
 }

@@ -20,7 +20,7 @@ class DocumentController
     {
         $validator = Validator::make($request->all(),[
             'id' => 'required|numeric',
-            'file' => 'required|mimes:jpeg,png,jpg,pdf|max:6291456',
+            'file' => 'required|max:4608',
         ]);
 
         if ($validator->fails()) {

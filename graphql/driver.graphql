@@ -21,6 +21,7 @@ input CreateDriverInput @validator {
   earnings: Float
   ref_code: String
   approved: Boolean
+  national_id: String
 }
 
 input UpdateDriverInput @validator {
@@ -50,6 +51,7 @@ input UpdateDriverInput @validator {
   secondary_phone: String
   title: String
   approved: Boolean
+  national_id: String
 }
 
 input DriverVehicleInput {
@@ -99,6 +101,7 @@ type Driver {
   title: String
   approved: Boolean
   otp: String
+  national_id: String
 }
 
 input DriverPhoneVerificationInput {

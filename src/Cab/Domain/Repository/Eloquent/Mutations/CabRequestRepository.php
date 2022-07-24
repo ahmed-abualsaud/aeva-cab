@@ -77,7 +77,48 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     public function search(array $args)
     {
-        return $this->searchNewRequest($args);
+        $input = Arr::except($args, ['directive', 'distance', 'duration']);
+
+        if ($args['user_id'] == 0 || is_null($args['user_id']) || !User::where('id', $args['user_id'])->exists()) {
+            throw new CustomException(__('lang.user_not_found'));
+        }
+
+        $active_requests = $this->model->wherePending($args['user_id'])->first();
+
+        if($active_requests) {
+            throw new CustomException(__('lang.request_inprogress'));
+        }
+
+        $settings = $this->settings(['Coverage Radius', 'Coverage Center Latitude', 'Coverage Center Longitude']);
+        $cov_rds = $settings['Coverage Radius'];
+        $cov_lat = $settings['Coverage Center Latitude'];
+        $cov_lng = $settings['Coverage Center Longitude'];
+        $radius = $this->sphereDistance($args['s_lat'], $args['s_lng'], $cov_lat, $cov_lng);
+        if( $radius > $cov_rds) {
+            throw new CustomException(__('lang.out_of_coverage_area'));
+        }
+
+        $result = $this->getNearestDriversWithVehicles($args);
+
+        $payload = [
+            'summary' => [
+                'distance' => $args['distance'],
+                'duration' => $args['duration']
+            ],
+            'searching' => [
+                'at' => date("Y-m-d H:i:s"),
+                'user' => User::find($args['user_id']),
+                'result' => $result
+            ]
+        ];
+
+        $input['status'] = 'Searching';
+        $input['history'] = $payload;
+
+        $request = $this->model->create($input);
+        $request['result'] = $result;
+
+        return $request;
     }
 
     public function pickCarType(array $args)
@@ -101,7 +142,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
 
-        if ( $request->status != 'Searching' ) {
+        $dialog_shown = (time() - strtotime($request->history['searching']['at'])) < $this->settings('Show Acceptance Dialog');
+
+        if ( !in_array($request->status, ['Searching', 'Sending']) || ($request->status == 'Sending' && $dialog_shown) ) {
             throw new CustomException(__('lang.request_drivers_failed'));
         }
 
@@ -122,11 +165,19 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         $filtered = array_values($filtered);
+
         $payload = [
             'sending' => [
                 'at' => date("Y-m-d H:i:s"),
                 'chosen_car_type' => $car_type,
                 'payment_method' => $args['payment_method']
+            ],
+            'missing' => ($request->status == 'Sending')?  [
+                'status' => true, 
+                'missed' => $this->getMissedDrivers($request, Arr::pluck($filtered, 'driver_id'))
+            ] : [    
+                'status' => false,
+                'missed' => []
             ]
         ];
         
@@ -143,7 +194,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $driversIds = Arr::pluck($filtered, 'driver_id');
 
-        DriverStats::whereIn('id', $driversIds)->increment('received_cab_requests', 1);
+        DriverStats::whereIn('driver_id', $driversIds)->increment('received_cab_requests', 1);
         DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);
 
         SendPushNotification::dispatch(
@@ -170,7 +221,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.request_already_accepted_by_another_driver'));
         }
 
-        DriverStats::where('id', $args['driver_id'])->increment('accepted_cab_requests', 1);
+        DriverStats::where('driver_id', $args['driver_id'])->increment('accepted_cab_requests', 1);
         DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
@@ -382,7 +433,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $token = null;
         if (strtolower($args['cancelled_by']) == 'user') {
             if ($request->driver_id) {
-                DriverStats::where('id', $request->driver_id)->update([
+                DriverStats::where('driver_id', $request->driver_id)->update([
                     'accepted_cab_requests' => DB::raw('accepted_cab_requests - 1'),
                 ]);
                 DriverLog::log([
@@ -399,7 +450,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         if (strtolower($args['cancelled_by']) == 'driver') {
             if ($request->driver_id) {
-                DriverStats::where('id', $request->driver_id)->update([
+                DriverStats::where('driver_id', $request->driver_id)->update([
                     'accepted_cab_requests' => DB::raw('accepted_cab_requests - 1'), 
                     'cancelled_cab_requests' => DB::raw('cancelled_cab_requests + 1')
                 ]);
@@ -468,7 +519,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     public function updateDriverCabStatus(array $args)
     {
-        $active_requests = $this->model->live()->where('driver_id', $args['driver_id'])->first();
+        $active_requests = $this->model->live($args)->where('driver_id', $args['driver_id'])->first();
         if($active_requests && in_array($args['cab_status'], ['Offline', 'Online'])) {
             throw new CustomException(__('lang.update_status_failed').' id = '.$active_requests->id);
         }
@@ -623,52 +674,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $socketRequest['status'] = 'Redirected';
 
         broadcast(new CabRequestStatusChanged($socketRequest));
-
-        return $request;
-    }
-
-    protected function searchNewRequest(array $args) 
-    {
-        $input = Arr::except($args, ['directive', 'distance', 'duration']);
-
-        if ($args['user_id'] == 0 || is_null($args['user_id']) || !User::where('id', $args['user_id'])->exists()) {
-            throw new CustomException(__('lang.user_not_found'));
-        }
-
-        $active_requests = $this->model->wherePending($args['user_id'])->first();
-
-        if($active_requests) {
-            throw new CustomException(__('lang.request_inprogress'));
-        }
-
-        $settings = $this->settings(['Coverage Radius', 'Coverage Center Latitude', 'Coverage Center Longitude']);
-        $cov_rds = $settings['Coverage Radius'];
-        $cov_lat = $settings['Coverage Center Latitude'];
-        $cov_lng = $settings['Coverage Center Longitude'];
-        $radius = $this->sphereDistance($args['s_lat'], $args['s_lng'], $cov_lat, $cov_lng);
-        if( $radius > $cov_rds) {
-            throw new CustomException(__('lang.out_of_coverage_area'));
-        }
-
-        $result = $this->getNearestDriversWithVehicles($args);
-
-        $payload = [
-            'summary' => [
-                'distance' => $args['distance'],
-                'duration' => $args['duration']
-            ],
-            'searching' => [
-                'at' => date("Y-m-d H:i:s"),
-                'user' => User::find($args['user_id']),
-                'result' => $result
-            ]
-        ];
-
-        $input['status'] = 'Searching';
-        $input['history'] = $payload;
-
-        $request = $this->model->create($input);
-        $request['result'] = $result;
 
         return $request;
     }

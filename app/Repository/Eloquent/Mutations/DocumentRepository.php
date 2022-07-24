@@ -49,6 +49,10 @@ class DocumentRepository extends BaseRepository
 
         $input = collect($args)->except(['file', 'directive'])->toArray();
 
+        if (array_key_exists('national_id', $args) && $args['national_id']) {
+            Driver::where('id', $document->documentable_id)->update(['national_id' => $args['national_id']]);
+        }
+        
         if (array_key_exists('file', $args) && $args['file'] != null) {
             $file = $args['file'];
             if ($document->url) $this->deleteOneFile($document->url, 'documents');
