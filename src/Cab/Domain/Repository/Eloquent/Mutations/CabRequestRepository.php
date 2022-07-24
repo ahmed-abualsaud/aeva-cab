@@ -194,7 +194,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $driversIds = Arr::pluck($filtered, 'driver_id');
 
-        DriverStats::whereIn('id', $driversIds)->increment('received_cab_requests', 1);
+        DriverStats::whereIn('driver_id', $driversIds)->increment('received_cab_requests', 1);
         DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);
 
         SendPushNotification::dispatch(
@@ -221,7 +221,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.request_already_accepted_by_another_driver'));
         }
 
-        DriverStats::where('id', $args['driver_id'])->increment('accepted_cab_requests', 1);
+        DriverStats::where('driver_id', $args['driver_id'])->increment('accepted_cab_requests', 1);
         DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
@@ -433,7 +433,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $token = null;
         if (strtolower($args['cancelled_by']) == 'user') {
             if ($request->driver_id) {
-                DriverStats::where('id', $request->driver_id)->update([
+                DriverStats::where('driver_id', $request->driver_id)->update([
                     'accepted_cab_requests' => DB::raw('accepted_cab_requests - 1'),
                 ]);
                 DriverLog::log([
@@ -450,7 +450,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         if (strtolower($args['cancelled_by']) == 'driver') {
             if ($request->driver_id) {
-                DriverStats::where('id', $request->driver_id)->update([
+                DriverStats::where('driver_id', $request->driver_id)->update([
                     'accepted_cab_requests' => DB::raw('accepted_cab_requests - 1'), 
                     'cancelled_cab_requests' => DB::raw('cancelled_cab_requests + 1')
                 ]);
