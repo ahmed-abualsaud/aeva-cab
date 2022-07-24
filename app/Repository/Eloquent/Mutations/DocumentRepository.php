@@ -11,6 +11,7 @@ use App\Traits\HandleUpload;
 use App\Exceptions\CustomException;
 use App\Repository\Eloquent\BaseRepository;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
@@ -49,7 +50,14 @@ class DocumentRepository extends BaseRepository
 
         $input = collect($args)->except(['file', 'directive'])->toArray();
 
+        if (array_key_exists('national_id', $args) && $args['national_id']) {
+            Driver::where('id', $document->documentable_id)->update(['national_id' => $args['national_id']]);
+        }
+        
         if (array_key_exists('file', $args) && $args['file'] != null) {
+            $ret = $this->upload($args);
+            dd($ret);
+
             $file = $args['file'];
             if ($document->url) $this->deleteOneFile($document->url, 'documents');
             $url = $this->uploadOneFile($file, 'documents');
@@ -112,6 +120,28 @@ class DocumentRepository extends BaseRepository
         Document::createVehicleDocuments($vehicle->id);
 
         return $driver;
+    }
+
+    public function upload($args) 
+    {
+        dd($args['file']->createFromBase($args['file']));
+        $url = 'https://'.config('custom.aevapay_staging_server_domain').'/api/v1/aevacab-in/documents-upload';
+        return Http::withHeaders([
+            'x-api-key' => $this->getXAPIKey($args['id'])
+        ])
+        ->post($url, [
+            'id' => $args['id'],
+            'file' => $args['file']->get()
+        ])
+        ->throw();
+    }
+
+    protected function getXAPIKey($input)
+    {
+        $server_key = config('custom.aevapay_staging_server_key');
+        $str = $server_key.$input;
+        $hashed_str = hash("sha256",$str,true);
+        return base64_encode($hashed_str);
     }
 
     protected function checkVehicleAndDocumentsApproved($document)

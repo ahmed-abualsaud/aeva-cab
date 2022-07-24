@@ -28,8 +28,19 @@ class PromoCodeRepository extends BaseRepository implements PromoCodeRepositoryI
             throw new CustomException(__('lang.invalid_promo_code'));
         }
 
-        if(array_key_exists('request_id', $args)) {
-            $this->updateCabRequestPromoCode($args['request_id'], $promoCode->id);
+        $promo_code =  PromoCodeUsage::selectRaw('
+                promo_codes.id, 
+                promo_codes.name, 
+                COUNT(promo_codes.id) as count
+            ')
+            ->join('promo_codes', 'promo_code_usages.promo_code_id', 'promo_codes.id')
+            ->where('user_id', $args['user_id'])
+            ->groupBy('promo_codes.name', 'promo_codes.id')
+            ->having('count', '<', 4)
+            ->first();
+
+        if($promo_code && $promo_code->name != $args['name'] ) {
+            throw new CustomException(__('lang.you_already_applyed_promo_code').': '.$args['name']);
         }
             
         $trip_count = PromoCodeUsage::where('promo_code_id', $promoCode->id)
@@ -48,6 +59,10 @@ class PromoCodeRepository extends BaseRepository implements PromoCodeRepositoryI
     
         if ($trip_count == 0 && $users_count >= $promoCode->max_users) {
             throw new CustomException(__('lang.permitted_number_of_users_exceeded'));
+        }
+
+        if(array_key_exists('request_id', $args)) {
+            $this->updateCabRequestPromoCode($args['request_id'], $promoCode->id);
         }
     
         PromoCodeUsage::create(['promo_code_id' => $promoCode->id, 'user_id' => $args['user_id']]);
