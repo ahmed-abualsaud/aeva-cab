@@ -298,6 +298,16 @@ trait CabRequestHelper
         ->throw();
     }
 
+    public function getMissedDrivers($request, $drivers_ids) 
+    {
+        $missed = $request->history['missing']['missed'];
+        $missed[] = [
+            'at' => date('Y-m-d H:i:s'),
+            'by' => $drivers_ids
+        ];
+        return $missed;
+    }
+
     protected function getXAccessToken()
     {
         $response = Http::post('http://'.config('custom.credit_go_staging_server_domain').'/backend/api/users/confirm', [
