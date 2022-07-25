@@ -123,7 +123,7 @@ trait CabRequestHelper
             car_types.id as car_type_id,
             car_types.name as car_type,
             car_types.min_fees,
-            (car_types.base_fare  + ((car_types.distance_price * ?) / 1000) + ((car_types.duration_price * car_types.surge_factor * ?) / 60)) as price,
+            CEILING(car_types.base_fare  + ((car_types.distance_price * ?) / 1000) + ((car_types.duration_price * car_types.surge_factor * ?) / 60)) as price,
             vehicles.license_plate as license,
             vehicles.color,
             vehicles.photo'
