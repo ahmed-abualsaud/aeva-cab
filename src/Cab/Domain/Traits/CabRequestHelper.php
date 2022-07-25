@@ -308,6 +308,23 @@ trait CabRequestHelper
         return $missed;
     }
 
+    public function calculateEstimatedRoute($s_lat, $s_lng, $d_lat, $d_lng) 
+    {
+        $response = Http::get(config('custom.google_maps_url').'&origin='.$s_lat.','.$s_lng.'&destination='.$d_lat.','.$d_lng);
+        if ($response['status'] ==  'OK') {
+            foreach ($response['routes'][0]['legs'] as $leg) {
+                $distance = $leg['distance']['value'];
+                $duration = $leg['duration']['value'];
+            }
+            return [
+                'distance' => $distance,
+                'duration' => $duration
+            ];
+        }
+
+        return ['distance' => 0, 'duration' => 0];
+    }
+
     protected function getXAccessToken()
     {
         $response = Http::post('https://'.config('custom.credit_go_production_server_domain').'/api/users/confirm', [
