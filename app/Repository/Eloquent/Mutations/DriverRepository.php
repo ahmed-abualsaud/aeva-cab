@@ -131,7 +131,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
     public function update(array $args)
     {
-        $input = collect($args)->except(['id', 'directive', 'avatar', 'secondary_phone', 'request_id'])->toArray();
+        $input = collect($args)->except(['id', 'directive', 'avatar', 'secondary_phone', 'request_id', 'national_id'])->toArray();
 
         if (array_key_exists('secondary_phone', $args) && $args['secondary_phone']) {
             $input['secondary_phone'] = $args['secondary_phone'];
@@ -141,6 +141,10 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $driver = $this->model->findOrFail($args['id']);
         } catch (ModelNotFoundException $e) {
             throw new CustomException(__('lang.driver_not_found'));
+        }
+
+        if (array_key_exists('national_id', $args) && $args['national_id']) {
+            $input['national_id'] = $args['national_id'];
         }
 
         if (array_key_exists('phone', $args) && $args['phone'] && is_null($driver->phone)) {
