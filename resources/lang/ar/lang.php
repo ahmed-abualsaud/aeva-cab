@@ -108,7 +108,9 @@ return [
     'payment_category_exist' => 'فئة الدفع هذه موجوده بالفعل',
     'device_exist' => 'هذا الجهاز موجود بالفعل',
     'not_available_phone' => 'الهاتف المختار غير متوفر',
-    'not_available_email' => 'البريد الإلكتروني المختار غير متوفر',
+    'not_available_email' => 'البريد اﻷلكتروني المختار غير متوفر',
+    'not_available_national_id' => 'الرقم القومي المختار غير متوفر',
+    'not_available_secondary_phone' => 'رقم الهاتف الثانوي المختار غير متوفر',
     'not_available_arabic_name' => 'الاسم العربي المختار غير متوفر',
     'not_available_type' => 'النوع المختار غير متوفر',
     'not_available_license' => 'لوحة الترخيص المختارة غير متوفرة',
@@ -128,6 +130,7 @@ return [
     'promocode_has_already_been_applied' => 'هذا الرمز الترويجي مطبق بالفعل',
     'payment_method_does_not_match' => 'طريقة الدفع المطبقة لا تتطابق مع طريقة الدفع المطلوبة',
     'amount_paid_less_than_amount_requested' => 'المبلغ المدفوع أقل من المبلغ المطلوب',
+    'you_already_applyed_another_promo_code' => 'لديك رمز ترويجي أخر مطبق بالفعل',
 
     // ============================== Aeva Cab ==============================
 

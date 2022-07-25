@@ -18,7 +18,7 @@ class CreateDriversTable extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('full_name')->virtualAs('concat(first_name," ",last_name)');
-            $table->string('national_id')->unique();
+            $table->string('national_id')->unique()->nullable();
             $table->string('email')->unique()->nullable();
             $table->string('password')->nullable();
             $table->string('phone')->unique()->nullable();
