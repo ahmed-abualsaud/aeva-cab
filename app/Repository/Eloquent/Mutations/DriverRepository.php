@@ -130,7 +130,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
     public function update(array $args)
     {
-        $input = collect($args)->except(['id', 'directive', 'avatar', 'secondary_phone', 'request_id'])->toArray();
+        $input = collect($args)->except(['id', 'directive', 'avatar', 'secondary_phone', 'request_id', 'national_id'])->toArray();
 
         if (array_key_exists('secondary_phone', $args) && $args['secondary_phone']) {
             $input['secondary_phone'] = $args['secondary_phone'];
@@ -144,6 +144,10 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
         if (array_key_exists('phone', $args) && $args['phone'] && is_null($driver->phone)) {
             $input['phone_verified_at'] = date('Y-m-d H:i:s');
+        }
+
+        if (array_key_exists('national_id', $args) && $args['national_id']) {
+            $input['national_id'] = $args['national_id'];
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
