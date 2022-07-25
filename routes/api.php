@@ -6,10 +6,16 @@
 |--------------------------------------------------------------------------
 |
 */
+
+use App\Http\Controllers\Queries\Exports\ExportCabRequestsController;
+use App\Http\Controllers\Queries\Exports\ExportDriversController;
+use App\Http\Controllers\Queries\Exports\ExportDriverTransactionsController;
+use Illuminate\Support\Facades\Route;
+
 Route::group(['namespace' => 'Mutations'], function () {
     Route::post('/admin/login', 'AdminController@login');
     Route::post('/driver/login', 'DriverController@login');
-    
+
     Route::post('/user/create', 'UserController@create');
     Route::post('/user/login', 'UserController@login');
     Route::post('/user/social/login', 'UserController@socialLogin');
@@ -74,3 +80,30 @@ Route::group(['middleware' => ['auth:driver'], 'namespace' => 'Queries'], functi
 });
 
 Route::get('/driver/by/phone/{phone}', 'Queries\DriverController@getByPhone');
+
+Route::group([
+    'prefix' => 'drivers',
+//    'middleware' => ['auth:admin'],
+    'as' => 'drivers.'
+    ], function () {
+
+    Route::get('export', [ExportDriversController::class,'__invoke']);
+});
+
+Route::group([
+    'prefix' => 'driver-transactions',
+//    'middleware' => ['auth:admin'],
+    'as' => 'driver.transactions.'
+    ], function () {
+
+    Route::get('export', [ExportDriverTransactionsController::class,'__invoke']);
+});
+
+Route::group([
+    'prefix' => 'cab-requests',
+//    'middleware' => ['auth:admin'],
+    'as' => 'cab.requests.'
+    ], function () {
+
+    Route::get('export', [ExportCabRequestsController::class,'__invoke']);
+});

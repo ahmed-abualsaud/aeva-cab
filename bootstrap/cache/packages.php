@@ -78,6 +78,20 @@
       0 => 'Laravel\\Ui\\UiServiceProvider',
     ),
   ),
+  'laravel/vapor-core' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Laravel\\Vapor\\VaporServiceProvider',
+    ),
+  ),
+  'laravel/vapor-ui' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Laravel\\VaporUi\\VaporUiServiceProvider',
+    ),
+  ),
   'maatwebsite/excel' => 
   array (
     'providers' => 
@@ -87,13 +101,6 @@
     'aliases' => 
     array (
       'Excel' => 'Maatwebsite\\Excel\\Facades\\Excel',
-    ),
-  ),
-  'matthewbdaly/laravel-azure-storage' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Matthewbdaly\\LaravelAzureStorage\\AzureStorageServiceProvider',
     ),
   ),
   'mll-lab/laravel-graphql-playground' => 
