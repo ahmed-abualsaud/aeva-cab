@@ -142,7 +142,13 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
 
-        $dialog_shown = (time() - strtotime($request->history['searching']['at'])) < $this->settings('Show Acceptance Dialog');
+        if ($request->status == 'Searching') {
+            $dialog_shown = (time() - strtotime($request->history['searching']['at'])) < $this->settings('Show Acceptance Dialog');
+        }
+
+        if ($request->status == 'Sending') {
+            $dialog_shown = (time() - strtotime($request->history['sending']['at'])) < $this->settings('Show Acceptance Dialog');
+        }
 
         if ( !in_array($request->status, ['Searching', 'Sending']) || ($request->status == 'Sending' && $dialog_shown) ) {
             throw new CustomException(__('lang.request_drivers_failed'));
@@ -193,6 +199,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request = $this->updateRequest($request, $input);
 
         $driversIds = Arr::pluck($filtered, 'driver_id');
+
+        if ($request->status == 'Sending') {
+            DriverStats::whereIn('driver_id', $driversIds)->increment('missed_cab_requests', 1);
+            DriverLog::log(['driver_id' => $driversIds, 'missed_cab_requests' => 1]);
+        }
 
         DriverStats::whereIn('driver_id', $driversIds)->increment('received_cab_requests', 1);
         DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);

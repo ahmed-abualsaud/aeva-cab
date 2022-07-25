@@ -7,8 +7,10 @@ type DriverLog {
   received_cab_requests: Float
   accepted_cab_requests: Float
   cancelled_cab_requests: Float
+  missed_cab_requests: Float
   acceptance_rate: Float
   cancellation_rate: Float
+  missing_rate: Float
   total_working_time: Float
   created_at: String
   updated_at: String

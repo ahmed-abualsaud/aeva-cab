@@ -15,7 +15,8 @@ class DriverLog extends Model
 
     protected $appends = [
         'acceptance_rate', 
-        'cancellation_rate'
+        'cancellation_rate',
+        'missing_rate'
     ];
 
     public function driver()
@@ -47,6 +48,7 @@ class DriverLog extends Model
             sum(received_cab_requests) as received_cab_requests,
             sum(accepted_cab_requests) as accepted_cab_requests,
             sum(cancelled_cab_requests) as cancelled_cab_requests,
+            sum(missed_cab_requests) as missed_cab_requests,
             sum(total_working_time) as total_working_time
         ')
         ->groupBy('driver_id');
@@ -67,7 +69,16 @@ class DriverLog extends Model
                 $inputs['driver_id'] = $driver_id;
                 $last_log = DriverLog::create($inputs);
             } else {
-                $inc_keys = ['cash', 'wallet', 'earnings', 'received_cab_requests', 'accepted_cab_requests', 'cancelled_cab_requests', 'total_working_time'];
+                $inc_keys = [
+                    'cash',
+                    'wallet',
+                    'earnings',
+                    'received_cab_requests',
+                    'accepted_cab_requests',
+                    'cancelled_cab_requests',
+                    'missed_cab_requests',
+                    'total_working_time'
+                ];
 
                 foreach ($inputs as $key => $value) {
                     if (in_array($key, $inc_keys)) {
@@ -93,5 +104,11 @@ class DriverLog extends Model
     {
         if ($this->accepted_cab_requests == 0) {return 0;}
         return ($this->cancelled_cab_requests / $this->accepted_cab_requests);
+    }
+
+    public function getMissingRateAttribute()
+    {
+        if ($this->received_cab_requests == 0) {return 0;}
+        return ($this->missed_cab_requests / $this->received_cab_requests);
     }
 }
