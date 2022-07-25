@@ -47,12 +47,14 @@ type CabRequest {
   created_at: String
   costs_after_discount: Float
   notes: String
+  missed_drivers: [Driver]
 }
 
 type CabRequestHistory {
   scheduled: HistoryObj
   searching: HistoryObj
   sending: HistoryObj
+  missing: HistoryObj
   accepted: HistoryObj
   arrived: HistoryObj
   started: HistoryObj
@@ -78,6 +80,8 @@ type HistoryObj {
   vehicle: VehicleObj
   waiting_time: Float
   cancelled_drivers: [ID]
+  missed: [Missed]
+  status: Boolean
 }
 
 type Summary {
@@ -112,4 +116,9 @@ type VehicleObj {
   license: String
   photo: String
   price: Float
+}
+
+type Missed {
+  at: String
+  by: [ID]
 }

@@ -2,6 +2,7 @@
 
 namespace Aeva\Cab\Domain\Repository\Eloquent\Queries;
 
+use App\Driver;
 use Illuminate\Support\Arr;
 
 use Aeva\Cab\Domain\Models\CabRequest;
@@ -54,5 +55,24 @@ class CabRequestRepository extends BaseRepository
         }
 
         return $requests;
+    }
+
+    public function missedRequests(array $args)
+    {
+        $query = $this->model;
+
+        if (array_key_exists('user_id', $args) && $args['user_id']) {
+            $query = $this->model->where('user_id', $args['user_id']);
+        }
+
+        $missed_requests =  $query->where('history->missing->status', true)->get();
+        foreach ($missed_requests as $req) {
+            $drivers_ids = [];
+            foreach ($req->history['missing']['missed'] as $missed) {
+                $drivers_ids = array_values(array_unique(array_merge($drivers_ids, $missed['by'])));
+            }
+            $req->missed_drivers = Driver::whereIn('id', $drivers_ids)->get();
+        }
+        return $missed_requests;
     }
 }

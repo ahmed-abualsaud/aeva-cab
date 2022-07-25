@@ -17,4 +17,9 @@ class CabRequestResolver
     {
         return $this->cabRequestRepository->history($args);
     }
+
+    public function missedRequests($_, array $args)
+    {
+        return $this->cabRequestRepository->missedRequests($args);
+    }
 }
