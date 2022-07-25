@@ -48,7 +48,7 @@ class DocumentRepository extends BaseRepository
             throw new CustomException(__('lang.document_not_found'));
         }
 
-        $input = collect($args)->except(['file', 'directive'])->toArray();
+        $input = collect($args)->except(['file', 'national_id', 'directive'])->toArray();
 
         if (array_key_exists('national_id', $args) && $args['national_id']) {
             Driver::where('id', $document->documentable_id)->update(['national_id' => $args['national_id']]);
