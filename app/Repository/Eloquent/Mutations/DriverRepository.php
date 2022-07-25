@@ -206,7 +206,11 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $driver->update(['device_id' => $args['device_id']]);
         }
 
-        $this->handleAccessTokenCache('driver', $driver, $token);
+        try {
+            $this->handleAccessTokenCache('driver', $driver, $token);
+        } catch (\Exception $e) {
+            throw new CustomException($e->getMessage());
+        }
 
         return [
             'access_token' => $token,

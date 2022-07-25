@@ -40,7 +40,7 @@ class PromoCodeRepository extends BaseRepository implements PromoCodeRepositoryI
             ->first();
 
         if($promo_code && $promo_code->name != $args['name'] ) {
-            throw new CustomException(__('lang.you_already_applyed_promo_code').': '.$args['name']);
+            throw new CustomException(__('lang.you_already_applyed_another_promo_code').': '.$args['name']);
         }
             
         $trip_count = PromoCodeUsage::where('promo_code_id', $promoCode->id)
@@ -52,10 +52,10 @@ class PromoCodeRepository extends BaseRepository implements PromoCodeRepositoryI
         }
     
         $users_count = PromoCodeUsage::select('user_id')
-        ->where('promo_code_id', $promoCode->id)
-        ->groupBy('user_id')
-        ->get()
-        ->count();
+            ->where('promo_code_id', $promoCode->id)
+            ->groupBy('user_id')
+            ->get()
+            ->count();
     
         if ($trip_count == 0 && $users_count >= $promoCode->max_users) {
             throw new CustomException(__('lang.permitted_number_of_users_exceeded'));

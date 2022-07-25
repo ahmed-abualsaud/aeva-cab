@@ -42,4 +42,6 @@ return [
     'credit_go_production_pass_code' => env('CREDIT_GO_PRODUCTION_SERVER_PIN_CODE','246810'),
 
     'default_verification_code' => env('DEFAULT_VERIFICATION_CODE', 6254),
+
+    'google_maps_url' => env('GOOGLE_MAPS_URL', 'https://maps.googleapis.com/maps/api/directions/json?key='.env('GOOGLE_MAP_KEY', 'AIzaSyA0a4_5jHzBStit_c4_ZM7TPTCO-uNLfoM').'&%2520waypoints=optimize:true%7C&sensor=false'),
 ];

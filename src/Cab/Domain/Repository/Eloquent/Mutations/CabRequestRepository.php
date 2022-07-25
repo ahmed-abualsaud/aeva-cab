@@ -98,13 +98,14 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.out_of_coverage_area'));
         }
 
+        $route = $this->calculateEstimatedRoute($args['s_lat'], $args['s_lng'], $args['d_lat'], $args['d_lng']);
+        
+        $args['distance'] = $route['distance'];
+        $args['duration'] = $route['duration'];
         $result = $this->getNearestDriversWithVehicles($args);
-
+    
         $payload = [
-            'summary' => [
-                'distance' => $args['distance'],
-                'duration' => $args['duration']
-            ],
+            'summary' => $route,
             'searching' => [
                 'at' => date("Y-m-d H:i:s"),
                 'user' => User::find($args['user_id']),
@@ -186,15 +187,25 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'missed' => []
             ]
         ];
-        
+
+        if ((array_key_exists('s_lat', $args) || array_key_exists('s_lng', $args)) && 
+        ($args['s_lat'] != $request->s_lat || $args['s_lng'] != $request->s_lng)) {
+            $input['s_lat'] = $args['s_lat'];
+            $input['s_lng'] = $args['s_lng'];
+            $route = $this->calculateEstimatedRoute($args['s_lat'], $args['s_lng'], $request->d_lat, $request->d_lng);
+            $payload['summary'] = $route;
+            $request->history['summary'] = $route;
+        }
+
+        $input['costs'] = $this->calculateCosts(
+            $request->history['summary']['distance'], 
+            $request->history['summary']['duration'], 
+            $filtered[0]['car_type_id']
+        );
+
         $input['status'] = 'Sending';
         $input['costs'] = $filtered[0]['price'];
         $input['history'] = array_merge($request->history, $payload);
-        
-        if ((array_key_exists('s_lat', $args) || array_key_exists('s_lng', $args)) && 
-            ($args['s_lat'] != $request->s_lat || $args['s_lng'] != $request->s_lng)) {
-                $input['costs'] = $this->calculateCosts($args['distance'], $args['duration'], $filtered[0]['car_type_id']);
-        }
 
         $request = $this->updateRequest($request, $input);
 
@@ -541,13 +552,14 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $args['s_lat'] = $request->s_lat;
         $args['s_lng'] = $request->s_lng;
+        $route = $this->calculateEstimatedRoute($request->s_lat, $request->s_lng, $args['d_lat'], $args['d_lng']);
+
+        $args['distance'] = $route['distance'];
+        $args['duration'] = $route['duration'];
         $result = $this->getNearestDriversWithVehicles($args);
 
         $payload = [
-            'summary' => [
-                'distance' => $args['distance'],
-                'duration' => $args['duration']
-            ],
+            'summary' => $route,
             'searching' => [
                 'at' => $request->history['searching']['at'],
                 'user' => $request->history['searching']['user'],
@@ -573,6 +585,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $args['s_lat'] = $request->s_lat;
         $args['s_lng'] = $request->s_lng;
+        $route = $this->calculateEstimatedRoute($request->s_lat, $request->s_lng, $args['d_lat'], $args['d_lng']);
+
+        $args['distance'] = $route['distance'];
+        $args['duration'] = $route['duration'];
         $result = $this->getNearestDriversWithVehicles($args);
 
         $filtered = Arr::where($result['vehicles']->toArray(), function ($value, $key) use ($request){
@@ -580,10 +596,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         });
 
         $payload = [
-            'summary' => [
-                'distance' => $args['distance'],
-                'duration' => $args['duration']
-            ],
+            'summary' => $route,
             'searching' => [
                 'at' => $request->history['searching']['at'],
                 'user' => $request->history['searching']['user'],
@@ -636,7 +649,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $result = $request->history['searching']['result'];
         $waiting_time = ($action == 'start') ? (time() - strtotime($request->history['arrived']['at'])) : 0;
-        $prices = $this->calculateCosts($args['distance'], $args['duration'], Arr::pluck($result['vehicles'], 'car_type_id'), $waiting_time);
+        $route = $this->calculateEstimatedRoute($request->s_lat, $request->s_lng, $args['d_lat'], $args['d_lng']);
+        $prices = $this->calculateCosts($route['distance'], $route['duration'], Arr::pluck($result['vehicles'], 'car_type_id'), $waiting_time);
         $vehicles = $result['vehicles'];
 
         foreach ($vehicles as $vehicle) {
@@ -650,10 +664,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         });
 
         $payload = [
-            'summary' => [
-                'distance' => $args['distance'],
-                'duration' => $args['duration']
-            ],
+            'summary' => $route,
             'searching' => [
                 'at' => $request->history['searching']['at'],
                 'user' => $request->history['searching']['user'],
