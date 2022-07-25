@@ -35,6 +35,7 @@ class PromoCodeRepository extends BaseRepository implements PromoCodeRepositoryI
             ')
             ->join('promo_codes', 'promo_code_usages.promo_code_id', 'promo_codes.id')
             ->where('user_id', $args['user_id'])
+            ->where('expires_on', '>', date('Y-m-d'))
             ->groupBy('promo_codes.name', 'promo_codes.id')
             ->having('count', '<', 4)
             ->first();
