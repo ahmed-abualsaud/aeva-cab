@@ -40,7 +40,7 @@ class PromoCodeRepository extends BaseRepository implements PromoCodeRepositoryI
             ->first();
 
         if($promo_code && $promo_code->name != $args['name'] ) {
-            throw new CustomException(__('lang.you_already_applyed_another_promo_code').': '.$args['name']);
+            throw new CustomException(__('lang.you_already_applyed_another_promo_code').': '.$promo_code->name);
         }
             
         $trip_count = PromoCodeUsage::where('promo_code_id', $promoCode->id)
