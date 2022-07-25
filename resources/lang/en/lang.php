@@ -109,6 +109,8 @@ return [
     'device_exist' => 'This device already exists',
     'not_available_phone' => 'The chosen phone is not available',
     'not_available_email' => 'The chosen email is not available',
+    'not_available_national_id' => 'The chosen nationa id is not available',
+    'not_available_secondary_phone' => 'The chosen secondary phone is not available',
     'not_available_arabic_name' => 'The chosen arabic name is not available',
     'not_available_type' => 'The chosen type is not available',
     'not_available_license' => 'The chosen license plate is not available',
@@ -128,6 +130,7 @@ return [
     'promocode_has_already_been_applied' => 'Promocode has already been applied',
     'payment_method_does_not_match' => 'The applied payment method does not match the requested payment method',
     'amount_paid_less_than_amount_requested' => 'The amount paid is less than the amount requested',
+    'you_already_applyed_another_promo_code' => 'You already applied another promocode',
 
     // ============================== Aeva Cab ==============================
 

@@ -51,10 +51,6 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.request_already_paid'));
         }
 
-        if ($args['costs'] < $request->costs_after_discount) {
-            throw new CustomException(__('lang.amount_paid_less_than_amount_requested'));
-        }
-
         $args['uuid'] = Str::orderedUuid();
         $input =  Arr::except($args, ['directive']);
         $input['user_id'] = $request->user_id;
