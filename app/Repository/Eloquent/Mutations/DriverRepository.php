@@ -166,7 +166,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         try {
             $driver = Driver::where('phone', $args['phone'])->firstOrFail();
         } catch (ModelNotFoundException $e) {
-            throw new \Exception(__('lang.driver_not_found'));
+            throw new CustomException(__('lang.driver_not_found'));
         }
 
         $credentials["phone"] = $args['phone'];
