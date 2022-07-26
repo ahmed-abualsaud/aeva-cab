@@ -172,7 +172,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         $filtered = array_values($filtered);
-        $input['costs'] = $filtered[0]['price'];
+        if ($request->status == 'Searching') {
+            $input['costs'] = $filtered[0]['price'];
+        }
 
         $payload = [
             'sending' => [

@@ -11,12 +11,14 @@ use App\DriverStats;
 
 use Aeva\Cab\Domain\Models\CabRating;
 use Aeva\Cab\Domain\Models\CabRequest;
+use Aeva\Cab\Domain\Models\CabRequestTransaction;
 
 use App\Exceptions\CustomException;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -80,20 +82,38 @@ trait CabRequestHelper
     protected function applyCancelFees($cancelled_by, $request) 
     {
         if ($request->status == 'Arrived' && $cancelled_by == 'user') {
-            $this->flushCancelFees($request);
+            $cancel_fees = $this->settings('Cancelation Fees');
+            $this->flushCancelFees($request, $cancel_fees);
+            CabRequestTransaction::create([
+                'user_id' => $request->user_id,
+                'driver_id' => $request->driver_id,
+                'request_id' => $request->id,
+                'costs' => $cancel_fees,
+                'payment_method' => 'Cancel Fees'
+            ]);
+
+            DriverStats::where('driver_id', $request->driver_id)->update([
+                'wallet' => DB::raw('wallet + '.$cancel_fees), 
+                'earnings' => DB::raw('earnings + '.$cancel_fees)
+            ]);
+    
+            DriverLog::log([
+                'driver_id' => $request->driver_id, 
+                'wallet' => $cancel_fees, 
+                'earnings' => $cancel_fees
+            ]);
         }
 
         if ($request->status == 'Arrived' && $cancelled_by == 'driver') {
+            $cancel_fees = $this->settings('Cancelation Fees');
             if ((time() - strtotime($request->history['arrived']['at'])) >= $this->settings('Waiting Time')) {
-                $this->flushCancelFees($request);
+                $this->flushCancelFees($request, $cancel_fees);
             }
         }
     }
 
-    protected function flushCancelFees($request)
-    {
-        $cancel_fees = $this->settings('Cancelation Fees');
-        
+    protected function flushCancelFees($request, $cancel_fees)
+    {  
         $this->pay([
             'user_id' => $request->user_id,
             'amount' => $cancel_fees,
