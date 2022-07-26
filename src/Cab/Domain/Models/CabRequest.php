@@ -54,8 +54,7 @@ class CabRequest extends Model
 
     public function promoCode()
     {
-        return $this->belongsTo(PromoCode::class, 'promo_code_id')
-            ->select('id', 'description', 'name', 'max_discount', 'max_users', 'max_trips', 'expires_on', 'type');
+        return $this->belongsTo(PromoCode::class, 'promo_code_id');
     }
 
     public function scopeLive($query, $args)

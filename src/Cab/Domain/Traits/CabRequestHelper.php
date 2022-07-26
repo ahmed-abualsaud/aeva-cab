@@ -89,7 +89,8 @@ trait CabRequestHelper
                 'driver_id' => $request->driver_id,
                 'request_id' => $request->id,
                 'costs' => $cancel_fees,
-                'payment_method' => 'Cancel Fees'
+                'payment_method' => 'Cancel Fees',
+                'uuid' => Str::orderedUuid()
             ]);
 
             DriverStats::where('driver_id', $request->driver_id)->update([
