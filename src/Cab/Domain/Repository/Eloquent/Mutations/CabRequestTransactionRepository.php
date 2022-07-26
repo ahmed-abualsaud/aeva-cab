@@ -58,18 +58,16 @@ class CabRequestTransactionRepository extends BaseRepository
 
         $this->updateDriverStatus($request->driver_id, 'Online');
         $payment_method = strtolower($request->history['sending']['payment_method']);
+
         if ($args['payment_method'] == 'Cash' && str_contains($payment_method, 'cash')) {
             $refund = $this->cashPay($args, $request);
             $request->update(['status' => 'Completed', 'paid' => true]);
 
-            if ($refund > 0) {
-                $input['costs'] = $request->costs_after_discount;
-                $trx = $this->model->create($input);
-                $input['costs'] = $refund;
-                $input['payment_method'] = 'Refund';
+            $trx = $this->model->create($input);
+            if ($request->costs > $request->costs_after_discount) {
+                $input['costs'] = $request->costs - $request->costs_after_discount;
+                $input['payment_method'] = 'Promo Code Remaining';
                 $this->model->create($input);
-            } else { 
-                $trx = $this->model->create($input); 
             } 
 
             $trx->debt = 0;
@@ -147,15 +145,14 @@ class CabRequestTransactionRepository extends BaseRepository
     protected function cashPay($args, $request)
     {
         $refund = 0;
-        $costs = $args['costs'];
         if($args['costs'] > $request->costs_after_discount) {
             $refund = ($args['costs'] - $request->costs_after_discount);
-            $costs = $request->costs_after_discount;
             $this->updateUserWallet($request->user_id, $refund, 'Aevacab Refund', $args['uuid'].'-refund');
         }
 
-        $this->updateUserWallet($request->user_id, $costs, 'Cash', $args['uuid']);
-        $this->updateDriverWallet($request->driver_id, $args['costs'], $args['costs'], ($request->costs_after_discount - $args['costs']));
+        $this->updateUserWallet($request->user_id, $args['costs'], 'Cash', $args['uuid']);
+        $driver_promo_code_remaining = $request->costs - $request->costs_after_discount;
+        $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_promo_code_remaining), $args['costs'], $driver_promo_code_remaining);
         return $refund;
     }
 
