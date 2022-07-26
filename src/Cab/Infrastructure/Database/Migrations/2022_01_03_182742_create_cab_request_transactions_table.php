@@ -21,8 +21,8 @@ class CreateCabRequestTransactionsTable extends Migration
             $table->unsignedBigInteger('merchant_id')->nullable();
             $table->string('merchant_name')->nullable();
             $table->float('costs', 8, 2);
-            $table->enum('payment_method', ['Cash', 'Card', 'Wallet', 'Cashout', 'Refund']);
-            $table->string('uuid');
+            $table->enum('payment_method', ['Cash', 'Card', 'Wallet', 'Cashout', 'Refund', 'Cancel Fees']);
+            $table->string('uuid')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
