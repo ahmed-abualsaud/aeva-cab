@@ -172,6 +172,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         $filtered = array_values($filtered);
+        $input['costs'] = $filtered[0]['price'];
 
         $payload = [
             'sending' => [
@@ -194,17 +195,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             $input['s_lng'] = $args['s_lng'];
             $route = $this->calculateEstimatedRoute($args['s_lat'], $args['s_lng'], $request->d_lat, $request->d_lng);
             $payload['summary'] = $route;
+            $input['costs'] = $this->calculateCosts($route['distance'], $route['duration'], $filtered[0]['car_type_id']);
         }
 
-        $input['history'] = array_merge($request->history, $payload);
-        $input['costs'] = $this->calculateCosts(
-            $request->history['summary']['distance'], 
-            $request->history['summary']['duration'], 
-            $filtered[0]['car_type_id']
-        );
-
         $input['status'] = 'Sending';
-        $input['costs'] = $filtered[0]['price'];
+        $input['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $input);
 
