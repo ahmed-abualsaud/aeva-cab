@@ -4,6 +4,7 @@ namespace App;
 
 use App\Settings;
 use App\PartnerDriver;
+use App\Traits\Query;
 use App\Traits\Searchable;
 
 use App\Notifications\ResetPassword as ResetPasswordNotification;
@@ -11,6 +12,7 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
 use Aeva\Cab\Domain\Models\CabRequest;
 use Aeva\Cab\Domain\Models\CabRequestTransaction;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -20,9 +22,38 @@ use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
 
 class Driver extends Authenticatable implements JWTSubject
 {
-    use Notifiable; 
+    use Notifiable;
     use Searchable;
     use SoftDeletes;
+    use Query;
+/*
+    public static string $main_table;
+    public static array $filters;
+    public static array $search;
+    public static Builder $builder;
+*/
+
+    public static function filters(): array
+    {
+        return [
+            'id'=> '=',
+            'status' => '=',
+            'cab_status' => '=',
+            'referrer_id'=> '=',
+            'title'=> '=',
+            'approved'=> '=',
+        ];
+    }
+
+    public static function mainTable(): string
+    {
+        return 'drivers';
+    }
+
+    public static function builder(): Builder
+    {
+        return self::query();
+    }
 
     protected $guarded = [];
 
@@ -97,7 +128,7 @@ class Driver extends Authenticatable implements JWTSubject
         $this->attributes['name'] = ucwords($value);
     }
 
-    public function scopeFleet($query, $args) 
+    public function scopeFleet($query, $args)
     {
         if (array_key_exists('fleet_id', $args) && $args['fleet_id']) {
             $query->where('fleet_id', $args['fleet_id']);
@@ -106,18 +137,18 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
-    public function scopeAssigned($query, $args) 
+    public function scopeAssigned($query, $args)
     {
         return $query->whereIn('id', PartnerDriver::byPartner($args))->latest();
     }
 
-    public function scopeNotAssigned($query, $args) 
+    public function scopeNotAssigned($query, $args)
     {
         return $query->whereNotIn('id', PartnerDriver::byPartner($args));
     }
 
-    public function scopeSearch($query, $args) 
-    {   
+    public function scopeSearch($query, $args)
+    {
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
@@ -130,7 +161,7 @@ class Driver extends Authenticatable implements JWTSubject
         }
         return $query;
     }
-    
+
     public function scopeTitle($query, $args)
     {
         if (array_key_exists('title', $args) && $args['title']) {
@@ -143,7 +174,7 @@ class Driver extends Authenticatable implements JWTSubject
     {
         $radius = Settings::where('name', 'Search Radius')->first()->value;
 
-        $query = $query->selectRaw('id, 
+        $query = $query->selectRaw('id,
             full_name, phone, avatar, latitude, longitude,
             ST_Distance_Sphere(point(longitude, latitude), point(?, ?))
             as distance
@@ -156,7 +187,7 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
-    public function scopeApproved($query, $args) 
+    public function scopeApproved($query, $args)
     {
         if (array_key_exists('approved', $args) && !is_null($args['approved'])) {
             $query = $query->where('approved', $args['approved']);
@@ -164,7 +195,7 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
-    public function scopeGetLatest($query, $args) 
+    public function scopeGetLatest($query, $args)
     {
         return $query->latest();
     }
@@ -179,4 +210,5 @@ class Driver extends Authenticatable implements JWTSubject
             //
         }
     }
-} 
+
+}

@@ -4,79 +4,100 @@ namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use JetBrains\PhpStorm\ArrayShape;
 
-trait BaseQueryCriteria
+trait Query
 {
-    public array $search;
-    public string $main_table;
-    public Builder $builder;
+    /*
+    public static array $search;
+    public static string $main_table;
+    public static Builder $builder;
+    public static array $filters;
+    */
 
-    public function __construct()
-    {
-        $this->search = $this->search();
-        $this->builder = $this->applySearch();
-    }
+    abstract public static function mainTable() : string;
+    abstract public static function builder() : Builder;
+    abstract public static function filters() : array;
+
 
     /**
      * @return array
      */
-    public function search() : array
+    #[ArrayShape(['for' => "array|null|string", 'value' => "array|null|string", 'timestamp' => "string", 'dir' => "string", 'order_by' => "array|string"])]
+    public static function searchParameters() : array
     {
         return [
             'for'=> request()->query('search_for'),
             'value'=> request()->query('search_value'),
-            'timestamp'=> $this->timestamp(),
-            'dir'=> $this->orderByDir(),
-            'order_by'=> request()->query('order_by') ?? $this->timestamp(),
+            'timestamp'=> static::timestamp(),
+            'dir'=> static::orderByDir(),
+            'order_by'=> request()->query('order_by') ?? static::timestamp(),
         ];
     }
 
-
-    /**
-     * @return Builder
-     */
-    public function applySearch() : Builder
+    public static function applySearch(Builder $builder = null) : Builder
     {
-        $this->builder = $this->applyOptionalSearchFilters($this->builder);
-        $this->builder = $this->applyQueries($this->builder);
-        return $this->builder;
+       $builder ??= static::builder();
+       $builder = static::accToTrash($builder);
+       $search = static::searchParameters();
+
+        (!empty($search['for']) and ! is_null($search['value'])) and $builder = $builder->where($search['for'],'like','%'.$search['value'].'%');
+        $builder = static::applyDateFilter($builder);
+
+        $operators_keyed_by_column = collect(static::filters());
+        $searched_columns = $operators_keyed_by_column->reject(fn($operator,$column_name) => is_null(request()->query($column_name)));
+        $search_args = $operators_keyed_by_column->intersectByKeys($searched_columns);
+
+        $search_args->each(function ($operator,$column_name) use ($builder){
+            $query_params = explode(',',request()->query($column_name));
+            if (count($query_params) == 1)
+                $builder = ($operator == '%like%') ? static::likeAny($builder,$column_name) : $builder->where($column_name,$operator,head($query_params));
+            else $builder->whereIn($column_name,$query_params);
+        });
+
+        return $builder->orderBy($search['order_by'],$search['dir']);
     }
 
-    /**
-     * @param ...$args
-     * @return Builder
-     */
-    public function applyQueries(...$args) : Builder
-    {
-        (!empty($this->search['for']) and ! is_null($this->search['value'])) and $this->builder = $this->builder->where($this->search['for'],'like','%'.$this->search['value'].'%');
-
-        $search_args = collect($args)->except('search_for','search_value','timestamp','dir','date')->filter(fn($arg) => ! is_null(request()->query($arg)));
-        $search_args->each(fn($param) => $this->builder = $this->builder->where($param,'like','%'.request()->query($param).'%'));
-        return $this->builder->orderBy($this->search['order_by'],$this->search['dir']);
-    }
-
-    /**
-     * @param Builder $builder
-     * @return Builder
-     */
-    public function applyOptionalSearchFilters(Builder $builder) : Builder
-    {
-        return $builder;
-    }
     /**
      * @param Builder $builder
      * @param string|null $date_column
      * @param string $date_query_key
      * @return Builder
      */
-    public function dateFilter(Builder $builder, string $date_column = null, string $date_query_key = 'date') : Builder
+    public static function applyDateFilter(Builder $builder, string $date_column = null, string $date_query_key = 'date') : Builder
     {
-        $date_column ??= $this->timestamp();
-        $date_array = explode(',' ,request()->query($date_query_key));
-        return count($date_array) == 1 ? $builder->whereDate($this->fullColumnName($date_column),$this->dbDate(head($date_array)))
-            : $builder->whereBetween($this->fullColumnName($date_column),[$this->dbDate(head($date_array),'startOfDay'),$this->dbDate(last($date_array),'endOfDay')]);
+        if (! empty(request()->query($date_query_key))):
+            $date_column ??= static::timestamp();
+            $date_array = explode(',' ,request()->query($date_query_key));
+            return count($date_array) == 1
+                              ? $builder->whereDate(static::fullColumnName($date_column),static::dbDate(head($date_array)))
+                             : $builder->whereBetween(static::fullColumnName($date_column),[static::dbDate(head($date_array),'startOfDay'),static::dbDate(last($date_array),'endOfDay')]);
+        else: return $builder;
+        endif;
     }
 
+    /**
+     * @param Builder $builder
+     * @return mixed
+     */
+    public static function accToTrash (Builder $builder) : Builder
+    {
+        $trash = (string)request()->query('trash');
+        $acc_to_trash = optional(['included' => 'withTrashed', 'excluded' => 'withoutTrashed', 'only' => 'onlyTrashed']);
+        return $builder->{$acc_to_trash[$trash] ?? $acc_to_trash['excluded']}();
+    }
+
+    /**
+     * @param Builder $builder
+     * @param string $column_name
+     * @param string|null $query_key
+     * @return Builder
+     */
+    public static function likeAny (Builder $builder, string $column_name, string $query_key = null) : Builder
+    {
+        $query = request()->query($query_key ?? $column_name);
+        return isset($query) ? $builder->where($column_name,'like','%'.$query.'%') : $builder;
+    }
 
     /**
      * @param $date
@@ -85,7 +106,7 @@ trait BaseQueryCriteria
      * @param string $format
      * @return mixed
      */
-    public function dbDate($date, string $carbon_method = 'startOfDay', array $carbon_method_args = [], string $format = 'Y-m-d H:i:s')
+    public static function dbDate($date, string $carbon_method = 'startOfDay', array $carbon_method_args = [], string $format = 'Y-m-d H:i:s')
     {
         try {
             return Carbon::parse($date)->{$carbon_method}(...$carbon_method_args)->format($format);
@@ -101,10 +122,10 @@ trait BaseQueryCriteria
      * @param string|null $query_key
      * @return Builder
      */
-    public function flagFilter(Builder $builder, string $column, string $operator = '=', string $query_key = null) : Builder
+    public static function flagFilter(Builder $builder, string $column, string $operator = '=', string $query_key = null) : Builder
     {
         $query_array = explode(',' ,request()->query($query_key ?? $column));
-        return count($query_array) == 1  ?  $builder->where($this->fullColumnName($column),$operator,head($query_array)) : $builder->whereIn($this->fullColumnName($column),$query_array);
+        return count($query_array) == 1  ?  $builder->where(static::fullColumnName($column),$operator,head($query_array)) : $builder->whereIn(static::fullColumnName($column),$query_array);
     }
 
     /**
@@ -113,11 +134,11 @@ trait BaseQueryCriteria
      * @param string|null $query_key
      * @return Builder
      */
-    public function actualOrRangeFilter(Builder $builder, string $column, string $query_key = null) : Builder
+    public static function actualOrRangeFilter(Builder $builder, string $column, string $query_key = null) : Builder
     {
         $query_array = explode(',' ,request()->query($query_key ?? $column));
-        return count($query_array) == 1  ?  $builder->where($this->fullColumnName($column),head($query_array))
-            : $builder->whereBetween($this->fullColumnName($column),[head($query_array),last($query_array)]);
+        return count($query_array) == 1  ?  $builder->where(static::fullColumnName($column),head($query_array))
+            : $builder->whereBetween(static::fullColumnName($column),[head($query_array),last($query_array)]);
     }
 
     /**
@@ -127,9 +148,9 @@ trait BaseQueryCriteria
      * @param array $method_args
      * @return Builder
      */
-    public function applyOrSkip(Builder $builder, string $query_key, string $method, array $method_args = []) : Builder
+    public static function applyOrSkip(Builder $builder, string $query_key, string $method, array $method_args = []) : Builder
     {
-        return ! is_null(request()->query($query_key)) ? $this->{$method}(...$method_args) : $builder;
+        return ! is_null(request()->query($query_key)) ? static::{$method}(...$method_args) : $builder;
     }
 
     /**
@@ -139,14 +160,14 @@ trait BaseQueryCriteria
      * @param string $query_key
      * @return string
      */
-    public function orderByProbability(array $main_table_columns, array $probable = [], string $query_key = 'order_by') : string
+    public static function orderByProbability(array $main_table_columns, array $probable = [], string $query_key = 'order_by') : string
     {
         $order_by = request()->query($query_key);
         if (!empty($order_by)){
-            $prepared = $this->prepareOrderBy($order_by,$main_table_columns);
-            return in_array($prepared['order_by'],[...$prepared['main_table_columns'],...$probable]) ? $prepared['order_by'] : $this->createdAt();
+            $prepared = static::prepareOrderBy($order_by,$main_table_columns);
+            return in_array($prepared['order_by'],[...$prepared['main_table_columns'],...$probable]) ? $prepared['order_by'] : static::createdAt();
         }
-        return $this->createdAt();
+        return static::createdAt();
     }
 
     /**
@@ -154,27 +175,27 @@ trait BaseQueryCriteria
      * @param array $main_table_columns
      * @return array
      */
-    private function prepareOrderBy(string $order_by, array $main_table_columns) : array
+    private static function prepareOrderBy(string $order_by, array $main_table_columns) : array
     {
-        $table_columns = array_merge(array_combine($main_table_columns,$this->prepareMainTableColumns($main_table_columns)),$this->timestamps());
+        $table_columns = array_merge(array_combine($main_table_columns,static::prepareMainTableColumns($main_table_columns)),static::timestamps());
         $column = array_search($order_by,$table_columns);
         $column and $order_by = $table_columns[$column];
         in_array($order_by,array_keys($table_columns)) and $order_by = $table_columns[$order_by];
         return ['main_table_columns'=> array_values($table_columns),'order_by'=> $order_by];
     }
 
-    private function prepareMainTableColumns(array $main_table_columns) : array
+    private static function prepareMainTableColumns(array $main_table_columns) : array
     {
-        return array_map(fn($column) => $this->fullColumnName($column),$main_table_columns);
+        return array_map(fn($column) => static::fullColumnName($column),$main_table_columns);
     }
 
     /**
      * declared timestamps keyed by generic others used as keys & values in preparing orderBy column to avoid ambiguous SQL error
      * @return string[]
      */
-    private function timestamps() : array
+    private static function timestamps() : array
     {
-        return ['created_at' => $this->createdAt(),'updated_at'=> $this->updatedAt(),'deleted_at'=> $this->deletedAt()];
+        return ['created_at' => static::createdAt(),'updated_at'=> static::updatedAt(),'deleted_at'=> static::deletedAt()];
     }
 
 
@@ -182,34 +203,34 @@ trait BaseQueryCriteria
      * @param string $created_at
      * @return string
      */
-    public function createdAt(string $created_at = 'created_at') : string
+    public static function createdAt(string $created_at = 'created_at') : string
     {
-        return $this->fullColumnName($created_at);
+        return static::fullColumnName($created_at);
     }
 
     /**
      * @param string $updated_at
      * @return string
      */
-    public function updatedAt(string $updated_at = 'updated_at') : string
+    public static function updatedAt(string $updated_at = 'updated_at') : string
     {
-        return $this->fullColumnName($updated_at);
+        return static::fullColumnName($updated_at);
     }
 
     /**
      * @param string $deleted_at
      * @return string
      */
-    public function deletedAt(string $deleted_at = 'deleted_at') : string
+    public static function deletedAt(string $deleted_at = 'deleted_at') : string
     {
-        return $this->fullColumnName($deleted_at);
+        return static::fullColumnName($deleted_at);
     }
 
     /**
      * order by direction
      * @return string
      */
-    private function orderByDir() : string
+    private static function orderByDir() : string
     {
         return request()->query('dir') == 'asc' ? 'asc' : 'desc';
     }
@@ -218,16 +239,16 @@ trait BaseQueryCriteria
      * @param string $column_name
      * @return string
      */
-    public function fullColumnName(string $column_name) : string
+    public static function fullColumnName(string $column_name) : string
     {
-        return $this->main_table.'.'.$column_name;
+        return static::mainTable().'.'.$column_name;
     }
 
     /**
      * @param string $timestamp_query_key
      * @return string
      */
-    private function timestamp(string $timestamp_query_key = 'timestamp') : string
+    private static function timestamp(string $timestamp_query_key = 'timestamp') : string
     {
         $time_stamp = request()->query($timestamp_query_key);
         return in_array($time_stamp,['created_at','updated_at','deleted_at']) ? $time_stamp : 'created_at';

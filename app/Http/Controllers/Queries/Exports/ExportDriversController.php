@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Queries\Exports;
 
-use App\DriverTransaction;
+use App\Driver;
 use App\Exports\DriversExport;
 use App\Http\Controllers\Controller;
+use App\Traits\Query;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -18,6 +20,6 @@ class ExportDriversController extends Controller
      */
     public function __invoke(Request $request)
     {
-        return (new DriversExport(DriverTransaction::query()))->download();
+        return (new DriversExport(Driver::applySearch()))->download();
     }
 }

@@ -17,12 +17,12 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
 class User extends Authenticatable implements JWTSubject
 {
     use Notifiable, Searchable;
-    
+
     protected $guarded = [];
 
     protected $connection = 'mysql2';
 
-    protected $hidden = ['password'];
+    protected $hidden = ['password','pin_code','otp_code'];
 
     /**
      * Send the password reset notification.
@@ -30,7 +30,7 @@ class User extends Authenticatable implements JWTSubject
      * @param  string  $token
      * @param  string  $type
      * @return void
-     */ 
+     */
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordNotification($token, "users"));
@@ -66,7 +66,7 @@ class User extends Authenticatable implements JWTSubject
         $this->attributes['name'] = ucwords($value);
     }
 
-    public function scopeSearch($query, $args) 
+    public function scopeSearch($query, $args)
     {
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
@@ -82,7 +82,7 @@ class User extends Authenticatable implements JWTSubject
             ->decrement('wallet_balance', $balance);
     }
 
-    /*public function scopeAssignedOrNot($query, $args) 
+    /*public function scopeAssignedOrNot($query, $args)
     {
         if ($args['assigned']) {
             return $query->whereIn('id', PartnerUser::getIds($args));
@@ -91,17 +91,17 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
-    public function scopeAssigned($query, $args) 
+    public function scopeAssigned($query, $args)
     {
         return $query->whereIn('id', PartnerUser::getIds($args));
     }
 
-    public function scopeNotAssigned($query, $args) 
+    public function scopeNotAssigned($query, $args)
     {
         return $query->whereNotIn('id', PartnerUser::getIds($args));
     }
 
-    public function scopeUnsubscribed($query, $args) 
+    public function scopeUnsubscribed($query, $args)
     {
         $businessTripUsers = BusinessTripSubscription::select('user_id')
             ->where('trip_id', $args['trip_id']);
@@ -146,4 +146,3 @@ class User extends Authenticatable implements JWTSubject
             ->decrement('nfc_balance', $balance);
     }*/
 }
- 
