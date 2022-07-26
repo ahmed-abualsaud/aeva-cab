@@ -195,11 +195,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             $input['s_lng'] = $args['s_lng'];
             $route = $this->calculateEstimatedRoute($args['s_lat'], $args['s_lng'], $request->d_lat, $request->d_lng);
             $payload['summary'] = $route;
-            $input['costs'] = $this->calculateCosts(
-                $route['distance'], 
-                $route['duration'], 
-                $filtered[0]['car_type_id']
-            );
+            $input['costs'] = $this->calculateCosts($route['distance'], $route['duration'], $filtered[0]['car_type_id']);
         }
 
         $input['status'] = 'Sending';
