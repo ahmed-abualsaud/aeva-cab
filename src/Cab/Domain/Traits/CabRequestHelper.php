@@ -345,11 +345,11 @@ trait CabRequestHelper
 
     public function calculateRealRoute($s_lat, $s_lng, $d_lat, $d_lng, $locations)
     {
-        if (gettype($locations) == 'array') 
+        if (!empty($locations) && gettype($locations) == 'array') 
         {
-            usort($locations, fn($a, $b) =>  $a->id > $b->id);
+            array_multisort(array_column($locations, 'id'), SORT_ASC, $locations);
             foreach ($locations as $location) {
-                $path[] = $location->latitude.','.$location->longitude;
+                $path[] = $location['latitude'].','.$location['longitude'];
             }
             $locations = implode('|', $path);
         }
