@@ -51,7 +51,7 @@ trait CabRequestHelper
                 'total_working_time' => ($total_working_time / 60)
             ]);
 
-            $total_working_time = $total_working_time / 60 + $driver->total_working_time;
+            $total_working_time = $total_working_time / 60 + $driverStats->total_working_time;
             $driverStats->update([
                 'total_working_time' => $total_working_time,
                 'activity_updated_at'=> $activity_updated_at
