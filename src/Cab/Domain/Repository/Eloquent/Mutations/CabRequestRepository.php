@@ -373,8 +373,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         $distance = 0;
-        $last_location =  CabRequestEntry::getLastLocation($args['id']);
-        if (array_key_exists('locations', $args) && is_array($args['locations']) && count($args['locations']) > 0) 
+        $last_location = CabRequestEntry::getLastLocation($args['id']);
+        if (array_key_exists('locations', $args) && is_array($args['locations']) && !empty($args['locations'])) 
         {
             $locations = [];
             if ($last_location) {
