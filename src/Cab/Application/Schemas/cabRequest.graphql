@@ -19,6 +19,13 @@ input CabRequestInput {
   d_lat: Float
   d_lng: Float
   notes: String
+  locations: [Location]
+}
+
+input Location {
+  latitude: Float
+  longitude: Float
+  id: Int
 }
 
 type CabRequest {

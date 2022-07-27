@@ -52,6 +52,10 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.request_already_paid'));
         }
 
+        if ($args['costs'] < $request->remaining || empty($args['costs'])) {
+            throw new CustomException(__('lang.amount_paid_less_than_amount_requested'));
+        }
+
         $args['uuid'] = Str::orderedUuid();
         $input =  Arr::except($args, ['directive']);
         $input['user_id'] = $request->user_id;
@@ -60,10 +64,9 @@ class CabRequestTransactionRepository extends BaseRepository
         $this->updateDriverStatus($request->driver_id, 'Online');
         $payment_method = strtolower($request->history['sending']['payment_method']);
 
-        if ($args['payment_method'] == 'Cash' && str_contains($payment_method, 'cash')) {
+        if ($args['payment_method'] == 'Cash' && str_contains($payment_method, 'cash')) 
+        {
             $refund = $this->cashPay($args, $request);
-            $request->update(['status' => 'Completed', 'paid' => true]);
-
             $trx = $this->model->create($input);
             if ($request->costs > $request->costs_after_discount) {
                 $input['costs'] = $request->costs - $request->costs_after_discount;
@@ -71,6 +74,7 @@ class CabRequestTransactionRepository extends BaseRepository
                 $this->model->create($input);
             } 
 
+            $request->update(['status' => 'Completed', 'paid' => true, 'remaining' => 0]);
             $trx->debt = 0;
             $socket_request = $request->toArray();
             $socket_request['refund'] = $refund;
@@ -78,18 +82,22 @@ class CabRequestTransactionRepository extends BaseRepository
             return $trx;
         }
 
-        if ($args['payment_method'] == 'Wallet' && str_contains($payment_method, 'wallet')) {
+        if ($args['payment_method'] == 'Wallet' && str_contains($payment_method, 'wallet')) 
+        {
             $paid = $this->walletPay($args, $request);
             if ($paid < $args['costs']) {
                 $input['costs'] = $paid;
             } 
-            
-            if ($paid == $args['costs']) {
-                $request->update(['status' => 'Completed', 'paid' => true]);
-            }
 
             $trx = $this->model->create($input);
             $trx->debt = $args['costs'] - $paid;
+
+            if ($paid == $args['costs']) {
+                $request->update(['status' => 'Completed', 'paid' => true, 'remaining' => 0]);
+            } else {
+                $request->update(['remaining' => $trx->debt]);
+            }
+
             $socket_request = $request->toArray();
             $socket_request['refund'] = 0;
             $this->notifyUserOfPayment($socket_request);

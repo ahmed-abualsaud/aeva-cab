@@ -38,6 +38,7 @@ class CreateCabRequestsTable extends Migration
             $table->boolean('paid')->default(0);
             $table->boolean('rated')->default(0);
             $table->double('costs', 8, 3)->nullable();
+            $table->double('remaining', 8, 3)->nullable();
             $table->string('s_address')->nullable();
             $table->double('s_lat', 15, 8);
             $table->double('s_lng', 15, 8);
