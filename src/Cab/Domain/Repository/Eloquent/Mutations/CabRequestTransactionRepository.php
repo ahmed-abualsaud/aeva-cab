@@ -52,7 +52,7 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.request_already_paid'));
         }
 
-        if ($args['costs'] < $request->remaining) {
+        if ($args['costs'] < $request->remaining || empty($args['costs'])) {
             throw new CustomException(__('lang.amount_paid_less_than_amount_requested'));
         }
 
