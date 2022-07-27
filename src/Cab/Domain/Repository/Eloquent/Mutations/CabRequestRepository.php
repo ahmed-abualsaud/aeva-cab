@@ -417,6 +417,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['id'] = $args['id'];
         $input['status'] = 'Ended';
         $input['costs'] = $this->calculateCosts($distance, $duration, $vehicle[0]['car_type_id'], $request->history['started']['waiting_time']);
+        $input['remaining'] = $input['costs'];
         $input['history'] = array_merge($request->history, $payload);
         $input['map_url'] = CabRequestEntry::buildMapURL($args['id']);
 
