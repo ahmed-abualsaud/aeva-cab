@@ -174,6 +174,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $filtered = array_values($filtered);
         if ($request->status == 'Searching') {
             $input['costs'] = $filtered[0]['price'];
+            $input['remaining'] = $input['costs'];
         }
 
         $payload = [
@@ -198,6 +199,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             $route = $this->calculateEstimatedRoute($args['s_lat'], $args['s_lng'], $request->d_lat, $request->d_lng);
             $payload['summary'] = $route;
             $input['costs'] = $this->calculateCosts($route['distance'], $route['duration'], $filtered[0]['car_type_id']);
+            $input['remaining'] = $input['costs'];
         }
 
         $input['status'] = 'Sending';
@@ -372,7 +374,26 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $distance = 0;
         $last_location =  CabRequestEntry::getLastLocation($args['id']);
-        if($last_location) { $distance = $last_location->distance; }
+        if (array_key_exists('locations', $args) && is_array($args['locations']) && count($args['locations']) > 0) 
+        {
+            $locations = [];
+            if ($last_location) {
+                $locations = explode('|', $last_location->path);
+            }
+            
+            if (count($args['locations']) >= count($locations)) {
+                $locations = $args['locations'];
+            }
+
+            if(gettype($locations[0]) == 'string') {
+                $locations = $last_location->path;
+            }
+
+            $distance = $this->calculateRealRoute($request->s_lat, $request->s_lng, $request->d_lat, $request->d_lng, $locations)['distance'];
+        } 
+        else {
+            if($last_location && empty($distance)) { $distance = $last_location->distance; }
+        }
 
         $duration = (time() - strtotime($request->history['started']['at']));
 
@@ -608,7 +629,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['d_lat'] = $args['d_lat'];
         $input['d_lng'] = $args['d_lng'];
         $input['d_address'] = $args['d_address'];
-        $input['costs'] = $filtered[0]['price']; 
+        $input['costs'] = $filtered[0]['price'];
+        $input['remaining'] = $input['costs'];
         $input['history'] = array_merge($request->history, $payload);
         $request = $this->updateRequest($request, $input);
 
@@ -677,6 +699,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['d_lng'] = $args['d_lng'];
         $input['d_address'] = $args['d_address'];
         $input['costs'] = ($action == 'start') ? $filtered[0]['price'] + $request->costs : $filtered[0]['price']; 
+        $input['remaining'] = $input['costs'];
         $input['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $input);

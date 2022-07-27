@@ -331,19 +331,39 @@ trait CabRequestHelper
 
     public function calculateEstimatedRoute($s_lat, $s_lng, $d_lat, $d_lng) 
     {
-        $response = Http::get(config('custom.google_maps_url').'&origin='.$s_lat.','.$s_lng.'&destination='.$d_lat.','.$d_lng);
+        $distance = 0;
+        $duration = 0;
+        $response = Http::get(config('custom.google_maps_url').'&%2520waypoints=optimize:true%7C&origin='.$s_lat.','.$s_lng.'&destination='.$d_lat.','.$d_lng);
         if ($response['status'] ==  'OK') {
             foreach ($response['routes'][0]['legs'] as $leg) {
-                $distance = $leg['distance']['value'];
-                $duration = $leg['duration']['value'];
+                $distance += $leg['distance']['value'];
+                $duration += $leg['duration']['value'];
             }
-            return [
-                'distance' => $distance,
-                'duration' => $duration
-            ];
+        }
+        return ['distance' => $distance, 'duration' => $duration];
+    }
+
+    public function calculateRealRoute($s_lat, $s_lng, $d_lat, $d_lng, $locations)
+    {
+        if (gettype($locations) == 'array') 
+        {
+            usort($locations, fn($a, $b) =>  $a->id > $b->id);
+            foreach ($locations as $location) {
+                $path[] = $location->latitude.','.$location->longitude;
+            }
+            $locations = implode('|', $path);
         }
 
-        return ['distance' => 0, 'duration' => 0];
+        $distance = 0;
+        $duration = 0;
+        $response = Http::get(config('custom.google_maps_url').'&waypoints='.$locations.'&origin='.$s_lat.','.$s_lng.'&destination='.$d_lat.','.$d_lng);
+        if ($response['status'] ==  'OK') {
+            foreach ($response['routes'][0]['legs'] as $leg) {
+                $distance += $leg['distance']['value'];
+                $duration += $leg['duration']['value'];
+            }
+        }
+        return ['distance' => $distance, 'duration' => $duration]; 
     }
 
     protected function getXAccessToken()
