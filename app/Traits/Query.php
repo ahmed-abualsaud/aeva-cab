@@ -45,17 +45,27 @@ trait Query
         $builder = static::applyDateFilter($builder);
 
         $operators_keyed_by_column = collect(static::filters());
-        $searched_columns = $operators_keyed_by_column->reject(fn($operator,$column_name) => is_null(request()->query($column_name)));
+        $searched_columns = $operators_keyed_by_column->reject(fn($operator,$column_name) => ! static::isAcceptedValue(request()->query($column_name)) or is_null(request()->query($column_name)));
         $search_args = $operators_keyed_by_column->intersectByKeys($searched_columns);
 
         $search_args->each(function ($operator,$column_name) use ($builder){
             $query_params = explode(',',request()->query($column_name));
             if (count($query_params) == 1)
                 $builder = ($operator == '%like%') ? static::likeAny($builder,$column_name) : $builder->where($column_name,$operator,head($query_params));
-            else $builder->whereIn($column_name,$query_params);
+            else $builder = $builder->whereIn($column_name,$query_params);
         });
 
         return $builder->orderBy($search['order_by'],$search['dir']);
+    }
+
+    /**
+     * @param $value
+     * @return bool
+     */
+    public static function isAcceptedValue($value)
+    {
+        $checked_value = trim($value);
+        return (is_numeric($checked_value) or is_bool($value)) or ! empty($checked_value);
     }
 
     /**
