@@ -166,5 +166,6 @@ return [
     'ride_completed_body' => 'Ride completed successfully.',
     'request_already_accepted_by_another_driver' => 'Request already accepted by another driver',
     'update_status_failed' => 'Update status failed, a trip is in progress that you have to finish first',
-    'request_already_paid' => 'Request already paid'
+    'request_already_paid' => 'Request already paid',
+    'amount_can_not_be_zero' => 'Amount paid cannot be zero'
 ];

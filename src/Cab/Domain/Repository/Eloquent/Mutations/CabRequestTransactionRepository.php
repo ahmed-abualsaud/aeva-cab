@@ -43,16 +43,15 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new \Exception(__('lang.request_not_found'));
         }
 
-        $sum = $this->model->where('request_id', $request->id)
-            ->selectRaw('request_id, sum(costs) as amount')
-            ->whereIn('payment_method', ['Cash', 'Wallet'])
-            ->groupBy('request_id')->first();
-
-        if (!is_null($sum) && $sum->amount >= $request->costs_after_discount) {
+        if ($request->paid) {
             throw new CustomException(__('lang.request_already_paid'));
         }
+        
+        if (empty($args['costs'])) {
+            throw new CustomException(__('lang.amount_can_not_be_zero'));
+        }
 
-        if ($args['costs'] < $request->remaining || empty($args['costs'])) {
+        if ($args['costs'] < $request->remaining) {
             throw new CustomException(__('lang.amount_paid_less_than_amount_requested'));
         }
 

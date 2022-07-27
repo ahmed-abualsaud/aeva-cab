@@ -373,8 +373,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         $distance = 0;
-        $last_location =  CabRequestEntry::getLastLocation($args['id']);
-        if (array_key_exists('locations', $args) && is_array($args['locations']) && count($args['locations']) > 0) 
+        $last_location = CabRequestEntry::getLastLocation($args['id']);
+        if (array_key_exists('locations', $args) && is_array($args['locations']) && !empty($args['locations'])) 
         {
             $locations = [];
             if ($last_location) {
@@ -414,13 +414,13 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $vehicle = array_values($vehicle);
 
-        $args['costs'] = $this->calculateCosts($distance, $duration, $vehicle[0]['car_type_id'], $request->history['started']['waiting_time']);
+        $input['id'] = $args['id'];
+        $input['status'] = 'Ended';
+        $input['costs'] = $this->calculateCosts($distance, $duration, $vehicle[0]['car_type_id'], $request->history['started']['waiting_time']);
+        $input['history'] = array_merge($request->history, $payload);
+        $input['map_url'] = CabRequestEntry::buildMapURL($args['id']);
 
-        $args['status'] = 'Ended';
-        $args['history'] = array_merge($request->history, $payload);
-        $args['map_url'] = CabRequestEntry::buildMapURL($args['id']);
-
-        $request = $this->updateRequest($request, $args);
+        $request = $this->updateRequest($request, $input);
 
         $this->addReferralBonus($request->driver_id);
 
