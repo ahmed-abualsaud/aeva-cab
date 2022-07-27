@@ -142,12 +142,12 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             throw new CustomException(__('lang.driver_not_found'));
         }
 
-        if (array_key_exists('phone', $args) && $args['phone'] && is_null($driver->phone)) {
-            $input['phone_verified_at'] = date('Y-m-d H:i:s');
-        }
-
         if (array_key_exists('national_id', $args) && $args['national_id']) {
             $input['national_id'] = $args['national_id'];
+        }
+
+        if (array_key_exists('phone', $args) && $args['phone'] && is_null($driver->phone)) {
+            $input['phone_verified_at'] = date('Y-m-d H:i:s');
         }
 
         if (array_key_exists('avatar', $args) && $args['avatar']) {
@@ -204,7 +204,11 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $driver->update(['device_id' => $args['device_id']]);
         }
 
-        $this->handleAccessTokenCache('driver', $driver, $token);
+        try {
+            $this->handleAccessTokenCache('driver', $driver, $token);
+        } catch (\Exception $e) {
+            throw new CustomException($e->getMessage());
+        }
 
         return [
             'access_token' => $token,
