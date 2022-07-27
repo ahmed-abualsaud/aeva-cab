@@ -45,6 +45,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
         $sum = $this->model->where('request_id', $request->id)
             ->selectRaw('request_id, sum(costs) as amount')
+            ->whereIn('payment_method', ['Cash', 'Wallet'])
             ->groupBy('request_id')->first();
 
         if (!is_null($sum) && $sum->amount >= $request->costs_after_discount) {
@@ -170,6 +171,10 @@ class CabRequestTransactionRepository extends BaseRepository
             $user = User::findOrFail($user_id);
         } catch (\Exception $e) {
             throw new CustomException(__('lang.user_not_found'));
+        }
+
+        if(is_null($user->wallet)) {
+            return 0;
         }
 
         $paid = $costs;

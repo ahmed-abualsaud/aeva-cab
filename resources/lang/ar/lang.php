@@ -166,4 +166,5 @@ return [
     'ride_completed_body' => 'تم اكمال الرحلة بنجاح',
     'request_already_accepted_by_another_driver' => 'تم قبول الرحلة بواسطة سائق اخر',
     'update_status_failed' => 'لا يمكن تحديث حالتك, هناك رحلة جارية الان يجب أكمالها أولا',
+    'request_already_paid' => 'الرحلة مدفوعة بالفعل'
 ];
