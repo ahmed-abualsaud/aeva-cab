@@ -13,7 +13,6 @@ yarn-error.log
 .vapor/
 .env.production
 .env.staging
-.env.uat
-/bootstrap/cache/services.php
-/bootstrap/cache/config.php
+bootstrap/cache/services.php
+bootstrap/cache/config.php
 .idea/
