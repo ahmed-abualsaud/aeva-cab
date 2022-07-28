@@ -20,6 +20,6 @@ class ExportDriversController extends Controller
      */
     public function __invoke(Request $request)
     {
-        return (new DriversExport(Driver::applySearch()))->download();
+        return (new DriversExport(Driver::searchApplied()))->download();
     }
 }

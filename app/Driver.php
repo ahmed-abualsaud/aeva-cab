@@ -1,9 +1,10 @@
-<?php
+<?php /** @noinspection PhpUnnecessaryLocalVariableInspection */
 
 namespace App;
 
 use App\Settings;
 use App\PartnerDriver;
+use App\Traits\Filterable;
 use App\Traits\Query;
 use App\Traits\Searchable;
 
@@ -24,6 +25,7 @@ class Driver extends Authenticatable implements JWTSubject
 {
     use Notifiable;
     use Searchable;
+    use Filterable;
     use SoftDeletes;
     use Query;
 /*
@@ -133,7 +135,6 @@ class Driver extends Authenticatable implements JWTSubject
         if (array_key_exists('fleet_id', $args) && $args['fleet_id']) {
             $query->where('fleet_id', $args['fleet_id']);
         }
-
         return $query;
     }
 
@@ -152,6 +153,7 @@ class Driver extends Authenticatable implements JWTSubject
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
+        return $query;
     }
 
     public function scopeCabStatus($query, $args)
@@ -172,6 +174,7 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function scopeNearby($query, $args)
     {
+        if (isset($args['lng'],$args['lat'])):
         $radius = Settings::where('name', 'Search Radius')->first()->value;
 
         $query = $query->selectRaw('id,
@@ -182,8 +185,9 @@ class Driver extends Authenticatable implements JWTSubject
             )
             ->having('distance', '<=', $radius)
             ->where('cab_status', 'Online')
+            ->groupBy('id')
             ->orderBy('distance','asc');
-
+        endif;
         return $query;
     }
 
@@ -211,4 +215,25 @@ class Driver extends Authenticatable implements JWTSubject
         }
     }
 
+    public function scopeApprovedOrNot($query,$args)
+    {
+        if (array_key_exists('approved', $args)){
+            $query = is_null($args['approved']) ? $query->whereNull('approved') : $query->where('approved','=',$args['approved']);
+        }
+        return $query;
+    }
+
+    public function scopeSearchApplied($query)
+    {
+        $args = request()->query();
+        self::scopeSearch($query,$args);
+        self::scopeFleet($query,$args);
+        self::scopeApprovedOrNot($query,$args);
+        self::scopeCabStatus($query,$args);
+        self::scopeTitle($query,$args);
+        self::scopeNearby($query,$args);
+        !empty($args['created_at']) and $query = self::dateFilter($args['created_at'],$query,self::getTable().'.created_at');
+        !empty($args['updated_at']) and $query = self::dateFilter($args['updated_at'],$query,self::getTable().'.updated_at');
+        return self::scopeGetLatest($query,$args);
+    }
 }
