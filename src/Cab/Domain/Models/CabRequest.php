@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection DuplicatedCode */
 
 namespace Aeva\Cab\Domain\Models;
 
@@ -137,6 +137,7 @@ class CabRequest extends Model
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
+        return $query;
     }
 
     public function scopeFilter($query, $args)
@@ -156,6 +157,7 @@ class CabRequest extends Model
         if (array_key_exists('period', $args) && $args['period']) {
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
+        return $query;
     }
 
     public function scopePending($query, $args)
@@ -197,5 +199,16 @@ class CabRequest extends Model
             $discount_rate = $promoCode->max_discount;
         }
         return floor($discount_rate);
+    }
+
+
+    public function scopeSearchApplied($query)
+    {
+        $args = request()->query();
+        self::scopeSearch($query,$args);
+        self::scopeFilter($query,$args);
+        !empty($args['created_at']) and $query = self::dateFilter($args['created_at'],$query,self::getTable().'.created_at');
+        !empty($args['updated_at']) and $query = self::dateFilter($args['updated_at'],$query,self::getTable().'.updated_at');
+        return self::scopeGetLatest($query,$args);
     }
 }
