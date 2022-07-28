@@ -559,7 +559,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     public function updateDriverCabStatus(array $args)
     {
-        $active_requests = $this->model->live($args)->where('driver_id', $args['driver_id'])->first();
+        $active_requests = $this->model->driverLive($args)->first();
         if($active_requests && in_array($args['cab_status'], ['Offline', 'Online'])) {
             throw new CustomException(__('lang.update_status_failed').' id = '.$active_requests->id);
         }
