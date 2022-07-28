@@ -18,6 +18,6 @@ class ExportCabRequestsController extends Controller
      */
     public function __invoke(Request $request)
     {
-        return (new CabRequestsExport(CabRequest::query()))->download();
+        return (new CabRequestsExport(CabRequest::applySearch()))->download();
     }
 }
