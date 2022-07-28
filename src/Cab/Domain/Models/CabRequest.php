@@ -2,12 +2,12 @@
 
 namespace Aeva\Cab\Domain\Models;
 
-use App\Traits\Query;
 use App\User;
 use App\Driver;
 use App\Vehicle;
 use App\PromoCode;
 
+use App\Traits\Query;
 use App\Traits\Filterable;
 use App\Traits\Searchable;
 
