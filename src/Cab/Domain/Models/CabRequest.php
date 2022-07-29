@@ -61,7 +61,7 @@ class CabRequest extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['costs_after_discount'];
+    protected $appends = ['costs_after_discount', 'discount'];
 
     protected $casts = [
         'history' => 'json',
@@ -107,6 +107,7 @@ class CabRequest extends Model
                             ->where('rated', false);
                 });
         }
+        return $query;
     }
 
     public function scopeDriverLive($query, $args)
@@ -115,6 +116,7 @@ class CabRequest extends Model
             return $query->where('driver_id', $args['driver_id'])
                 ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed']);
         }
+        return $query;
     }
 
     public function scopeWherePending($query, $user_id)
@@ -180,5 +182,20 @@ class CabRequest extends Model
             $discount_rate = $promoCode->max_discount;
         }
         return ($this->costs - $discount_rate);
+    }
+
+    public function getDiscount()
+    {
+        $promoCode = $this->promoCode;
+
+        if ( !($promoCode && $this->costs) ) {return $this->costs;}
+
+        $promoCode = PromoCode::find($promoCode->id);
+        $discount_rate = ($this->costs * $promoCode->percentage / 100);
+
+        if ($discount_rate > $promoCode->max_discount) {
+            $discount_rate = $promoCode->max_discount;
+        }
+        return $discount_rate;
     }
 }

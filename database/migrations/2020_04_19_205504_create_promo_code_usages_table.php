@@ -16,6 +16,7 @@ class CreatePromoCodeUsagesTable extends Migration
         Schema::create('promo_code_usages', function (Blueprint $table) {
             $table->unsignedBigInteger('promo_code_id');
             $table->unsignedBigInteger('user_id');
+            $table->boolean('used')->default(false);
 
             $table->index(['promo_code_id', 'user_id']);
 
