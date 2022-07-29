@@ -43,5 +43,5 @@ return [
 
     'default_verification_code' => env('DEFAULT_VERIFICATION_CODE', 6254),
 
-    'google_maps_url' => env('GOOGLE_MAPS_URL', 'https://maps.googleapis.com/maps/api/directions/json?key='.env('GOOGLE_MAP_KEY', 'AIzaSyA0a4_5jHzBStit_c4_ZM7TPTCO-uNLfoM').'&sensor=false'),
+    'google_maps_url' => env('GOOGLE_MAPS_URL', 'https://maps.googleapis.com/maps/api/directions/json?key='.env('GOOGLE_MAP_KEY', 'AIzaSyDp1TeAL54m5bl6wCFIs4RZj4EPnvElR7g').'&sensor=false'),
 ];

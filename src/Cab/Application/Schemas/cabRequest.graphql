@@ -53,6 +53,7 @@ type CabRequest {
   d_lng: Float
   created_at: String
   costs_after_discount: Float
+  discount: Float
   notes: String
   missed_drivers: [Driver]
 }

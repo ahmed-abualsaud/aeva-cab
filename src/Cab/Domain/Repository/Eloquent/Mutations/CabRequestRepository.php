@@ -6,6 +6,7 @@ use App\User;
 use App\Driver;
 use App\DriverLog;
 use App\DriverStats;
+use App\PromoCodeUsage;
 
 use App\Jobs\SendPushNotification;
 use App\Exceptions\CustomException;
@@ -374,26 +375,27 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $distance = 0;
         $last_location = CabRequestEntry::getLastLocation($args['id']);
-        if (array_key_exists('locations', $args) && is_array($args['locations']) && !empty($args['locations'])) 
-        {
-            $locations = [];
-            if ($last_location) {
-                $locations = explode('|', $last_location->path);
-            }
+        if($last_location && empty($distance)) { $distance = $last_location->distance; }
+        // if (array_key_exists('locations', $args) && is_array($args['locations']) && !empty($args['locations'])) 
+        // {
+        //     $locations = [];
+        //     if ($last_location) {
+        //         $locations = explode('|', $last_location->path);
+        //     }
             
-            if (count($args['locations']) >= count($locations)) {
-                $locations = $args['locations'];
-            }
+        //     if (count($args['locations']) >= count($locations)) {
+        //         $locations = $args['locations'];
+        //     }
 
-            if(gettype($locations[0]) == 'string') {
-                $locations = $last_location->path;
-            }
+        //     if(gettype($locations[0]) == 'string') {
+        //         $locations = $last_location->path;
+        //     }
 
-            $distance = $this->calculateRealRoute($request->s_lat, $request->s_lng, $request->d_lat, $request->d_lng, $locations)['distance'];
-        } 
-        else {
-            if($last_location && empty($distance)) { $distance = $last_location->distance; }
-        }
+        //     $distance = $this->calculateRealRoute($request->s_lat, $request->s_lng, $request->d_lat, $request->d_lng, $locations)['distance'];
+        // } 
+        // else {
+        //     if($last_location && empty($distance)) { $distance = $last_location->distance; }
+        // }
 
         $duration = (time() - strtotime($request->history['started']['at']));
 
@@ -424,6 +426,12 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request = $this->updateRequest($request, $input);
 
         $this->addReferralBonus($request->driver_id);
+
+        if ($request->promo_code_id) {
+            PromoCodeUsage::where('user_id', $request->user_id)
+                ->where('promo_code_id', $request->promo_code_id)
+                ->update(['used' => true]);
+        }
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
@@ -485,6 +493,12 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             $request = $this->updateRequest($request, $args);
             if ($request->driver_id) {
                 $token = $this->driversToken($request->driver_id);
+            }
+
+            if ($request->promo_code_id) {
+                PromoCodeUsage::where('user_id', $request->user_id)
+                    ->where('promo_code_id', $request->promo_code_id)
+                    ->update(['used' => true]);
             }
         }
 
