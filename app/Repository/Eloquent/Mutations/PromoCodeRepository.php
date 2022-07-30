@@ -73,7 +73,14 @@ class PromoCodeRepository extends BaseRepository implements PromoCodeRepositoryI
             $this->updateCabRequestPromoCode($args['request_id'], $promoCode->id);
         }
     
-        PromoCodeUsage::create(['promo_code_id' => $promoCode->id, 'user_id' => $args['user_id'], 'used' => false]);
+        $usage = PromoCodeUsage::where('promo_code_id', $promoCode->id)
+            ->where('user_id', $args['user_id'])
+            ->where('used', false)
+            ->first();
+        
+        if(!$usage) {
+            PromoCodeUsage::create(['promo_code_id' => $promoCode->id, 'user_id' => $args['user_id'], 'used' => false]);
+        }
 
         return $promoCode;
     }
