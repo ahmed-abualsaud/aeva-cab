@@ -196,6 +196,6 @@ class CabRequest extends Model
         if ($discount_rate > $promoCode->max_discount) {
             $discount_rate = $promoCode->max_discount;
         }
-        return $discount_rate;
+        return floor($discount_rate);
     }
 }
