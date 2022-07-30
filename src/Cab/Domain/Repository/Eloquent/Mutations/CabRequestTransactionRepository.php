@@ -72,7 +72,6 @@ class CabRequestTransactionRepository extends BaseRepository
             $socket_request = $request->toArray();
             $socket_request['refund'] = $refund;
             $this->notifyUserOfPayment($socket_request);
-            return $trx;
         }
 
         if ($args['payment_method'] == 'Wallet' && str_contains($payment_method, 'wallet')) 
@@ -94,7 +93,6 @@ class CabRequestTransactionRepository extends BaseRepository
             $socket_request = $request->toArray();
             $socket_request['refund'] = 0;
             $this->notifyUserOfPayment($socket_request);
-            return $trx;
         }
 
         if ($request->costs > $request->costs_after_discount) {
@@ -102,6 +100,8 @@ class CabRequestTransactionRepository extends BaseRepository
             $input['payment_method'] = 'Promo Code Remaining';
             $this->model->create($input);
         } 
+
+        if(!empty($trx)) { return $trx; }
         
         throw new CustomException(__('lang.payment_method_does_not_match'));
     }
