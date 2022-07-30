@@ -181,10 +181,10 @@ class CabRequest extends Model
         if ($discount_rate > $promoCode->max_discount) {
             $discount_rate = $promoCode->max_discount;
         }
-        return ($this->costs - $discount_rate);
+        return ceil($this->costs - $discount_rate);
     }
 
-    public function getDiscount()
+    public function getDiscountAttribute()
     {
         $promoCode = $this->promoCode;
 
