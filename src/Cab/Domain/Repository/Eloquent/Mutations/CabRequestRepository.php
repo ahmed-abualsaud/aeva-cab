@@ -4,6 +4,7 @@ namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 
 use App\User;
 use App\Driver;
+use App\PromoCode;
 use App\DriverLog;
 use App\DriverStats;
 use App\PromoCodeUsage;
@@ -423,15 +424,23 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['history'] = array_merge($request->history, $payload);
         $input['map_url'] = CabRequestEntry::buildMapURL($args['id']);
 
-        $request = $this->updateRequest($request, $input);
-
         $this->addReferralBonus($request->driver_id);
 
         if ($request->promo_code_id) {
+            $promoCode = PromoCode::find($request->promo_code_id);
+            $discount_rate = ($input['costs'] * $promoCode->percentage / 100);
+
+            if ($discount_rate > $promoCode->max_discount) {
+                $discount_rate = $promoCode->max_discount;
+            }
+            $input['remaining'] = ceil($input['costs'] - $discount_rate);
+
             PromoCodeUsage::where('user_id', $request->user_id)
                 ->where('promo_code_id', $request->promo_code_id)
                 ->update(['used' => true]);
         }
+
+        $request = $this->updateRequest($request, $input);
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
