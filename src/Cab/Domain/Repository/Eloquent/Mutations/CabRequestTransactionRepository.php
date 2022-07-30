@@ -77,11 +77,14 @@ class CabRequestTransactionRepository extends BaseRepository
         if ($args['payment_method'] == 'Wallet' && str_contains($payment_method, 'wallet')) 
         {
             $paid = $this->walletPay($args, $request);
-            if ($paid < $args['costs']) {
-                $input['costs'] = $paid;
-            } 
+            
+            if (!empty($paid)) {
+                if ($paid < $args['costs']) {
+                    $input['costs'] = $paid;
+                } 
+                $trx = $this->model->create($input);
+            }
 
-            $trx = $this->model->create($input);
             $trx->debt = $args['costs'] - $paid;
 
             if ($paid == $args['costs']) {
@@ -180,7 +183,7 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.user_not_found'));
         }
 
-        if(is_null($user->wallet)) {
+        if(empty($user->wallet)) {
             return 0;
         }
 
