@@ -83,7 +83,7 @@ extend type Query @guard(with: ["user"]) {
   # Cab Request
   userCabRequests(user_id: ID!, status: String, first: Int, page:Int): [[CabRequest]]
     @field(resolver: "CabRequestResolver@history")
-  userLiveCabRequest(user_id: ID!): CabRequest @first(scopes: ["userLive"])
+  userLiveCabRequest(user_id: ID!): CabRequest @first(scopes: ["userLive", "getLatest"])
   userScheduledCabRequests(user_id: ID! @eq): [CabRequest] 
     @all(scopes: ["whereScheduled", "getLatest"])
 }
@@ -93,7 +93,7 @@ extend type Query @guard(with: ["driver"]) {
   # Cab Request
   driverCabRequests(driver_id: ID!, status: String, first: Int, page:Int): [[CabRequest]] 
     @field(resolver: "CabRequestResolver@history")
-  driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["driverLive"])
+  driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["driverLive", "getLatest"])
 }
 
 # Admin,Partner,Manager,User Guard
