@@ -67,12 +67,6 @@ class CabRequestTransactionRepository extends BaseRepository
         {
             $refund = $this->cashPay($args, $request);
             $trx = $this->model->create($input);
-            if ($request->costs > $request->costs_after_discount) {
-                $input['costs'] = $request->costs - $request->costs_after_discount;
-                $input['payment_method'] = 'Promo Code Remaining';
-                $this->model->create($input);
-            } 
-
             $request->update(['status' => 'Completed', 'paid' => true, 'remaining' => 0]);
             $trx->debt = 0;
             $socket_request = $request->toArray();
@@ -102,6 +96,12 @@ class CabRequestTransactionRepository extends BaseRepository
             $this->notifyUserOfPayment($socket_request);
             return $trx;
         }
+
+        if ($request->costs > $request->costs_after_discount) {
+            $input['costs'] = floor($request->costs - $request->costs_after_discount);
+            $input['payment_method'] = 'Promo Code Remaining';
+            $this->model->create($input);
+        } 
         
         throw new CustomException(__('lang.payment_method_does_not_match'));
     }
@@ -159,7 +159,7 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         $this->updateUserWallet($request->user_id, $args['costs'], 'Cash', $args['uuid']);
-        $driver_promo_code_remaining = $request->costs - $request->costs_after_discount;
+        $driver_promo_code_remaining = floor($request->costs - $request->costs_after_discount);
         $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_promo_code_remaining), $args['costs'], $driver_promo_code_remaining);
         return $refund;
     }
@@ -167,8 +167,8 @@ class CabRequestTransactionRepository extends BaseRepository
     protected function walletPay($args, $request)
     {
         $paid = $this->updateUserWallet($request->user_id, $args['costs'], 'Aevapay User Wallet', $args['uuid']);
-        $driver_cash = $request->costs - $request->costs_after_discount + $paid;
-        $this->updateDriverWallet($request->driver_id, $driver_cash, 0, $driver_cash);
+        $driver_wallet = floor($request->costs - $request->costs_after_discount) + $paid;
+        $this->updateDriverWallet($request->driver_id, $driver_wallet, 0, $driver_wallet);
         return $paid;
     }
 
