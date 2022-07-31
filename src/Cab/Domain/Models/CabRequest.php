@@ -211,4 +211,15 @@ class CabRequest extends Model
         !empty($args['updated_at']) and $query = self::dateFilter($args['updated_at'],$query,self::getTable().'.updated_at');
         return self::scopeGetLatest($query,$args);
     }
+
+
+    public function scopeSearchApplied($query)
+    {
+        $args = request()->query();
+        self::scopeSearch($query,$args);
+        self::scopeFilter($query,$args);
+        !empty($args['created_at']) and $query = self::dateFilter($args['created_at'],$query,self::getTable().'.created_at');
+        !empty($args['updated_at']) and $query = self::dateFilter($args['updated_at'],$query,self::getTable().'.updated_at');
+        return self::scopeGetLatest($query,$args);
+    }
 }
