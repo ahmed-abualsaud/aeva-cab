@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Queries\Exports;
 
 use App\DriverTransaction;
-use App\Exports\DriversExport;
 use App\Exports\DriverTransactionsExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -19,6 +18,6 @@ class ExportDriverTransactionsController extends Controller
      */
     public function __invoke(Request $request)
     {
-        return (new DriverTransactionsExport(DriverTransaction::applySearch()))->download();
+        return (new DriverTransactionsExport(DriverTransaction::searchApplied()))->download();
     }
 }
