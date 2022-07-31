@@ -131,6 +131,7 @@ return [
     'payment_method_does_not_match' => 'The applied payment method does not match the requested payment method',
     'amount_paid_less_than_amount_requested' => 'The amount paid is less than the amount requested',
     'you_already_applyed_another_promo_code' => 'You already applied another promocode',
+    'empty_user_wallet' => 'The user\'s wallet is empty. Please pay in cash',
 
     // ============================== Aeva Cab ==============================
 
@@ -167,5 +168,5 @@ return [
     'request_already_accepted_by_another_driver' => 'Request already accepted by another driver',
     'update_status_failed' => 'Update status failed, a trip is in progress that you have to finish first',
     'request_already_paid' => 'Request already paid',
-    'amount_can_not_be_zero' => 'Amount paid cannot be zero'
+    'amount_can_not_be_zero' => 'Amount paid cannot be zero',
 ];

@@ -78,12 +78,10 @@ class CabRequestTransactionRepository extends BaseRepository
         {
             $paid = $this->walletPay($args, $request);
             
-            if (!empty($paid)) {
-                if ($paid < $args['costs']) {
-                    $input['costs'] = $paid;
-                } 
-                $trx = $this->model->create($input);
-            }
+            if ($paid < $args['costs']) {
+                $input['costs'] = $paid;
+            } 
+            $trx = $this->model->create($input);
 
             $trx->debt = $args['costs'] - $paid;
 
@@ -184,7 +182,7 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         if(empty($user->wallet)) {
-            return 0;
+            throw new CustomException(__('lang.empty_user_wallet'));
         }
 
         $paid = $costs;

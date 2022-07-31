@@ -131,6 +131,7 @@ return [
     'payment_method_does_not_match' => 'طريقة الدفع المطبقة لا تتطابق مع طريقة الدفع المطلوبة',
     'amount_paid_less_than_amount_requested' => 'المبلغ المدفوع أقل من المبلغ المطلوب',
     'you_already_applyed_another_promo_code' => 'لديك رمز ترويجي أخر مطبق بالفعل',
+    'empty_user_wallet' => 'محفظة العميل فارغة. يرجي الدفع نقدا',
 
     // ============================== Aeva Cab ==============================
 
@@ -167,5 +168,5 @@ return [
     'request_already_accepted_by_another_driver' => 'تم قبول الرحلة بواسطة سائق اخر',
     'update_status_failed' => 'لا يمكن تحديث حالتك, هناك رحلة جارية الان يجب أكمالها أولا',
     'request_already_paid' => 'الرحلة مدفوعة بالفعل',
-    'amount_can_not_be_zero' => 'المبلغ المدفوع يجب ان تكون قيمته اكبر من الصفر'
+    'amount_can_not_be_zero' => 'المبلغ المدفوع يجب ان تكون قيمته اكبر من الصفر',
 ];
