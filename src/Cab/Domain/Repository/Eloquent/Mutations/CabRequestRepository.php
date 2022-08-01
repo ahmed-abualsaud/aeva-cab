@@ -374,9 +374,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.end_ride_failed'));
         }
 
-        $distance = 0;
-        $last_location = CabRequestEntry::getLastLocation($args['id']);
-        if($last_location && empty($distance)) { $distance = $last_location->distance; }
+        // $distance = 0;
+        // $last_location = CabRequestEntry::getLastLocation($args['id']);
         // if (array_key_exists('locations', $args) && is_array($args['locations']) && !empty($args['locations'])) 
         // {
         //     $locations = [];
@@ -399,6 +398,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         // }
 
         $duration = (time() - strtotime($request->history['started']['at']));
+        $distance = $request->history['summary']['distance'];
 
         $payload = [
             'summary' => [
