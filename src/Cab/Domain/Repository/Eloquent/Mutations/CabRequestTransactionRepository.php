@@ -30,6 +30,8 @@ class CabRequestTransactionRepository extends BaseRepository
     use CabRequestHelper;
     use HandleDeviceTokens;
 
+    protected $payment_method;
+
     public function __construct(CabRequestTransaction $model)
     {
         parent::__construct($model);
@@ -46,7 +48,7 @@ class CabRequestTransactionRepository extends BaseRepository
         if ($request->paid) {
             throw new CustomException(__('lang.request_already_paid'));
         }
-        
+
         if (empty($args['costs'])) {
             throw new CustomException(__('lang.amount_can_not_be_zero'));
         }
@@ -60,10 +62,9 @@ class CabRequestTransactionRepository extends BaseRepository
         $input['user_id'] = $request->user_id;
         $input['driver_id'] = $request->driver_id;
 
-        $this->updateDriverStatus($request->driver_id, 'Online');
-        $payment_method = strtolower($request->history['sending']['payment_method']);
+        $this->payment_method = strtolower($request->history['sending']['payment_method']);
 
-        if ($args['payment_method'] == 'Cash' && str_contains($payment_method, 'cash')) 
+        if ($args['payment_method'] == 'Cash' && str_contains($this->payment_method, 'cash')) 
         {
             $refund = $this->cashPay($args, $request);
             $trx = $this->model->create($input);
@@ -74,7 +75,7 @@ class CabRequestTransactionRepository extends BaseRepository
             $this->notifyUserOfPayment($socket_request);
         }
 
-        if ($args['payment_method'] == 'Wallet' && str_contains($payment_method, 'wallet')) 
+        if ($args['payment_method'] == 'Wallet' && str_contains($this->payment_method, 'wallet')) 
         {
             $paid = $this->walletPay($args, $request);
             
@@ -102,7 +103,10 @@ class CabRequestTransactionRepository extends BaseRepository
             $this->model->create($input);
         } 
 
-        if(!empty($trx)) { return $trx; }
+        if(!empty($trx)) {
+            $this->updateDriverStatus($request->driver_id, 'Online');
+            return $trx; 
+        }
         
         throw new CustomException(__('lang.payment_method_does_not_match'));
     }
@@ -181,7 +185,7 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.user_not_found'));
         }
 
-        if(empty($user->wallet)) {
+        if($this->payment_method == 'wallet' && $this->isZero($user->wallet)) {
             throw new CustomException(__('lang.empty_user_wallet'));
         }
 
