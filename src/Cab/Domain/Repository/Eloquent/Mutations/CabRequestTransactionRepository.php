@@ -103,7 +103,7 @@ class CabRequestTransactionRepository extends BaseRepository
             $this->model->create($input);
         } 
 
-        if (empty($request->reamining)) {
+        if (empty($request->remaining)) {
             $this->updateDriverStatus($request->driver_id, 'Online');
         }
 
