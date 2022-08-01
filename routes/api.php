@@ -3,6 +3,7 @@
 use App\Http\Controllers\Queries\Exports\ExportCabRequestsController;
 use App\Http\Controllers\Queries\Exports\ExportDriversController;
 use App\Http\Controllers\Queries\Exports\ExportDriverTransactionsController;
+use App\Http\Controllers\Queries\PartnerController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -106,4 +107,13 @@ Route::group([
     ], function () {
 
     Route::get('export', [ExportCabRequestsController::class,'__invoke']);
+});
+
+Route::group([
+    'prefix' => 'partners',
+    'middleware' => ['auth:admin'],
+    'as' => 'partners.'
+    ], function () {
+
+    Route::get('/', [PartnerController::class,'index']);
 });
