@@ -103,8 +103,11 @@ class CabRequestTransactionRepository extends BaseRepository
             $this->model->create($input);
         } 
 
-        if(!empty($trx)) {
+        if (empty($request->reamining)) {
             $this->updateDriverStatus($request->driver_id, 'Online');
+        }
+
+        if (!empty($trx)) {
             return $trx; 
         }
         
@@ -185,7 +188,7 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.user_not_found'));
         }
 
-        if($this->payment_method == 'wallet' && $this->isZero($user->wallet)) {
+        if($this->payment_method == 'wallet' && is_zero($user->wallet)) {
             throw new CustomException(__('lang.empty_user_wallet'));
         }
 

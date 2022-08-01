@@ -61,6 +61,9 @@
             "Aeva\\Cab\\": "src/Cab",
             "Aeva\\Seats\\": "src/Seats"
         },
+        "files": [
+            "app/Helpers/CabHelper.php"
+        ],
         "classmap": [
             "database/seeds",
             "database/factories"
