@@ -60,7 +60,6 @@ class DriverTransaction extends Model
         if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
-
         return $query;
     }
 
@@ -80,5 +79,21 @@ class DriverTransaction extends Model
         }
 
         return $query;
+    }
+
+    public function scopeGetLatest($query, $args)
+    {
+        return $query->latest();
+    }
+
+    public function scopeSearchApplied($query)
+    {
+        $args = request()->query();
+        self::scopeSearch($query,$args);
+        self::scopePeriod($query,$args);
+        self::scopeType($query,$args);
+        !empty($args['created_at']) and $query = self::dateFilter($args['created_at'],$query,self::getTable().'.created_at');
+        !empty($args['updated_at']) and $query = self::dateFilter($args['updated_at'],$query,self::getTable().'.updated_at');
+        return self::scopeGetLatest($query,$args);
     }
 }
