@@ -558,8 +558,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request = $this->findRequest($args['id']);
         $result = $request->history['searching']['result'];
         $waiting_time = strtotime($request->history['started']['at']) - strtotime($request->history['arrived']['at']);
-        $distance = $request->history['summary']['distance'];
         $duration = time() - strtotime($request->history['started']['at']);
+        $distance = $this->calculateEstimatedRoute($request->s_lat, $request->s_lng, $args['s_lat'], $args['s_lng'])['distance'];
         $route = $this->calculateEstimatedRoute($args['s_lat'], $args['s_lng'], $args['d_lat'], $args['d_lng']);
 
         foreach ($result['vehicles'] as $vehicle) {
