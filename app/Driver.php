@@ -159,7 +159,8 @@ class Driver extends Authenticatable implements JWTSubject
     public function scopeCabStatus($query, $args)
     {
         if (array_key_exists('cabStatus', $args) && $args['cabStatus']) {
-            $query = $query->where('cab_status', $args['cabStatus']);
+            $status_array = explode(',',$args['cabStatus']);
+            $query = count($status_array) == 1 ? $query->where('cab_status', head($status_array)) : $query->whereIn('cab_status',$status_array);
         }
         return $query;
     }
