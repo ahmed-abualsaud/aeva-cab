@@ -374,9 +374,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.end_ride_failed'));
         }
 
-        $distance = 0;
-        $last_location = CabRequestEntry::getLastLocation($args['id']);
-        if($last_location && empty($distance)) { $distance = $last_location->distance; }
+        // $distance = 0;
+        // $last_location = CabRequestEntry::getLastLocation($args['id']);
         // if (array_key_exists('locations', $args) && is_array($args['locations']) && !empty($args['locations'])) 
         // {
         //     $locations = [];
@@ -399,6 +398,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         // }
 
         $duration = (time() - strtotime($request->history['started']['at']));
+        $distance = $request->history['summary']['distance'];
 
         $payload = [
             'summary' => [
@@ -556,176 +556,51 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function redirect(array $args)
     {
         $request = $this->findRequest($args['id']);
-        
-        if ( $request->status == 'Searching' ) {
-            $request = $this->re_search($request, $args);
-        }
-
-        if ( $request->status == 'Sending' ) {
-            $request = $this->re_send($request, $args);
-        }
-
-        if ( $request->status == 'Accepted' ) {
-            $request = $this->re_accept($request, $args);
-        }
-
-        if ( $request->status == 'Arrived' ) {
-            $request = $this->re_arrived($request, $args);
-        }
-
-        if ( $request->status == 'Started' ) {
-            $request = $this->re_start($request, $args);
-        }
-
-        return $request;
-    }
-
-    public function updateDriverCabStatus(array $args)
-    {
-        $active_requests = $this->model->driverLive($args)->first();
-        if($active_requests && in_array($args['cab_status'], ['Offline', 'Online'])) {
-            throw new CustomException(__('lang.update_status_failed').' id = '.$active_requests->id);
-        }
-        return $this->updateDriverStatus($args['driver_id'], $args['cab_status']);
-    }
-
-    protected function re_search($request, $args) 
-    {
-        $args['s_lat'] = $request->s_lat;
-        $args['s_lng'] = $request->s_lng;
-        $route = $this->calculateEstimatedRoute($request->s_lat, $request->s_lng, $args['d_lat'], $args['d_lng']);
-
-        $args['distance'] = $route['distance'];
-        $args['duration'] = $route['duration'];
-        $result = $this->getNearestDriversWithVehicles($args);
-
-        $payload = [
-            'summary' => $route,
-            'searching' => [
-                'at' => $request->history['searching']['at'],
-                'user' => $request->history['searching']['user'],
-                'result' => $result
-            ],
-            're_search' => [
-                'at' => date("Y-m-d H:i:s")
-            ]
-        ];
-
-        $input['d_lat'] = $args['d_lat'];
-        $input['d_lng'] = $args['d_lng'];
-        $input['d_address'] = $args['d_address'];
-        $input['history'] = array_merge($request->history, $payload);
-
-        $request = $this->updateRequest($request, $input);
-        $request['result'] = $result;
-
-        return $request;
-    }
-
-    protected function re_send($request, $args)
-    {
-        $args['s_lat'] = $request->s_lat;
-        $args['s_lng'] = $request->s_lng;
-        $route = $this->calculateEstimatedRoute($request->s_lat, $request->s_lng, $args['d_lat'], $args['d_lng']);
-
-        $args['distance'] = $route['distance'];
-        $args['duration'] = $route['duration'];
-        $result = $this->getNearestDriversWithVehicles($args);
-
-        $filtered = Arr::where($result['vehicles']->toArray(), function ($value, $key) use ($request){
-            return $value['car_type'] == $request->history['sending']['chosen_car_type'];
-        });
-
-        $payload = [
-            'summary' => $route,
-            'searching' => [
-                'at' => $request->history['searching']['at'],
-                'user' => $request->history['searching']['user'],
-                'result' => $result
-            ],
-            're_send' => [
-                'at' => date("Y-m-d H:i:s")
-            ]
-        ];
-
-        $filtered = array_values($filtered);
-
-        $input['d_lat'] = $args['d_lat'];
-        $input['d_lng'] = $args['d_lng'];
-        $input['d_address'] = $args['d_address'];
-        $input['costs'] = $filtered[0]['price'];
-        $input['remaining'] = $input['costs'];
-        $input['history'] = array_merge($request->history, $payload);
-        $request = $this->updateRequest($request, $input);
-
-        $driversIds = Arr::pluck($filtered, 'driver_id');
-
-        SendPushNotification::dispatch(
-            $this->driversToken($driversIds),
-            __('lang.accept_request_body'),
-            __('lang.accept_request'),
-            ['view' => 'AcceptRequest', 'id' => $args['id']]
-        );
-
-        broadcast(new AcceptCabRequest($driversIds, $request));
-
-        return $request;
-    }
-
-    protected function re_accept($request, $args)
-    {
-        return $this->refresh($request, $args, 'accept');
-    }
-
-    protected function re_arrived($request, $args) 
-    {
-        return $this->refresh($request, $args, 'arrive');
-    }
-
-    protected function re_start($request, $args) 
-    {
-        return $this->refresh($request, $args, 'start');
-    }
-
-    protected function refresh($request, $args, $action)
-    {
         $result = $request->history['searching']['result'];
-        $waiting_time = ($action == 'start') ? (time() - strtotime($request->history['arrived']['at'])) : 0;
-        $route = $this->calculateEstimatedRoute($request->s_lat, $request->s_lng, $args['d_lat'], $args['d_lng']);
-        $prices = $this->calculateCosts($route['distance'], $route['duration'], Arr::pluck($result['vehicles'], 'car_type_id'), $waiting_time);
-        $vehicles = $result['vehicles'];
+        $waiting_time = strtotime($request->history['started']['at']) - strtotime($request->history['arrived']['at']);
+        $duration = time() - strtotime($request->history['started']['at']);
+        $distance = $this->calculateEstimatedRoute($request->s_lat, $request->s_lng, $args['s_lat'], $args['s_lng'])['distance'];
+        $route = $this->calculateEstimatedRoute($args['s_lat'], $args['s_lng'], $args['d_lat'], $args['d_lng']);
 
-        foreach ($vehicles as $vehicle) {
-            $vehicle['price'] = $prices[$vehicle['car_type_id']]['costs'];
+        foreach ($result['vehicles'] as $vehicle) {
+            if ($vehicle['car_type'] == $request->history['sending']['chosen_car_type']) {
+                $chosen_vehicle = $vehicle;
+                break;
+            }
         }
-
-        $result['vehicles'] = $vehicles;
-
-        $filtered = Arr::where($result['vehicles'], function ($value, $key) use ($request){
-            return $value['car_type'] == $request->history['sending']['chosen_car_type'];
-        });
+        
+        $costs1 = $this->calculateCosts($distance, $duration, $chosen_vehicle['car_type_id'], $waiting_time);
+        $costs2 = $this->calculateCosts($route['distance'], $route['duration'], $chosen_vehicle['car_type_id'], $waiting_time);
 
         $payload = [
-            'summary' => $route,
+            'summary' => [
+                'distance' => $route['distance'] + $distance,
+                'duration' => $route['duration'] + $duration
+            ],
             'searching' => [
                 'at' => $request->history['searching']['at'],
                 'user' => $request->history['searching']['user'],
                 'result' => $result
             ],
-            're_'.$action => [
-                'at' => date("Y-m-d H:i:s")
+            'redirect' => [
+                'previous_route_costs' => $costs1,
+                'next_route_costs' => $costs2,
+                'at' => date("Y-m-d H:i:s"),
+                's_lat' => $args['s_lat'],
+                's_lng' => $args['s_lng'],
+                's_address' => array_key_exists('s_address', $args) ? $args['s_address'] : "",
+                'd_lat' => $args['d_lat'],
+                'd_lng' => $args['d_lng'],
+                'd_address' => array_key_exists('d_address', $args) ? $args['d_address'] : ""
             ]
         ];
-
-        $filtered = array_values($filtered);
 
         $input['d_lat'] = $args['d_lat'];
         $input['d_lng'] = $args['d_lng'];
         $input['d_address'] = $args['d_address'];
-        $input['costs'] = ($action == 'start') ? $filtered[0]['price'] + $request->costs : $filtered[0]['price']; 
+        $input['costs'] = $costs1 + $costs2;
         $input['remaining'] = $input['costs'];
         $input['history'] = array_merge($request->history, $payload);
-
         $request = $this->updateRequest($request, $input);
 
         SendPushNotification::dispatch(
@@ -741,6 +616,15 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         broadcast(new CabRequestStatusChanged($socketRequest));
 
         return $request;
+    }
+
+    public function updateDriverCabStatus(array $args)
+    {
+        $active_requests = $this->model->driverLive($args)->first();
+        if($active_requests && in_array($args['cab_status'], ['Offline', 'Online'])) {
+            throw new CustomException(__('lang.update_status_failed').' id = '.$active_requests->id);
+        }
+        return $this->updateDriverStatus($args['driver_id'], $args['cab_status']);
     }
 
     protected function searchExistedRequest(array $args) 
