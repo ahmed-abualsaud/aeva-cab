@@ -111,7 +111,6 @@ Route::group([
 
 Route::group([
     'prefix' => 'partners',
-    'middleware' => ['auth:admin'],
     'as' => 'partners.'
     ], function () {
 
