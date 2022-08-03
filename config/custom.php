@@ -23,9 +23,11 @@ return [
     'victorylink_url' => env('VICTORY_LINK_URL'),
     'victorylink_sender' => env('VICTORY_LINK_SENDER'),
 
+    'aevapay_uat_server_domain' => env('AEVAPAY_UAT_SERVER_DOMAIN', 'uat.aevapay.net'),
     'aevapay_staging_server_domain' => env('AEVAPAY_STAGING_SERVER_DOMAIN', 'staging.aevapay.net'),
     'aevapay_production_server_domain' => env('AEVAPAY_PRODUCTION_SERVER_DOMAIN', 'production.aevapay.net'),
     
+    'aevapay_uat_server_key' => env('AEVAPAY_UAT_SERVER_KEY', '$2y$10$PoO5Gfl4PAezsMeI0LPbKul5Kes4Ee06pIGGsMVV36Zy6BXne/Lom'),
     'aevapay_staging_server_key' => env('AEVAPAY_STAGING_SERVER_KEY', '$2y$10$PoO5Gfl4PAezsMeI0LPbKul5Kes4Ee06pIGGsMVV36Zy6BXne/Lom'),
     'aevapay_production_server_key' => env('AEVAPAY_PRODUCTION_SERVER_KEY', '$2y$10$raHvQpKOVZMJk/3s84KrbOQeze4fM3M0gQ57kaHUTVMkhJ4ibJF.i'),
     
