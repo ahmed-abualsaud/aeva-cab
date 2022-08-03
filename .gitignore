@@ -16,3 +16,11 @@ yarn-error.log
 bootstrap/cache/services.php
 bootstrap/cache/config.php
 .idea/
+routes/web.php
+package-lock.json
+public/css/
+public/js/
+public/mix-manifest.json
+src/Cab/Domain/Helpers/
+switch-env.sh
+storage
