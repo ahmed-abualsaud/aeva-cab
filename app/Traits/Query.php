@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpMissingReturnTypeInspection */
+<?php /** @noinspection PhpUnnecessaryLocalVariableInspection */
+
+/** @noinspection PhpMissingReturnTypeInspection */
 
 namespace App\Traits;
 
@@ -8,6 +10,8 @@ use JetBrains\PhpStorm\ArrayShape;
 
 trait Query
 {
+    public static array $booleans = ['true','false','1','0',true,false,0,1,'on','off','yes','no'];
+
     /*
     public static array $search;
     public static string $main_table;
@@ -33,6 +37,19 @@ trait Query
             'dir'=> static::orderByDir(),
             'order_by'=> request()->query('order_by') ?? static::timestamp(),
         ];
+    }
+
+    public static function applyBooleanFilter(Builder $builder,?string $query_parameter,string $column,string $separator = ',')
+    {
+        if (is_null($query_parameter) or (! is_numeric($query_parameter) and empty(trim($query_parameter))) ) return $builder;
+        $query_array = explode($separator,$query_parameter);
+        $query_values = collect($query_array)->transform(function ($value){
+            $value == 'null' and $value = null;
+            in_array($value,static::$booleans,true) and $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+            return $value;
+        })->all();
+        $builder = count($query_values) == 1 ? $builder->where($column,head($query_values)) : $builder->whereIn($column,$query_values);
+        return $builder;
     }
 
     public static function applySearch(Builder $builder = null) : Builder
