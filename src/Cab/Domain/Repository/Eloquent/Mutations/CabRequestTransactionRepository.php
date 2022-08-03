@@ -38,7 +38,7 @@ class CabRequestTransactionRepository extends BaseRepository
     }
 
     public function create(array $args)
-    {        
+    {
         try {
             $request = CabRequest::findOrFail($args['request_id']);
         } catch (ModelNotFoundException $e) {
@@ -78,10 +78,10 @@ class CabRequestTransactionRepository extends BaseRepository
         if ($args['payment_method'] == 'Wallet' && str_contains($this->payment_method, 'wallet')) 
         {
             $paid = $this->walletPay($args, $request);
-            
+
             if ($paid < $args['costs']) {
                 $input['costs'] = $paid;
-            } 
+            }
             $trx = $this->model->create($input);
 
             $trx->debt = $args['costs'] - $paid;
@@ -101,7 +101,7 @@ class CabRequestTransactionRepository extends BaseRepository
             $input['costs'] = floor($request->costs - $request->costs_after_discount);
             $input['payment_method'] = 'Promo Code Remaining';
             $this->model->create($input);
-        } 
+        }
 
         if (empty($request->remaining)) {
             $this->updateDriverStatus($request->driver_id, 'Online');
@@ -119,7 +119,7 @@ class CabRequestTransactionRepository extends BaseRepository
         return $this->model->whereIn('id', $args['id'])->delete();
     }
 
-    public function confirmCashout(array $args) 
+    public function confirmCashout(array $args)
     {
         try {
             $driver = Driver::findOrFail($args['driver_id']);
@@ -142,7 +142,7 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         $cashout = $this->model->create([
-            'driver_id' => $args['driver_id'], 
+            'driver_id' => $args['driver_id'],
             //'merchant_id' => $args['merchant_id'],
             //'merchant_name' => $args['merchant_name'],
             'costs' => $args['amount'],
@@ -151,7 +151,7 @@ class CabRequestTransactionRepository extends BaseRepository
         ]);
 
         $stats->update([
-            'wallet' => DB::raw('wallet - '.$args['amount']), 
+            'wallet' => DB::raw('wallet - '.$args['amount']),
             'earnings' => DB::raw('earnings - '.$args['amount'])
         ]);
 
@@ -216,15 +216,15 @@ class CabRequestTransactionRepository extends BaseRepository
     protected function updateDriverWallet($driver_id, $earnings, $cash, $wallet)
     {
         DriverStats::where('driver_id', $driver_id)->update([
-            'cash' => DB::raw('cash + '.$cash), 
-            'wallet' => DB::raw('wallet + '.$wallet), 
+            'cash' => DB::raw('cash + '.$cash),
+            'wallet' => DB::raw('wallet + '.$wallet),
             'earnings' => DB::raw('earnings + '.$earnings)
         ]);
 
         DriverLog::log([
-            'driver_id' => $driver_id, 
+            'driver_id' => $driver_id,
             'cash' => $cash,
-            'wallet' => $wallet, 
+            'wallet' => $wallet,
             'earnings' => $earnings
         ]);
     }
@@ -241,7 +241,7 @@ class CabRequestTransactionRepository extends BaseRepository
         broadcast(new CabRequestStatusChanged($request));
     }
 
-    protected function parseErrorMessage($err_mesg, $needle) 
+    protected function parseErrorMessage($err_mesg, $needle)
     {
         $index = strpos($err_mesg, $needle);
         if($index) {
