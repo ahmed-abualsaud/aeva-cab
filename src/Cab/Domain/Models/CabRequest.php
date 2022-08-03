@@ -2,12 +2,12 @@
 
 namespace Aeva\Cab\Domain\Models;
 
-use App\Traits\Query;
 use App\User;
 use App\Driver;
 use App\Vehicle;
 use App\PromoCode;
 
+use App\Traits\Query;
 use App\Traits\Filterable;
 use App\Traits\Searchable;
 
@@ -21,6 +21,7 @@ class CabRequest extends Model
     use Searchable;
     use SoftDeletes;
     use Query;
+    protected $connection = 'mysql';
 
     public static function filters(): array
     {
@@ -61,7 +62,7 @@ class CabRequest extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['costs_after_discount'];
+    protected $appends = ['costs_after_discount', 'discount'];
 
     protected $casts = [
         'history' => 'json',
@@ -97,19 +98,32 @@ class CabRequest extends Model
         return $this->belongsTo(PromoCode::class, 'promo_code_id');
     }
 
-    public function scopeLive($query)
+    public function scopeUserLive($query, $args)
     {
-        return $query->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed'])
-            ->orWhere(function ($query) {
-                $query->where('status', 'Completed')
-                        ->where('rated', false);
-            });
+        if (array_key_exists('user_id', $args) && $args['user_id']) {
+            return $query->where('user_id', $args['user_id'])
+                ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed', 'Ended'])
+                ->orWhere(function ($query) {
+                    $query->where('status', 'Completed')
+                            ->where('rated', false);
+                });
+        }
+        return $query;
+    }
+
+    public function scopeDriverLive($query, $args)
+    {
+        if (array_key_exists('driver_id', $args) && $args['driver_id']) {
+            return $query->where('driver_id', $args['driver_id'])
+                ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed']);
+        }
+        return $query;
     }
 
     public function scopeWherePending($query, $user_id)
     {
         return $query->where('user_id', $user_id)
-            ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed']);
+            ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed', 'Ended']);
     }
 
     public function scopeWhereScheduled($query, $user_id)
@@ -141,9 +155,14 @@ class CabRequest extends Model
             $query = $query->where('status', $args['status']);
         }
 
-        if (array_key_exists('period', $args) && $args['period']) {
-            $query = $this->dateFilter($args['period'], $query, 'created_at');
+        if (array_key_exists('paid', $args) && $args['paid']) {
+            $query = static::applyBooleanFilter($query,$args['paid'],self::getTable().'paid');
         }
+
+        if (array_key_exists('rated', $args) && $args['rated']) {
+            $query = static::applyBooleanFilter($query,$args['rated'],self::getTable().'rated');
+        }
+
         return $query;
     }
 
@@ -164,13 +183,39 @@ class CabRequest extends Model
 
         if ( !($promoCode && $this->costs) ) {return $this->costs;}
 
+        $promoCode = PromoCode::find($promoCode->id);
         $discount_rate = ($this->costs * $promoCode->percentage / 100);
 
         if ($discount_rate > $promoCode->max_discount) {
             $discount_rate = $promoCode->max_discount;
         }
+        return ceil($this->costs - $discount_rate);
+    }
 
-        return ($this->costs - $discount_rate);
+    public function getDiscountAttribute()
+    {
+        $promoCode = $this->promoCode;
+
+        if ( !($promoCode && $this->costs) ) {return $this->costs;}
+
+        $promoCode = PromoCode::find($promoCode->id);
+        $discount_rate = ($this->costs * $promoCode->percentage / 100);
+
+        if ($discount_rate > $promoCode->max_discount) {
+            $discount_rate = $promoCode->max_discount;
+        }
+        return floor($discount_rate);
+    }
+
+
+    public function scopeSearchApplied($query)
+    {
+        $args = request()->query();
+        self::scopeSearch($query,$args);
+        self::scopeFilter($query,$args);
+        !empty($args['created_at']) and $query = self::dateFilter($args['created_at'],$query,self::getTable().'.created_at');
+        !empty($args['updated_at']) and $query = self::dateFilter($args['updated_at'],$query,self::getTable().'.updated_at');
+        return self::scopeGetLatest($query,$args);
     }
 
 }
