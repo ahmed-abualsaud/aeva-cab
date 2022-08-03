@@ -41,7 +41,7 @@ trait Query
 
     public static function applyBooleanFilter(Builder $builder,?string $query_parameter,string $column,string $separator = ',')
     {
-        if (is_null($query_parameter) or (! is_numeric($query_parameter) and empty(trim($query_parameter))) ) return $builder;
+        if (is_null($query_parameter) or trim($query_parameter) == 'null' or (! is_numeric($query_parameter) and empty(trim($query_parameter))) ) return $builder;
         $query_array = explode($separator,$query_parameter);
         $query_values = collect($query_array)->transform(function ($value){
             $value == 'null' and $value = null;
