@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Queries;
 
-use App\AevaPayPartner;
 use App\Repository\Queries\PartnerRepositoryInterface;
+use Illuminate\Support\Facades\Http;
 
 class PartnerController
 {
@@ -17,13 +17,6 @@ class PartnerController
 
     public function index()
     {
-        $partners = AevaPayPartner::query()->paginate(50);
-        return response()->json([
-           'status'=> true,
-           'message'=> 'all partners',
-           'info'=> compact('partners')
-        ]);
-
+        return Http::get(config('custom.aevapay_production_server_domain').'/api/v1/contact-us/partners')->json();
     }
-
 }
