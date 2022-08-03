@@ -30,22 +30,23 @@ class PromoCodeRepository extends BaseRepository implements PromoCodeRepositoryI
         }
 
         // prevent the rider from using two promo codes at the same time.
-        $promo_code =  PromoCodeUsage::selectRaw('
-                promo_codes.id, 
-                promo_codes.name, 
-                COUNT(promo_codes.id) as count
-            ')
-            ->join('promo_codes', 'promo_code_usages.promo_code_id', 'promo_codes.id')
-            ->where('user_id', $args['user_id'])
-            ->where('expires_on', '>', date('Y-m-d'))
-            ->where('promo_code_usages.used', true)
-            ->groupBy('promo_codes.name', 'promo_codes.id')
-            ->having('count', '<', 4)
-            ->first();
+        // $promo_code =  PromoCodeUsage::selectRaw('
+        //         promo_codes.id,
+        //         promo_codes.name,
+        //         promo_codes.max_trips,
+        //         COUNT(promo_codes.id) as count
+        //     ')
+        //     ->join('promo_codes', 'promo_code_usages.promo_code_id', 'promo_codes.id')
+        //     ->where('user_id', $args['user_id'])
+        //     ->where('expires_on', '>', date('Y-m-d'))
+        //     ->where('promo_code_usages.used', true)
+        //     ->groupBy('promo_codes.name', 'promo_codes.id')
+        //     ->havingRaw('count < max_trips')
+        //     ->first();
 
-        if($promo_code && $promo_code->name != $args['name'] ) {
-            throw new CustomException(__('lang.you_already_applyed_another_promo_code').': '.$promo_code->name);
-        }
+        // if($promo_code && $promo_code->name != $args['name'] ) {
+        //     throw new CustomException(__('lang.you_already_applyed_another_promo_code').': '.$promo_code->name);
+        // }
 
         // check if the premetted number of promo code trips per user is exceeded or not
         $trip_count = PromoCodeUsage::where('promo_code_id', $promoCode->id)
