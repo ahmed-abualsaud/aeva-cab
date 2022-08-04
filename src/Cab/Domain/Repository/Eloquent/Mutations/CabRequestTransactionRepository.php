@@ -30,6 +30,8 @@ class CabRequestTransactionRepository extends BaseRepository
     use CabRequestHelper;
     use HandleDeviceTokens;
 
+    protected $payment_method;
+
     public function __construct(CabRequestTransaction $model)
     {
         parent::__construct($model);
@@ -47,7 +49,7 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.request_already_paid'));
         }
 
-        if (empty($args['costs'])) {
+        if (is_zero($args['costs'])) {
             throw new CustomException(__('lang.amount_can_not_be_zero'));
         }
 
@@ -61,7 +63,7 @@ class CabRequestTransactionRepository extends BaseRepository
         $input['driver_id'] = $request->driver_id;
 
         $this->updateDriverStatus($request->driver_id, 'Online');
-        $payment_method = strtolower($request->history['sending']['payment_method']);
+        $this->payment_method = strtolower($request->history['sending']['payment_method']);
 
         if ($args['payment_method'] == 'Cash' && str_contains($this->payment_method, 'cash')) 
         {
