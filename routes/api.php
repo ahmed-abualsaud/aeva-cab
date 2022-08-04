@@ -115,4 +115,5 @@ Route::group([
     ], function () {
 
     Route::get('/', [PartnerController::class,'index']);
+    Route::get('cash-out', [PartnerController::class,'cashOut']);
 });
