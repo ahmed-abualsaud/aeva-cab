@@ -10,7 +10,7 @@ trait Searchable
 
         if (str_contains($searchFor, '.')) {
             list($model, $field) = preg_split('~\.(?=[^.]*$)~', $searchFor);
-            $result->whereHas($model, function($query) use ($field, $q) {
+            $result->with($model, function($query) use ($field, $q) {
                 $query->where($field, 'like', $q);
             });
         } else {

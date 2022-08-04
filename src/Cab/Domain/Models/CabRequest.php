@@ -21,6 +21,7 @@ class CabRequest extends Model
     use Searchable;
     use SoftDeletes;
     use Query;
+    protected $connection = 'mysql';
 
     public static function filters(): array
     {
@@ -154,9 +155,14 @@ class CabRequest extends Model
             $query = $query->where('status', $args['status']);
         }
 
-        if (array_key_exists('period', $args) && $args['period']) {
-            $query = $this->dateFilter($args['period'], $query, 'created_at');
+        if (array_key_exists('paid', $args) && $args['paid']) {
+            $query = static::applyBooleanFilter($query,$args['paid'],self::getTable().'paid');
         }
+
+        if (array_key_exists('rated', $args) && $args['rated']) {
+            $query = static::applyBooleanFilter($query,$args['rated'],self::getTable().'rated');
+        }
+
         return $query;
     }
 
