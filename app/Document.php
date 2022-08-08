@@ -10,7 +10,9 @@ class Document extends Model
     use SoftDeletes;
 
     protected $guarded = [];
-    
+    protected $connection ='mysql';
+
+
     /**
      * Get the owning documentable model.
      */
@@ -24,7 +26,7 @@ class Document extends Model
         return $this->setConnection('mysql2')->belongsTo(Admin::class);
     }
 
-    public static function createDriverDocuments($driver_id) 
+    public static function createDriverDocuments($driver_id)
     {
         $row = [
             'documentable_id' => $driver_id,
@@ -50,7 +52,7 @@ class Document extends Model
 
     }
 
-    public static function createVehicleDocuments($vehicle_id) 
+    public static function createVehicleDocuments($vehicle_id)
     {
         $row = [
             'documentable_id' => $vehicle_id,

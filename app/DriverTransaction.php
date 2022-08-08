@@ -57,7 +57,7 @@ class DriverTransaction extends Model
 
     public function scopeSearch($query, $args)
     {
-        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+        if (array_key_exists('searchQuery', $args) && !empty_graph_ql_value($args['searchQuery'])) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
         return $query;
@@ -65,7 +65,7 @@ class DriverTransaction extends Model
 
     public function scopePeriod($query, $args)
     {
-        if (array_key_exists('period', $args) && $args['period']) {
+        if (array_key_exists('period', $args) && !empty_graph_ql_value($args['period'])) {
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
 
@@ -74,7 +74,7 @@ class DriverTransaction extends Model
 
     public function scopeType($query, $args)
     {
-        if (array_key_exists('type', $args) && $args['type']) {
+        if (array_key_exists('type', $args) && !empty_graph_ql_value($args['type'])) {
             return $query->where('type', $args['type']);
         }
 
@@ -89,11 +89,14 @@ class DriverTransaction extends Model
     public function scopeSearchApplied($query)
     {
         $args = request()->query();
+        $optional = optional($args);
+
         self::scopeSearch($query,$args);
         self::scopePeriod($query,$args);
         self::scopeType($query,$args);
-        !empty($args['created_at']) and $query = self::dateFilter($args['created_at'],$query,self::getTable().'.created_at');
-        !empty($args['updated_at']) and $query = self::dateFilter($args['updated_at'],$query,self::getTable().'.updated_at');
+
+        !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
+        !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
         return self::scopeGetLatest($query,$args);
     }
 }
