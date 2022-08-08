@@ -135,7 +135,7 @@ class CabRequest extends Model
     public function scopeSearch($query, $args)
     {
 
-        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+        if (array_key_exists('searchQuery', $args) && !empty_graph_ql_value($args['searchQuery'])) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
         return $query;
@@ -143,23 +143,23 @@ class CabRequest extends Model
 
     public function scopeFilter($query, $args)
     {
-        if (array_key_exists('driver_id', $args) && $args['driver_id']) {
+        if (array_key_exists('driver_id', $args) && !empty_graph_ql_value($args['driver_id'])) {
             $query = $query->where('driver_id', $args['driver_id']);
         }
 
-        if (array_key_exists('user_id', $args) && $args['user_id']) {
+        if (array_key_exists('user_id', $args) && !empty_graph_ql_value($args['user_id'])) {
             $query = $query->where('user_id', $args['user_id']);
         }
 
-        if (array_key_exists('status', $args) && $args['status']) {
+        if (array_key_exists('status', $args) && !empty_graph_ql_value($args['status'])) {
             $query = $query->where('status', $args['status']);
         }
 
-        if (array_key_exists('paid', $args) && $args['paid']) {
+        if (array_key_exists('paid', $args) && !empty_graph_ql_value($args['paid'])) {
             $query = static::applyBooleanFilter($query,$args['paid'],self::getTable().'paid');
         }
 
-        if (array_key_exists('rated', $args) && $args['rated']) {
+        if (array_key_exists('rated', $args) && !empty_graph_ql_value($args['rated'])) {
             $query = static::applyBooleanFilter($query,$args['rated'],self::getTable().'rated');
         }
 
@@ -211,10 +211,14 @@ class CabRequest extends Model
     public function scopeSearchApplied($query)
     {
         $args = request()->query();
+        $optional = optional($args);
+
         self::scopeSearch($query,$args);
         self::scopeFilter($query,$args);
-        !empty($args['created_at']) and $query = self::dateFilter($args['created_at'],$query,self::getTable().'.created_at');
-        !empty($args['updated_at']) and $query = self::dateFilter($args['updated_at'],$query,self::getTable().'.updated_at');
+
+        !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
+        !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
+
         return self::scopeGetLatest($query,$args);
     }
 

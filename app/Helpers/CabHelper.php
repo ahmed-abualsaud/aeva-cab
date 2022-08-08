@@ -148,3 +148,23 @@ function response_error(string $message, int $status_code = 400)
         'message'=> $message,
     ],$status_code));
 }
+
+/**
+ * @param string|null $value
+ * @return bool
+ */
+function empty_value(?string $value) : bool
+{
+    return is_null($value) or (! is_numeric($value = trim($value)) and empty($value));
+}
+
+
+/**
+ * @param string|null $value
+ * @return bool
+ */
+function empty_graph_ql_value(?string $value) : bool
+{
+    return is_null($value) or in_array($value = trim($value),['null','undefined'],true) or (! is_numeric($value) and empty($value));
+}
+
