@@ -49,7 +49,7 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.request_already_paid'));
         }
 
-        if (is_zero($args['costs'])) {
+        if (is_zero($args['costs']) && $request->remaining > 0) {
             throw new CustomException(__('lang.amount_can_not_be_zero'));
         }
 
@@ -62,10 +62,20 @@ class CabRequestTransactionRepository extends BaseRepository
         $input['user_id'] = $request->user_id;
         $input['driver_id'] = $request->driver_id;
 
-        $this->updateDriverStatus($request->driver_id, 'Online');
         $this->payment_method = strtolower($request->history['sending']['payment_method']);
 
-        if ($args['payment_method'] == 'Cash' && str_contains($this->payment_method, 'cash')) 
+        if (is_zero($args['costs']) && is_zero($request->remaining)) {
+            $trx = new CabRequestTransaction($input);
+            $trx->debt = 0;
+        }
+
+        if ($request->costs > $request->costs_after_discount) {
+            $input['costs'] = floor($request->costs - $request->costs_after_discount);
+            $input['payment_method'] = 'Promo Code Remaining';
+            $this->model->create($input);
+        }
+
+        if ($args['payment_method'] == 'Cash' && str_contains($this->payment_method, 'cash') && $request->remaining > 0) 
         {
             $refund = $this->cashPay($args, $request);
             $trx = $this->model->create($input);
@@ -76,7 +86,7 @@ class CabRequestTransactionRepository extends BaseRepository
             $this->notifyUserOfPayment($socket_request);
         }
 
-        if ($args['payment_method'] == 'Wallet' && str_contains($this->payment_method, 'wallet')) 
+        if ($args['payment_method'] == 'Wallet' && str_contains($this->payment_method, 'wallet') && $request->remaining > 0) 
         {
             $paid = $this->walletPay($args, $request);
 
@@ -96,12 +106,6 @@ class CabRequestTransactionRepository extends BaseRepository
             $socket_request = $request->toArray();
             $socket_request['refund'] = 0;
             $this->notifyUserOfPayment($socket_request);
-        }
-
-        if ($request->costs > $request->costs_after_discount) {
-            $input['costs'] = floor($request->costs - $request->costs_after_discount);
-            $input['payment_method'] = 'Promo Code Remaining';
-            $this->model->create($input);
         }
 
         if (empty($request->remaining)) {
