@@ -28,6 +28,9 @@ class Driver extends Authenticatable implements JWTSubject
     use Filterable;
     use SoftDeletes;
     use Query;
+
+
+    protected $connection ='mysql';
 /*
     public static string $main_table;
     public static array $filters;
@@ -150,7 +153,7 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function scopeSearch($query, $args)
     {
-        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+        if (array_key_exists('searchQuery', $args) && !empty_graph_ql_value($args['searchQuery'])) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
         return $query;
@@ -158,7 +161,7 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function scopeCabStatus($query, $args)
     {
-        if (array_key_exists('cabStatus', $args) && $args['cabStatus']) {
+        if (array_key_exists('cabStatus', $args) && !empty_graph_ql_value($args['cabStatus'])) {
             $status_array = explode(',',$args['cabStatus']);
             $query = count($status_array) == 1 ? $query->where('cab_status', head($status_array)) : $query->whereIn('cab_status',$status_array);
         }
@@ -175,7 +178,7 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function scopeTitle($query, $args)
     {
-        if (array_key_exists('title', $args) && $args['title']) {
+        if (array_key_exists('title', $args) && !empty_graph_ql_value($args['title'])) {
             $query = $query->where('title', $args['title']);
         }
         return $query;
@@ -202,7 +205,7 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function scopeApproved($query, $args)
     {
-        if (array_key_exists('approved', $args) && !is_null($args['approved'])) {
+        if (array_key_exists('approved', $args) && !empty_graph_ql_value($args['approved'])) {
             $query = $query->where('approved', $args['approved']);
         }
         return $query;
@@ -234,8 +237,9 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function scopeSearchApplied($query)
     {
-        //searchFor(id,first_name,last_name,full_name,national_id,primary_phone,secondary_phone)
         $args = request()->query();
+        $optional = optional($args);
+
         self::scopeSearch($query,$args);
         self::scopeFleet($query,$args);
         self::scopeApprovedOrNot($query,$args);
@@ -243,8 +247,9 @@ class Driver extends Authenticatable implements JWTSubject
         self::scopeCabStatus($query,$args);
         self::scopeTitle($query,$args);
         self::scopeNearby($query,$args);
-        !empty($args['created_at']) and $query = self::dateFilter($args['created_at'],$query,self::getTable().'.created_at');
-        !empty($args['updated_at']) and $query = self::dateFilter($args['updated_at'],$query,self::getTable().'.updated_at');
+
+        !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
+        !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
         return self::scopeGetLatest($query,$args);
     }
 }

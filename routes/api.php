@@ -8,6 +8,7 @@
 */
 
 use App\Http\Controllers\Queries\Exports\ExportCabRequestsController;
+use App\Http\Controllers\Queries\Exports\ExportCabRequestTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportDriversController;
 use App\Http\Controllers\Queries\Exports\ExportDriverTransactionsController;
 use Illuminate\Support\Facades\Route;
@@ -97,6 +98,15 @@ Route::group([
     ], function () {
 
     Route::get('export', [ExportDriverTransactionsController::class,'__invoke']);
+});
+
+Route::group([
+    'prefix' => 'cab-request-transactions',
+    'middleware' => ['auth:admin'],
+    'as' => 'cab-request-transactions.'
+    ], function () {
+
+    Route::get('export', [ExportCabRequestTransactionsController::class,'__invoke']);
 });
 
 Route::group([

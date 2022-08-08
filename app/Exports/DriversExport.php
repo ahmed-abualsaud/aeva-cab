@@ -122,7 +122,7 @@ class DriversExport implements FromQuery,WithHeadings,WithMapping,Responsable
             'secondary_phone',
             'title',
             'approved',
-            'natiaonal_id',
+            'national_id',
         ];
     }
 }

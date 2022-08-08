@@ -41,10 +41,10 @@ trait Query
 
     public static function applyBooleanFilter(Builder $builder,?string $query_parameter,string $column,string $separator = ',')
     {
-        if (is_null($query_parameter) or trim($query_parameter) == 'null' or (! is_numeric($query_parameter) and empty(trim($query_parameter))) ) return $builder;
+        if (empty_graph_ql_value($query_parameter)) return $builder;
         $query_array = explode($separator,$query_parameter);
         $query_values = collect($query_array)->transform(function ($value){
-            $value == 'null' and $value = null;
+            empty_graph_ql_value($value) and $value = null;
             in_array($value,static::$booleans,true) and $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
             return $value;
         })->all();
@@ -97,8 +97,8 @@ trait Query
             $date_column ??= static::timestamp();
             $date_array = explode(',' ,request()->query($date_query_key));
             return count($date_array) == 1
-                              ? $builder->whereDate(static::fullColumnName($date_column),static::dbDate(head($date_array)))
-                             : $builder->whereBetween(static::fullColumnName($date_column),[static::dbDate(head($date_array),'startOfDay'),static::dbDate(last($date_array),'endOfDay')]);
+                              ? $builder->whereDate(static::fullColumnName($date_column),db_date(head($date_array)))
+                             : $builder->whereBetween(static::fullColumnName($date_column),[db_date(head($date_array),'startOfDay'),db_date(last($date_array),'endOfDay')]);
         else: return $builder;
         endif;
     }
@@ -124,22 +124,6 @@ trait Query
     {
         $query = request()->query($query_key ?? $column_name);
         return isset($query) ? $builder->where($column_name,'like','%'.$query.'%') : $builder;
-    }
-
-    /**
-     * @param $date
-     * @param string $carbon_method
-     * @param array $carbon_method_args
-     * @param string $format
-     * @return mixed
-     */
-    public static function dbDate($date, string $carbon_method = 'startOfDay', array $carbon_method_args = [], string $format = 'Y-m-d H:i:s')
-    {
-        try {
-            return Carbon::parse($date)->{$carbon_method}(...$carbon_method_args)->format($format);
-        }catch (\Exception $e){
-            return false;
-        }
     }
 
     /**
