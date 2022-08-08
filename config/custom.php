@@ -40,8 +40,8 @@ return [
     'credit_go_staging_phone'=> env('CREDIT_GO_STAGING_SERVER_PHONE','01286308351'), 
     'credit_go_production_phone'=> env('CREDIT_GO_PRODUCTION_SERVER_PHONE','01126999840'), 
     
-    'credit_go_staging_pass_code' => env('CREDIT_GO_STAGING_SERVER_PIN_CODE','000000'),
-    'credit_go_production_pass_code' => env('CREDIT_GO_PRODUCTION_SERVER_PIN_CODE','246810'),
+    'credit_go_staging_pass_code' => env('CREDIT_GO_STAGING_SERVER_PIN_CODE','driver@Api123'),
+    'credit_go_production_pass_code' => env('CREDIT_GO_PRODUCTION_SERVER_PIN_CODE','driver@Api123'),
 
     'default_verification_code' => env('DEFAULT_VERIFICATION_CODE', 6254),
 
