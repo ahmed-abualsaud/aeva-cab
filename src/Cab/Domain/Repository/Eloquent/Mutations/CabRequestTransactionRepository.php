@@ -32,6 +32,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
     protected $costs;
     protected $payment_method;
+    protected $cash_after_wallet;
 
     public function __construct(CabRequestTransaction $model)
     {
@@ -65,6 +66,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
         $this->costs = $request->costs;
         $this->payment_method = $args['payment_method'];
+        $this->cash_after_wallet = ($request->costs_after_discount > $request->remaining);
 
         if (is_zero($args['costs']) && is_zero($request->remaining)) {
             $trx = new CabRequestTransaction($input);
@@ -199,7 +201,7 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.user_not_found'));
         }
 
-        if($this->payment_method == 'Wallet' && is_zero($user->wallet)) {
+        if($this->payment_method == 'Wallet' && is_zero($user->wallet) && !$this->cash_after_wallet) {
             throw new CustomException(__('lang.empty_user_wallet'));
         }
 
