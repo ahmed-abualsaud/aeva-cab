@@ -67,7 +67,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $input['avatar'] = $url;
         }
 
-        //$verification_code = mt_rand(1000, 9999);
+        //$verification_code = '0000';
         $verification_code = '0000';
         $input['otp'] = $verification_code;
 
@@ -185,7 +185,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
         if (!$driver->phone_verified_at) 
         {
-            //$verification_code = mt_rand(1000, 9999);
+            //$verification_code = '0000';
             $verification_code = '0000';
             $driver->update(['otp' => $verification_code]);
 
@@ -292,7 +292,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             throw new \Exception(__('lang.driver_not_found'));
         }
         
-        //$verification_code = mt_rand(1000, 9999);
+        //$verification_code = '0000';
         $verification_code = '0000';
         $driver->update(['otp' => $verification_code]);
 
