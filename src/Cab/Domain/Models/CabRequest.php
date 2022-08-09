@@ -171,6 +171,10 @@ class CabRequest extends Model
             $query = static::applyBooleanFilter($query,$args['rated'],self::getTable().'rated');
         }
 
+        if (array_key_exists('user_id', $args) && !empty_graph_ql_value($args['user_id'])) {
+            $query = $query->where('user_id','=',$args['user_id']);
+        }
+
         return $query;
     }
 
