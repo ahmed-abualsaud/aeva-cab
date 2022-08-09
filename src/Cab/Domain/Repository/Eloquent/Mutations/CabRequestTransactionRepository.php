@@ -165,7 +165,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
         if ($type == 'Aevacab Refund' && is_zero($costs)) { return; }
 
-        if($type == 'Aevapay User Wallet' && is_zero($user->wallet)) {
+        if ($type == 'Aevapay User Wallet' && is_zero($user->wallet)) {
             throw new CustomException(__('lang.empty_user_wallet'));
         }
 
