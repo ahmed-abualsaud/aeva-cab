@@ -49,6 +49,10 @@ class CabRequestTransaction extends Model
         if (array_key_exists('period', $args) && !empty_graph_ql_value($args['period'])) {
             $query = $this->dateFilter($args['period'], $query, 'created_at');
         }
+
+        if (array_key_exists('user_id', $args) && !empty_graph_ql_value($args['user_id'])) {
+            $query = $query->where('user_id','=',$args['user_id']);
+        }
     }
 
     public function scopeDriver($query, $args)
