@@ -208,7 +208,7 @@ class CabRequest extends Model
     {
         $promoCode = $this->promoCode;
 
-        if ( !($promoCode && $this->costs) ) {return $this->costs;}
+        if ( !($promoCode && $this->costs) ) {return 0;}
 
         $promoCode = PromoCode::find($promoCode->id);
         $discount_rate = ($this->costs * $promoCode->percentage / 100);
