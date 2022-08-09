@@ -147,6 +147,10 @@ class CabRequest extends Model
             $query = $query->where('driver_id', $args['driver_id']);
         }
 
+        if (array_key_exists('period', $args) && $args['period']) {
+            $query = $this->dateFilter($args['period'], $query, 'created_at');
+        }
+
         if (array_key_exists('user_id', $args) && !empty_graph_ql_value($args['user_id'])) {
             $query = $query->where('user_id', $args['user_id']);
         }
