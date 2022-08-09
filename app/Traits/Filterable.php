@@ -14,26 +14,26 @@ trait Filterable
 
             case 'yesterday':
                 return $result->whereDate($field, '=', Carbon::yesterday());
-                
+
             case 'week':
                 return $result->whereDate($field, '>=', Carbon::now()->subDays(7));
-            
+
             case 'month':
                 return $result->whereDate($field, '>=', Carbon::now()->subMonth());
-            
+
             case 'quarter':
                 return $result->whereDate($field, '>=', Carbon::now()->subMonth(3));
-            
+
             case 'half':
                 return $result->whereDate($field, '>=', Carbon::now()->subMonth(6));
-            
+
             case 'year':
-                return $result->whereDate($field, '>=', Carbon::now()->subMonth(12)); 
-                
+                return $result->whereDate($field, '>=', Carbon::now()->subMonth(12));
+
             default:
                 if (str_contains($period, ',')) {
                     list($from, $to) = explode(',', $period);
-                    return $result->whereBetween($field, [$from, $to]);
+                    return $result->whereBetween($field, [db_date($from),db_date($to,'endOfDay')]);
                 } else {
                     return $result->whereDate($field, '=', $period);
                 }

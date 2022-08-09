@@ -49,7 +49,7 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.request_already_paid'));
         }
 
-        if (is_zero($args['costs'])) {
+        if (is_zero($args['costs']) && $request->remaining > 0) {
             throw new CustomException(__('lang.amount_can_not_be_zero'));
         }
 
@@ -62,10 +62,20 @@ class CabRequestTransactionRepository extends BaseRepository
         $input['user_id'] = $request->user_id;
         $input['driver_id'] = $request->driver_id;
 
-        $this->updateDriverStatus($request->driver_id, 'Online');
         $this->payment_method = strtolower($request->history['sending']['payment_method']);
 
-        if ($args['payment_method'] == 'Cash' && str_contains($this->payment_method, 'cash')) 
+        if (is_zero($args['costs']) && is_zero($request->remaining)) {
+            $trx = new CabRequestTransaction($input);
+            $trx->debt = 0;
+        }
+
+        if ($request->costs > $request->costs_after_discount) {
+            $input['costs'] = floor($request->costs - $request->costs_after_discount);
+            $input['payment_method'] = 'Promo Code Remaining';
+            $this->model->create($input);
+        }
+
+        if ($args['payment_method'] == 'Cash' && str_contains($this->payment_method, 'cash') && $request->remaining > 0)
         {
             $refund = $this->cashPay($args, $request);
             $trx = $this->model->create($input);
@@ -76,7 +86,7 @@ class CabRequestTransactionRepository extends BaseRepository
             $this->notifyUserOfPayment($socket_request);
         }
 
-        if ($args['payment_method'] == 'Wallet' && str_contains($this->payment_method, 'wallet')) 
+        if ($args['payment_method'] == 'Wallet' && str_contains($this->payment_method, 'wallet') && $request->remaining > 0)
         {
             $paid = $this->walletPay($args, $request);
 
@@ -98,20 +108,14 @@ class CabRequestTransactionRepository extends BaseRepository
             $this->notifyUserOfPayment($socket_request);
         }
 
-        if ($request->costs > $request->costs_after_discount) {
-            $input['costs'] = floor($request->costs - $request->costs_after_discount);
-            $input['payment_method'] = 'Promo Code Remaining';
-            $this->model->create($input);
-        }
-
         if (empty($request->remaining)) {
             $this->updateDriverStatus($request->driver_id, 'Online');
         }
 
         if (!empty($trx)) {
-            return $trx; 
+            return $trx;
         }
-        
+
         throw new CustomException(__('lang.payment_method_does_not_match'));
     }
 
@@ -168,15 +172,15 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         $this->updateUserWallet($request->user_id, $args['costs'], 'Cash', $args['uuid']);
-        $driver_promo_code_remaining = floor($request->costs - $request->costs_after_discount);
-        $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_promo_code_remaining), $args['costs'], $driver_promo_code_remaining);
+        $driver_wallet = $request->discount - $refund;
+        $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_wallet), $args['costs'], $driver_wallet);
         return $refund;
     }
 
     protected function walletPay($args, $request)
     {
         $paid = $this->updateUserWallet($request->user_id, $args['costs'], 'Aevapay User Wallet', $args['uuid']);
-        $driver_wallet = floor($request->costs - $request->costs_after_discount) + $paid;
+        $driver_wallet = $request->discount + $paid;
         $this->updateDriverWallet($request->driver_id, $driver_wallet, 0, $driver_wallet);
         return $paid;
     }

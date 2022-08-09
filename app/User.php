@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Aeva\Cab\Domain\Models\CabRequestTransaction;
 use App\Traits\Searchable;
 use Illuminate\Support\Facades\Cache;
 
@@ -34,6 +35,11 @@ class User extends Authenticatable implements JWTSubject
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordNotification($token, "users"));
+    }
+
+    public function cabRequestTransactions()
+    {
+        return $this->setConnection('mysql')->hasMany(CabRequestTransaction::class);
     }
 
     /**
