@@ -30,6 +30,7 @@ class CabRequestTransactionRepository extends BaseRepository
     use CabRequestHelper;
     use HandleDeviceTokens;
 
+    protected $costs;
     protected $payment_method;
 
     public function __construct(CabRequestTransaction $model)
@@ -62,20 +63,17 @@ class CabRequestTransactionRepository extends BaseRepository
         $input['user_id'] = $request->user_id;
         $input['driver_id'] = $request->driver_id;
 
-        $this->payment_method = strtolower($request->history['sending']['payment_method']);
+        $this->costs = $request->costs;
+        $this->payment_method = $args['payment_method'];
 
         if (is_zero($args['costs']) && is_zero($request->remaining)) {
             $trx = new CabRequestTransaction($input);
             $trx->debt = 0;
         }
 
-        if ($request->costs > $request->costs_after_discount) {
-            $input['costs'] = floor($request->costs - $request->costs_after_discount);
-            $input['payment_method'] = 'Promo Code Remaining';
-            $this->model->create($input);
-        }
-
-        if ($args['payment_method'] == 'Cash' && str_contains($this->payment_method, 'cash') && $request->remaining > 0)
+        if ($args['payment_method'] == 'Cash' && 
+            str_contains(strtolower($request->history['sending']['payment_method']), 'cash') && 
+            $request->remaining > 0)
         {
             $refund = $this->cashPay($args, $request);
             $trx = $this->model->create($input);
@@ -86,7 +84,9 @@ class CabRequestTransactionRepository extends BaseRepository
             $this->notifyUserOfPayment($socket_request);
         }
 
-        if ($args['payment_method'] == 'Wallet' && str_contains($this->payment_method, 'wallet') && $request->remaining > 0)
+        if ($args['payment_method'] == 'Wallet' && 
+            str_contains(strtolower($request->history['sending']['payment_method']), 'wallet') && 
+            $request->remaining > 0)
         {
             $paid = $this->walletPay($args, $request);
 
@@ -106,6 +106,12 @@ class CabRequestTransactionRepository extends BaseRepository
             $socket_request = $request->toArray();
             $socket_request['refund'] = 0;
             $this->notifyUserOfPayment($socket_request);
+        }
+
+        if ($request->costs > $request->costs_after_discount) {
+            $input['costs'] = floor($request->costs - $request->costs_after_discount);
+            $input['payment_method'] = 'Promo Code Remaining';
+            $this->model->create($input);
         }
 
         if (empty($request->remaining)) {
@@ -193,7 +199,7 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.user_not_found'));
         }
 
-        if($this->payment_method == 'wallet' && is_zero($user->wallet)) {
+        if($this->payment_method == 'Wallet' && is_zero($user->wallet)) {
             throw new CustomException(__('lang.empty_user_wallet'));
         }
 
@@ -220,7 +226,17 @@ class CabRequestTransactionRepository extends BaseRepository
 
     protected function updateDriverWallet($driver_id, $earnings, $cash, $wallet)
     {
-        DriverStats::where('driver_id', $driver_id)->update([
+        try {
+            $stats = DriverStats::where('driver_id', $driver_id)->firstOrFail();
+        } catch (\Exception $e) {
+            throw new CustomException(__('lang.driver_not_found'));
+        }
+
+        if($stats->wallet + $wallet < 0) {
+            throw new CustomException(__('lang.insufficient_driver_wallet_balance', ['cash_amount' => $stats->wallet + $this->costs]));
+        }
+
+        $stats->update([
             'cash' => DB::raw('cash + '.$cash),
             'wallet' => DB::raw('wallet + '.$wallet),
             'earnings' => DB::raw('earnings + '.$earnings)

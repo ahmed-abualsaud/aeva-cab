@@ -132,6 +132,7 @@ return [
     'amount_paid_less_than_amount_requested' => 'The amount paid is less than the amount requested',
     'you_already_applyed_another_promo_code' => 'You already applied another promocode',
     'empty_user_wallet' => 'The user\'s wallet is empty. Please pay in cash',
+    'insufficient_driver_wallet_balance' => 'Insufficient driver wallet balance, The maximum amount of cash you can take is :cash_amount EGP',
 
     // ============================== Aeva Cab ==============================
 
