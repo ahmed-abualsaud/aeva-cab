@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Aeva\Cab\Domain\Models\CabRequestTransaction;
 use App\Traits\Searchable;
 use Illuminate\Support\Facades\Cache;
 

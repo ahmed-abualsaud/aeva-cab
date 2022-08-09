@@ -65,23 +65,6 @@ class CabRequestTransaction extends Model
         return $query->latest();
     }
 
-    public static function mainTable(): string
-    {
-        return self::getTable();
-    }
-
-    public static function builder(): Builder
-    {
-        return self::query();
-    }
-
-    public static function filters(): array
-    {
-        return [
-
-        ];
-    }
-
     public function scopeSearchApplied($query)
     {
         $args = request()->query();

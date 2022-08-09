@@ -3,11 +3,9 @@
 namespace App\Traits;
 
 use Carbon\Carbon;
-use App\Traits\Query;
 
 trait Filterable
 {
-    use Query;
     protected function dateFilter($period, $result, $field)
     {
         switch($period) {
@@ -35,7 +33,7 @@ trait Filterable
             default:
                 if (str_contains($period, ',')) {
                     list($from, $to) = explode(',', $period);
-                    return $result->whereBetween($field, [static::dbDate($from),static::dbDate($to,'endOfDay')]);
+                    return $result->whereBetween($field, [db_date($from),db_date($to,'endOfDay')]);
                 } else {
                     return $result->whereDate($field, '=', $period);
                 }

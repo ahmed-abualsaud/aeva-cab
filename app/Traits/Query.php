@@ -97,8 +97,8 @@ trait Query
             $date_column ??= static::timestamp();
             $date_array = explode(',' ,request()->query($date_query_key));
             return count($date_array) == 1
-                              ? $builder->whereDate(static::fullColumnName($date_column),static::dbDate(head($date_array)))
-                             : $builder->whereBetween(static::fullColumnName($date_column),[static::dbDate(head($date_array),'startOfDay'),static::dbDate(last($date_array),'endOfDay')]);
+                              ? $builder->whereDate(static::fullColumnName($date_column),db_date(head($date_array)))
+                             : $builder->whereBetween(static::fullColumnName($date_column),[db_date(head($date_array),'startOfDay'),db_date(last($date_array),'endOfDay')]);
         else: return $builder;
         endif;
     }
@@ -124,22 +124,6 @@ trait Query
     {
         $query = request()->query($query_key ?? $column_name);
         return isset($query) ? $builder->where($column_name,'like','%'.$query.'%') : $builder;
-    }
-
-    /**
-     * @param $date
-     * @param string $carbon_method
-     * @param array $carbon_method_args
-     * @param string $format
-     * @return mixed
-     */
-    public static function dbDate($date, string $carbon_method = 'startOfDay', array $carbon_method_args = [], string $format = 'Y-m-d H:i:s')
-    {
-        try {
-            return Carbon::parse($date)->{$carbon_method}(...$carbon_method_args)->format($format);
-        }catch (\Exception $e){
-            return false;
-        }
     }
 
     /**
