@@ -25,7 +25,7 @@ class SendOtp implements ShouldQueue
     {
         $this->to = $to;
         $this->message = $message;
-        $this->queue = 'uat-high';
+        $this->queue = 'dev-high';
     }
 
     /**
@@ -35,6 +35,6 @@ class SendOtp implements ShouldQueue
      */
     public function handle()
     {
-        Otp::send($this->to, $this->message);
+        //Otp::send($this->to, $this->message);
     }
 }

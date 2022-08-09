@@ -29,7 +29,7 @@ class SendPushNotification implements ShouldQueue
         $this->message = $message; 
         $this->title = $title;
         $this->data = $data;
-        $this->queue = 'uat-high';
+        $this->queue = 'dev-high';
     }
 
     /**

@@ -99,7 +99,7 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         if ($request->costs > $request->costs_after_discount) {
-            $input['costs'] = floor($request->costs - $request->costs_after_discount);
+            $input['costs'] = $request->discount;
             $input['payment_method'] = 'Promo Code Remaining';
             $this->model->create($input);
         }
@@ -168,15 +168,15 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         $this->updateUserWallet($request->user_id, $args['costs'], 'Cash', $args['uuid']);
-        $driver_promo_code_remaining = floor($request->costs - $request->costs_after_discount);
-        $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_promo_code_remaining), $args['costs'], $driver_promo_code_remaining);
+        $driver_wallet = $request->discount - $refund;
+        $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_wallet), $args['costs'], $driver_wallet);
         return $refund;
     }
 
     protected function walletPay($args, $request)
     {
         $paid = $this->updateUserWallet($request->user_id, $args['costs'], 'Aevapay User Wallet', $args['uuid']);
-        $driver_wallet = floor($request->costs - $request->costs_after_discount) + $paid;
+        $driver_wallet = $request->discount + $paid;
         $this->updateDriverWallet($request->driver_id, $driver_wallet, 0, $driver_wallet);
         return $paid;
     }

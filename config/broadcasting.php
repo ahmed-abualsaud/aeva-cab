@@ -38,7 +38,7 @@ return [
             'options' => [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'useTLS' => true,
-                'host' => 'uat-ws.aevapay.net',
+                'host' => 'mobility-ws.aevapay.net',
                 'port' => 6001,
                 'scheme' => 'https',
                 'curl_options' => [
