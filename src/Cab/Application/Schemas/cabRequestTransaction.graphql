@@ -8,6 +8,7 @@ input CabRequestTransactionInput {
 
 type CabRequestTransaction {
   id: ID
+  user_id: ID
   request: CabRequest @BelongsTo
   user: CabUser @BelongsTo(relation: "user")
   driver: Driver @BelongsTo
