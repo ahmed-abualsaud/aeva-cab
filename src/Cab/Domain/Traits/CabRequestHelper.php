@@ -368,7 +368,7 @@ trait CabRequestHelper
 
     protected function getXAccessToken()
     {
-        $response = Http::post('https://'.config('custom.credit_go_production_server_domain').'/api/users/confirm', [
+        $response = Http::post('https://'.config('custom.credit_go_production_server_domain').'/api/users/loginWithoutOtp', [
             'phone'=> config('custom.credit_go_production_phone'),
             'passcode'=> config('custom.credit_go_production_pass_code')
         ])

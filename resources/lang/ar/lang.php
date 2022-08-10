@@ -132,6 +132,7 @@ return [
     'amount_paid_less_than_amount_requested' => 'المبلغ المدفوع أقل من المبلغ المطلوب',
     'you_already_applyed_another_promo_code' => 'لديك رمز ترويجي أخر مطبق بالفعل',
     'empty_user_wallet' => 'محفظة العميل فارغة. يرجي الدفع نقدا',
+    'insufficient_driver_wallet_balance' => 'رصيد محفظة السائق غير كافٍ ، والحد الأقصى للمبلغ النقدي الذي يمكنك تحصيله من العمبل هو :cash_amount جنيه مصري',
 
     // ============================== Aeva Cab ==============================
 
