@@ -22,28 +22,27 @@ return [
     'victorylink_password' => env('VICTORY_LINK_PASSWORD'),
     'victorylink_url' => env('VICTORY_LINK_URL'),
     'victorylink_sender' => env('VICTORY_LINK_SENDER'),
-
-    'aevapay_uat_server_domain' => env('AEVAPAY_UAT_SERVER_DOMAIN', 'uat.aevapay.net'),
-    'aevapay_staging_server_domain' => env('AEVAPAY_STAGING_SERVER_DOMAIN', 'staging.aevapay.net'),
-    'aevapay_production_server_domain' => env('AEVAPAY_PRODUCTION_SERVER_DOMAIN', 'production.aevapay.net'),
-    
-    'aevapay_uat_server_key' => env('AEVAPAY_UAT_SERVER_KEY', '$2y$10$PoO5Gfl4PAezsMeI0LPbKul5Kes4Ee06pIGGsMVV36Zy6BXne/Lom'),
-    'aevapay_staging_server_key' => env('AEVAPAY_STAGING_SERVER_KEY', '$2y$10$PoO5Gfl4PAezsMeI0LPbKul5Kes4Ee06pIGGsMVV36Zy6BXne/Lom'),
-    'aevapay_production_server_key' => env('AEVAPAY_PRODUCTION_SERVER_KEY', '$2y$10$raHvQpKOVZMJk/3s84KrbOQeze4fM3M0gQ57kaHUTVMkhJ4ibJF.i'),
     
     'aevacab_staging_server_key' => env('AEVACAB_STAGING_SERVER_KEY', '!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ'),
     'aevacab_production_server_key' => env('AEVACAB_PRODUCTION_SERVER_KEY', '!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ!K4O^Coj_y3baShe4L7;Rhp]C)y6yiacx+Tn.^%xVev9t4Jd`7D`gVG+3>HdTrJ'),
 
-    'credit_go_staging_server_domain'=> env('CREDIT_GO_STAGING_SERVER_DOMAIN','165.227.124.123'), 
-    'credit_go_production_server_domain'=> env('CREDIT_GO_PRODUCTION_SERVER_DOMAIN','creditgo.app'), 
-    
-    'credit_go_staging_phone'=> env('CREDIT_GO_STAGING_SERVER_PHONE','01286308351'), 
-    'credit_go_production_phone'=> env('CREDIT_GO_PRODUCTION_SERVER_PHONE','01126999840'), 
-    
-    'credit_go_staging_pass_code' => env('CREDIT_GO_STAGING_SERVER_PIN_CODE','driver@Api123'),
-    'credit_go_production_pass_code' => env('CREDIT_GO_PRODUCTION_SERVER_PIN_CODE','driver@Api123'),
-
     'default_verification_code' => env('DEFAULT_VERIFICATION_CODE', 6254),
 
     'google_maps_url' => env('GOOGLE_MAPS_URL', 'https://maps.googleapis.com/maps/api/directions/json?key='.env('GOOGLE_MAP_KEY', 'AIzaSyDp1TeAL54m5bl6wCFIs4RZj4EPnvElR7g').'&sensor=false'),
+
+    // ================================================ Environment Credentials ================================================
+
+    'send_otp' => env('SEND_OTP'),
+    'queue_high' => env('QUEUE_HIGH'),
+    'websocket_host' => env('WEBSOCKET_HOST'),
+
+    'aevapay_server_url' => env('AEVAPAY_SERVER_URL'),
+    'aevapay_server_key' => env('AEVAPAY_SERVER_KEY'),
+    'aevapay_slug_pay' => env('AEVAPAY_SLUG_PAY'),
+
+    'credit_go_phone' => env('CREDIT_GO_PHONE'),
+    'credit_go_pass_code' => env('CREDIT_GO_PASS_CODE'),
+    'credit_go_server_url' => env('CREDIT_GO_SERVER_URL'),
+    'credit_go_slug_auth' => env('CREDIT_GO_SLUG_AUTH'),
+    'credit_go_slug_cashout' => env('CREDIT_GO_SLUG_CASHOUT'),
 ];
