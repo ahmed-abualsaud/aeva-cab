@@ -164,11 +164,11 @@ class CabRequest extends Model
         }
 
         if (array_key_exists('paid', $args) && !empty_graph_ql_value($args['paid'])) {
-            $query = static::applyBooleanFilter($query,$args['paid'],self::getTable().'paid');
+            $query = static::applyBooleanFilter($query,$args['paid'],self::getTable().'.paid');
         }
 
         if (array_key_exists('rated', $args) && !empty_graph_ql_value($args['rated'])) {
-            $query = static::applyBooleanFilter($query,$args['rated'],self::getTable().'rated');
+            $query = static::applyBooleanFilter($query,$args['rated'],self::getTable().'.rated');
         }
 
         if (array_key_exists('user_id', $args) && !empty_graph_ql_value($args['user_id'])) {
