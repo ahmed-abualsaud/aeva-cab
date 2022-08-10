@@ -24,6 +24,7 @@ type AdminAuthPayload {
 type Admin {
   id: ID
   name: String
+  full_name: String
   email: String
   phone: String
   avatar: String
