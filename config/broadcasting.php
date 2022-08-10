@@ -38,7 +38,7 @@ return [
             'options' => [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'useTLS' => true,
-                'host' => 'production-ws.aevapay.net',
+                'host' => config('custom.websocket_host'),
                 'port' => 6001,
                 'scheme' => 'https',
                 'curl_options' => [

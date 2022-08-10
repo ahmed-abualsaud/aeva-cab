@@ -63,8 +63,8 @@ class CabRequestTransactionRepository extends BaseRepository
         $input['user_id'] = $request->user_id;
         $input['driver_id'] = $request->driver_id;
 
-        $this->costs = $request->costs;
         $this->cash_after_wallet = ($request->costs_after_discount > $request->remaining);
+        $this->costs = $this->cash_after_wallet? $request->remaining : $request->costs;
 
         if (is_zero($args['costs']) && is_zero($request->remaining)) {
             $trx = new CabRequestTransaction($input);
@@ -139,7 +139,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
     protected function cashPay($args, $request)
     {
-        $refund = $args['costs'] - $request->costs_after_discount;
+        $refund = $args['costs'] - $request->remaining;
         $driver_wallet = $request->discount - $refund;
         $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_wallet), $args['costs'], $driver_wallet);
         $this->updateUserWallet($request->user_id, $refund, 'Aevacab Refund', $args['uuid'].'-refund');
