@@ -10,7 +10,7 @@ input CreateDriverTransactionInput {
 type DriverTransaction {
   id: ID
   driver: Driver @belongsTo
-  admin: AdminType @morphTo
+  admin: Admin @belongsTo
   amount: Float
   type: String
   created_at: String

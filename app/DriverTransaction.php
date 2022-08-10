@@ -52,7 +52,7 @@ class DriverTransaction extends Model
 
     public function admin()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Admin::class);
     }
 
     public function scopeSearch($query, $args)
