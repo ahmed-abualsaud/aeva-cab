@@ -1,7 +1,7 @@
 input UpdateSettingsInput {
   id: ID! @rules(apply: ["required"])
   name: String
-  value: Float
+  value: String
   description: String
 }
 
