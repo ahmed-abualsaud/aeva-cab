@@ -93,11 +93,13 @@ class DriverLog extends Model
                         $inputs[$key] = $last_log->{$key} + $value;
                     }
 
-                    if ($key == 'cashout_remaining' && $last_log->cashout_remaining + $value > 0) {
-                        $inputs['cashout_remaining'] = $last_log->cashout_remaining + $value;
-                    } else {
-                        throw new CustomException(__('lang.max_cahsout_exceeded', ['cashout_amount' => $last_log->cashout_remaining]));
-                    }
+                    if ($key == 'cashout_remaining') {
+                        if ($last_log->cashout_remaining + $value > 0) {
+                            $inputs['cashout_remaining'] = $last_log->cashout_remaining + $value;
+                        } else {
+                            throw new CustomException(__('lang.max_cahsout_exceeded', ['cashout_amount' => $last_log->cashout_remaining]));
+                        }
+                    } 
                 }
 
                 $last_log->update($inputs);
