@@ -27,7 +27,7 @@ class ChangeDriverStatusSettingsSeeder extends Seeder
         Settings::updateOrCreate(['name'=> $this->activation_key],[
             'name'=> $this->activation_key,
             'value'=> 'on',
-            'description'=> 'acceptable distance in meter that driver can be online within last location update',
+            'description'=> 'turn on/off change driver status cron job from online to offline',
        ]);
     }
 }
