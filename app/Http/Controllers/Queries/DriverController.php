@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Queries;
 
 use App\Driver;
+use App\Traits\HandleAccessTokenCache;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class DriverController 
+class DriverController
 {
-
+    use HandleAccessTokenCache;
     public function auth()
     {
         return auth('driver')->user();
@@ -30,7 +31,7 @@ class DriverController
                 'message' => 'Not Found'
             ];
             return response()->json($response, 404);
-       } 
+       }
     }
 
     public function getByPhone($phone, Request $req)
@@ -61,7 +62,7 @@ class DriverController
                 'message' => 'Not Found'
             ];
             return response()->json($response, 404);
-       } 
+       }
     }
 
     public function driverDeviceId($driver_id) {
@@ -77,7 +78,7 @@ class DriverController
                 'message' => 'Not Found'
             ];
             return response()->json($response, 404);
-       } 
+       }
     }
 
     public function driversDeviceId(Request $request) {
@@ -93,6 +94,13 @@ class DriverController
                 'message' => 'Not Found'
             ];
             return response()->json($response, 404);
-       } 
+       }
+    }
+
+    public function BlockedLoggedOut()
+    {
+        $blocked_ids = Driver::query()->select('id')->where('status','=',false)->cursor()->pluck('id');
+        $blocked_ids->each(fn($id) => $this->logOutOldDevices('driver',$id));
+        return dashboard_success('Blocked drivers tokens invalidated');
     }
 }
