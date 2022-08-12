@@ -18,6 +18,16 @@ trait HandleAccessTokenCache
         $this->cacheToken($guard, $entity->id, $token);
     }
 
+    protected function logOutOldDevices($guard, $id)
+    {
+        $cachedToken = $this->getCachedToken($guard, $id);
+
+        if ($cachedToken) {
+            $this->invalidateToken($guard, $cachedToken);
+            $this->removeCachedToken($guard, $id);
+        }
+    }
+
     protected function cacheToken($guard, $id, $token){
         return Cache::put($guard.'_'.$id.'_token', $token);
     }

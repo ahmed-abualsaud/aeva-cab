@@ -61,7 +61,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
         $input['password'] = Hash::make($password);
         $input['status'] = true;
- 
+
         if (array_key_exists('avatar', $args) && $args['avatar']) {
             $url = $this->uploadOneFile($args['avatar'], 'avatars');
             $input['avatar'] = $url;
@@ -104,7 +104,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             'verification_code' => $verification_code,
             'signature' => config('custom.otp_signature'),
         ]);
-        
+
         SendOtp::dispatch($args['phone'], $message);
 
         $driver->verification_code = $verification_code;
@@ -122,7 +122,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
         Document::createDriverDocuments($driver->id);
         Document::createVehicleDocuments($vehicle->id);
-        
+
         if (array_key_exists('partner_id', $args) && $args['partner_id']) {
             $this->createPartnerDriver($args['partner_id'], $driver->id);
         }
@@ -161,6 +161,10 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $input['avatar'] = $url;
         }
 
+        if (array_key_exists('status',$args) && in_array($args['status'],BOOLEAN_FALSE)){
+            $this->logOutOldDevices('driver',$driver->id);
+        }
+
         $driver->update($input);
 
         return $driver;
@@ -187,7 +191,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             throw new CustomException(__('lang.your_account_is_disabled'));
         }
 
-        if (!$driver->phone_verified_at) 
+        if (!$driver->phone_verified_at)
         {
             if (config('custom.send_otp')) {
                 $verification_code = mt_rand(1000, 9999);;
@@ -201,15 +205,15 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
                 'verification_code' => $verification_code,
                 'signature' => config('custom.otp_signature'),
             ]);
-            
+
             SendOtp::dispatch($args['phone'], $message);
 
             $driver->verification_code = $verification_code;
         }
 
-        if (array_key_exists('device_id', $args) 
-            && $args['device_id'] 
-            && $driver->device_id != $args['device_id']) 
+        if (array_key_exists('device_id', $args)
+            && $args['device_id']
+            && $driver->device_id != $args['device_id'])
         {
             $driver->update(['device_id' => $args['device_id']]);
         }
@@ -259,7 +263,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
     }
 
     public function assignVehicle(array $args)
-    { 
+    {
         try {
             DriverVehicle::create([
                 'vehicle_id' => $args['vehicle_id'],
@@ -269,7 +273,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         } catch (\Exception $e) {
             throw new CustomException(__('lang.assignment_failed'));
         }
- 
+
         return [
             "status" => true,
             "message" => __('lang.assign_vehicle')
@@ -299,7 +303,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         } catch (ModelNotFoundException $e) {
             throw new \Exception(__('lang.driver_not_found'));
         }
-        
+
         if (config('custom.send_otp')) {
             $verification_code = mt_rand(1000, 9999);;
         } else {
