@@ -31,6 +31,7 @@ class CabRequestTransactionRepository extends BaseRepository
     use HandleDeviceTokens;
 
     protected $costs;
+    protected $refund;
     protected $cash_after_wallet;
 
     public function __construct(CabRequestTransaction $model)
@@ -83,15 +84,22 @@ class CabRequestTransactionRepository extends BaseRepository
             $request->remaining > 0)
         {
             if ($this->cash_after_wallet) {
+                $input['payment_method'] = 'Cash';
                 $trx = $this->cash($args, $input, $request);
             } else {
                 $trx = $this->wallet($args, $input, $request);
             }
         }
 
-        if ($request->costs > $request->costs_after_discount) {
-            $input['costs'] = floor($request->costs - $request->costs_after_discount);
+        if ($request->costs > $request->costs_after_discount && !$this->cash_after_wallet) {
+            $input['costs'] = $request->discount;
             $input['payment_method'] = 'Promo Code Remaining';
+            $this->model->create($input);
+        }
+
+        if(!is_zero($this->refund)) {
+            $input['costs'] = $this->refund;
+            $input['payment_method'] = 'Refund';
             $this->model->create($input);
         }
 
@@ -108,11 +116,11 @@ class CabRequestTransactionRepository extends BaseRepository
 
     protected function cash($args, $input, $request)
     {
-        $refund = $this->cashPay($args, $request);
+        $this->refund = $this->cashPay($args, $request);
         $trx = $this->model->create($input);
         $request->update(['status' => 'Completed', 'paid' => true, 'remaining' => 0]);
         $trx->debt = 0;
-        $this->notifyUserOfPayment($request, $refund);
+        $this->notifyUserOfPayment($request, $this->refund);
         return $trx;
     }
 
@@ -140,7 +148,7 @@ class CabRequestTransactionRepository extends BaseRepository
     protected function cashPay($args, $request)
     {
         $refund = $args['costs'] - $request->remaining;
-        $driver_wallet = $request->discount - $refund;
+        $driver_wallet = $this->cash_after_wallet? -$refund : $request->discount - $refund;
         $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_wallet), $args['costs'], $driver_wallet);
         $this->updateUserWallet($request->user_id, $refund, 'Aevacab Refund', $args['uuid'].'-refund');
         $this->updateUserWallet($request->user_id, $args['costs'], 'Cash', $args['uuid']);
