@@ -56,7 +56,7 @@ class Kernel extends ConsoleKernel
                 Log::error('Broadcast all drivers locations failed with error: '.$output);
             });
 
-        $schedule->command('change:driver-status')->everyFifteenMinutes();
+        $schedule->command('change:driver-status')->everyThirtyMinutes();
     }
 
     /**
