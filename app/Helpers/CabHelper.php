@@ -4,6 +4,10 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 
+const BOOLEANS = ['true','false','1','0',true,false,0,1,'on','off','yes','no'];
+const BOOLEAN_FALSE = ['false',false,0,'off'];
+const BOOLEAN_TRUE = ['true',true,0,'no'];
+
 /**
  * @param string|null $amount
  * @return bool

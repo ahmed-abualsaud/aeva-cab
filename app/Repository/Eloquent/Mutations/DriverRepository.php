@@ -161,6 +161,10 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $input['avatar'] = $url;
         }
 
+        if (array_key_exists('status',$args) && in_array($args['status'],BOOLEAN_FALSE)){
+            $this->logOutOldDevices('driver',$driver->id);
+        }
+
         $driver->update($input);
 
         return $driver;
@@ -299,7 +303,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         } catch (ModelNotFoundException $e) {
             throw new \Exception(__('lang.driver_not_found'));
         }
-        
+
         if (config('custom.send_otp')) {
             $verification_code = mt_rand(1000, 9999);;
         } else {
