@@ -257,7 +257,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
         DriverLog::log([
             'driver_id' => $args['driver_id'],
-            'cashout_remaining' => -$args['amount']
+            'cashout_amount' => $args['amount']
         ]);
 
         try {
