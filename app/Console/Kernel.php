@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\ChangeDriverStatus;
 use App\Driver;
 use App\Events\AllDriversLocations;
 
@@ -20,7 +21,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        ChangeDriverStatus::class
     ];
 
     /**
@@ -55,6 +56,8 @@ class Kernel extends ConsoleKernel
                 Log::error('Broadcast all drivers locations failed with error: '.$output);
             });
 */
+
+        $schedule->command('change:driver-status')->everyThirtyMinutes();
     }
 
     /**

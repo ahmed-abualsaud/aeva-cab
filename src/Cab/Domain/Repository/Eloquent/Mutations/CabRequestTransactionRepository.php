@@ -255,6 +255,11 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.insufficient_balance'));
         }
 
+        DriverLog::log([
+            'driver_id' => $args['driver_id'],
+            'cashout_remaining' => -$args['amount']
+        ]);
+
         try {
             $this->cashout([
                 'reference_number' => $args['reference_number']

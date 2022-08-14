@@ -4,6 +4,8 @@ namespace App;
 
 use App\Traits\Filterable;
 
+use App\Exceptions\CustomException;
+
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
 
@@ -67,6 +69,12 @@ class DriverLog extends Model
 
             if(!$last_log || (time() - strtotime(substr($last_log->created_at, 0, 10))) >= 86400) {
                 $inputs['driver_id'] = $driver_id;
+                $daily_amount = Settings::where('name', 'Cashout Amount Limit')->first()->value;
+                $wallet = DriverStats::select('wallet')->where('driver_id', $driver_id)->first()->wallet;
+                $inputs['cashout_remaining'] = $wallet < $daily_amount ? $wallet : $daily_amount;
+                if (array_key_exists('cashout_remaining', $args) && $inputs['cashout_remaining'] + $args['cashout_remaining'] < 0) {
+                    throw new CustomException(__('lang.max_cahsout_exceeded', ['cashout_amount' => $inputs['cashout_remaining']]));
+                }
                 $last_log = DriverLog::create($inputs);
             } else {
                 $inc_keys = [
@@ -84,6 +92,14 @@ class DriverLog extends Model
                     if (in_array($key, $inc_keys)) {
                         $inputs[$key] = $last_log->{$key} + $value;
                     }
+
+                    if ($key == 'cashout_remaining') {
+                        if ($last_log->cashout_remaining + $value > 0) {
+                            $inputs['cashout_remaining'] = $last_log->cashout_remaining + $value;
+                        } else {
+                            throw new CustomException(__('lang.max_cahsout_exceeded', ['cashout_amount' => $last_log->cashout_remaining]));
+                        }
+                    } 
                 }
 
                 $last_log->update($inputs);
