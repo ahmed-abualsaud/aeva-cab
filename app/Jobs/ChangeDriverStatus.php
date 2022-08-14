@@ -33,7 +33,7 @@ class ChangeDriverStatus implements ShouldQueue
         $settings = Settings::query()->whereIn('name',[$this->duration_key,$this->activation_key])->pluck('value','name');
         $now = Carbon::now();
         $acceptable_time = $now->subMinutes($settings[$this->duration_key])->format('Y-m-d H:i:s');
-        $settings[$this->activation_key] == 'on' and $this->accToActivityUpdatedAt($now,$acceptable_time);
+        $settings[$this->activation_key] == 'on' and $this->accToLocationUpdatedAt($now,$acceptable_time);
     }
 
     /**
