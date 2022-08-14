@@ -40,7 +40,7 @@ class Kernel extends ConsoleKernel
         //     ->onFailure(function (Stringable $output) {
         //         Log::error('Database backup failed with error: '.$output);
         //     });
-
+/* fix websocket time-out
         $schedule->call(function () {
                 $dt = Carbon::now();
                 $x=60/10;
@@ -54,6 +54,7 @@ class Kernel extends ConsoleKernel
             ->onFailure(function (Stringable $output) {
                 Log::error('Broadcast all drivers locations failed with error: '.$output);
             });
+*/
     }
 
     /**
