@@ -67,7 +67,8 @@ class CabRequestTransactionRepository extends BaseRepository
         $this->cash_after_wallet = ($request->costs_after_discount > $request->remaining);
         $this->costs = $this->cash_after_wallet? $request->remaining : $request->costs;
 
-        if (is_zero($args['costs']) && is_zero($request->remaining)) {
+        if (is_zero($request->remaining)) {
+            $request->update(['status' => 'Completed', 'paid' => true]);
             $trx = new CabRequestTransaction($input);
             $trx->debt = 0;
         }
@@ -103,7 +104,7 @@ class CabRequestTransactionRepository extends BaseRepository
             $this->model->create($input);
         }
 
-        if (empty($request->remaining)) {
+        if (is_zero($request->remaining)) {
             $this->updateDriverStatus($request->driver_id, 'Online');
         }
 
@@ -279,7 +280,7 @@ class CabRequestTransactionRepository extends BaseRepository
         $cashout = $this->model->create([
             'driver_id' => $args['driver_id'],
             //'merchant_id' => $args['merchant_id'],
-            //'merchant_name' => $args['merchant_name'],
+            'merchant_name' => $args['merchant_name'],
             'costs' => $args['amount'],
             'payment_method' => 'Cashout',
             'uuid' => Str::orderedUuid()
@@ -289,6 +290,8 @@ class CabRequestTransactionRepository extends BaseRepository
             'wallet' => DB::raw('wallet - '.$args['amount']),
             'earnings' => DB::raw('earnings - '.$args['amount'])
         ]);
+
+        $cashout->wallet = $stats->wallet;
 
         return $cashout;
     }
