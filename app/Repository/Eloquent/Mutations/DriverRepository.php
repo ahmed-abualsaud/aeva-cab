@@ -165,6 +165,10 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $this->logOutOldDevices('driver',$driver->id);
         }
 
+         if (array_key_exists('block_reason',$args) && !empty_graph_ql_value($args['block_reason'])){
+             $input['block_reason'] = $args['block_reason'];
+         }
+
         $driver->update($input);
 
         return $driver;
