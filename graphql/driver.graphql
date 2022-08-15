@@ -3,7 +3,7 @@ input CreateDriverInput @validator {
   last_name: String! @rules(apply: ["required"])
   fleet_id: ID
   email: String
-  phone: String 
+  phone: String
   secondary_phone: String
   title: String @rules(apply: ["in:Normal,AevaX"])
   password: String
@@ -42,7 +42,7 @@ input UpdateDriverInput @validator {
   longitude: Float
   wallet: Float
   register_complete: Boolean
-  car_type_id: ID 
+  car_type_id: ID
   city: String
   vehicle: String
   phone_verified_at: String
@@ -52,6 +52,7 @@ input UpdateDriverInput @validator {
   title: String
   approved: Boolean
   national_id: String
+  block_reason: String
 }
 
 input DriverVehicleInput {
@@ -102,6 +103,7 @@ type Driver {
   approved: Boolean
   otp: String
   national_id: String
+  block_reason: String
 }
 
 input DriverPhoneVerificationInput {
