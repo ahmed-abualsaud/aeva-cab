@@ -38,7 +38,7 @@ return [
             'options' => [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'useTLS' => true,
-                'host' => config('custom.websocket_host'),
+                'host' => env('WEBSOCKET_HOST'),
                 'port' => 6001,
                 'scheme' => 'https',
                 'curl_options' => [
