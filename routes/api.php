@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Queries\DriverController;
 use App\Http\Controllers\Queries\Exports\ExportCabRequestsController;
 use App\Http\Controllers\Queries\Exports\ExportCabRequestTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportDriversController;
