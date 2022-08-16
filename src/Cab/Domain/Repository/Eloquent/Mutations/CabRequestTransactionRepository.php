@@ -31,6 +31,7 @@ class CabRequestTransactionRepository extends BaseRepository
     use HandleDeviceTokens;
 
     protected $costs;
+    protected $refund;
     protected $cash_after_wallet;
 
     public function __construct(CabRequestTransaction $model)
@@ -66,36 +67,44 @@ class CabRequestTransactionRepository extends BaseRepository
         $this->cash_after_wallet = ($request->costs_after_discount > $request->remaining);
         $this->costs = $this->cash_after_wallet? $request->remaining : $request->costs;
 
-        if (is_zero($args['costs']) && is_zero($request->remaining)) {
+        if (is_zero($request->remaining)) {
+            $request->update(['status' => 'Completed', 'paid' => true]);
             $trx = new CabRequestTransaction($input);
             $trx->debt = 0;
         }
 
-        if ($args['payment_method'] == 'Cash' && 
-            str_contains(strtolower($request->history['sending']['payment_method']), 'cash') && 
+        if ($args['payment_method'] == 'Cash' &&
+            str_contains(strtolower($request->history['sending']['payment_method']), 'cash') &&
             $request->remaining > 0)
         {
             $trx = $this->cash($args, $input, $request);
         }
 
-        if ($args['payment_method'] == 'Wallet' && 
-            str_contains(strtolower($request->history['sending']['payment_method']), 'wallet') && 
+        if ($args['payment_method'] == 'Wallet' &&
+            str_contains(strtolower($request->history['sending']['payment_method']), 'wallet') &&
             $request->remaining > 0)
         {
             if ($this->cash_after_wallet) {
+                $input['payment_method'] = 'Cash';
                 $trx = $this->cash($args, $input, $request);
             } else {
                 $trx = $this->wallet($args, $input, $request);
             }
         }
 
-        if ($request->costs > $request->costs_after_discount) {
-            $input['costs'] = floor($request->costs - $request->costs_after_discount);
+        if ($request->costs > $request->costs_after_discount && !$this->cash_after_wallet) {
+            $input['costs'] = $request->discount;
             $input['payment_method'] = 'Promo Code Remaining';
             $this->model->create($input);
         }
 
-        if (empty($request->remaining)) {
+        if(!is_zero($this->refund)) {
+            $input['costs'] = $this->refund;
+            $input['payment_method'] = 'Refund';
+            $this->model->create($input);
+        }
+
+        if (is_zero($request->remaining)) {
             $this->updateDriverStatus($request->driver_id, 'Online');
         }
 
@@ -108,11 +117,11 @@ class CabRequestTransactionRepository extends BaseRepository
 
     protected function cash($args, $input, $request)
     {
-        $refund = $this->cashPay($args, $request);
+        $this->refund = $this->cashPay($args, $request);
         $trx = $this->model->create($input);
         $request->update(['status' => 'Completed', 'paid' => true, 'remaining' => 0]);
         $trx->debt = 0;
-        $this->notifyUserOfPayment($request, $refund); 
+        $this->notifyUserOfPayment($request, $this->refund);
         return $trx;
     }
 
@@ -140,7 +149,7 @@ class CabRequestTransactionRepository extends BaseRepository
     protected function cashPay($args, $request)
     {
         $refund = $args['costs'] - $request->remaining;
-        $driver_wallet = $request->discount - $refund;
+        $driver_wallet = $this->cash_after_wallet? -$refund : $request->discount - $refund;
         $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_wallet), $args['costs'], $driver_wallet);
         $this->updateUserWallet($request->user_id, $refund, 'Aevacab Refund', $args['uuid'].'-refund');
         $this->updateUserWallet($request->user_id, $args['costs'], 'Cash', $args['uuid']);
@@ -255,6 +264,11 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.insufficient_balance'));
         }
 
+        DriverLog::log([
+            'driver_id' => $args['driver_id'],
+            'cashout_remaining' => -$args['amount']
+        ]);
+
         try {
             $this->cashout([
                 'reference_number' => $args['reference_number']
@@ -266,7 +280,7 @@ class CabRequestTransactionRepository extends BaseRepository
         $cashout = $this->model->create([
             'driver_id' => $args['driver_id'],
             //'merchant_id' => $args['merchant_id'],
-            //'merchant_name' => $args['merchant_name'],
+            'merchant_name' => $args['merchant_name'],
             'costs' => $args['amount'],
             'payment_method' => 'Cashout',
             'uuid' => Str::orderedUuid()
@@ -276,6 +290,8 @@ class CabRequestTransactionRepository extends BaseRepository
             'wallet' => DB::raw('wallet - '.$args['amount']),
             'earnings' => DB::raw('earnings - '.$args['amount'])
         ]);
+
+        $cashout->wallet = $stats->wallet;
 
         return $cashout;
     }

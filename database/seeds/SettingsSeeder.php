@@ -65,6 +65,11 @@ class SettingsSeeder extends Seeder
                 'name' => 'Show Acceptance Dialog',
                 'value' => 30,
                 'description' => 'show acceptance dialog duration in seconds for the driver'
+            ],
+            [
+                'name' => 'Cashout Amount Limit',
+                'value' => 200,
+                'description' => 'restrict the cashout amount a driver can withdraw per day'
             ]
         ]);
     }

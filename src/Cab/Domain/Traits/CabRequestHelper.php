@@ -47,7 +47,7 @@ trait CabRequestHelper
         if (strtolower($cab_status) == 'offline' && $driver->cab_status == 'Online') {
             $total_working_time = strtotime($activity_updated_at) - strtotime($driverStats->activity_updated_at);
             DriverLog::log([
-                'driver_id' => $driver->id, 
+                'driver_id' => $driver->id,
                 'total_working_time' => ($total_working_time / 60)
             ]);
 
@@ -79,7 +79,7 @@ trait CabRequestHelper
         }
     }
 
-    protected function applyCancelFees($cancelled_by, $request) 
+    protected function applyCancelFees($cancelled_by, $request)
     {
         if ($request->status == 'Arrived' && $cancelled_by == 'user') {
             $cancel_fees = $this->settings('Cancelation Fees');
@@ -94,13 +94,13 @@ trait CabRequestHelper
             ]);
 
             DriverStats::where('driver_id', $request->driver_id)->update([
-                'wallet' => DB::raw('wallet + '.$cancel_fees), 
+                'wallet' => DB::raw('wallet + '.$cancel_fees),
                 'earnings' => DB::raw('earnings + '.$cancel_fees)
             ]);
-    
+
             DriverLog::log([
-                'driver_id' => $request->driver_id, 
-                'wallet' => $cancel_fees, 
+                'driver_id' => $request->driver_id,
+                'wallet' => $cancel_fees,
                 'earnings' => $cancel_fees
             ]);
         }
@@ -114,7 +114,7 @@ trait CabRequestHelper
     }
 
     protected function flushCancelFees($request, $cancel_fees)
-    {  
+    {
         $this->pay([
             'user_id' => $request->user_id,
             'amount' => $cancel_fees,
@@ -202,7 +202,7 @@ trait CabRequestHelper
         return $fees->costs;
     }
 
-    protected function updateRequest($request, $args) 
+    protected function updateRequest($request, $args)
     {
         $input = Arr::except($args, ['id', 'directive', 'cancelled_by', 'cancel_reason', 'distance', 'duration']);
 
@@ -211,7 +211,7 @@ trait CabRequestHelper
         return $request;
     }
 
-    protected function findRequest($id) 
+    protected function findRequest($id)
     {
         try {
             return CabRequest::with('promoCode:id,percentage')->findOrFail($id);
@@ -220,11 +220,11 @@ trait CabRequestHelper
         }
     }
 
-    protected function getNearestDrivers($lat, $lng, $except = []) 
+    protected function getNearestDrivers($lat, $lng, $except = [])
     {
         $radius = $this->settings('Search Radius');
 
-        $drivers = Driver::selectRaw('id AS driver_id, 
+        $drivers = Driver::selectRaw('id AS driver_id,
             full_name as name, phone, avatar, latitude, longitude,
             ST_Distance_Sphere(point(longitude, latitude), point(?, ?))
             as distance
@@ -236,7 +236,7 @@ trait CabRequestHelper
             ->orderBy('distance','asc')
             ->take(15)
             ->get();
-        
+
         return $drivers;
     }
 
@@ -255,21 +255,21 @@ trait CabRequestHelper
         $occupiedPeriods = CabRequest::select('schedule_time','next_free_time')
             ->whereScheduled($args['user_id'])
             ->whereRaw('
-                (? >= schedule_time AND ? < next_free_time) OR 
+                (? >= schedule_time AND ? < next_free_time) OR
                 (? >= schedule_time AND ? < next_free_time)
             ', [
-                $args['schedule_time'], $args['schedule_time'], 
+                $args['schedule_time'], $args['schedule_time'],
                 $args['next_free_time'], $args['next_free_time']
             ])
             ->first();
-        
+
         if($occupiedPeriods || time() > strtotime($args['schedule_time'])) {
             return false;
         }
         return true;
     }
 
-    protected function settings($name) 
+    protected function settings($name)
     {
         if(is_array($name)) {
             $ret = Settings::select('name', 'value')->whereIn('name', $name)->get()->keyBy('name');
@@ -292,7 +292,7 @@ trait CabRequestHelper
         return acos($dist) / $rad * 60 * 1853;
     }
 
-    public function pay($args) 
+    public function pay($args)
     {
         $url = config('custom.aevapay_server_url').config('custom.aevapay_slug_pay');
         return Http::withHeaders([
@@ -307,7 +307,7 @@ trait CabRequestHelper
         ->throw();
     }
 
-    public function cashout($args) 
+    public function cashout($args)
     {
         $url = config('custom.credit_go_server_url').config('custom.credit_go_slug_cashout');
         return Http::withHeaders([
@@ -319,7 +319,7 @@ trait CabRequestHelper
         ->throw();
     }
 
-    public function getMissedDrivers($request, $drivers_ids) 
+    public function getMissedDrivers($request, $drivers_ids)
     {
         $missed = $request->history['missing']['missed'];
         $missed[] = [
@@ -329,7 +329,7 @@ trait CabRequestHelper
         return $missed;
     }
 
-    public function calculateEstimatedRoute($s_lat, $s_lng, $d_lat, $d_lng) 
+    public function calculateEstimatedRoute($s_lat, $s_lng, $d_lat, $d_lng)
     {
         $distance = 0;
         $duration = 0;
@@ -345,7 +345,7 @@ trait CabRequestHelper
 
     public function calculateRealRoute($s_lat, $s_lng, $d_lat, $d_lng, $locations)
     {
-        if (!empty($locations) && gettype($locations) == 'array') 
+        if (!empty($locations) && gettype($locations) == 'array')
         {
             array_multisort(array_column($locations, 'id'), SORT_ASC, $locations);
             foreach ($locations as $location) {
@@ -363,7 +363,7 @@ trait CabRequestHelper
                 $duration += $leg['duration']['value'];
             }
         }
-        return ['distance' => $distance, 'duration' => $duration]; 
+        return ['distance' => $distance, 'duration' => $duration];
     }
 
     protected function getXAccessToken()

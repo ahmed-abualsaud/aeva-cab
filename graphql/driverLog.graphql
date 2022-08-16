@@ -4,6 +4,7 @@ type DriverLog {
   cash: Float
   wallet: Float
   earnings: Float
+  cashout_remaining: Float
   received_cab_requests: Float
   accepted_cab_requests: Float
   cancelled_cab_requests: Float
