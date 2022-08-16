@@ -69,11 +69,11 @@ class DriverLog extends Model
 
             if(!$last_log || (time() - strtotime(substr($last_log->created_at, 0, 10))) >= 86400) {
                 $inputs['driver_id'] = $driver_id;
-                $daily_amount = Settings::where('name', 'Cashout Amount Limit')->first()->value;
-                $wallet = DriverStats::select('wallet')->where('driver_id', $driver_id)->first()->wallet;
-                $inputs['cashout_remaining'] = $wallet < $daily_amount ? $wallet : $daily_amount;
-                if (array_key_exists('cashout_remaining', $args) && $inputs['cashout_remaining'] + $args['cashout_remaining'] < 0) {
-                    throw new CustomException(__('lang.max_cahsout_exceeded', ['cashout_amount' => $inputs['cashout_remaining']]));
+                if (array_key_exists('cashout_amount', $args) && $args['cashout_amount']) {
+                    $daily_amount = Settings::where('name', 'Cashout Amount Limit')->first()->value;
+                    if ($args['cashout_amount'] > $daily_amount) {
+                        throw new CustomException(__('lang.max_cahsout_exceeded', ['cashout_amount' => $daily_amount]));
+                    }
                 }
                 $last_log = DriverLog::create($inputs);
             } else {
@@ -85,7 +85,8 @@ class DriverLog extends Model
                     'accepted_cab_requests',
                     'cancelled_cab_requests',
                     'missed_cab_requests',
-                    'total_working_time'
+                    'total_working_time',
+                    'cashout_amount'
                 ];
 
                 foreach ($inputs as $key => $value) {
@@ -93,11 +94,10 @@ class DriverLog extends Model
                         $inputs[$key] = $last_log->{$key} + $value;
                     }
 
-                    if ($key == 'cashout_remaining') {
-                        if ($last_log->cashout_remaining + $value > 0) {
-                            $inputs['cashout_remaining'] = $last_log->cashout_remaining + $value;
-                        } else {
-                            throw new CustomException(__('lang.max_cahsout_exceeded', ['cashout_amount' => $last_log->cashout_remaining]));
+                    if ($key == 'cashout_amount') {
+                        $daily_amount = Settings::where('name', 'Cashout Amount Limit')->first()->value;
+                        if ($inputs['cashout_amount'] > $daily_amount) {
+                            throw new CustomException(__('lang.max_cahsout_exceeded', ['cashout_amount' => ($daily_amount - $last_log->cashout_amount)]));
                         }
                     } 
                 }
