@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\ChangeDriverStatus;
 use App\Driver;
 use App\Events\AllDriversLocations;
 
@@ -20,7 +21,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        ChangeDriverStatus::class
     ];
 
     /**
@@ -40,7 +41,7 @@ class Kernel extends ConsoleKernel
         //     ->onFailure(function (Stringable $output) {
         //         Log::error('Database backup failed with error: '.$output);
         //     });
-/* fix websocket time-out
+
         $schedule->call(function () {
                 $dt = Carbon::now();
                 $x=60/10;
@@ -54,7 +55,8 @@ class Kernel extends ConsoleKernel
             ->onFailure(function (Stringable $output) {
                 Log::error('Broadcast all drivers locations failed with error: '.$output);
             });
-*/
+
+        $schedule->command('change:driver-status')->everyThirtyMinutes();
     }
 
     /**

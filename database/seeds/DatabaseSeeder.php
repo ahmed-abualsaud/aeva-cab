@@ -1,5 +1,6 @@
 <?php
 
+use Database\Seeders\ChangeDriverStatusSettingsSeeder;
 use Illuminate\Database\Seeder;
 
 use Database\Seeders\SettingsSeeder;
@@ -16,7 +17,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             SettingsSeeder::class,
-            DriverStatsSeeder::class
+            DriverStatsSeeder::class,
+            ChangeDriverStatusSettingsSeeder::class,
         ]);
         // $this->call(UsersTableSeeder::class);
     }
