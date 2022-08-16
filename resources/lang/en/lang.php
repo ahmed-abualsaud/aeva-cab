@@ -54,7 +54,6 @@ return [
     'unassign_vehicle' => 'Selected vehicles have been unassigned successfully',
     'fleet_not_found' => 'The provided fleet ID is not found',
     'create_request_failed' => 'Could not create this request',
-    'request_not_found' => 'The provided request ID is not found',
     'change_request_failed' => 'Request status can not be changed',
     'cancel_request_failed' => 'This request can not be cancelled',
     'request_submitted' => 'New On-Demand request has been submitted',

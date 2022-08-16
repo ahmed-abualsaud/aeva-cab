@@ -54,7 +54,6 @@ return [
     'unassign_vehicle' => 'تم إلغاء تخصيص المركبات المختارة بنجاح',
     'fleet_not_found' => 'لم يتم العثور على معرف الأسطول المقدم',
     'create_request_failed' => 'لم نتمكن من إنشاء هذا الطلب',
-    'request_not_found' => 'لم يتم العثور على معرف الطلب المقدم',
     'change_request_failed' => 'لا يمكن تغيير حالة الطلب',
     'cancel_request_failed' => 'لا يمكن إلغاء هذا الطلب',
     'request_submitted' => 'تم تقديم طلب On-Demand جديد',
