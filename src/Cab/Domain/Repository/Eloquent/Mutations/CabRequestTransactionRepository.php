@@ -69,6 +69,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
         if (is_zero($request->remaining)) {
             $request->update(['status' => 'Completed', 'paid' => true]);
+            $this->updateDriverWallet($request->driver_id, $request->discount, 0, $request->discount);
             $trx = new CabRequestTransaction($input);
             $trx->debt = 0;
         }
