@@ -84,7 +84,7 @@ class ChangeDriverStatus implements ShouldQueue
                 return $stat;
             })->chunk(500)->each(fn($chunked) => BulkQuery::update('driver_stats',['total_working_time','activity_updated_at'],$chunked->pluck('updates','id')->all()));
 
-            $fake_online_drivers->update(['cab_status'=> 'Offline']);
+            $fake_online_drivers->update(['cab_status'=> 'Online']);
 
             DB::commit();
         }catch (\Exception $e){
