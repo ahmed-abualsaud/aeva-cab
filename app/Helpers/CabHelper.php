@@ -213,22 +213,25 @@ function trace(string $event,$guard_model = null,string $guard = 'driver')
     ]);
 }
 
-
 /**
  * @param string $event
  * @param Model $model
  * @param iterable $ids
  * @param string $guard
- * @return \Illuminate\Support\Collection
+ * @return void
  */
 function multiple_trace(string $event, Model $model, iterable $ids, string $guard = 'driver')
 {
      $now = Carbon::now()->format('Y-m-d H:i:s');
-     return @$model::query()->select(['id as guard_id','latitude','longitude'])->whereIn('id',$ids)->chunkMap(function ($record) use ($event,$guard,$now){
-         $record['event'] = $event;
-         $record['guard'] = $guard;
-//         $record['created_at'] = $now;
-//         $record['updated_at'] = $now;
-         return $record;
-     },500)->each(fn($_500) => @Trace::query()->insert($_500->toArray()));
+     @$model::query()->select(['id as guard_id','latitude','longitude'])->whereIn('id',$ids)->cursor()->map(fn ($record) =>
+          [
+            'event'=> $event,
+            'guard'=> $guard,
+            'guard_id'=> $record['guard_id'],
+            'latitude'=> $record['latitude'],
+            'longitude'=> $record['longitude'],
+            'created_at'=> $now,
+            'updated_at'=> $now,
+         ]
+     )->chunk(500)->each(fn($_500) => @Trace::query()->insert($_500->all()));
 }
