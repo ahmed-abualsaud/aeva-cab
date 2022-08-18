@@ -205,6 +205,7 @@ function trace(string $event,$guard_model = null,string $guard = 'driver')
 {
     $guard_model ??= @auth($guard)->user();
     return @Trace::create([
+        'guard'=> $guard,
         'guard_id'=> $guard_model['id'],
         'event'=> $event,
         'latitude'=> $guard_model['latitude'],
@@ -221,8 +222,9 @@ function trace(string $event,$guard_model = null,string $guard = 'driver')
  */
 function multiple_trace(string $event, Model $model,iterable $ids, string $guard = 'driver')
 {
-     @$model::query()->select(['id as guard_id','latitude','longitude'])->where('guard','=',$guard)->whereIn('id',$ids)->cursor()->map(function ($record) use ($event){
-        $record['event'] = $event;
-        return $record;
-    })->chunk(500)->each(fn($_500) => @Trace::query()->insert($_500->all()));
+     @$model::query()->select(['id as guard_id','latitude','longitude'])->whereIn('id',$ids)->chunkMap(function ($record) use ($event,$guard){
+         $record['event'] = $event;
+         $record['guard'] = $guard;
+         return $record;
+     },500)->each(fn($_500) => @Trace::query()->insert($_500->all()));
 }
