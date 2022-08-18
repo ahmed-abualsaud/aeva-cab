@@ -48,6 +48,7 @@ class DriversExport implements FromQuery,WithHeadings,WithMapping,Responsable
     public function map($row): array
     {
         //attributes shown
+        $driver_stats = optional($row->stats);
         return [
             $row->id,
             $row->first_name,
@@ -81,6 +82,8 @@ class DriversExport implements FromQuery,WithHeadings,WithMapping,Responsable
             $row->title,
             $row->approved,
             $row->natiaonal_id,
+            $driver_stats['total_working_hours'],
+            $driver_stats['created_at'],
         ];
     }
 
@@ -123,6 +126,8 @@ class DriversExport implements FromQuery,WithHeadings,WithMapping,Responsable
             'title',
             'approved',
             'national_id',
+            'driver_stats:total_working_hours',
+            'driver_stats:created_at',
         ];
     }
 }

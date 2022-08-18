@@ -235,6 +235,27 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
+    public function scopeStatsTotalWorkingHours($query,$args)
+    {
+        if (array_key_exists('stats__total_working_hours',$args) && !empty_graph_ql_value($args['stats__total_working_hours']))
+        {
+            $query = $query->whereHas('stats',fn($q) => $q->where('driver_stats.total_working_hours','>=',$args['stats__total_working_hours']));
+        }
+        return $query;
+    }
+
+    public function scopeStatsCreatedAt($query,$args)
+    {
+        if (array_key_exists('stats__created_at',$args) && !empty_graph_ql_value($args['stats__created_at']))
+        {
+            $date_array = explode(',',$args['stats__created_at']);
+            $query = $query->whereHas('stats',fn($q) => count($date_array) == 1
+                                                         ? $query->whereDate('driver_stats.created_at',db_date(head($date_array)))
+                                                         : $query->whereBetween('driver_stats.created_at',[db_date(head($date_array)),db_date(last($date_array))]));
+        }
+        return $query;
+    }
+
     public function scopeSearchApplied($query)
     {
         $args = request()->query();
@@ -247,6 +268,8 @@ class Driver extends Authenticatable implements JWTSubject
         self::scopeCabStatus($query,$args);
         self::scopeTitle($query,$args);
         self::scopeNearby($query,$args);
+        self::scopeStatsTotalWorkingHours($query,$args);
+        self::scopeStatsCreatedAt($query,$args);
 
         !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
         !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
