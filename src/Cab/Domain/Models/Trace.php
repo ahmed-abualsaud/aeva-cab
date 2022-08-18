@@ -29,7 +29,7 @@ class Trace extends Model
      * @var array
      */
     protected $attributes = [
-      'gurad'=> 'driver'
+      'guard'=> 'driver'
     ];
 
     /**
