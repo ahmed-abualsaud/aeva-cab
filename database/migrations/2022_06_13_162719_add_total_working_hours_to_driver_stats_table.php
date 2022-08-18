@@ -14,7 +14,7 @@ class addTotalWorkingHoursToDriverStatsTable extends Migration
     public function up()
     {
         Schema::table('driver_stats', function (Blueprint $table) {
-            $table->unsignedDecimal('total_working_hours',12,2)->storedAs('total_working_time/60');
+            $table->unsignedDecimal('total_working_hours',12,2)->after('total_working_time')->storedAs('total_working_time/60');
         });
     }
 
