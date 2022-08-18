@@ -4,6 +4,7 @@ namespace Aeva\Cab\Domain\Traits;
 
 use App\Driver;
 use App\CarType;
+use App\Helpers\TraceEvents;
 use App\Vehicle;
 use App\Settings;
 use App\DriverLog;
@@ -56,13 +57,13 @@ trait CabRequestHelper
                 'total_working_time' => $total_working_time,
                 'activity_updated_at'=> $activity_updated_at
             ]);
-            trace('go offline',$driver);
+            trace(TraceEvents::GO_OFFLINE,$driver);
             return $driver->update(['cab_status' => $cab_status]);
         }
 
         if (strtolower($cab_status) == 'online') {
             $driverStats->update(['activity_updated_at' => $activity_updated_at]);
-            trace('go online',$driver);
+            trace(TraceEvents::GO_ONLINE,$driver);
             return $driver->update(['cab_status' => $cab_status]);
         }
     }

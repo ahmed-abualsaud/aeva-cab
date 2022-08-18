@@ -2,6 +2,7 @@
 
 namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 
+use App\Helpers\TraceEvents;
 use App\User;
 use App\Driver;
 use App\PromoCode;
@@ -218,7 +219,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         DriverStats::whereIn('driver_id', $driversIds)->increment('received_cab_requests', 1);
         DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);
-        multiple_trace('received cab request',new Driver(),$driversIds);
+        multiple_trace(TraceEvents::RECEIVED_CAB_REQUEST,new Driver(),$driversIds);
 
         SendPushNotification::dispatch(
             $this->driversToken($driversIds),
@@ -246,7 +247,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         DriverStats::where('driver_id', $args['driver_id'])->increment('accepted_cab_requests', 1);
         DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
-        trace('accept cab request');
+        trace(TraceEvents::ACCEPT_CAB_REQUEST);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
 
@@ -316,7 +317,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'at' => date("Y-m-d H:i:s"),
             ]
         ];
-        trace('arrived cab request');
+        trace(TraceEvents::ARRIVED_CAB_REQUEST);
         $args['status'] = 'Arrived';
         $args['history'] = array_merge($request->history, $payload);
 
@@ -348,7 +349,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'waiting_time' => (time() - strtotime($request->history['arrived']['at']))
             ]
         ];
-        trace('start cab request');
+        trace(TraceEvents::START_CAB_REQUEST);
         $args['status'] = 'Started';
         $args['history'] = array_merge($request->history, $payload);
 
@@ -412,7 +413,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        trace('end cab request');
+        trace(TraceEvents::END_CAB_REQUEST);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
         $vehicle = Arr::where($vehicles, function ($value, $key) use ($request){
@@ -526,7 +527,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                     'cancelled_cab_requests' => 1,
                     'accepted_cab_requests' => -1
                 ]);
-                trace('cancel cap request');
+                trace(TraceEvents::CANCEL_CAB_REQUEST);
             }
             $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);

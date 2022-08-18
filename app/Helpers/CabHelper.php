@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpMissingReturnTypeInspection */
+<?php /** @noinspection PhpInconsistentReturnPointsInspection */
+
+/** @noinspection PhpMissingReturnTypeInspection */
 
 use Aeva\Cab\Domain\Models\Trace;
 use App\Driver;
@@ -203,14 +205,16 @@ function db_date($date, string $carbon_method = 'startOfDay', array $carbon_meth
  */
 function trace(string $event,$guard_model = null,string $guard = 'driver')
 {
-    $guard_model ??= @auth($guard)->user();
-    return @Trace::create([
-        'guard'=> $guard,
-        'guard_id'=> $guard_model['id'],
-        'event'=> $event,
-        'latitude'=> $guard_model['latitude'],
-        'longitude'=> $guard_model['longitude'],
-    ]);
+    try {
+        $guard_model ??= @auth($guard)->user();
+         @Trace::create([
+            'guard'=> $guard,
+            'guard_id'=> $guard_model['id'],
+            'event'=> $event,
+            'latitude'=> $guard_model['latitude'],
+            'longitude'=> $guard_model['longitude'],
+        ]);
+    }catch (Exception $e){}
 }
 
 /**
@@ -222,9 +226,10 @@ function trace(string $event,$guard_model = null,string $guard = 'driver')
  */
 function multiple_trace(string $event, Model $model, iterable $ids, string $guard = 'driver')
 {
-     $now = Carbon::now()->format('Y-m-d H:i:s');
-     @$model::query()->select(['id as guard_id','latitude','longitude'])->whereIn('id',$ids)->cursor()->map(fn ($record) =>
-          [
+    try {
+        $now = Carbon::now()->format('Y-m-d H:i:s');
+        @$model::query()->select(['id as guard_id','latitude','longitude'])->whereIn('id',$ids)->cursor()->map(fn ($record) =>
+        [
             'event'=> $event,
             'guard'=> $guard,
             'guard_id'=> $record['guard_id'],
@@ -232,6 +237,7 @@ function multiple_trace(string $event, Model $model, iterable $ids, string $guar
             'longitude'=> $record['longitude'],
             'created_at'=> $now,
             'updated_at'=> $now,
-         ]
-     )->chunk(500)->each(fn($_500) => @Trace::query()->insert($_500->all()));
+        ]
+        )->chunk(500)->each(fn($_500) => @Trace::query()->insert($_500->all()));
+    }catch (Exception $e){}
 }
