@@ -324,7 +324,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             'signature' => config('custom.otp_signature'),
         ]);
 
-        SendOtp::dispatch($args['phone'], $message);
+        //SendOtp::dispatch($args['phone'], $message);
 
         return [
             "verificationCode" => $verification_code
