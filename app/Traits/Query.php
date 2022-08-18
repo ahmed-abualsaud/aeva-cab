@@ -98,7 +98,7 @@ trait Query
             $date_array = explode(',' ,request()->query($date_query_key));
             return count($date_array) == 1
                               ? $builder->whereDate(static::fullColumnName($date_column),db_date(head($date_array)))
-                             : $builder->whereBetween(static::fullColumnName($date_column),[db_date(head($date_array),'startOfDay'),db_date(last($date_array),'endOfDay')]);
+                             : $builder->whereBetween(static::fullColumnName($date_column),[db_date(head($date_array),true),db_date(last($date_array),true,'endOfDay')]);
         else: return $builder;
         endif;
     }

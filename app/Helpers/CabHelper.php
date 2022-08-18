@@ -173,18 +173,19 @@ function empty_graph_ql_value(?string $value) : bool
     return is_null($value) or in_array($value = trim($value),['null','undefined'],true) or (! is_numeric($value) and empty($value));
 }
 
-
 /**
  * @param $date
+ * @param bool $use_carbon_method
  * @param string $carbon_method
  * @param array $carbon_method_args
  * @param string $format
- * @return mixed
+ * @return false|string
  */
-function db_date($date, string $carbon_method = 'startOfDay', array $carbon_method_args = [], string $format = 'Y-m-d H:i:s')
+function db_date($date, bool $use_carbon_method = false , string $carbon_method = 'startOfDay', array $carbon_method_args = [], string $format = 'Y-m-d H:i:s')
 {
     try {
-        return Carbon::parse($date)->{$carbon_method}(...$carbon_method_args)->format($format);
+        $valid_date = Carbon::parse($date);
+        return $use_carbon_method ? $valid_date->{$carbon_method}(...$carbon_method_args)->format($format) : $valid_date->format($format);
     }catch (\Exception $e){
         return false;
     }
