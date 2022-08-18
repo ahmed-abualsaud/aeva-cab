@@ -162,6 +162,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         if (array_key_exists('status',$args) && in_array($args['status'],BOOLEAN_FALSE)){
+            ! is_null(@auth('driver')->user()) and trace('log out',$driver);
             $this->logOutOldDevices('driver',$driver->id);
         }
 
@@ -227,6 +228,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         } catch (\Exception $e) {
             throw new CustomException($e->getMessage());
         }
+
+        trace('login',$driver);
 
         return [
             'access_token' => $token,

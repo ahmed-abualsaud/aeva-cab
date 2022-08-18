@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\Queries\DriverController;
 use App\Http\Controllers\Queries\Exports\ExportCabRequestsController;
 use App\Http\Controllers\Queries\Exports\ExportCabRequestTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportDriversController;
 use App\Http\Controllers\Queries\Exports\ExportDriverTransactionsController;
 use App\Http\Controllers\Queries\PartnerController;
+use App\Http\Controllers\Queries\TraceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -127,4 +129,14 @@ Route::group([
 
     Route::get('/', [PartnerController::class,'index']);
     Route::get('cash-out', [PartnerController::class,'cashOut']);
+});
+
+
+Route::group([
+    'prefix' => 'traces',
+    'middleware' => ['auth:admin'],
+    'as' => 'traces.'
+], function () {
+
+    Route::get('/', [TraceController::class,'index']);
 });

@@ -1,8 +1,13 @@
 <?php /** @noinspection PhpMissingReturnTypeInspection */
 
+use Aeva\Cab\Domain\Models\Trace;
+use App\Driver;
+use App\Traits\BulkQuery\BulkQuery;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\LazyCollection;
 
 const BOOLEANS = ['true','false','1','0',true,false,0,1,'on','off','yes','no'];
 const BOOLEAN_FALSE = ['false',false,0,'off'];
@@ -188,4 +193,36 @@ function db_date($date, string $carbon_method = 'startOfDay', array $carbon_meth
     }catch (\Exception $e){
         return false;
     }
+}
+
+/**
+ * @param string $event
+ * @param null $guard_model
+ * @param string $guard
+ * @return mixed
+ */
+function trace(string $event,$guard_model = null,string $guard = 'driver')
+{
+    $guard_model ??= @auth($guard)->user();
+    return @Trace::create([
+        'guard_id'=> $guard_model['id'],
+        'event'=> $event,
+        'latitude'=> $guard_model['latitude'],
+        'longitude'=> $guard_model['longitude'],
+    ]);
+}
+
+/**
+ * @param string $event
+ * @param Model $model
+ * @param $ids
+ * @param string $guard
+ * @return void
+ */
+function multiple_trace(string $event, Model $model,iterable $ids, string $guard = 'driver')
+{
+     @$model::query()->select(['id as guard_id','latitude','longitude'])->where('guard','=',$guard)->whereIn('id',$ids)->cursor()->map(function ($record) use ($event){
+        $record['event'] = $event;
+        return $record;
+    })->chunk(500)->each(fn($_500) => @Trace::query()->insert($_500->all()));
 }
