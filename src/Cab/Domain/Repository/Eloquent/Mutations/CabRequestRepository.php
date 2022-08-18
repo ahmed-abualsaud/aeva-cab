@@ -218,7 +218,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         DriverStats::whereIn('driver_id', $driversIds)->increment('received_cab_requests', 1);
         DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);
-        multiple_trace('received',new Driver(),$driversIds);
+        multiple_trace('received cab request',new Driver(),$driversIds);
 
         SendPushNotification::dispatch(
             $this->driversToken($driversIds),
