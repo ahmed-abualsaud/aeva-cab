@@ -290,12 +290,14 @@ class CabRequestTransactionRepository extends BaseRepository
             'uuid' => Str::orderedUuid()
         ]);
 
+        $cashout->wallet = $stats->wallet;
+
         $stats->update([
             'wallet' => DB::raw('wallet - '.$args['amount']),
             'earnings' => DB::raw('earnings - '.$args['amount'])
         ]);
 
-        $cashout->wallet = $stats->wallet;
+        $cashout->wallet -= $args['amount'];
 
         return $cashout;
     }
