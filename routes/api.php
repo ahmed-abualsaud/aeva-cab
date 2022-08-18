@@ -134,7 +134,7 @@ Route::group([
 
 Route::group([
     'prefix' => 'traces',
-    'middleware' => ['auth:admin'],
+//    'middleware' => ['auth:admin'],
     'as' => 'traces.'
 ], function () {
 
