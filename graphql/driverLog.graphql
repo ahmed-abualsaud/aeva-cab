@@ -13,6 +13,7 @@ type DriverLog {
   cancellation_rate: Float
   missing_rate: Float
   total_working_time: Float
+  total_working_hours: Float
   created_at: String
   updated_at: String
 }
