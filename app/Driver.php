@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Aeva\Cab\Domain\Models\Trace;
 use App\Settings;
 use App\PartnerDriver;
 use App\Traits\Filterable;
@@ -251,5 +252,10 @@ class Driver extends Authenticatable implements JWTSubject
         !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
         !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
         return self::scopeGetLatest($query,$args);
+    }
+
+    public function traces()
+    {
+        return $this->hasMany(Trace::class,'guard_id','id')->where('guard','=','driver');
     }
 }

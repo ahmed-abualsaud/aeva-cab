@@ -4,6 +4,7 @@ namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 
 use App\Exceptions\CustomException;
 
+use App\Helpers\TraceEvents;
 use App\User;
 use App\Driver;
 use App\DriverLog;
@@ -69,6 +70,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
         if (is_zero($request->remaining)) {
             $request->update(['status' => 'Completed', 'paid' => true]);
+            trace(TraceEvents::COMPLETE_CAB_REQUEST);
             $this->updateDriverWallet($request->driver_id, $request->discount, 0, $request->discount);
             $trx = new CabRequestTransaction($input);
             $trx->debt = 0;
@@ -121,6 +123,7 @@ class CabRequestTransactionRepository extends BaseRepository
         $this->refund = $this->cashPay($args, $request);
         $trx = $this->model->create($input);
         $request->update(['status' => 'Completed', 'paid' => true, 'remaining' => 0]);
+        trace(TraceEvents::COMPLETE_CAB_REQUEST);
         $trx->debt = 0;
         $this->notifyUserOfPayment($request, $this->refund);
         return $trx;
@@ -139,6 +142,7 @@ class CabRequestTransactionRepository extends BaseRepository
 
         if ($paid == $args['costs']) {
             $request->update(['status' => 'Completed', 'paid' => true, 'remaining' => 0]);
+            trace(TraceEvents::COMPLETE_CAB_REQUEST);
         } else {
             $request->update(['remaining' => $trx->debt]);
         }
@@ -269,7 +273,7 @@ class CabRequestTransactionRepository extends BaseRepository
             'driver_id' => $args['driver_id'],
             'cashout_amount' => $args['amount']
         ]);
-
+        trace(TraceEvents::CASHOUT);
         try {
             $this->cashout([
                 'reference_number' => $args['reference_number']

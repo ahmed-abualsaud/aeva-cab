@@ -3,6 +3,7 @@
 namespace App\Repository\Eloquent\Mutations;
 
 use App\Driver;
+use App\Helpers\TraceEvents;
 use App\Vehicle;
 use App\Document;
 use App\DriverStats;
@@ -162,6 +163,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         if (array_key_exists('status',$args) && in_array($args['status'],BOOLEAN_FALSE)){
+            ! is_null(@auth('driver')->user()) and trace(TraceEvents::LOG_OUT,$driver);
             $this->logOutOldDevices('driver',$driver->id);
         }
 
@@ -227,6 +229,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         } catch (\Exception $e) {
             throw new CustomException($e->getMessage());
         }
+
+        trace(TraceEvents::LOGIN,$driver);
 
         return [
             'access_token' => $token,

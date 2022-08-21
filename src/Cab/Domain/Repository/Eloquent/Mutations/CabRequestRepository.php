@@ -1,7 +1,8 @@
 <?php
 
-namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;   
+namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 
+use App\Helpers\TraceEvents;
 use App\User;
 use App\Driver;
 use App\PromoCode;
@@ -52,7 +53,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function schedule(array $args)
     {
         $input = Arr::except($args, ['directive', 'distance', 'total_eta']);
-        $args['next_free_time'] = date('Y-m-d H:i:s', 
+        $args['next_free_time'] = date('Y-m-d H:i:s',
             strtotime('+'.($args['total_eta'] + 300).' seconds', strtotime($args['schedule_time'])));
 
         if (!$this->isTimeValidated($args)) {
@@ -74,7 +75,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['status'] = 'Scheduled';
         $input['next_free_time'] = $args['next_free_time'];
 
-        return $this->model->create($input); 
+        return $this->model->create($input);
     }
 
     public function search(array $args)
@@ -101,11 +102,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         }
 
         $route = $this->calculateEstimatedRoute($args['s_lat'], $args['s_lng'], $args['d_lat'], $args['d_lng']);
-        
+
         $args['distance'] = $route['distance'];
         $args['duration'] = $route['duration'];
         $result = $this->getNearestDriversWithVehicles($args);
-    
+
         $payload = [
             'summary' => $route,
             'searching' => [
@@ -141,7 +142,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $request;
     }
 
-    public function send(array $args) 
+    public function send(array $args)
     {
         $request = $this->findRequest($args['id']);
 
@@ -186,15 +187,15 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'payment_method' => $args['payment_method']
             ],
             'missing' => ($request->status == 'Sending')?  [
-                'status' => true, 
+                'status' => true,
                 'missed' => $this->getMissedDrivers($request, Arr::pluck($filtered, 'driver_id'))
-            ] : [    
+            ] : [
                 'status' => false,
                 'missed' => []
             ]
         ];
 
-        if ((array_key_exists('s_lat', $args) || array_key_exists('s_lng', $args)) && 
+        if ((array_key_exists('s_lat', $args) || array_key_exists('s_lng', $args)) &&
         ($args['s_lat'] != $request->s_lat || $args['s_lng'] != $request->s_lng)) {
             $input['s_lat'] = $args['s_lat'];
             $input['s_lng'] = $args['s_lng'];
@@ -218,6 +219,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         DriverStats::whereIn('driver_id', $driversIds)->increment('received_cab_requests', 1);
         DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);
+        multiple_trace(TraceEvents::RECEIVED_CAB_REQUEST,new Driver(),$driversIds);
 
         SendPushNotification::dispatch(
             $this->driversToken($driversIds),
@@ -245,6 +247,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         DriverStats::where('driver_id', $args['driver_id'])->increment('accepted_cab_requests', 1);
         DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
+        trace(TraceEvents::ACCEPT_CAB_REQUEST);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
 
@@ -304,7 +307,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function arrived(array $args)
     {
         $request = $this->findRequest($args['id']);
-        
+
         if ( $request->status != 'Accepted' ) {
             throw new CustomException(__('lang.update_request_status_failed'));
         }
@@ -314,7 +317,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'at' => date("Y-m-d H:i:s"),
             ]
         ];
-
+        trace(TraceEvents::ARRIVED_CAB_REQUEST);
         $args['status'] = 'Arrived';
         $args['history'] = array_merge($request->history, $payload);
 
@@ -335,7 +338,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function start(array $args)
     {
         $request = $this->findRequest($args['id']);
-        
+
         if ( $request->status != 'Arrived' ) {
             throw new CustomException(__('lang.start_ride_failed'));
         }
@@ -346,7 +349,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'waiting_time' => (time() - strtotime($request->history['arrived']['at']))
             ]
         ];
-
+        trace(TraceEvents::START_CAB_REQUEST);
         $args['status'] = 'Started';
         $args['history'] = array_merge($request->history, $payload);
 
@@ -369,20 +372,20 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function end(array $args)
     {
         $request = $this->findRequest($args['id']);
-        
+
         if ( $request->status != 'Started') {
             throw new CustomException(__('lang.end_ride_failed'));
         }
 
         // $distance = 0;
         // $last_location = CabRequestEntry::getLastLocation($args['id']);
-        // if (array_key_exists('locations', $args) && is_array($args['locations']) && !empty($args['locations'])) 
+        // if (array_key_exists('locations', $args) && is_array($args['locations']) && !empty($args['locations']))
         // {
         //     $locations = [];
         //     if ($last_location) {
         //         $locations = explode('|', $last_location->path);
         //     }
-            
+
         //     if (count($args['locations']) >= count($locations)) {
         //         $locations = $args['locations'];
         //     }
@@ -392,7 +395,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         //     }
 
         //     $distance = $this->calculateRealRoute($request->s_lat, $request->s_lng, $request->d_lat, $request->d_lng, $locations)['distance'];
-        // } 
+        // }
         // else {
         //     if($last_location && empty($distance)) { $distance = $last_location->distance; }
         // }
@@ -409,6 +412,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'at' => date("Y-m-d H:i:s"),
             ]
         ];
+
+        trace(TraceEvents::END_CAB_REQUEST);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
         $vehicle = Arr::where($vehicles, function ($value, $key) use ($request){
@@ -494,7 +499,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                     'accepted_cab_requests' => DB::raw('accepted_cab_requests - 1'),
                 ]);
                 DriverLog::log([
-                    'driver_id' => $request->driver_id, 
+                    'driver_id' => $request->driver_id,
                     'accepted_cab_requests' => -1
                 ]);
             }
@@ -514,14 +519,15 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         if (strtolower($args['cancelled_by']) == 'driver') {
             if ($request->driver_id) {
                 DriverStats::where('driver_id', $request->driver_id)->update([
-                    'accepted_cab_requests' => DB::raw('accepted_cab_requests - 1'), 
+                    'accepted_cab_requests' => DB::raw('accepted_cab_requests - 1'),
                     'cancelled_cab_requests' => DB::raw('cancelled_cab_requests + 1')
                 ]);
                 DriverLog::log([
-                    'driver_id' => $request->driver_id, 
+                    'driver_id' => $request->driver_id,
                     'cancelled_cab_requests' => 1,
                     'accepted_cab_requests' => -1
                 ]);
+                trace(TraceEvents::CANCEL_CAB_REQUEST);
             }
             $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);
@@ -550,7 +556,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 $query->where('status', 'Searching')
                         ->orWhere('status', 'Sending');
             })
-            ->delete();        
+            ->delete();
     }
 
     public function redirect(array $args)
@@ -568,7 +574,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 break;
             }
         }
-        
+
         $costs1 = $this->calculateCosts($distance, $duration, $chosen_vehicle['car_type_id'], $waiting_time);
         $costs2 = $this->calculateCosts($route['distance'], $route['duration'], $chosen_vehicle['car_type_id'], $waiting_time);
 
@@ -627,7 +633,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         return $this->updateDriverStatus($args['driver_id'], $args['cab_status']);
     }
 
-    protected function searchExistedRequest(array $args) 
+    protected function searchExistedRequest(array $args)
     {
         $request = $this->findRequest($args['id']);
 
@@ -645,7 +651,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             'duration' => $request->history['summary']['duration'],
             'cancelled_drivers' => $cancelled_drivers
         ]);
-    
+
         $payload = [
             'summary' => [
                 'distance' => $request->history['summary']['distance'],
