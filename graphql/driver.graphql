@@ -97,6 +97,7 @@ type Driver {
   verification_code: String
   pivot: DriverVehiclePivot
   stats: DriverStats @hasOne
+  logs: DriverLog @hasMany
   password: String
   secondary_phone: String
   title: String
