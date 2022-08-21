@@ -244,14 +244,24 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
-    public function scopeStatsCreatedAt($query,$args)
+    public function scopeLogsTotalWorkingHours($query,$args)
     {
-        if (array_key_exists('stats__created_at',$args) && !empty_graph_ql_value($args['stats__created_at']))
+        if (array_key_exists('logs__total_working_hours',$args) && !empty_graph_ql_value($args['logs__total_working_hours']))
+        {
+            $query = $query->whereHas('logs',fn($q) => $q->where('driver_logs.total_working_hours','>=',$args['logs__total_working_hours']));
+        }
+        return $query;
+    }
+
+    public function scopeLogsCreatedAt($query,$args)
+    {
+        if (array_key_exists('logs__created_at',$args) && !empty_graph_ql_value($args['logs__created_at']))
         {
             $date_array = explode(',',$args['stats__created_at']);
-            $query = $query->whereHas('stats',fn($q) => count($date_array) == 1
-                                                         ? $query->whereDate('driver_stats.created_at',db_date(head($date_array)))
-                                                         : $query->whereBetween('driver_stats.created_at',[db_date(head($date_array)),db_date(last($date_array))]));
+            $query = $query->withSum('logs','total_working_hours');
+            $query = $query->whereHas('logs',fn($q) => count($date_array) == 1
+                                                         ? $q->whereDate('driver_logs.created_at',db_date(head($date_array)))
+                                                         : $q->whereBetween('driver_logs.created_at',[db_date(head($date_array)),db_date(last($date_array))]));
         }
         return $query;
     }
@@ -269,7 +279,8 @@ class Driver extends Authenticatable implements JWTSubject
         self::scopeTitle($query,$args);
         self::scopeNearby($query,$args);
         self::scopeStatsTotalWorkingHours($query,$args);
-        self::scopeStatsCreatedAt($query,$args);
+        self::scopeLogsTotalWorkingHours($query,$args);
+        self::scopeLogsCreatedAt($query,$args);
 
         !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
         !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
