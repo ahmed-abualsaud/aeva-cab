@@ -128,6 +128,11 @@ class Driver extends Authenticatable implements JWTSubject
         return $this->hasOne(DriverStats::class, 'driver_id');
     }
 
+    public function logs()
+    {
+        return $this->hasMany(DriverLog::class, 'driver_id');
+    }
+
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = ucwords($value);
