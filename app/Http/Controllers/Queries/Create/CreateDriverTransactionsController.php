@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Queries\Create;
 
+use App\DriverStats;
 use App\DriverTransaction;
+use App\Exceptions\CustomException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\BulkTransactionsCreateRequest;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CreateDriverTransactionsController extends Controller
@@ -31,8 +34,29 @@ class CreateDriverTransactionsController extends Controller
             'insertion_uuid'=> $insertion_uuid,
         ]);
 
-        DriverTransaction::query()->insert($data->all());
-        $transactions = DriverTransaction::query()->where('insertion_uuid','=',$insertion_uuid)->paginate(50);
-        return dashboard_info('Transactions Created Successfully',compact('transactions'));
+        try {
+            DB::beginTransaction();
+            DriverTransaction::query()->insert($data->all());
+            $this->updateDriversWallets($request->type,$data->pluck('driver_id')->all(),$request->amount);
+            DB::commit();
+            $transactions = DriverTransaction::query()->where('insertion_uuid','=',$insertion_uuid)->paginate(50);
+            return dashboard_info('Transactions Created Successfully',compact('transactions'));
+        }catch (\Exception $e){
+            DB::rollBack();
+            return dashboard_error('Connection Takes a long time',504);
+        }
+    }
+
+    public function updateDriversWallets($type,array $ids,$amount)
+    {
+        $driver_stats = DriverStats::query()->whereIn('driver_id', $ids);
+        switch($type) :
+            case 'Wallet Deposit':
+                $driver_stats->increment('wallet', $amount);
+            case 'Wallet Withdraw':
+            case 'Cashout':
+                $driver_stats->decrement('wallet', $amount);
+        endswitch;
+        return $driver_stats;
     }
 }

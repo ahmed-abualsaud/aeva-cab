@@ -40,7 +40,7 @@ class BulkTransactionsCreateRequest extends FormRequest
     protected function passedValidation()
     {
         $this->merge([
-            'admin_id' => @auth('admin')->id() ?? $this->admin_id ?? dashboard_error('admin_id required')
+            'admin_id' => @auth('admin')->id() ?? $this->admin_id ?? dashboard_error('Admin id required')
         ]);
     }
 
