@@ -243,7 +243,7 @@ function multiple_trace(string $event, Model $model, iterable $ids, string $guar
     }catch (Exception $e){}
 }
 
-function update_drivers_wallet($type,$amount,...$ids)
+function update_driver_wallet($type,$amount,...$ids)
 {
     $driver_stats = DriverStats::query()->whereIn('driver_id',$ids);
     switch ($type) :

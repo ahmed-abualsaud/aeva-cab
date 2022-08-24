@@ -37,7 +37,7 @@ class CreateDriverTransactionsController extends Controller
         try {
             DB::beginTransaction();
             DriverTransaction::query()->insert($data->all());
-            update_drivers_wallet($request->type,$request->amount,...$data->pluck('driver_id')->all());
+            update_driver_wallet($request->type,$request->amount,...$data->pluck('driver_id')->all());
             DB::commit();
             $transactions = DriverTransaction::query()->where('insertion_uuid','=',$insertion_uuid)->paginate(50);
             return dashboard_info('Transactions Created Successfully',compact('transactions'));

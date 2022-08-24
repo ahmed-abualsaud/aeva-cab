@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\DriverStats;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -42,6 +43,9 @@ class BulkTransactionsCreateRequest extends FormRequest
         $this->merge([
             'admin_id' => @auth('admin')->id() ?? $this->admin_id ?? dashboard_error('Admin id required')
         ]);
+
+        in_array($this->type,['Wallet Withdraw','Cashout']) and DriverStats::query()->whereIn('driver_id',$this->driver_id)->pluck('wallet','driver_id')
+            ->each(fn($wallet,$driver_id) => ($this->amount > $wallet) and dashboard_error("driver id : $driver_id has a wallet smaller than amount you try to withdraw ".$this->amount));
     }
 
     /**
