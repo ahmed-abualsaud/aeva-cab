@@ -37,7 +37,7 @@ class CreateDriverTransactionsController extends Controller
         try {
             DB::beginTransaction();
             DriverTransaction::query()->insert($data->all());
-            $this->updateDriversWallets($request->type,$data->pluck('driver_id')->all(),$request->amount);
+            update_drivers_wallet($request->type,$request->amount,...$data->pluck('driver_id')->all());
             DB::commit();
             $transactions = DriverTransaction::query()->where('insertion_uuid','=',$insertion_uuid)->paginate(50);
             return dashboard_info('Transactions Created Successfully',compact('transactions'));
@@ -45,18 +45,5 @@ class CreateDriverTransactionsController extends Controller
             DB::rollBack();
             return dashboard_error('Connection Takes a long time',504);
         }
-    }
-
-    public function updateDriversWallets($type,array $ids,$amount)
-    {
-        $driver_stats = DriverStats::query()->whereIn('driver_id', $ids);
-        switch($type) :
-            case 'Wallet Deposit':
-                $driver_stats->increment('wallet', $amount);
-            case 'Wallet Withdraw':
-            case 'Cashout':
-                $driver_stats->decrement('wallet', $amount);
-        endswitch;
-        return $driver_stats;
     }
 }
