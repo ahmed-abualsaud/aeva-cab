@@ -199,11 +199,12 @@ function db_date($date, string $carbon_method = 'startOfDay', array $carbon_meth
 
 /**
  * @param string $event
+ * @param int|null $request_id
  * @param null $guard_model
  * @param string $guard
- * @return mixed
+ * @return void
  */
-function trace(string $event,$guard_model = null,string $guard = 'driver')
+function trace(string $event,int $request_id = null, $guard_model = null, string $guard = 'driver')
 {
     try {
         $guard_model ??= @auth($guard)->user();
@@ -211,6 +212,7 @@ function trace(string $event,$guard_model = null,string $guard = 'driver')
             'guard'=> $guard,
             'guard_id'=> $guard_model['id'],
             'event'=> $event,
+            'request_id'=> $request_id,
             'latitude'=> $guard_model['latitude'],
             'longitude'=> $guard_model['longitude'],
         ]);
@@ -219,18 +221,20 @@ function trace(string $event,$guard_model = null,string $guard = 'driver')
 
 /**
  * @param string $event
+ * @param int|null $request_id
  * @param Model $model
  * @param iterable $ids
  * @param string $guard
  * @return void
  */
-function multiple_trace(string $event, Model $model, iterable $ids, string $guard = 'driver')
+function multiple_trace(string $event, ?int $request_id , Model $model, iterable $ids, string $guard = 'driver')
 {
     try {
         $now = Carbon::now()->format('Y-m-d H:i:s');
         @$model::query()->select(['id as guard_id','latitude','longitude'])->whereIn('id',$ids)->cursor()->map(fn ($record) =>
         [
             'event'=> $event,
+            'request_id'=> $request_id,
             'guard'=> $guard,
             'guard_id'=> $record['guard_id'],
             'latitude'=> $record['latitude'],

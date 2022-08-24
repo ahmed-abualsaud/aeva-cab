@@ -93,6 +93,11 @@ class CabRequest extends Model
         return $this->setConnection('mysql')->hasMany(CabRequestTransaction::class, 'request_id');
     }
 
+    public function traces()
+    {
+        return $this->setConnection('mysql')->hasMany(Trace::class, 'request_id');
+    }
+
     public function promoCode()
     {
         return $this->belongsTo(PromoCode::class, 'promo_code_id');
