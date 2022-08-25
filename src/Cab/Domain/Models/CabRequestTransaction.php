@@ -62,6 +62,12 @@ class CabRequestTransaction extends Model
         return $query;
     }
 
+    public function scopeCashoutExcluded($query, $args)
+    {
+        $query = $query->where('payment_method','!=','Cashout');
+        return $query;
+    }
+
     public function scopeDriver($query, $args)
     {
         if (array_key_exists('driver_id', $args) && !empty_graph_ql_value($args['driver_id'])) {
@@ -81,6 +87,7 @@ class CabRequestTransaction extends Model
         $args = request()->query();
         $optional = optional($args);
 
+        self::scopeCashoutExcluded($query,$args);
         self::scopeSearch($query,$args);
         self::scopeFilter($query,$args);
 
