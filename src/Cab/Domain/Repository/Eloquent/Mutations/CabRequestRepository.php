@@ -205,17 +205,18 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             $input['remaining'] = $input['costs'];
         }
 
-        $input['status'] = 'Sending';
-        $input['history'] = array_merge($request->history, $payload);
-
-        $request = $this->updateRequest($request, $input);
-
         $driversIds = Arr::pluck($filtered, 'driver_id');
 
         if ($request->status == 'Sending') {
             DriverStats::whereIn('driver_id', $driversIds)->increment('missed_cab_requests', 1);
             DriverLog::log(['driver_id' => $driversIds, 'missed_cab_requests' => 1]);
+            multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$driversIds);
         }
+
+        $input['status'] = 'Sending';
+        $input['history'] = array_merge($request->history, $payload);
+
+        $request = $this->updateRequest($request, $input);
 
         DriverStats::whereIn('driver_id', $driversIds)->increment('received_cab_requests', 1);
         DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);
