@@ -46,13 +46,20 @@ class CabRequestTransaction extends Model
 
     public function scopeFilter($query, $args)
     {
-        if (array_key_exists('period', $args) && !empty_graph_ql_value($args['period'])) {
-            $query = $this->dateFilter($args['period'], $query, 'created_at');
-        }
-
+        $query = self::scopePeriodFilter($query,$args);
+        $query = self::scopeDriver($query,$args);
         if (array_key_exists('user_id', $args) && !empty_graph_ql_value($args['user_id'])) {
             $query = $query->where('user_id','=',$args['user_id']);
         }
+        return $query;
+    }
+
+    public function scopePeriodFilter($query, $args)
+    {
+        if (array_key_exists('period', $args) && !empty_graph_ql_value($args['period'])) {
+            $query = $this->dateFilter($args['period'], $query, 'created_at');
+        }
+        return $query;
     }
 
     public function scopeDriver($query, $args)
@@ -81,5 +88,21 @@ class CabRequestTransaction extends Model
         !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
 
         return self::scopeGetLatest($query,$args)->with('user','driver');
+    }
+
+    public function scopeCashOut($query)
+    {
+        $args = request()->query();
+        $optional = optional($args);
+
+        $query = $query->where('payment_method','=','Cashout');
+        self::scopeSearch($query,$args);
+        self::scopeDriver($query,$args);
+        self::scopePeriodFilter($query,$args);
+
+        !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
+        !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
+
+        return self::scopeGetLatest($query,$args)->with('driver');
     }
 }
