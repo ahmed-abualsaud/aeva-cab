@@ -18,6 +18,7 @@ use App\Traits\HandleDriverAttributes;
 use Aeva\Cab\Domain\Models\CabRating;
 use Aeva\Cab\Domain\Models\CabRequest;
 use Aeva\Cab\Domain\Models\CabRequestEntry;
+use Aeva\Cab\Domain\Models\CabRequestTransaction;
 
 use Aeva\Cab\Domain\Traits\CabRequestHelper;
 use Aeva\Cab\Domain\Traits\HandleDeviceTokens;
@@ -30,6 +31,7 @@ use Aeva\Cab\Domain\Events\CabRequestStatusChanged;
 use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 use Aeva\Cab\Domain\Repository\Mutations\CabRequestRepositoryInterface;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -40,6 +42,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     use HandleDeviceTokens;
     use HandleDriverAttributes;
 
+    protected $uuid;
+
     /**
     * CabRequest constructor.
     *
@@ -48,6 +52,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function __construct(CabRequest $model)
     {
         parent::__construct($model);
+        $this->uuid = Str::orderedUuid();
     }
 
     public function schedule(array $args)
@@ -445,18 +450,87 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 ->update(['used' => true]);
         }
 
+        if ($input['costs'] > $input['remaining']) {
+            $trx['payment_method'] = 'Promo Code Remaining';
+            $trx['costs'] = $input['costs'] - $input['remaining'];
+            $trx['uuid'] = $this->uuid;
+            $trx['request_id'] = $request->id;
+            $trx['user_id'] = $request->user_id;
+            $trx['driver_id'] = $request->driver_id;
+            CabRequestTransaction::create($trx);
+        }
+
+        if (is_zero($input['remaining'])) {
+            $paid_amount = 0;
+            $totally_paid = true;
+            $input['paid'] = true;
+            $input['status'] = 'Completed';
+            trace(TraceEvents::COMPLETE_CAB_REQUEST);
+            $this->updateDriverWallet($request->driver_id, $input['costs'], 0, $input['costs']);
+            $this->updateDriverStatus($request->driver_id, 'Online');
+        }
+
+        if (str_contains(strtolower($request->history['sending']['payment_method']), 'wallet') && $input['remaining'] > 0) {
+            $totally_paid = false;
+            $paid_amount = $this->wallet($input['remaining'], $request);
+
+            if ($paid_amount == $input['remaining']) {
+                $totally_paid = true;
+                $input['paid'] = true; 
+                $input['remaining'] = 0;
+                $input['status'] = 'Completed'; 
+                trace(TraceEvents::COMPLETE_CAB_REQUEST);
+                $this->updateDriverStatus($request->driver_id, 'Online');
+            }
+
+            if ($paid_amount < $input['remaining']) {
+                $input['remaining'] -= $paid_amount;
+            }
+        }
+
+        if (empty($paid_amount) && $input['remaining'] > 0) {
+            $paid_amount = 0;
+            $totally_paid = false;
+        }
+
         $request = $this->updateRequest($request, $input);
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
             __('lang.ride_ended_body'),
             __('lang.ride_ended'),
-            ['view' => 'RideEnded', 'id' => $args['id']]
+            ['view' => 'RideEnded', 'id' => $args['id'], 'paid_amount' => $paid_amount, 'totally_paid' => $totally_paid]
         );
 
+        $request->amount_paid = $paid_amount;
+        $request->totally_paid = $totally_paid;
+        $request->remaining = $input['remaining'];
+        
         broadcast(new CabRequestStatusChanged($request->toArray()));
 
         return $request;
+    }
+
+    protected function wallet($costs, $request)
+    {
+        $input['costs'] = $costs;
+        $input['uuid'] = $this->uuid;
+        $input['payment_method'] = 'Wallet';
+        $input['request_id'] = $request->id;
+        $input['user_id'] = $request->user_id;
+        $input['driver_id'] = $request->driver_id;
+
+        $paid = $this->updateUserWallet($request->user_id, $input['costs'], 'Aevapay User Wallet', $input['uuid']);
+        $driver_wallet = $request->discount + $paid;
+        $this->updateDriverWallet($request->driver_id, $driver_wallet, 0, $driver_wallet);
+
+        if ($paid < $input['costs']) {
+            $input['costs'] = $paid;
+        }
+
+        $trx = CabRequestTransaction::create($input);
+
+        return $paid;
     }
 
     public function cancel(array $args)
