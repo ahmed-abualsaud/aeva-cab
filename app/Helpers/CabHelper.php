@@ -4,6 +4,7 @@
 
 use Aeva\Cab\Domain\Models\Trace;
 use App\Driver;
+use App\DriverStats;
 use App\Traits\BulkQuery\BulkQuery;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -241,4 +242,17 @@ function multiple_trace(string $event, Model $model, iterable $ids, string $guar
         ]
         )->chunk(500)->each(fn($_500) => @Trace::query()->insert($_500->all()));
     }catch (Exception $e){}
+}
+
+function update_driver_wallet($type,$amount,...$ids)
+{
+    $driver_stats = DriverStats::query()->whereIn('driver_id',$ids);
+    switch ($type) :
+        case 'Wallet Deposit':
+            $driver_stats->increment('wallet',$amount); break;
+        case 'Wallet Withdraw':
+        case 'Cashout':
+            $driver_stats->decrement('wallet',$amount); break;
+    endswitch;
+    return $driver_stats->pluck('wallet','driver_id');
 }

@@ -18,6 +18,8 @@ class DriverTransaction extends Model
     public static Builder $builder;
 */
 
+    protected $hidden = ['insertion_uuid'];
+
     public static function filters(): array
     {
         return [
