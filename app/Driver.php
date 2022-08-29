@@ -229,7 +229,7 @@ class Driver extends Authenticatable implements JWTSubject
     public function scopeApproved($query,$args)
     {
         if (array_key_exists('approved', $args) && !empty_graph_ql_value($args['approved'])){
-            $query = static::applyBooleanFilter($query,$args['approved'],self::getTable().'.status');
+            $query = static::applyBooleanFilter($query,$args['approved'],self::getTable().'.approved');
         }
         return $query;
     }
