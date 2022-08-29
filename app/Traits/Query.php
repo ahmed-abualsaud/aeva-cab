@@ -10,8 +10,6 @@ use JetBrains\PhpStorm\ArrayShape;
 
 trait Query
 {
-    public static array $booleans = ['true','false','1','0',true,false,0,1,'on','off','yes','no'];
-
     /*
     public static array $search;
     public static string $main_table;
@@ -41,11 +39,9 @@ trait Query
 
     public static function applyBooleanFilter(Builder $builder,?string $query_parameter,string $column,string $separator = ',')
     {
-        if (empty_graph_ql_value($query_parameter)) return $builder;
         $query_array = explode($separator,$query_parameter);
         $query_values = collect($query_array)->transform(function ($value){
-            empty_graph_ql_value($value) and $value = null;
-            in_array($value,static::$booleans,true) and $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+            in_array($value,BOOLEANS,true) and $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
             return $value;
         })->all();
         $builder = count($query_values) == 1 ? $builder->where($column,head($query_values)) : $builder->whereIn($column,$query_values);
