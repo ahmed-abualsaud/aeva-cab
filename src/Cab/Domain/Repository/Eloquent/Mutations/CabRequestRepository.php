@@ -215,7 +215,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         if ($request->status == 'Sending') {
             DriverStats::whereIn('driver_id', $driversIds)->increment('missed_cab_requests', 1);
             DriverLog::log(['driver_id' => $driversIds, 'missed_cab_requests' => 1]);
-            empty(data_get($request->history,'missing.missed')) and multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$driversIds);
         }
 
         $input['status'] = 'Sending';
@@ -540,8 +539,16 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $args['cancelled_by'] = strtolower($args['cancelled_by']);
 
         if ($request->status == 'Sending' && strtolower($args['cancelled_by']) == 'user') {
-            $drivers = $request->history['searching']['result']['drivers'];
-            $drivers_ids = Arr::pluck($drivers, 'driver_id');
+            $vehicles = $request->history['searching']['result']['vehicles'];
+            $car_type = $request->history['sending']['chosen_car_type'];
+
+            $filtered = Arr::where($vehicles, function ($value, $key) use ($args, $car_type){
+                return $value['car_type'] == $car_type;
+            });
+
+            $filtered = array_values($filtered);
+            $drivers_ids = Arr::pluck($filtered, 'driver_id');
+            multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$drivers_ids);
             broadcast(new DismissCabRequest($drivers_ids));
         }
 

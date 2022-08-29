@@ -13,6 +13,7 @@ class TraceEvents
     const CANCEL_CAB_REQUEST = 'cancel cap request';
     const COMPLETE_CAB_REQUEST = 'complete cab request';
     const MISSED_CAB_REQUEST = 'missed cab request';
+    const DIS_MISSED_CAB_REQUEST = 'dismissed cab request';
     const CASHOUT = 'cashout';
     const GO_OFFLINE = 'go offline';
     const GO_ONLINE = 'go online';
@@ -28,6 +29,7 @@ class TraceEvents
         self::CANCEL_CAB_REQUEST,
         self::COMPLETE_CAB_REQUEST,
         self::MISSED_CAB_REQUEST,
+        self::DIS_MISSED_CAB_REQUEST,
         self::CASHOUT,
         self::GO_OFFLINE,
         self::GO_ONLINE,
