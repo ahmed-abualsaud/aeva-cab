@@ -210,7 +210,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         if ($request->status == 'Sending') {
             DriverStats::whereIn('driver_id', $driversIds)->increment('missed_cab_requests', 1);
             DriverLog::log(['driver_id' => $driversIds, 'missed_cab_requests' => 1]);
-            multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$driversIds);
+            empty(data_get($request->history,'missing.missed')) and multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$driversIds);
         }
 
         $input['status'] = 'Sending';
