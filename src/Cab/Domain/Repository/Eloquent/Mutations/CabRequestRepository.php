@@ -467,6 +467,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         if ($request->status == 'Sending' && strtolower($args['cancelled_by']) == 'user') {
             $vehicles = $request->history['searching']['result']['vehicles'];
             $car_type = $request->history['sending']['chosen_car_type'];
+            $dialog_shown = (time() - strtotime(@$request->history['sending']['at']) ?? $request->history['searching']['at']) < $this->settings('Show Acceptance Dialog');
 
             $filtered = Arr::where($vehicles, function ($value, $key) use ($args, $car_type){
                 return $value['car_type'] == $car_type;
@@ -474,7 +475,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
             $filtered = array_values($filtered);
             $drivers_ids = Arr::pluck($filtered, 'driver_id');
-            multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$drivers_ids);
+            ! $dialog_shown and multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$drivers_ids);
             broadcast(new DismissCabRequest($drivers_ids));
         }
 
