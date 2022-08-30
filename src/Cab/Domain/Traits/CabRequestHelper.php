@@ -62,13 +62,13 @@ trait CabRequestHelper
                 'total_working_time' => $total_working_time,
                 'activity_updated_at'=> $activity_updated_at
             ]);
-            trace(TraceEvents::GO_OFFLINE,$driver);
+            trace(TraceEvents::GO_OFFLINE);
             return $driver->update(['cab_status' => $cab_status]);
         }
 
         if (strtolower($cab_status) == 'online') {
             $driverStats->update(['activity_updated_at' => $activity_updated_at]);
-            trace(TraceEvents::GO_ONLINE,$driver);
+            trace(TraceEvents::GO_ONLINE);
             return $driver->update(['cab_status' => $cab_status]);
         }
     }

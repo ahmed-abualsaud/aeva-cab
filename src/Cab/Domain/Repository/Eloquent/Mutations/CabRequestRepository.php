@@ -210,11 +210,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             $input['remaining'] = $input['costs'];
         }
 
-        $input['status'] = 'Sending';
-        $input['history'] = array_merge($request->history, $payload);
-
-        $request = $this->updateRequest($request, $input);
-
         $driversIds = Arr::pluck($filtered, 'driver_id');
 
         if ($request->status == 'Sending') {
@@ -222,9 +217,14 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             DriverLog::log(['driver_id' => $driversIds, 'missed_cab_requests' => 1]);
         }
 
+        $input['status'] = 'Sending';
+        $input['history'] = array_merge($request->history, $payload);
+
+        $request = $this->updateRequest($request, $input);
+
         DriverStats::whereIn('driver_id', $driversIds)->increment('received_cab_requests', 1);
         DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);
-        multiple_trace(TraceEvents::RECEIVED_CAB_REQUEST,new Driver(),$driversIds);
+        multiple_trace(TraceEvents::RECEIVED_CAB_REQUEST,$request->id,new Driver(),$driversIds);
 
         SendPushNotification::dispatch(
             $this->driversToken($driversIds),
@@ -252,7 +252,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         DriverStats::where('driver_id', $args['driver_id'])->increment('accepted_cab_requests', 1);
         DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
-        trace(TraceEvents::ACCEPT_CAB_REQUEST);
+        trace(TraceEvents::ACCEPT_CAB_REQUEST,$request->id);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
 
@@ -322,7 +322,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'at' => date("Y-m-d H:i:s"),
             ]
         ];
-        trace(TraceEvents::ARRIVED_CAB_REQUEST);
+        trace(TraceEvents::ARRIVED_CAB_REQUEST,$request->id);
         $args['status'] = 'Arrived';
         $args['history'] = array_merge($request->history, $payload);
 
@@ -354,7 +354,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'waiting_time' => (time() - strtotime($request->history['arrived']['at']))
             ]
         ];
-        trace(TraceEvents::START_CAB_REQUEST);
+        trace(TraceEvents::START_CAB_REQUEST,$request->id);
         $args['status'] = 'Started';
         $args['history'] = array_merge($request->history, $payload);
 
@@ -418,7 +418,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        trace(TraceEvents::END_CAB_REQUEST);
+        trace(TraceEvents::END_CAB_REQUEST,$request->id);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
         $vehicle = Arr::where($vehicles, function ($value, $key) use ($request){
@@ -539,8 +539,17 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $args['cancelled_by'] = strtolower($args['cancelled_by']);
 
         if ($request->status == 'Sending' && strtolower($args['cancelled_by']) == 'user') {
-            $drivers = $request->history['searching']['result']['drivers'];
-            $drivers_ids = Arr::pluck($drivers, 'driver_id');
+            $vehicles = $request->history['searching']['result']['vehicles'];
+            $car_type = $request->history['sending']['chosen_car_type'];
+            $dialog_shown = (time() - strtotime(@$request->history['sending']['at']) ?? $request->history['searching']['at']) < $this->settings('Show Acceptance Dialog');
+
+            $filtered = Arr::where($vehicles, function ($value, $key) use ($args, $car_type){
+                return $value['car_type'] == $car_type;
+            });
+
+            $filtered = array_values($filtered);
+            $drivers_ids = Arr::pluck($filtered, 'driver_id');
+            ! $dialog_shown and multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$drivers_ids);
             broadcast(new DismissCabRequest($drivers_ids));
         }
 
@@ -601,7 +610,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                     'cancelled_cab_requests' => 1,
                     'accepted_cab_requests' => -1
                 ]);
-                trace(TraceEvents::CANCEL_CAB_REQUEST);
+                trace(TraceEvents::CANCEL_CAB_REQUEST,$request->id);
             }
             $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);

@@ -105,6 +105,7 @@ type Driver {
   otp: String
   national_id: String
   block_reason: String
+  logs__total_working_hours : Float
 }
 
 input DriverPhoneVerificationInput {

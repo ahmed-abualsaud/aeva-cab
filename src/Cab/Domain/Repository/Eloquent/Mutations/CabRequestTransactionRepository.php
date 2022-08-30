@@ -4,17 +4,20 @@ namespace Aeva\Cab\Domain\Repository\Eloquent\Mutations;
 
 use App\Exceptions\CustomException;
 
+use App\Helpers\TraceEvents;
+use App\User;
 use App\Driver;
 use App\DriverLog;
 use App\DriverStats;
 
-use App\Helpers\TraceEvents;
+use App\Jobs\SendPushNotification;
 
 use Aeva\Cab\Domain\Models\CabRequest;
 use Aeva\Cab\Domain\Models\CabRequestTransaction;
 
 use Aeva\Cab\Domain\Traits\CabRequestHelper;
 use Aeva\Cab\Domain\Traits\HandleDeviceTokens;
+use Aeva\Cab\Domain\Events\CabRequestStatusChanged;
 use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 
 use Illuminate\Support\Str;
@@ -99,7 +102,7 @@ class CabRequestTransactionRepository extends BaseRepository
         $input['payment_method'] = 'Cash';
         $trx = $this->model->create($input);
         $request->update(['status' => 'Completed', 'paid' => true, 'remaining' => 0]);
-        trace(TraceEvents::COMPLETE_CAB_REQUEST);
+        trace(TraceEvents::COMPLETE_CAB_REQUEST,$request->id);
         $trx->debt = 0;
         $this->notifyUserOfPayment($request, $this->refund);
         return $trx;

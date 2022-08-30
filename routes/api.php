@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Queries\DriverController;
+use App\Http\Controllers\Queries\Create\CreateDriverTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportCabRequestsController;
 use App\Http\Controllers\Queries\Exports\ExportCabRequestTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportCashOutTransactionsController;
@@ -104,6 +105,7 @@ Route::group([
     ], function () {
 
     Route::get('export', [ExportDriverTransactionsController::class,'__invoke']);
+    Route::post('bulk-create', [CreateDriverTransactionsController::class,'__invoke']);
 });
 
 Route::group([

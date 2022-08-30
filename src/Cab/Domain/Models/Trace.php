@@ -37,7 +37,7 @@ class Trace extends Model
      *
      * @var array
      */
-    protected $fillable = ['guard','guard_id','event','latitude','longitude'];
+    protected $fillable = ['guard','guard_id','event','request_id','latitude','longitude'];
 
 
     /**
@@ -98,6 +98,10 @@ class Trace extends Model
             $query = $query->where('guard', strtolower($args['guard']));
         }
 
+        if (array_key_exists('request_id', $args) && !empty_graph_ql_value($args['request_id'])) {
+            $query = $query->where('request_id', $args['request_id']);
+        }
+
         return $query;
     }
 
@@ -122,5 +126,10 @@ class Trace extends Model
     public function driver()
     {
         return $this->belongsTo(Driver::class,'guard_id','id','traces');
+    }
+
+    public function cabRequest()
+    {
+        return $this->belongsTo(CabRequest::class,'request_id','id','traces');
     }
 }
