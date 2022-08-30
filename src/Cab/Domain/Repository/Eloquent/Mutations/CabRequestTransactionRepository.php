@@ -68,8 +68,7 @@ class CabRequestTransactionRepository extends BaseRepository
         $this->cash_after_wallet = ($request->costs_after_discount > $request->remaining);
         $this->costs = $this->cash_after_wallet? $request->remaining : $request->costs;
 
-        if (($args['payment_method'] == 'Cash' || ($args['payment_method'] == 'Wallet' && $this->cash_after_wallet)) &&
-            str_contains(strtolower($request->history['sending']['payment_method']), 'cash') && $request->remaining > 0) {
+        if (($args['payment_method'] == 'Cash' || ($args['payment_method'] == 'Wallet' && $this->cash_after_wallet)) && $request->remaining > 0) {
             $trx = $this->cash($args, $input, $request);
         }
 
