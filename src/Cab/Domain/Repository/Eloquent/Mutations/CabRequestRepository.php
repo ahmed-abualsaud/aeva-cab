@@ -205,17 +205,17 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             $input['remaining'] = $input['costs'];
         }
 
-        $input['status'] = 'Sending';
-        $input['history'] = array_merge($request->history, $payload);
-
-        $request = $this->updateRequest($request, $input);
-
         $driversIds = Arr::pluck($filtered, 'driver_id');
 
         if ($request->status == 'Sending') {
             DriverStats::whereIn('driver_id', $driversIds)->increment('missed_cab_requests', 1);
             DriverLog::log(['driver_id' => $driversIds, 'missed_cab_requests' => 1]);
         }
+
+        $input['status'] = 'Sending';
+        $input['history'] = array_merge($request->history, $payload);
+
+        $request = $this->updateRequest($request, $input);
 
         DriverStats::whereIn('driver_id', $driversIds)->increment('received_cab_requests', 1);
         DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);
@@ -465,8 +465,17 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $args['cancelled_by'] = strtolower($args['cancelled_by']);
 
         if ($request->status == 'Sending' && strtolower($args['cancelled_by']) == 'user') {
-            $drivers = $request->history['searching']['result']['drivers'];
-            $drivers_ids = Arr::pluck($drivers, 'driver_id');
+            $vehicles = $request->history['searching']['result']['vehicles'];
+            $car_type = $request->history['sending']['chosen_car_type'];
+            $dialog_shown = (time() - strtotime(@$request->history['sending']['at']) ?? $request->history['searching']['at']) < $this->settings('Show Acceptance Dialog');
+
+            $filtered = Arr::where($vehicles, function ($value, $key) use ($args, $car_type){
+                return $value['car_type'] == $car_type;
+            });
+
+            $filtered = array_values($filtered);
+            $drivers_ids = Arr::pluck($filtered, 'driver_id');
+            ! $dialog_shown and multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$drivers_ids);
             broadcast(new DismissCabRequest($drivers_ids));
         }
 
