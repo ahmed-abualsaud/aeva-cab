@@ -177,7 +177,7 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function scopeStatus($query, $args)
     {
-        if (array_key_exists('status', $args)) {
+        if (array_key_exists('status', $args) && !empty_graph_ql_value($args['status'])) {
            $query = static::applyBooleanFilter($query,$args['status'],self::getTable().'.status');
         }
         return $query;
@@ -210,14 +210,6 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
-    public function scopeApproved($query, $args)
-    {
-        if (array_key_exists('approved', $args) && !empty_graph_ql_value($args['approved'])) {
-            $query = $query->where('approved', $args['approved']);
-        }
-        return $query;
-    }
-
     public function scopeGetLatest($query, $args)
     {
         return $query->latest();
@@ -234,9 +226,9 @@ class Driver extends Authenticatable implements JWTSubject
         }
     }
 
-    public function scopeApprovedOrNot($query,$args)
+    public function scopeApproved($query,$args)
     {
-        if (array_key_exists('approved', $args)){
+        if (array_key_exists('approved', $args) && !empty_graph_ql_value($args['approved'])){
             $query = static::applyBooleanFilter($query,$args['approved'],self::getTable().'.approved');
         }
         return $query;
@@ -277,7 +269,7 @@ class Driver extends Authenticatable implements JWTSubject
 
         self::scopeSearch($query,$args);
         self::scopeFleet($query,$args);
-        self::scopeApprovedOrNot($query,$args);
+        self::scopeApproved($query,$args);
         self::scopeStatus($query,$args);
         self::scopeCabStatus($query,$args);
         self::scopeTitle($query,$args);

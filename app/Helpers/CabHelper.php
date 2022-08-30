@@ -12,7 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\LazyCollection;
 
-const BOOLEANS = ['true','false','1','0',true,false,0,1,'on','off','yes','no'];
+const BOOLEANS = ['true','false','1','0',true,false,0,1,'on','off','yes','no','True','False'];
 const BOOLEAN_FALSE = ['false',false,0,'off'];
 const BOOLEAN_TRUE = ['true',true,0,'no'];
 
@@ -163,23 +163,25 @@ function response_error(string $message, int $status_code = 400)
 }
 
 /**
- * @param string|null $value
+ * @param $value
  * @return bool
  */
-function empty_value(?string $value) : bool
+function empty_value($value) : bool
 {
-    return is_null($value) or (! is_numeric($value = trim($value)) and empty($value));
+    $trimmed = trim($value);
+    return is_null($value) or (! in_array($value,BOOLEANS,true) and empty($trimmed));
 }
-
 
 /**
- * @param string|null $value
+ * @param $value
  * @return bool
  */
-function empty_graph_ql_value(?string $value) : bool
+function empty_graph_ql_value($value) : bool
 {
-    return is_null($value) or in_array($value = trim($value),['null','undefined'],true) or (! is_numeric($value) and empty($value));
+    $trimmed = trim($value);
+    return is_null($value) or in_array($trimmed,['null','undefined'],true) or (! in_array($value,BOOLEANS,true) and empty($trimmed));
 }
+
 
 /**
  * @param $date
