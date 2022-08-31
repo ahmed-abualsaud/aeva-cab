@@ -22,4 +22,9 @@ class CabRequestResolver
     {
         return $this->cabRequestRepository->missedRequests($args);
     }
+
+    public function stats($_, array $args)
+    {
+        return $this->cabRequestRepository->stats($args);
+    }
 }

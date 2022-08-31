@@ -3,6 +3,8 @@
 namespace Aeva\Cab\Domain\Repository\Eloquent\Queries;
 
 use App\Driver;
+use App\Traits\Filterable;
+
 use Illuminate\Support\Arr;
 
 use Aeva\Cab\Domain\Models\CabRequest;
@@ -10,12 +12,14 @@ use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 
 class CabRequestRepository extends BaseRepository
 {
+    use Filterable;
+
     public function __construct(CabRequest $model)
     {
         parent::__construct($model);
     }
 
-    public function history(array $args) 
+    public function history(array $args)
     {
         $first = 10;
         $page = 0;
@@ -47,7 +51,7 @@ class CabRequestRepository extends BaseRepository
                     ->groupBy(function($item) {
                         return $item->created_at->format('Y-m-d');
                     });
-        
+
         [$dates, $requests] = Arr::divide($ret->toArray());
 
         foreach ($requests as $key => $request) {
@@ -74,5 +78,26 @@ class CabRequestRepository extends BaseRepository
             $req->missed_drivers = Driver::whereIn('id', $drivers_ids)->get();
         }
         return $missed_requests;
+    }
+
+    public function stats(array $args)
+    {
+        if (array_key_exists('x_as_driver_name', $args) && $args['x_as_driver_name']) {
+            $select_x = 'drivers.full_name as x';
+        } else {
+            $select_x = 'DATE_FORMAT(cab_requests.created_at, "%d %b %Y, %h %p") as x';
+        }
+
+        $transactionGroup = $this->model->selectRaw($select_x.', COUNT(*) as y');
+
+        if (array_key_exists('x_as_driver_name', $args) && $args['x_as_driver_name']) {
+            $transactionGroup = $transactionGroup->join('drivers', 'cab_requests.driver_id', '=', 'drivers.id');
+        }
+
+        if (array_key_exists('period', $args) && $args['period']) {
+            $transactionGroup = $this->dateFilter($args['period'], $transactionGroup, 'cab_requests.created_at');
+        }
+
+        return $transactionGroup->where('cab_requests.status', 'Completed')->groupBy('x')->get();
     }
 }
