@@ -285,7 +285,7 @@ class Driver extends Authenticatable implements JWTSubject
     public function getLastLogAttribute()
     {
         $last_log = $this->logs->last();
-        if (substr($last_log->created_at, 0, 10) == date('Y-m-d')) {
+        if ($last_log && substr($last_log->created_at, 0, 10) == date('Y-m-d')) {
             return $last_log;
         }
         return null;
