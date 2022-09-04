@@ -85,7 +85,7 @@ class CabRequestRepository extends BaseRepository
         if (array_key_exists('x_as_driver_name', $args) && $args['x_as_driver_name']) {
             $select_x = 'drivers.full_name as x';
         } else {
-            $select_x = 'DATE_FORMAT(cab_requests.created_at, "%d %b %Y, %h %p") as x';
+            $select_x = 'DATE_FORMAT(cab_requests.created_at, "%Y-%m-%d %H:00:00") as x';
         }
 
         $transactionGroup = $this->model->selectRaw($select_x.', COUNT(*) as y');
