@@ -108,6 +108,7 @@ type Driver {
   national_id: String
   block_reason: String
   notes: String
+  last_log: DriverLog
   logs__total_working_hours : Float
 }
 
