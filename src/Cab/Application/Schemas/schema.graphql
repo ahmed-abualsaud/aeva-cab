@@ -9,7 +9,7 @@ extend type Mutation @guard(with: ["admin"]) {
 }
 
 # User Guard
-extend type Mutation @guard(with: ["user"]) {
+extend type Mutation @guard(with: ["admin", "user"]) {
   # Cab Rating
   updateCabRating(input: UpdateCabRatingInput! @spread): [CabRating]
     @field(resolver: "CabRatingResolver@update")
@@ -20,7 +20,7 @@ extend type Mutation @guard(with: ["user"]) {
 }
 
 # Driver Guard
-extend type Mutation @guard(with: ["driver", "user"]) {
+extend type Mutation @guard(with: ["admin", "driver", "user"]) {
   # Cab Request
   createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
     @field(resolver: "CabRequestTransactionResolver@create")
