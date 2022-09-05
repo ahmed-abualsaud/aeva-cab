@@ -10,20 +10,24 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class DismissCabRequest implements ShouldBroadcast
+class BroadcastEventToDriver implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $drivers_ids;
+    public $driver_id;
+    public $event_name;
+    public $data;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($drivers_ids)
+    public function __construct($event_name, $driver_id, $data=null)
     {
-        $this->drivers_ids = $drivers_ids;
+        $this->event_name = $event_name;
+        $this->driver_id = $driver_id;
+        $this->data = $data;
     }
 
     /**
@@ -33,8 +37,12 @@ class DismissCabRequest implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        foreach ($this->drivers_ids as $driver_id) {
-            $channels[] = new PrivateChannel('Dismiss.Request.Driver.'.$driver_id);  
+        if ($this->event_name == 'dismiss') {
+            return new PrivateChannel('Dismiss.Request.Driver.'.$this->driver_id);
+        }
+
+        if ($this->event_name == 'missed') {
+            return new PrivateChannel('Missed.Request.Driver.'.$this->driver_id);
         }
 
         return $channels;
@@ -48,5 +56,15 @@ class DismissCabRequest implements ShouldBroadcast
     public function broadcastAs()
     {
         return 'client-cap.trip.status';
+    }
+
+    /**
+     * Get the data to broadcast.
+     *
+     * @return array
+     */
+    public function broadcastWith()
+    {
+        return ['data' => $this->data];
     }
 }
