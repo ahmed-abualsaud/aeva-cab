@@ -76,6 +76,8 @@ extend type Query @guard(with: ["admin"]) {
     @field(resolver: "CabRequestTransactionResolver@stats")
   missedCabRequests(user_id: ID): [CabRequest]
     @field(resolver: "CabRequestResolver@missedRequests")
+  completedCabRequestsStats(period: String, x_as_driver_name: Boolean): [chartObject]
+    @field(resolver: "CabRequestResolver@stats")
 }
 
 # User Guard
