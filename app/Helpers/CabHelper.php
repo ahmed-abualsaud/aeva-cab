@@ -182,7 +182,6 @@ function empty_graph_ql_value($value) : bool
     return is_null($value) or in_array($trimmed,['null','undefined'],true) or (! in_array($value,BOOLEANS,true) and empty($trimmed));
 }
 
-
 /**
  * @param $date
  * @param bool $use_carbon_method
