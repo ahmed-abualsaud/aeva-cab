@@ -167,10 +167,10 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $this->logOutOldDevices('driver',$driver->id);
         }
 
-        if (array_key_exists('suspended_at',$args) && $args['suspended_at'] &&
-            array_key_exists('suspension_period',$args) && $args['suspension_period']){
+        if (array_key_exists('suspension_period',$args) && $args['suspension_period']){
             ! is_null(@auth('driver')->user()) and trace(TraceEvents::LOG_OUT);
             $this->logOutOldDevices('driver',$driver->id);
+            $input['suspended_at'] = date('Y-m-d H:i:s');
         }
 
         if (array_key_exists('block_reason',$args) && !empty_graph_ql_value($args['block_reason'])){
