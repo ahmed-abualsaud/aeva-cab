@@ -183,6 +183,24 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
+    public function scopeActiveStatus($query, $args)
+    {
+        if (array_key_exists('active_status', $args) && !empty_graph_ql_value($args['active_status'])) {
+            if ($args['active_status'] == 'Blocked') {
+                $query = $this->scopeStatus($query, ['status' => false]);
+            }
+
+            if ($args['active_status'] == 'Suspended') {
+                $query = $query->whereRaw('DATE_ADD(suspended_at, INTERVAL (suspension_period * 3600) SECOND) > ?', [date('Y-m-d H:i:s')]);
+            }
+
+            if ($args['active_status'] == 'Active') {
+                $query = $query->whereRaw('status = true OR DATE_ADD(suspended_at, INTERVAL (suspension_period * 3600) SECOND) < ?', [date('Y-m-d H:i:s')]);
+            }
+        }
+        return $query;
+    }
+
     public function scopeTitle($query, $args)
     {
         if (array_key_exists('title', $args) && !empty_graph_ql_value($args['title'])) {
