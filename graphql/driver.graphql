@@ -55,7 +55,6 @@ input UpdateDriverInput @validator {
   national_id: String
   block_reason: String
   notes: String
-  suspended_at: String
   suspension_period: Float
   suspension_reason: String
 }
