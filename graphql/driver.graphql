@@ -55,6 +55,9 @@ input UpdateDriverInput @validator {
   national_id: String
   block_reason: String
   notes: String
+  suspended_at: String
+  suspension_period: Float
+  suspension_reason: String
 }
 
 input DriverVehicleInput {
@@ -110,6 +113,9 @@ type Driver {
   notes: String
   last_log: DriverLog
   logs__total_working_hours : Float
+  suspended_at: String
+  suspension_period: Float
+  suspension_reason: String
 }
 
 input DriverPhoneVerificationInput {

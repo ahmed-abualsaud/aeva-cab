@@ -46,6 +46,10 @@ class CreateDriversTable extends Migration
             $table->string('notes')->nullable();
             $table->string('otp');
             $table->boolean('approved')->default(false);
+            $table->timestamp('suspended_at')->nullable();
+            $table->double('suspension_period', 10, 2)->nullable();
+            $table->longText('suspension_reason')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
 
