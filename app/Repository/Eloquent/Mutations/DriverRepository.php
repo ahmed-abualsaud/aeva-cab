@@ -17,6 +17,9 @@ use App\Traits\HandleAccessTokenCache;
 
 use App\Exceptions\CustomException;
 
+use Aeva\Cab\Domain\Models\CabRequest;
+use Aeva\Cab\Domain\Traits\CabRequestHelper;
+
 use Vinkla\Hashids\Facades\Hashids;
 
 use Illuminate\Support\Facades\Hash;
@@ -29,6 +32,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 {
     use HandleUpload;
     use HandleAccessTokenCache;
+    use CabRequestHelper;
 
     public function __construct(Driver $model)
     {
@@ -175,6 +179,14 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
         if (array_key_exists('block_reason',$args) && !empty_graph_ql_value($args['block_reason'])){
              $input['block_reason'] = $args['block_reason'];
+         }
+
+         if (array_key_exists('cab_status', $args) && $args['cab_status']) {
+            $active_requests = CabRequest::driverLive(['driver_id' => $args['id']])->first();
+            if($active_requests && in_array($args['cab_status'], ['Offline', 'Online'])) {
+                throw new CustomException(__('lang.update_status_failed').' id = '.$active_requests->id);
+            }
+            $this->updateDriverStatus($args['id'], $args['cab_status']);
          }
 
         $driver->update($input);
