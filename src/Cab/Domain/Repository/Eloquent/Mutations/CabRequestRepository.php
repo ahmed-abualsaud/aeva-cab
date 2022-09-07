@@ -207,10 +207,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         $driversIds = Arr::pluck($filtered, 'driver_id');
 
-        if ($request->status == 'Sending') {
-            DriverStats::whereIn('driver_id', $driversIds)->increment('missed_cab_requests', 1);
-            DriverLog::log(['driver_id' => $driversIds, 'missed_cab_requests' => 1]);
-        }
+        // if ($request->status == 'Sending') {
+        //     DriverStats::whereIn('driver_id', $driversIds)->increment('missed_cab_requests', 1);
+        //     DriverLog::log(['driver_id' => $driversIds, 'missed_cab_requests' => 1]);
+        // }
 
         $input['status'] = 'Sending';
         $input['history'] = array_merge($request->history, $payload);
@@ -475,7 +475,13 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
             $filtered = array_values($filtered);
             $drivers_ids = Arr::pluck($filtered, 'driver_id');
-            ! $dialog_shown and multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$drivers_ids);
+
+            if (! $dialog_shown) {
+                DriverStats::whereIn('driver_id', $drivers_ids)->increment('missed_cab_requests', 1);
+                DriverLog::log(['driver_id' => $drivers_ids, 'missed_cab_requests' => 1]);
+                multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$drivers_ids);
+            }
+
             broadcast(new DismissCabRequest($drivers_ids));
         }
 
