@@ -476,9 +476,9 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
             if ($paid_amount == $input['remaining']) {
                 $totally_paid = true;
-                $input['paid'] = true; 
+                $input['paid'] = true;
                 $input['remaining'] = 0;
-                $input['status'] = 'Completed'; 
+                $input['status'] = 'Completed';
                 trace(TraceEvents::COMPLETE_CAB_REQUEST);
                 $this->updateDriverStatus($request->driver_id, 'Online');
             }
@@ -505,7 +505,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request->amount_paid = $paid_amount;
         $request->totally_paid = $totally_paid;
         $request->remaining = $input['remaining'];
-        
+
         broadcast(new CabRequestStatusChanged($request->toArray()));
 
         return $request;
@@ -596,12 +596,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             $request = $this->updateRequest($request, $args);
             if ($request->driver_id) {
                 $token = $this->driversToken($request->driver_id);
-            }
-
-            if ($request->promo_code_id) {
-                PromoCodeUsage::where('user_id', $request->user_id)
-                    ->where('promo_code_id', $request->promo_code_id)
-                    ->update(['used' => true]);
             }
         }
 
