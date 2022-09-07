@@ -22,6 +22,7 @@ input CreateDriverInput @validator {
   ref_code: String
   approved: Boolean
   national_id: String
+  notes: String
 }
 
 input UpdateDriverInput @validator {
@@ -53,6 +54,7 @@ input UpdateDriverInput @validator {
   approved: Boolean
   national_id: String
   block_reason: String
+  notes: String
 }
 
 input DriverVehicleInput {
@@ -105,6 +107,8 @@ type Driver {
   otp: String
   national_id: String
   block_reason: String
+  notes: String
+  last_log: DriverLog
   logs__total_working_hours : Float
 }
 

@@ -282,6 +282,15 @@ class Driver extends Authenticatable implements JWTSubject
         return self::scopeGetLatest($query,$args);
     }
 
+    public function getLastLogAttribute()
+    {
+        $last_log = $this->logs->last();
+        if ($last_log && substr($last_log->created_at, 0, 10) == date('Y-m-d')) {
+            return $last_log;
+        }
+        return null;
+    }
+
     public function traces()
     {
         return $this->hasMany(Trace::class,'guard_id','id')->where('guard','=','driver');
