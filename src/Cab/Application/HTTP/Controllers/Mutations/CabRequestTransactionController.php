@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
-class CabRequestTransactionController 
+class CabRequestTransactionController
 {
     private $cabRequestTransactionRepository;
 
@@ -18,11 +18,13 @@ class CabRequestTransactionController
         $this->cabRequestTransactionRepository = $cabRequestTransactionRepository;
     }
 
-    public function confirmCashout(Request $req) 
+    public function confirmCashout(Request $req)
     {
         $validator = Validator::make($req->all(), [
             'driver_id' => ['required'],
-            'amount' => ['required']
+            'amount' => ['required'],
+            'merchant_name' => ['required'],
+            'reference_number' => ['required']
         ]);
 
         if ($validator->fails()) {
