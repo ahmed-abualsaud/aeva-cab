@@ -24,9 +24,9 @@ use Aeva\Cab\Domain\Traits\CabRequestHelper;
 use Aeva\Cab\Domain\Traits\HandleDeviceTokens;
 
 use Aeva\Cab\Domain\Events\AcceptCabRequest;
-use Aeva\Cab\Domain\Events\DismissCabRequest;
 use Aeva\Cab\Domain\Events\CabRequestCancelled;
 use Aeva\Cab\Domain\Events\CabRequestStatusChanged;
+use Aeva\Cab\Domain\Events\BroadcastEventToDriver;
 
 use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 use Aeva\Cab\Domain\Repository\Mutations\CabRequestRepositoryInterface;
@@ -304,7 +304,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             }
         }
 
-        broadcast(new DismissCabRequest($drivers_ids));
+        $this->broadcastToDrivers('dismiss', $drivers_ids);
 
         return $request;
     }
@@ -552,11 +552,12 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
             if (! $dialog_shown) {
                 DriverStats::whereIn('driver_id', $drivers_ids)->increment('missed_cab_requests', 1);
-                DriverLog::log(['driver_id' => $drivers_ids, 'missed_cab_requests' => 1]);
+                $logs = DriverLog::log(['driver_id' => $drivers_ids, 'missed_cab_requests' => 1]);
+                $this->broadcastToDrivers('missed', $drivers_ids, $logs);
                 multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$drivers_ids);
             }
 
-            broadcast(new DismissCabRequest($drivers_ids));
+            $this->broadcastToDrivers('dismiss', $drivers_ids);
         }
 
         if ( $request->status == 'Cancelled' ) {
@@ -756,5 +757,18 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request['result'] = $result;
 
         return $request;
+    }
+
+    protected static function broadcastToDrivers($event_name, $drivers_ids, $data=null)
+    {
+        foreach ($drivers_ids as $driver_id) {
+            $driver_data = null;
+            if($data)  {
+                $driver_data = array_values(Arr::where($data, function ($value, $key) use ($driver_id){
+                    return $value['driver_id'] == $driver_id;
+                }))[0];
+            }
+            broadcast(new BroadcastEventToDriver($event_name, $driver_id, $driver_data));
+        }
     }
 }
