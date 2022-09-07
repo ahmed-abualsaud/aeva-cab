@@ -195,7 +195,7 @@ class Driver extends Authenticatable implements JWTSubject
             }
 
             if ($args['active_status'] == 'Active') {
-                $query = $query->whereRaw('status = true OR DATE_ADD(suspended_at, INTERVAL (suspension_period * 3600) SECOND) < ?', [date('Y-m-d H:i:s')]);
+                $query = $query->whereRaw('status = true AND (suspended_at IS NULL OR DATE_ADD(suspended_at, INTERVAL (suspension_period * 3600) SECOND) < ?)', [date('Y-m-d H:i:s')]);
             }
         }
         return $query;
@@ -307,6 +307,22 @@ class Driver extends Authenticatable implements JWTSubject
             return $last_log;
         }
         return null;
+    }
+
+    public function getActiveStatusAttribute()
+    {
+        if (!$this->status) {
+            return 'Blocked';
+        }
+
+        if ($this->suspended_at) {
+            $still_suspended = ((time() - strtotime($this->suspended_at)) / 3600) < $this->suspension_period? true : false;
+            if ($still_suspended) {
+                return 'Suspended';
+            }
+        }
+
+        return 'Active';
     }
 
     public function traces()
