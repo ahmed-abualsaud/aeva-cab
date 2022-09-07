@@ -115,6 +115,7 @@ type Driver {
   suspended_at: String
   suspension_period: Float
   suspension_reason: String
+  active_status: String
 }
 
 input DriverPhoneVerificationInput {
