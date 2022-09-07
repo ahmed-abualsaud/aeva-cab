@@ -18,15 +18,13 @@ class CreateCabRequestTransactionsTable extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('driver_id')->nullable();
             $table->unsignedBigInteger('request_id')->nullable();
-            $table->unsignedBigInteger('merchant_id')->nullable();
-            $table->string('merchant_name')->nullable();
             $table->float('costs', 8, 2);
             $table->enum('payment_method', [
-                'Cash', 
-                'Card', 
-                'Wallet', 
-                'Cashout', 
-                'Refund', 
+                'Cash',
+                'Card',
+                'Wallet',
+                'Cashout',
+                'Refund',
                 'Cancel Fees',
                 'Promo Code Remaining'
             ]);
@@ -36,7 +34,7 @@ class CreateCabRequestTransactionsTable extends Migration
 
             $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('set null');
             $table->foreign('request_id')->references('id')->on('cab_requests')->onDelete('set null');
-            
+
         });
     }
 
