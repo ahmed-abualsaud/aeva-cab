@@ -123,7 +123,7 @@ return [
     'the_following_already_exists' => 'المتابعة موجودة بالفعل',
     'user_exists' => 'هذا المستخدم موجود بالفعل',
     'you_already_booked_the_trip' => 'لقد قمت بحجز تلك الرحلة من قبل',
-    'your_account_is_disabled' => 'لقد تم تعليق حسابك',
+    'your_account_is_disabled' => 'لقد تم حظر حسابك',
     'permitted_number_of_trips_exceeded' => 'تم تجاوز عدد الرحلات المسموح بها لتطبيق هذا الخصم ',
     'permitted_number_of_users_exceeded' => 'تم تجاوز عدد المستخدمين المسموح بهم لتطبيق هذا الخصم',
     'promocode_has_already_been_applied' => 'هذا الرمز الترويجي مطبق بالفعل',
