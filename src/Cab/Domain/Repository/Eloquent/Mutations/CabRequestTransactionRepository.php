@@ -10,6 +10,8 @@ use App\Driver;
 use App\DriverLog;
 use App\DriverStats;
 
+use App\Repository\Eloquent\Mutations\DriverTransactionRepository;
+
 use App\Jobs\SendPushNotification;
 
 use Aeva\Cab\Domain\Models\CabRequest;
@@ -35,9 +37,13 @@ class CabRequestTransactionRepository extends BaseRepository
     protected $refund;
     protected $cash_after_wallet;
 
-    public function __construct(CabRequestTransaction $model)
+    private $driverTransactionRepository;
+
+    public function __construct(CabRequestTransaction $model, DriverTransactionRepository $driverTransactionRepository)
     {
         parent::__construct($model);
+        $this->driverTransactionRepository = $driverTransactionRepository;
+
     }
 
     public function create(array $args)
@@ -131,16 +137,10 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         $stats = DriverStats::where('driver_id', $args['driver_id'])->first();
-
         if($stats->wallet < $args['amount']) {
             throw new CustomException(__('lang.insufficient_balance'));
         }
 
-        DriverLog::log([
-            'driver_id' => $args['driver_id'],
-            'cashout_amount' => $args['amount']
-        ]);
-        trace(TraceEvents::CASHOUT);
         try {
             $this->cashout([
                 'reference_number' => $args['reference_number']
@@ -149,23 +149,21 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException($this->parseErrorMessage($e->getMessage(), 'success'));
         }
 
-        $cashout = $this->model->create([
+        $cashout = $this->driverTransactionRepository->create([
             'driver_id' => $args['driver_id'],
-            //'merchant_id' => $args['merchant_id'],
             'merchant_name' => $args['merchant_name'],
-            'costs' => $args['amount'],
-            'payment_method' => 'Cashout',
-            'uuid' => Str::orderedUuid()
+            'amount' => $args['amount'],
+            'type' => $args['type'],
+            'insertion_uuid' => Str::orderedUuid()
         ]);
 
-        $cashout->wallet = $stats->wallet;
-
-        $stats->update([
-            'wallet' => DB::raw('wallet - '.$args['amount']),
-            'earnings' => DB::raw('earnings - '.$args['amount'])
+        DriverLog::log([
+            'driver_id' => $args['driver_id'],
+            'cashout_amount' => $args['amount']
         ]);
+        trace(TraceEvents::CASHOUT);
 
-        $cashout->wallet -= $args['amount'];
+        $cashout->wallet = DriverStats::select('wallet')->where('driver_id', $args['driver_id'])->first()->wallet;
 
         return $cashout;
     }

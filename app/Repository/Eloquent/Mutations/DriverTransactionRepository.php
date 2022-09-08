@@ -4,9 +4,11 @@ namespace App\Repository\Eloquent\Mutations;
 
 use App\DriverStats;
 use App\DriverTransaction;
-use Illuminate\Support\Facades\DB;
 use App\Exceptions\CustomException;
 use App\Repository\Eloquent\BaseRepository;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class DriverTransactionRepository extends BaseRepository
 {
@@ -31,7 +33,7 @@ class DriverTransactionRepository extends BaseRepository
             throw new CustomException(
                 __('lang.create_trnx_failed'),
                 'customValidation'
-            ); 
+            );
         }
 
         $transaction->created_at = date('Y-m-d H:i:s');
@@ -42,16 +44,27 @@ class DriverTransactionRepository extends BaseRepository
     protected function updateBalance($args)
     {
         try {
-            switch($args['type']) {
-                case 'Wallet Deposit':
-                    return DriverStats::where('driver_id', $args['driver_id'])->increment('wallet', $args['amount']);
-                case 'Wallet Withdraw':
-                    return DriverStats::where('driver_id', $args['driver_id'])->decrement('wallet', $args['amount']);
-                case 'Cashout':
-                    return DriverStats::where('driver_id', $args['driver_id'])->decrement('wallet', $args['amount']);
+            $stats = DriverStats::where('driver_id', $args['driver_id'])->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception(__('lang.driver_not_found'));
+        }
+
+        if ($args['type'] == 'Wallet Deposit') {
+            $stats->update([
+                'wallet' => DB::raw('wallet + '.$args['amount']),
+                'earnings' => DB::raw('earnings + '.$args['amount'])
+            ]);
+        }
+
+        if (in_array($args['type'], ['Wallet Withdraw', 'Cashout', 'Scan And Pay'])) {
+            if($stats->wallet < $args['amount']) {
+                throw new CustomException(__('lang.insufficient_balance'));
             }
-        } catch (\Exception $e) {
-            throw new CustomException($e->getMessage());
+
+            $stats->update([
+                'wallet' => DB::raw('wallet - '.$args['amount']),
+                'earnings' => DB::raw('earnings - '.$args['amount'])
+            ]);
         }
     }
 }
