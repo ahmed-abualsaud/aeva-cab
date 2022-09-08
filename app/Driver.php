@@ -284,6 +284,7 @@ class Driver extends Authenticatable implements JWTSubject
         self::scopeNearby($query,$args);
         self::scopeStatsTotalWorkingHours($query,$args);
         self::scopeLogsTotalWorkingHours($query,$args);
+        self::scopeActiveStatus($query,$args);
 
         !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
         !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
