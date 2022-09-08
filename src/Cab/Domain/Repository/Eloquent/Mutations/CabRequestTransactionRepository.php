@@ -78,12 +78,6 @@ class CabRequestTransactionRepository extends BaseRepository
             $trx = $this->cash($args, $input, $request);
         }
 
-        if ($request->costs > $request->costs_after_discount && !$this->cash_after_wallet) {
-            $input['costs'] = $request->discount;
-            $input['payment_method'] = 'Promo Code Remaining';
-            $this->model->create($input);
-        }
-
         if(!is_zero($this->refund)) {
             $input['costs'] = $this->refund;
             $input['payment_method'] = 'Refund';
