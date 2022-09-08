@@ -123,7 +123,7 @@ return [
     'the_following_already_exists' => 'The following already exists',
     'user_exists' => 'User already exists',
     'you_already_booked_the_trip' => 'You already booked the trip',
-    'your_account_is_disabled' => 'Your account has been suspended',
+    'your_account_is_disabled' => 'Your account has been blocked',
     'permitted_number_of_trips_exceeded' => 'Permitted number of trips exceeded',
     'permitted_number_of_users_exceeded' => 'Permitted number of users exceeded',
     'promocode_has_already_been_applied' => 'Promocode has already been applied',

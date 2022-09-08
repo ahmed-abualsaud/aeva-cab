@@ -175,28 +175,19 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
-    public function scopeStatus($query, $args)
-    {
-        if (array_key_exists('status', $args) && !empty_graph_ql_value($args['status'])) {
-           $query = static::applyBooleanFilter($query,$args['status'],self::getTable().'.status');
-        }
-        return $query;
-    }
-
     public function scopeActiveStatus($query, $args)
     {
         if (array_key_exists('active_status', $args) && !empty_graph_ql_value($args['active_status'])) {
-            if ($args['active_status'] == 'Blocked') {
-                $query = $this->scopeStatus($query, ['status' => false]);
-            }
+            $update_query = clone $query;
+            $update_query->whereRaw('DATE_ADD(suspended_at, INTERVAL (suspension_period * 3600) SECOND) < ?', [date('Y-m-d H:i:s')])
+                ->update([
+                    'active_status' => 'Active',
+                    'suspended_at' => null,
+                    'suspension_period' => null,
+                    'suspension_reason' => null
+                ]);
 
-            if ($args['active_status'] == 'Suspended') {
-                $query = $query->whereRaw('DATE_ADD(suspended_at, INTERVAL (suspension_period * 3600) SECOND) > ?', [date('Y-m-d H:i:s')]);
-            }
-
-            if ($args['active_status'] == 'Active') {
-                $query = $query->whereRaw('status = true AND (suspended_at IS NULL OR DATE_ADD(suspended_at, INTERVAL (suspension_period * 3600) SECOND) < ?)', [date('Y-m-d H:i:s')]);
-            }
+            $query = $query->where('active_status', $args['active_status']);
         }
         return $query;
     }
@@ -288,12 +279,12 @@ class Driver extends Authenticatable implements JWTSubject
         self::scopeSearch($query,$args);
         self::scopeFleet($query,$args);
         self::scopeApproved($query,$args);
-        self::scopeStatus($query,$args);
         self::scopeCabStatus($query,$args);
         self::scopeTitle($query,$args);
         self::scopeNearby($query,$args);
         self::scopeStatsTotalWorkingHours($query,$args);
         self::scopeLogsTotalWorkingHours($query,$args);
+        self::scopeActiveStatus($query,$args);
 
         !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
         !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
@@ -307,22 +298,6 @@ class Driver extends Authenticatable implements JWTSubject
             return $last_log;
         }
         return null;
-    }
-
-    public function getActiveStatusAttribute()
-    {
-        if (!$this->status) {
-            return 'Blocked';
-        }
-
-        if ($this->suspended_at) {
-            $still_suspended = ((time() - strtotime($this->suspended_at)) / 3600) < $this->suspension_period? true : false;
-            if ($still_suspended) {
-                return 'Suspended';
-            }
-        }
-
-        return 'Active';
     }
 
     public function traces()
