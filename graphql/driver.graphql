@@ -11,7 +11,7 @@ input CreateDriverInput @validator {
   avatar: Upload
   city: String
   vehicle: String
-  status: Boolean
+  active_status: String
   partner_id: ID
   car_type_id: ID
   code: String
@@ -35,7 +35,7 @@ input UpdateDriverInput @validator {
   fleet_id: ID
   license_expires_on: String
   avatar: Upload
-  status: Boolean
+  active_status: String
   device_id: String
   partner_id: ID
   code: String
@@ -80,7 +80,7 @@ type Driver {
   avatar: String
   latitude: Float
   longitude: Float
-  status: Boolean
+  active_status: String
   cab_status: String
   city: String
   vehicle: String

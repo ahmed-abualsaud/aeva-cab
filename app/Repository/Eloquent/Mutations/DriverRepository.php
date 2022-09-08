@@ -162,20 +162,30 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $input['avatar'] = $url;
         }
 
-        if (array_key_exists('status',$args) && in_array($args['status'],BOOLEAN_FALSE)){
-            ! is_null(@auth('driver')->user()) and trace(TraceEvents::LOG_OUT);
-            $this->logOutOldDevices('driver',$driver->id);
-        }
+        if (array_key_exists('active_status',$args) && $args['active_status']){
 
-        if (array_key_exists('suspension_period',$args) && $args['suspension_period']){
-            ! is_null(@auth('driver')->user()) and trace(TraceEvents::LOG_OUT);
-            $this->logOutOldDevices('driver',$driver->id);
-            $input['suspended_at'] = date('Y-m-d H:i:s');
-        }
+            if ($args['active_status'] == 'Suspended') {
+                if (!(array_key_exists('suspension_period',$args) && $args['suspension_period'])){
+                    throw new CustomException('suspension_period is required');
+                }
+                $input['suspended_at'] = date('Y-m-d H:i:s');
+            }
 
-        if (array_key_exists('block_reason',$args) && !empty_graph_ql_value($args['block_reason'])){
-             $input['block_reason'] = $args['block_reason'];
-         }
+            if (in_array($args['active_status'] , ['Blocked', 'Suspended'])) {
+                ! is_null(@auth('driver')->user()) and trace(TraceEvents::LOG_OUT);
+                $this->logOutOldDevices('driver',$driver->id);
+            }
+
+            if (in_array($args['active_status'] , ['Active', 'Blocked'])) {
+                $input['suspended_at'] = null;
+                $input['suspension_period'] = null;
+                $input['suspension_reason'] = null;
+            }
+
+            if (in_array($args['active_status'] , ['Active', 'Suspended'])) {
+                $input['block_reason'] = null;
+            }
+        }
 
         $driver->update($input);
 
@@ -190,16 +200,17 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             throw new CustomException(__('lang.driver_not_found'));
         }
 
-        if (!$driver->status) {
+        if ($driver->active_status == 'Blocked') {
             throw new CustomException(__('lang.your_account_is_disabled'));
         }
 
-        if ($driver->suspended_at) {
+        if ($driver->active_status == 'Suspended') {
             $still_suspended = ((time() - strtotime($driver->suspended_at)) / 3600) < $driver->suspension_period? true : false;
             if ($still_suspended) {
                 throw new CustomException(__('lang.your_account_is_still_suspended'));
             } else {
                 $driver->update([
+                    'active_status' => 'Active',
                     'suspended_at' => null,
                     'suspension_period' => null,
                     'suspension_reason' => null
