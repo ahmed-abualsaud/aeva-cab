@@ -16,7 +16,7 @@ class DriverLog extends Model
     protected $guarded = [];
 
     protected $appends = [
-        'acceptance_rate', 
+        'acceptance_rate',
         'cancellation_rate',
         'missing_rate'
     ];
@@ -26,7 +26,7 @@ class DriverLog extends Model
         return $this->belongsTo(Driver::class);
     }
 
-    public function scopeLogs($query, array $args) 
+    public function scopeLogs($query, array $args)
     {
         if (array_key_exists('driver_id', $args)) {
             $query = $query->where('driver_id', $args['driver_id']);
@@ -39,7 +39,7 @@ class DriverLog extends Model
         return $query;
     }
 
-    public function scopeSummary($query, array $args) 
+    public function scopeSummary($query, array $args)
     {
         $query = $this->scopeLogs($query, $args);
 
@@ -62,7 +62,7 @@ class DriverLog extends Model
             $args['driver_id'] = [$args['driver_id']];
         }
 
-        foreach ($args['driver_id'] as $driver_id) 
+        foreach ($args['driver_id'] as $driver_id)
         {
             $last_log = DriverLog::where('driver_id', $driver_id)->latest()->first();
             $inputs = Arr::except($args, ['driver_id', 'activity_updated_at']);
@@ -99,7 +99,7 @@ class DriverLog extends Model
                         if ($inputs['cashout_amount'] > $daily_amount) {
                             throw new CustomException(__('lang.max_cahsout_exceeded', ['cashout_amount' => ($daily_amount - $last_log->cashout_amount)]));
                         }
-                    } 
+                    }
                 }
 
                 $last_log->update($inputs);
@@ -112,8 +112,8 @@ class DriverLog extends Model
 
     public function getAcceptanceRateAttribute()
     {
-        if ($this->received_cab_requests == 0) {return 0;}
-        return ($this->accepted_cab_requests / $this->received_cab_requests);
+        if ($this->missed_cab_requests == 0) {return 0;}
+        return ($this->accepted_cab_requests / $this->missed_cab_requests);
     }
 
     public function getCancellationRateAttribute()
