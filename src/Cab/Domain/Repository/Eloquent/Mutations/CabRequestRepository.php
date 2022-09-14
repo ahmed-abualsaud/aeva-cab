@@ -538,6 +538,15 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $request = $this->findRequest($args['id']);
         $args['cancelled_by'] = strtolower($args['cancelled_by']);
 
+        if ($request->status == 'Sending' && strtolower($args['cancelled_by']) == 'driver') {
+            $dialog_shown = (time() - strtotime($request->history['sending']['at'])) < $this->settings('Show Acceptance Dialog');
+            if ($dialog_shown) {
+                DriverStats::where('driver_id', $args['driver_id'])->increment('dismissed_cab_requests', 1);
+                DriverLog::log(['driver_id' => $args['driver_id'], 'dismissed_cab_requests' => 1]);
+            }
+            return $request;
+        }
+
         if ($request->status == 'Sending' && strtolower($args['cancelled_by']) == 'user') {
             $vehicles = $request->history['searching']['result']['vehicles'];
             $car_type = $request->history['sending']['chosen_car_type'];
@@ -600,7 +609,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             }
         }
 
-        if (strtolower($args['cancelled_by']) == 'driver') {
+        if ($request->status != 'Sending' && strtolower($args['cancelled_by']) == 'driver') {
             if ($request->driver_id) {
                 DriverStats::where('driver_id', $request->driver_id)->update([
                     'accepted_cab_requests' => DB::raw('accepted_cab_requests - 1'),
