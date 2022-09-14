@@ -51,6 +51,7 @@ class DriverLog extends Model
             sum(accepted_cab_requests) as accepted_cab_requests,
             sum(cancelled_cab_requests) as cancelled_cab_requests,
             sum(missed_cab_requests) as missed_cab_requests,
+            sum(dismissed_cab_requests) as dismissed_cab_requests,
             sum(total_working_time) as total_working_time
         ')
         ->groupBy('driver_id');
@@ -85,6 +86,7 @@ class DriverLog extends Model
                     'accepted_cab_requests',
                     'cancelled_cab_requests',
                     'missed_cab_requests',
+                    'dismissed_cab_requests',
                     'total_working_time',
                     'cashout_amount'
                 ];
@@ -126,5 +128,11 @@ class DriverLog extends Model
     {
         if ($this->accepted_cab_requests == 0) {return 0;}
         return ($this->missed_cab_requests / $this->accepted_cab_requests);
+    }
+
+    public function getDismissRateAttribute()
+    {
+        if ($this->received_cab_requests == 0) {return 0;}
+        return ($this->dismissed_cab_requests / $this->received_cab_requests);
     }
 }

@@ -23,6 +23,7 @@ class CreateDriverLogsTable extends Migration
             $table->bigInteger('received_cab_requests')->default(0);
             $table->bigInteger('accepted_cab_requests')->default(0);
             $table->bigInteger('cancelled_cab_requests')->default(0);
+            $table->bigInteger('dismissed_cab_requests')->default(0);
             $table->bigInteger('total_working_time')->default(0);
             $table->timestamps();
 

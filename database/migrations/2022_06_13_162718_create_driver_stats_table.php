@@ -24,6 +24,7 @@ class CreateDriverStatsTable extends Migration
             $table->bigInteger('accepted_cab_requests')->default(0);
             $table->bigInteger('cancelled_cab_requests')->default(0);
             $table->bigInteger('missed_cab_requests')->default(0);
+            $table->bigInteger('dismissed_cab_requests')->default(0);
             $table->bigInteger('total_working_time')->default(0);
             $table->timestamp('activity_updated_at')->nullable();
             $table->timestamps();

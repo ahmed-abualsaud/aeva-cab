@@ -36,4 +36,10 @@ class DriverStats extends Model
         if ($this->accepted_cab_requests == 0) {return 0;}
         return ($this->missed_cab_requests / $this->accepted_cab_requests);
     }
+
+    public function getDismissRateAttribute()
+    {
+        if ($this->received_cab_requests == 0) {return 0;}
+        return ($this->dismissed_cab_requests / $this->received_cab_requests);
+    }
 }
