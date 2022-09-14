@@ -33,7 +33,7 @@ class DriverStats extends Model
 
     public function getMissingRateAttribute()
     {
-        if ($this->received_cab_requests == 0) {return 0;}
-        return ($this->missed_cab_requests / $this->received_cab_requests);
+        if ($this->accepted_cab_requests == 0) {return 0;}
+        return ($this->missed_cab_requests / $this->accepted_cab_requests);
     }
 }
