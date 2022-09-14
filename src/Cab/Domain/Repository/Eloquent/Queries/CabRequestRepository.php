@@ -97,7 +97,7 @@ class CabRequestRepository extends BaseRepository
         if (array_key_exists('period', $args) && $args['period']) {
             $transactionGroup = $this->dateFilter($args['period'], $transactionGroup, 'cab_requests.created_at');
         }
-
-        return $transactionGroup->where('cab_requests.status', 'Completed')->groupBy('x')->get();
+        $transactionGroup = $transactionGroup->where('cab_requests.status', 'Completed')->groupBy('x');
+        return $select_x == 'drivers.full_name as x' ? $transactionGroup->take(30)->cursor() : $transactionGroup->cursor();
     }
 }
