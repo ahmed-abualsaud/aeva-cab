@@ -140,3 +140,5 @@ Route::group([
 
     Route::get('/', [TraceController::class,'index']);
 });
+
+Route::apiResource('cancellation/reasons/categories', CancellationReasonCategoryController::class)->middleware('auth:admin');
