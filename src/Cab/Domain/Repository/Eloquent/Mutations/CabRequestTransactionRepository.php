@@ -25,6 +25,7 @@ use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
@@ -142,6 +143,8 @@ class CabRequestTransactionRepository extends BaseRepository
         } catch (\Exception $e) {
             throw new CustomException($this->parseErrorMessage($e->getMessage(), 'success'));
         }
+
+        Log::info($response);
 
         if ( !$this->successResponseFilter($args, $response) ) {
             return null;
