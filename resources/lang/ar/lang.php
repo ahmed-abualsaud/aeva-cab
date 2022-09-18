@@ -170,4 +170,6 @@ return [
     'update_status_failed' => 'لا يمكن تحديث حالتك, هناك رحلة جارية الان يجب أكمالها أولا',
     'request_already_paid' => 'الرحلة مدفوعة بالفعل',
     'amount_can_not_be_zero' => 'المبلغ المدفوع يجب ان تكون قيمته اكبر من الصفر',
+    'scanAndPayCashbackTitle' => 'مبروك رجعلك كاش باك',
+    'scanAndPayCashbackBody' => 'رجعلك كاش باك لانك استخدمت المحفظة فى تعاملاتك اليومية',
 ];
