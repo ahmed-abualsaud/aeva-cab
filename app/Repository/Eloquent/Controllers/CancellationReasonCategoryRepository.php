@@ -2,6 +2,8 @@
 
 namespace App\Repository\Eloquent\Controllers;
 
+use Illuminate\Support\Arr;
+use App\CancellationReason;
 use App\CancellationReasonCategory;
 use App\Exceptions\CustomException;
 
@@ -29,7 +31,7 @@ class CancellationReasonCategoryRepository
      */
     public function index()
     {
-        $data = $this->model->all();
+        $data = $this->model->with('reasons')->get();
         return [
             'success' => true,
             'data' => $data
@@ -44,7 +46,18 @@ class CancellationReasonCategoryRepository
      */
     public function store(array $input)
     {
+        $args = $input;
+        $input = Arr::except($input, ['reasons']);
         $data = $this->model->create($input);
+
+        if (array_key_exists('reasons', $args) && $args['reasons']) {
+            foreach ($args['reasons'] as $key => $reason) {
+                $args['reasons'][$key] = ['category_id' => $data->id, 'reason' => $reason];
+            }
+            CancellationReason::insert($args['reasons']);
+        }
+
+        $data = $data->with('reasons')->find($data->id);
         return [
             'success' => true,
             'data' => $data
@@ -57,9 +70,9 @@ class CancellationReasonCategoryRepository
      * @param  $id
      * @return Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($category)
     {
-        $data = $this->model->find($id);
+        $data = $this->model->with('reasons')->where('category', $category)->get();
         return [
             'success' => true,
             'data' => $data
@@ -75,7 +88,7 @@ class CancellationReasonCategoryRepository
      */
     public function update(array $input, $id)
     {
-        $data = $this->model->find($id);
+        $data = $this->model->with('reasons')->find($id);
         $data->update($input);
         return [
             'success' => true,

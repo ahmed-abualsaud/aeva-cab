@@ -57,10 +57,11 @@ class CancellationReasonCategoryController extends Controller
      * @param  $id
      * @return Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($category)
     {
-        $validator = Validator::make(['id' => $id], [
-            'id' => ['exists:cancellation_reason_categories']
+        $category = ucfirst($category);
+        $validator = Validator::make(['category' => $category], [
+            'category' => ['exists:cancellation_reason_categories']
         ]);
 
         if ($validator->fails()) {
@@ -71,7 +72,7 @@ class CancellationReasonCategoryController extends Controller
             return response()->json($response, 400);
         }
 
-        return $this->cancellationReasonCategoryRepository->show($id);
+        return $this->cancellationReasonCategoryRepository->show($category);
     }
 
     /**

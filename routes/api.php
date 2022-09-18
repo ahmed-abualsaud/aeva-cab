@@ -8,6 +8,7 @@ use App\Http\Controllers\Queries\Exports\ExportDriverTransactionsController;
 use App\Http\Controllers\Queries\PartnerController;
 use App\Http\Controllers\Queries\TraceController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CancellationReasonCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -141,5 +142,17 @@ Route::group([
     Route::get('/', [TraceController::class,'index']);
 });
 
+Route::group([
+    'prefix' => 'cancellation/reasons/categories',
+    'middleware' => ['auth:admin'],
+], function () {
+
+    Route::get('/', [CancellationReasonCategoryController::class,'index']);
+    Route::post('/', [CancellationReasonCategoryController::class,'store']);
+    Route::get('/{category}', [CancellationReasonCategoryController::class,'show']);
+    Route::put('/{id}', [CancellationReasonCategoryController::class,'update']);
+    Route::delete('/{id}', [CancellationReasonCategoryController::class,'delete']);
+});
+
 Route::apiResource('cancellation/reasons', CancellationReasonController::class)->middleware('auth:admin');
-Route::apiResource('cancellation/reasons/categories', CancellationReasonCategoryController::class)->middleware('auth:admin');
+//Route::apiResource('cancellation/reasons/categories', CancellationReasonCategoryController::class)->middleware('auth:admin');
