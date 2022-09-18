@@ -252,12 +252,21 @@ class Driver extends Authenticatable implements JWTSubject
     {
         if (array_key_exists('logs__total_working_hours',$args) && !empty_graph_ql_value($args['logs__total_working_hours']))
         {
+            /*
             $query = $query->withSum(['logs as logs__total_working_hours'=> fn($logs) => $logs->when(
                 array_key_exists('logs__created_at',$args) && !empty_graph_ql_value($args['logs__created_at']),
                 fn($logs) => count($date_array = explode(',',$args['logs__created_at'])) == 1
                     ? $logs->whereDate('driver_logs.created_at',db_date(head($date_array)))
                     : $logs->whereBetween('driver_logs.created_at',[db_date(head($date_array)),db_date(last($date_array))])
             )],'total_working_hours')->having('logs__total_working_hours','>=',$args['logs__total_working_hours']);
+            */
+
+            $query = $query->withAggregate(['logs as logs__total_working_hours'=> fn($logs) => $logs->when(
+                array_key_exists('logs__created_at',$args) && !empty_graph_ql_value($args['logs__created_at']),
+                fn($logs) => count($date_array = explode(',',$args['logs__created_at'])) == 1
+                    ? $logs->whereDate('driver_logs.created_at',db_date(head($date_array)))
+                    : $logs->whereBetween('driver_logs.created_at',[db_date(head($date_array)),db_date(last($date_array))])
+            )],'sum(total_working_time/60)')->having('logs__total_working_hours','>=',$args['logs__total_working_hours']);
         }
         return $query;
     }
