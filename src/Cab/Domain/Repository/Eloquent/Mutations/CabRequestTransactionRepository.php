@@ -152,6 +152,7 @@ class CabRequestTransactionRepository extends BaseRepository
             'merchant_name' => $args['merchant_name'],
             'amount' => $args['amount'],
             'type' => $args['type'],
+            'reference_number' => $args['reference_number'],
             'insertion_uuid' => Str::orderedUuid()
         ]);
 
