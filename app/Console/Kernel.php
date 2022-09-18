@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\Console\Commands\ChangeDriverStatus;
 use App\Console\Commands\DriverScanAndPayCashback;
+use App\Console\Commands\UpdateDriverTransactionTypesEnum;
 use App\Driver;
 use App\Events\AllDriversLocations;
 
@@ -25,6 +26,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         ChangeDriverStatus::class,
         DriverScanAndPayCashback::class,
+        UpdateDriverTransactionTypesEnum::class,
     ];
 
     /**
