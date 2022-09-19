@@ -170,5 +170,7 @@ return [
     'update_status_failed' => 'Update status failed, a trip is in progress that you have to finish first',
     'request_already_paid' => 'Request already paid',
     'amount_can_not_be_zero' => 'Amount paid cannot be zero',
+    'scanAndPayCashbackTitle' => 'congratulations .. scan and pay cashback reward',
+    'scanAndPayCashbackBody' => 'you have a cashback as a gift for using our wallet',
     'your_account_is_still_suspended' => 'Your account is still suspended',
 ];
