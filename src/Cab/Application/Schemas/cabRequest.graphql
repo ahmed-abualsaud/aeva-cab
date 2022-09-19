@@ -37,6 +37,8 @@ type CabRequest {
   promo_code: PromoCode @belongsTo(relation: "promoCode")
   transactions: [CabRequestTransaction] @HasMany
   user_id: ID
+  user_name: String
+  user_phone: String
   result: DriverVehicle
   status: String
   schedule_time: String

@@ -68,7 +68,7 @@ extend type Mutation @guard(with: ["admin", "partner", "manager", "user", "drive
 # Admin Guard
 extend type Query @guard(with: ["admin"]) {
   # Cab Request
-  cabRequests(driver_id: ID, user_id: ID, status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
+  cabRequests(driver_id: ID, user_id: ID, user_name:String ,user_phone:String, status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
     @paginate(scopes: ["filter", "search", "getLatest"])
   cabRequestTransactions(period: String, searchFor: String, searchQuery: String, driver_id: ID): [CabRequestTransaction]
     @paginate(scopes: ["filter", "search", "getLatest", "driver","cashoutExcluded"])

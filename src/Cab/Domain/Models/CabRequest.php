@@ -14,6 +14,7 @@ use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class CabRequest extends Model
 {
@@ -146,7 +147,7 @@ class CabRequest extends Model
         return $query;
     }
 
-    public function scopeFilter($query, $args)
+    public function scopeFilter(Builder $query, $args)
     {
         if (array_key_exists('driver_id', $args) && !empty_graph_ql_value($args['driver_id'])) {
             $query = $query->where('driver_id', $args['driver_id']);
@@ -162,6 +163,16 @@ class CabRequest extends Model
 
         if (array_key_exists('user_id', $args) && !empty_graph_ql_value($args['user_id'])) {
             $query = $query->where('user_id', $args['user_id']);
+        }
+
+        if (array_key_exists('user_name', $args) && !empty_graph_ql_value($args['user_name'])) {
+            $users = DB::connection(app(User::class)->getConnectionName())->table('users')->select('id');
+            $query = $query->whereIn('user_id',$users->where('full_name','like','%'.$args['user_name'].'%')->cursor()->pluck('id')->all());
+        }
+
+        if (array_key_exists('user_phone', $args) && !empty_graph_ql_value($args['user_phone'])) {
+            $users = DB::connection(app(User::class)->getConnectionName())->table('users')->select('id');
+            $query = $query->whereIn('user_id',$users->where('phone','like','%'.$args['user_phone'].'%')->cursor()->pluck('id')->all());
         }
 
         if (array_key_exists('status', $args) && !empty_graph_ql_value($args['status'])) {
