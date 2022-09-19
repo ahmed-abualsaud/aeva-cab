@@ -9,7 +9,7 @@ class DriverStats extends Model
     protected $guarded = [];
 
     protected $appends = [
-        'acceptance_rate', 
+        'acceptance_rate',
         'cancellation_rate',
         'missing_rate'
     ];
@@ -21,8 +21,8 @@ class DriverStats extends Model
 
     public function getAcceptanceRateAttribute()
     {
-        if ($this->received_cab_requests == 0) {return 0;}
-        return ($this->accepted_cab_requests / $this->received_cab_requests);
+        if ($this->missed_cab_requests == 0) {return 0;}
+        return ($this->accepted_cab_requests / $this->missed_cab_requests);
     }
 
     public function getCancellationRateAttribute()
@@ -33,7 +33,13 @@ class DriverStats extends Model
 
     public function getMissingRateAttribute()
     {
+        if ($this->accepted_cab_requests == 0) {return 0;}
+        return ($this->missed_cab_requests / $this->accepted_cab_requests);
+    }
+
+    public function getDismissRateAttribute()
+    {
         if ($this->received_cab_requests == 0) {return 0;}
-        return ($this->missed_cab_requests / $this->received_cab_requests);
+        return ($this->dismissed_cab_requests / $this->received_cab_requests);
     }
 }
