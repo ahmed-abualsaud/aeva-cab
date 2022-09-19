@@ -171,7 +171,13 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $this->logOutOldDevices('driver',$driver->id);
         }
 
-         if (array_key_exists('block_reason',$args) && !empty_graph_ql_value($args['block_reason'])){
+        if (array_key_exists('suspension_period',$args) && $args['suspension_period']){
+            ! is_null(@auth('driver')->user()) and trace(TraceEvents::LOG_OUT);
+            $this->logOutOldDevices('driver',$driver->id);
+            $input['suspended_at'] = date('Y-m-d H:i:s');
+        }
+
+        if (array_key_exists('block_reason',$args) && !empty_graph_ql_value($args['block_reason'])){
              $input['block_reason'] = $args['block_reason'];
          }
 
@@ -196,6 +202,23 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             throw new CustomException(__('lang.driver_not_found'));
         }
 
+        if (!$driver->status) {
+            throw new CustomException(__('lang.your_account_is_disabled'));
+        }
+
+        if ($driver->suspended_at) {
+            $still_suspended = ((time() - strtotime($driver->suspended_at)) / 3600) < $driver->suspension_period? true : false;
+            if ($still_suspended) {
+                throw new CustomException(__('lang.your_account_is_still_suspended'));
+            } else {
+                $driver->update([
+                    'suspended_at' => null,
+                    'suspension_period' => null,
+                    'suspension_reason' => null
+                ]);
+            }
+        }
+
         $credentials["phone"] = $args['phone'];
         $credentials["password"] = $args['password'];
 
@@ -204,10 +227,6 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         $driver = auth('driver')->user();
-
-        if (!$driver->status) {
-            throw new CustomException(__('lang.your_account_is_disabled'));
-        }
 
         if (!$driver->phone_verified_at)
         {
