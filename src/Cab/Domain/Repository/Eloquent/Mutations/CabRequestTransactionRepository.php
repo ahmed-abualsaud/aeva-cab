@@ -25,6 +25,7 @@ use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 
@@ -136,11 +137,17 @@ class CabRequestTransactionRepository extends BaseRepository
         }
 
         try {
-            $this->cashout([
+            $response = $this->cashout([
                 'reference_number' => $args['reference_number']
-            ]);
+            ])->json();
         } catch (\Exception $e) {
             throw new CustomException($this->parseErrorMessage($e->getMessage(), 'success'));
+        }
+
+        Log::info($response);
+
+        if ( !$this->successResponseFilter($args, $response) ) {
+            return null;
         }
 
         $cashout = $this->driverTransactionRepository->create([
@@ -148,6 +155,7 @@ class CabRequestTransactionRepository extends BaseRepository
             'merchant_name' => $args['merchant_name'],
             'amount' => $args['amount'],
             'type' => $args['type'],
+            'reference_number' => $args['reference_number'],
             'insertion_uuid' => Str::orderedUuid()
         ]);
 
@@ -160,5 +168,14 @@ class CabRequestTransactionRepository extends BaseRepository
         $cashout->wallet = DriverStats::select('wallet')->where('driver_id', $args['driver_id'])->first()->wallet;
 
         return $cashout;
+    }
+
+    private function successResponseFilter($args, $response)
+    {
+        return array_key_exists('success', $response) && $response['success'] &&
+            array_key_exists('code', $response) && $response['code'] == 200 &&
+            array_key_exists('data', $response) &&
+            array_key_exists('amount', $response['data']) && $response['data']['amount'] == $args['amount'] &&
+            array_key_exists('driverId', $response['data']) && $response['data']['driverId'] == $args['driver_id'];
     }
 }

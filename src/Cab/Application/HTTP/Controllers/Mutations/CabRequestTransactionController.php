@@ -38,6 +38,13 @@ class CabRequestTransactionController
 
         try {
             $data = $this->cabRequestTransactionRepository->confirmCashout($req->all());
+            if (!$data) {
+                return [
+                    'success' => false,
+                    'message' => 'Some thing went wrong'
+                ];
+            }
+
             return [
                 'success' => true,
                 'data' => $data,

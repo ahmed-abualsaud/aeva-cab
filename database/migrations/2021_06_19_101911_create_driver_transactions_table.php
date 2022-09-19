@@ -21,6 +21,7 @@ class CreateDriverTransactionsTable extends Migration
             $table->enum('type', ['Wallet Deposit','Wallet Withdraw', 'Cashout', 'Scan And Pay']);
             $table->string('notes')->nullable();
             $table->string('merchant_name')->nullable();
+            $table->string('reference_number')->nullable();
             $table->dateTime('created_at')->useCurrent();
 
             $table->index('driver_id');
