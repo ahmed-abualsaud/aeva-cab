@@ -23,6 +23,7 @@ input CreateDriverInput @validator {
   approved: Boolean
   national_id: String
   notes: String
+  cab_status: String
 }
 
 input UpdateDriverInput @validator {
@@ -55,6 +56,7 @@ input UpdateDriverInput @validator {
   national_id: String
   block_reason: String
   notes: String
+  cab_status: String
 }
 
 input DriverVehicleInput {
