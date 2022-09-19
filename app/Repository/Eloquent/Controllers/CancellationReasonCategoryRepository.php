@@ -51,8 +51,15 @@ class CancellationReasonCategoryRepository
         $data = $this->model->create($input);
 
         if (array_key_exists('reasons', $args) && $args['reasons']) {
+            $now = date('Y-m-d H:i:s');
             foreach ($args['reasons'] as $key => $reason) {
-                $args['reasons'][$key] = ['category_id' => $data->id, 'reason' => $reason];
+                $args['reasons'][$key] = [
+                    'category_id' => $data->id,
+                    'reason' => $reason['reason'],
+                    'reason_ar' => $reason['reason_ar'],
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
             }
             CancellationReason::insert($args['reasons']);
         }

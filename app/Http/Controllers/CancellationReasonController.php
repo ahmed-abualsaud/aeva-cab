@@ -38,7 +38,8 @@ class CancellationReasonController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'category_id' => ['required', 'exists:cancellation_reason_categories,id'],
-            'reason' => ['required']
+            'reason' => ['required'],
+            'reason_ar' => ['required']
         ]);
 
         if ($validator->fails()) {
