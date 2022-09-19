@@ -99,7 +99,7 @@ class DriverController
 
     public function BlockedLoggedOut()
     {
-        $blocked_ids = Driver::query()->select('id')->where('status','=',false)->cursor()->pluck('id');
+        $blocked_ids = Driver::query()->select('id')->where('active_status','=','Blocked')->cursor()->pluck('id');
         $blocked_ids->each(fn($id) => $this->logOutOldDevices('driver',$id));
         return dashboard_success('Blocked drivers tokens invalidated');
     }
