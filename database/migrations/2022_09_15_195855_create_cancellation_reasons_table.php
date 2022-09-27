@@ -17,6 +17,7 @@ class CreateCancellationReasonsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('category_id');
             $table->string('reason');
+            $table->string('reason_ar');
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('cancellation_reason_categories')->onDelete('cascade');
