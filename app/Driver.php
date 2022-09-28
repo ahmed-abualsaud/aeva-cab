@@ -125,6 +125,11 @@ class Driver extends Authenticatable implements JWTSubject
         return $this->morphMany(Document::class, 'documentable');
     }
 
+    public function driverTransactions()
+    {
+        return $this->hasMany(DriverTransaction::class);
+    }
+
     public function stats()
     {
         return $this->hasOne(DriverStats::class, 'driver_id');

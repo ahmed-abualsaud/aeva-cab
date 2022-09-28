@@ -261,3 +261,13 @@ function update_driver_wallet($type,$amount,...$ids)
     endswitch;
     return $driver_stats->pluck('wallet','driver_id');
 }
+
+/**
+ * @param array $array
+ * @return string
+ */
+function array_to_migration_enum(array $array)
+{
+    $enum_items = collect($array)->filter()->map(fn($item) => "'".$item."'");
+    return $enum_items->implode(',');
+}
