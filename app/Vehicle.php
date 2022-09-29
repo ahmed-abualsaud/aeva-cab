@@ -83,7 +83,7 @@ class Vehicle extends Model
 
     public function scopeSearch($query, $args)
     {
-        if (array_key_exists('searchQuery', $args) && $args['searchQuery']) {
+        if (array_key_exists('searchQuery', $args) && !empty_graph_ql_value($args['searchQuery'])) {
             $query = $this->search($args['searchFor'], $args['searchQuery'], $query);
         }
 
@@ -93,5 +93,12 @@ class Vehicle extends Model
     public function scopeGetLatest($query, $args)
     {
         return $query->latest();
+    }
+
+    public function scopeSearchApplied($query)
+    {
+        $args = request()->query();
+        $query = self::scopeSearch($query,$args);
+        return self::scopeGetLatest($query,$args);
     }
 }
