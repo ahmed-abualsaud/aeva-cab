@@ -156,7 +156,7 @@ Route::group([
 
     Route::get('/', [CancellationReasonCategoryController::class,'index']);
     Route::post('/', [CancellationReasonCategoryController::class,'store']);
-    Route::get('/{category}', [CancellationReasonCategoryController::class,'show']);
+    Route::get('/category', [CancellationReasonCategoryController::class,'show']);
     Route::put('/{id}', [CancellationReasonCategoryController::class,'update']);
     Route::delete('/{id}', [CancellationReasonCategoryController::class,'delete']);
 });
