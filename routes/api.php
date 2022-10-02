@@ -8,6 +8,7 @@ use App\Http\Controllers\Queries\Exports\ExportCabRequestTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportCashOutTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportDriversController;
 use App\Http\Controllers\Queries\Exports\ExportDriverTransactionsController;
+use App\Http\Controllers\Queries\Exports\ExportVehiclesController;
 use App\Http\Controllers\Queries\Index\IndexingCashOutTransactionsController;
 use App\Http\Controllers\Queries\PartnerController;
 use App\Http\Controllers\Queries\TraceController;
@@ -148,6 +149,15 @@ Route::group([
 ], function () {
 
     Route::get('/', [TraceController::class,'index']);
+});
+
+Route::group([
+    'prefix' => 'vehicles',
+    'middleware' => ['auth:admin'],
+    'as' => 'vehicles.'
+], function () {
+
+    Route::get('export', [ExportVehiclesController::class,'__invoke']);
 });
 
 Route::group([
