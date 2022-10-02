@@ -54,13 +54,14 @@ class CancellationReasonCategoryController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  $id
+     * @param  App\Http\Requests\Request  $request
      * @return Illuminate\Http\Response
      */
-    public function show($category)
+    public function show(Request $request)
     {
-        $category = ucfirst($category);
-        $validator = Validator::make(['category' => $category], [
+        $locale = $request->getPreferredLanguage(['en', 'ar']);
+        $input = $request->all();
+        $validator = Validator::make($input, [
             'category' => ['exists:cancellation_reason_categories']
         ]);
 
@@ -72,7 +73,7 @@ class CancellationReasonCategoryController extends Controller
             return response()->json($response, 400);
         }
 
-        return $this->cancellationReasonCategoryRepository->show($category);
+        return $this->cancellationReasonCategoryRepository->show($input['category'], $locale);
     }
 
     /**

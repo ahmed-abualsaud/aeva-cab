@@ -77,9 +77,15 @@ class CancellationReasonCategoryRepository
      * @param  $id
      * @return Illuminate\Http\Response
      */
-    public function show($category)
+    public function show($category, $locale)
     {
-        $data = $this->model->with('reasons')->where('category', $category)->get();
+        if ($locale == 'ar') {
+            $query = $this->model->with('reasons:id,category_id,reason_ar');
+        } else {
+            $query = $this->model->with('reasons:id,category_id,reason');
+        }
+
+        $data = $query->where('category', $category)->get();
         return [
             'success' => true,
             'data' => $data
