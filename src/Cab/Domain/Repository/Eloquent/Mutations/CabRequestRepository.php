@@ -18,6 +18,7 @@ use App\Traits\HandleDriverAttributes;
 use Aeva\Cab\Domain\Models\CabRating;
 use Aeva\Cab\Domain\Models\CabRequest;
 use Aeva\Cab\Domain\Models\CabRequestEntry;
+use Aeva\Cab\Domain\Models\CabRequestTransaction;
 
 use Aeva\Cab\Domain\Traits\CabRequestHelper;
 use Aeva\Cab\Domain\Traits\HandleDeviceTokens;
@@ -30,6 +31,7 @@ use Aeva\Cab\Domain\Events\CabRequestStatusChanged;
 use Aeva\Cab\Domain\Repository\Eloquent\BaseRepository;
 use Aeva\Cab\Domain\Repository\Mutations\CabRequestRepositoryInterface;
 
+use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 
@@ -40,6 +42,8 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     use HandleDeviceTokens;
     use HandleDriverAttributes;
 
+    protected $uuid;
+
     /**
     * CabRequest constructor.
     *
@@ -48,6 +52,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     public function __construct(CabRequest $model)
     {
         parent::__construct($model);
+        $this->uuid = Str::orderedUuid();
     }
 
     public function schedule(array $args)
@@ -205,21 +210,21 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             $input['remaining'] = $input['costs'];
         }
 
+        $driversIds = Arr::pluck($filtered, 'driver_id');
+
+        // if ($request->status == 'Sending') {
+        //     DriverStats::whereIn('driver_id', $driversIds)->increment('missed_cab_requests', 1);
+        //     DriverLog::log(['driver_id' => $driversIds, 'missed_cab_requests' => 1]);
+        // }
+
         $input['status'] = 'Sending';
         $input['history'] = array_merge($request->history, $payload);
 
         $request = $this->updateRequest($request, $input);
 
-        $driversIds = Arr::pluck($filtered, 'driver_id');
-
-        if ($request->status == 'Sending') {
-            DriverStats::whereIn('driver_id', $driversIds)->increment('missed_cab_requests', 1);
-            DriverLog::log(['driver_id' => $driversIds, 'missed_cab_requests' => 1]);
-        }
-
         DriverStats::whereIn('driver_id', $driversIds)->increment('received_cab_requests', 1);
         DriverLog::log(['driver_id' => $driversIds, 'received_cab_requests' => 1]);
-        multiple_trace(TraceEvents::RECEIVED_CAB_REQUEST,new Driver(),$driversIds);
+        multiple_trace(TraceEvents::RECEIVED_CAB_REQUEST,$request->id,new Driver(),$driversIds);
 
         SendPushNotification::dispatch(
             $this->driversToken($driversIds),
@@ -247,7 +252,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
         DriverStats::where('driver_id', $args['driver_id'])->increment('accepted_cab_requests', 1);
         DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
-        trace(TraceEvents::ACCEPT_CAB_REQUEST);
+        trace(TraceEvents::ACCEPT_CAB_REQUEST,$request->id);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
 
@@ -317,7 +322,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'at' => date("Y-m-d H:i:s"),
             ]
         ];
-        trace(TraceEvents::ARRIVED_CAB_REQUEST);
+        trace(TraceEvents::ARRIVED_CAB_REQUEST,$request->id);
         $args['status'] = 'Arrived';
         $args['history'] = array_merge($request->history, $payload);
 
@@ -349,7 +354,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 'waiting_time' => (time() - strtotime($request->history['arrived']['at']))
             ]
         ];
-        trace(TraceEvents::START_CAB_REQUEST);
+        trace(TraceEvents::START_CAB_REQUEST,$request->id);
         $args['status'] = 'Started';
         $args['history'] = array_merge($request->history, $payload);
 
@@ -413,7 +418,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             ]
         ];
 
-        trace(TraceEvents::END_CAB_REQUEST);
+        trace(TraceEvents::END_CAB_REQUEST,$request->id);
 
         $vehicles = $request->history['searching']['result']['vehicles'];
         $vehicle = Arr::where($vehicles, function ($value, $key) use ($request){
@@ -445,18 +450,87 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 ->update(['used' => true]);
         }
 
+        if ($input['costs'] > $input['remaining']) {
+            $trx['payment_method'] = 'Promo Code Remaining';
+            $trx['costs'] = $input['costs'] - $input['remaining'];
+            $trx['uuid'] = $this->uuid;
+            $trx['request_id'] = $request->id;
+            $trx['user_id'] = $request->user_id;
+            $trx['driver_id'] = $request->driver_id;
+            CabRequestTransaction::create($trx);
+        }
+
+        if (is_zero($input['remaining'])) {
+            $paid_amount = 0;
+            $totally_paid = true;
+            $input['paid'] = true;
+            $input['status'] = 'Completed';
+            trace(TraceEvents::COMPLETE_CAB_REQUEST);
+            $this->updateDriverWallet($request->driver_id, $input['costs'], 0, $input['costs']);
+            $this->updateDriverStatus($request->driver_id, 'Online');
+        }
+
+        if (str_contains(strtolower($request->history['sending']['payment_method']), 'wallet') && $input['remaining'] > 0) {
+            $totally_paid = false;
+            $paid_amount = $this->wallet($input['remaining'], $request);
+
+            if ($paid_amount == $input['remaining']) {
+                $totally_paid = true;
+                $input['paid'] = true;
+                $input['remaining'] = 0;
+                $input['status'] = 'Completed';
+                trace(TraceEvents::COMPLETE_CAB_REQUEST);
+                $this->updateDriverStatus($request->driver_id, 'Online');
+            }
+
+            if ($paid_amount < $input['remaining']) {
+                $input['remaining'] -= $paid_amount;
+            }
+        }
+
+        if (empty($paid_amount) && $input['remaining'] > 0) {
+            $paid_amount = 0;
+            $totally_paid = false;
+        }
+
         $request = $this->updateRequest($request, $input);
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
             __('lang.ride_ended_body'),
             __('lang.ride_ended'),
-            ['view' => 'RideEnded', 'id' => $args['id']]
+            ['view' => 'RideEnded', 'id' => $args['id'], 'paid_amount' => $paid_amount, 'totally_paid' => $totally_paid]
         );
+
+        $request->amount_paid = $paid_amount;
+        $request->totally_paid = $totally_paid;
+        $request->remaining = $input['remaining'];
 
         broadcast(new CabRequestStatusChanged($request->toArray()));
 
         return $request;
+    }
+
+    protected function wallet($costs, $request)
+    {
+        $input['costs'] = $costs;
+        $input['uuid'] = $this->uuid;
+        $input['payment_method'] = 'Wallet';
+        $input['request_id'] = $request->id;
+        $input['user_id'] = $request->user_id;
+        $input['driver_id'] = $request->driver_id;
+
+        $paid = $this->updateUserWallet($request->user_id, $input['costs'], 'Aevapay User Wallet', $input['uuid']);
+        $driver_wallet = $request->discount + $paid;
+        $this->updateDriverWallet($request->driver_id, $driver_wallet, 0, $driver_wallet);
+
+        if ($paid < $input['costs']) {
+            $input['costs'] = $paid;
+        }
+
+        $trx = CabRequestTransaction::create($input);
+
+        return $paid;
     }
 
     public function cancel(array $args)
@@ -465,8 +539,23 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $args['cancelled_by'] = strtolower($args['cancelled_by']);
 
         if ($request->status == 'Sending' && strtolower($args['cancelled_by']) == 'user') {
-            $drivers = $request->history['searching']['result']['drivers'];
-            $drivers_ids = Arr::pluck($drivers, 'driver_id');
+            $vehicles = $request->history['searching']['result']['vehicles'];
+            $car_type = $request->history['sending']['chosen_car_type'];
+            $dialog_shown = (time() - strtotime(@$request->history['sending']['at']) ?? $request->history['searching']['at']) < $this->settings('Show Acceptance Dialog');
+
+            $filtered = Arr::where($vehicles, function ($value, $key) use ($args, $car_type){
+                return $value['car_type'] == $car_type;
+            });
+
+            $filtered = array_values($filtered);
+            $drivers_ids = Arr::pluck($filtered, 'driver_id');
+
+            if (! $dialog_shown) {
+                DriverStats::whereIn('driver_id', $drivers_ids)->increment('missed_cab_requests', 1);
+                DriverLog::log(['driver_id' => $drivers_ids, 'missed_cab_requests' => 1]);
+                multiple_trace(TraceEvents::MISSED_CAB_REQUEST,$request->id,new Driver(),$drivers_ids);
+            }
+
             broadcast(new DismissCabRequest($drivers_ids));
         }
 
@@ -508,12 +597,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             if ($request->driver_id) {
                 $token = $this->driversToken($request->driver_id);
             }
-
-            if ($request->promo_code_id) {
-                PromoCodeUsage::where('user_id', $request->user_id)
-                    ->where('promo_code_id', $request->promo_code_id)
-                    ->update(['used' => true]);
-            }
         }
 
         if (strtolower($args['cancelled_by']) == 'driver') {
@@ -527,7 +610,7 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                     'cancelled_cab_requests' => 1,
                     'accepted_cab_requests' => -1
                 ]);
-                trace(TraceEvents::CANCEL_CAB_REQUEST);
+                trace(TraceEvents::CANCEL_CAB_REQUEST,$request->id);
             }
             $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);

@@ -9,7 +9,7 @@ extend type Mutation @guard(with: ["admin"]) {
 }
 
 # User Guard
-extend type Mutation @guard(with: ["user"]) {
+extend type Mutation @guard(with: ["admin", "user"]) {
   # Cab Rating
   updateCabRating(input: UpdateCabRatingInput! @spread): [CabRating]
     @field(resolver: "CabRatingResolver@update")
@@ -20,11 +20,11 @@ extend type Mutation @guard(with: ["user"]) {
 }
 
 # Driver Guard
-extend type Mutation @guard(with: ["driver", "user"]) {
+extend type Mutation @guard(with: ["admin", "driver", "user"]) {
   # Cab Request
   createCabRequestTransaction(input: CabRequestTransactionInput! @spread): CabRequestTransaction
     @field(resolver: "CabRequestTransactionResolver@create")
-  updateDriverCabStatus(driver_id: ID!, cab_status: String!): Boolean 
+  updateDriverCabStatus(driver_id: ID!, cab_status: String!): Boolean
     @field(resolver: "CabRequestResolver@updateDriverCabStatus")
 }
 
@@ -39,7 +39,7 @@ extend type Mutation @guard(with: ["admin", "user"]) {
     @field(resolver: "CabRequestResolver@pickCarType")
   sendCabRequest(input: CabRequestInput! @spread): CabRequest
     @field(resolver: "CabRequestResolver@send")
-} 
+}
 
 # Admin,Driver Guard
 extend type Mutation @guard(with: ["admin", "driver"]) {
@@ -71,11 +71,13 @@ extend type Query @guard(with: ["admin"]) {
   cabRequests(driver_id: ID, user_id: ID, status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
     @paginate(scopes: ["filter", "search", "getLatest"])
   cabRequestTransactions(period: String, searchFor: String, searchQuery: String, driver_id: ID): [CabRequestTransaction]
-    @paginate(scopes: ["filter", "search", "getLatest", "driver"])
+    @paginate(scopes: ["filter", "search", "getLatest", "driver","cashoutExcluded"])
   cabRequestTransactionsStats(period: String): TransactionStats
     @field(resolver: "CabRequestTransactionResolver@stats")
   missedCabRequests(user_id: ID): [CabRequest]
     @field(resolver: "CabRequestResolver@missedRequests")
+  completedCabRequestsStats(period: String, x_as_driver_name: Boolean): [chartObject]
+    @field(resolver: "CabRequestResolver@stats")
 }
 
 # User Guard
@@ -84,14 +86,14 @@ extend type Query @guard(with: ["user"]) {
   userCabRequests(user_id: ID!, status: String, first: Int, page:Int): [[CabRequest]]
     @field(resolver: "CabRequestResolver@history")
   userLiveCabRequest(user_id: ID!): CabRequest @first(scopes: ["userLive", "getLatest"])
-  userScheduledCabRequests(user_id: ID! @eq): [CabRequest] 
+  userScheduledCabRequests(user_id: ID! @eq): [CabRequest]
     @all(scopes: ["whereScheduled", "getLatest"])
 }
 
 # Driver Guard
 extend type Query @guard(with: ["driver"]) {
   # Cab Request
-  driverCabRequests(driver_id: ID!, status: String, first: Int, page:Int): [[CabRequest]] 
+  driverCabRequests(driver_id: ID!, status: String, first: Int, page:Int): [[CabRequest]]
     @field(resolver: "CabRequestResolver@history")
   driverLiveCabRequest(driver_id: ID! @eq): CabRequest @first(scopes: ["driverLive", "getLatest"])
 }
@@ -100,7 +102,7 @@ extend type Query @guard(with: ["driver"]) {
 extend type Query @guard(with: ["admin", "partner", "user", "manager"]) {
   # Cab Rating
   cabRating(request_id: ID! @eq): CabRating @find
-  unratedCabRequests(user_id: ID, driver_id: ID): [CabRequest] 
+  unratedCabRequests(user_id: ID, driver_id: ID): [CabRequest]
     @all(scopes: ["unrated", "getLatest"], model: "CabRating")
   nearestDrivers(lat: Float!, lng: Float): [Driver] @all(scopes: ["nearby"])
 }
@@ -109,7 +111,7 @@ extend type Query @guard(with: ["admin", "partner", "user", "manager"]) {
 extend type Query @guard(with: ["admin", "user", "driver"]) {
   # Cab Request
   cabRequest(id: ID! @eq): CabRequest @findOrFail
-  pendingCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest] 
+  pendingCabRequests(issuer_id: ID!, issuer_type: String!): [CabRequest]
     @all(scopes: ["pending", "getLatest"])
 }
 

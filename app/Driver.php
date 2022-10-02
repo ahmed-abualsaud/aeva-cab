@@ -14,6 +14,7 @@ use App\Notifications\ResetPassword as ResetPasswordNotification;
 use Aeva\Cab\Domain\Models\CabRequest;
 use Aeva\Cab\Domain\Models\CabRequestTransaction;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -129,6 +130,11 @@ class Driver extends Authenticatable implements JWTSubject
         return $this->hasOne(DriverStats::class, 'driver_id');
     }
 
+    public function logs()
+    {
+        return $this->hasMany(DriverLog::class, 'driver_id');
+    }
+
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = ucwords($value);
@@ -171,7 +177,7 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function scopeStatus($query, $args)
     {
-        if (array_key_exists('status', $args)) {
+        if (array_key_exists('status', $args) && !empty_graph_ql_value($args['status'])) {
            $query = static::applyBooleanFilter($query,$args['status'],self::getTable().'.status');
         }
         return $query;
@@ -204,14 +210,6 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
-    public function scopeApproved($query, $args)
-    {
-        if (array_key_exists('approved', $args) && !empty_graph_ql_value($args['approved'])) {
-            $query = $query->where('approved', $args['approved']);
-        }
-        return $query;
-    }
-
     public function scopeGetLatest($query, $args)
     {
         return $query->latest();
@@ -228,10 +226,47 @@ class Driver extends Authenticatable implements JWTSubject
         }
     }
 
-    public function scopeApprovedOrNot($query,$args)
+    public function scopeApproved($query,$args)
     {
-        if (array_key_exists('approved', $args)){
+        if (array_key_exists('approved', $args) && !empty_graph_ql_value($args['approved'])){
             $query = static::applyBooleanFilter($query,$args['approved'],self::getTable().'.approved');
+        }
+        return $query;
+    }
+
+    public function scopeStatsTotalWorkingHours($query,$args)
+    {
+        if (array_key_exists('stats__total_working_hours',$args) && !empty_graph_ql_value($args['stats__total_working_hours']))
+        {
+            $query = $query->whereHas('stats',fn($stats) => $stats->when(
+                array_key_exists('stats__created_at',$args) && !empty_graph_ql_value($args['stats__created_at']),
+                fn($stats) => count($date_array = explode(',',$args['stats__created_at'])) == 1
+                    ? $stats->whereDate('driver_stats.created_at',db_date(head($date_array)))
+                    : $stats->whereBetween('driver_stats.created_at',[db_date(head($date_array)),db_date(last($date_array))])
+            )->where('driver_stats.total_working_hours','>=',$args['stats__total_working_hours']));
+        }
+        return $query;
+    }
+
+    public function scopeLogsTotalWorkingHours($query,$args)
+    {
+        if (array_key_exists('logs__total_working_hours',$args) && !empty_graph_ql_value($args['logs__total_working_hours']))
+        {
+            /*
+            $query = $query->withSum(['logs as logs__total_working_hours'=> fn($logs) => $logs->when(
+                array_key_exists('logs__created_at',$args) && !empty_graph_ql_value($args['logs__created_at']),
+                fn($logs) => count($date_array = explode(',',$args['logs__created_at'])) == 1
+                    ? $logs->whereDate('driver_logs.created_at',db_date(head($date_array)))
+                    : $logs->whereBetween('driver_logs.created_at',[db_date(head($date_array)),db_date(last($date_array))])
+            )],'total_working_hours')->having('logs__total_working_hours','>=',$args['logs__total_working_hours']);
+            */
+
+            $query = $query->withAggregate(['logs as logs__total_working_hours'=> fn($logs) => $logs->when(
+                array_key_exists('logs__created_at',$args) && !empty_graph_ql_value($args['logs__created_at']),
+                fn($logs) => count($date_array = explode(',',$args['logs__created_at'])) == 1
+                    ? $logs->whereDate('driver_logs.created_at',db_date(head($date_array)))
+                    : $logs->whereBetween('driver_logs.created_at',[db_date(head($date_array)),db_date(last($date_array))])
+            )],'sum(total_working_time/60)')->having('logs__total_working_hours','>=',$args['logs__total_working_hours']);
         }
         return $query;
     }
@@ -243,15 +278,26 @@ class Driver extends Authenticatable implements JWTSubject
 
         self::scopeSearch($query,$args);
         self::scopeFleet($query,$args);
-        self::scopeApprovedOrNot($query,$args);
+        self::scopeApproved($query,$args);
         self::scopeStatus($query,$args);
         self::scopeCabStatus($query,$args);
         self::scopeTitle($query,$args);
         self::scopeNearby($query,$args);
+        self::scopeStatsTotalWorkingHours($query,$args);
+        self::scopeLogsTotalWorkingHours($query,$args);
 
         !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
         !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
         return self::scopeGetLatest($query,$args);
+    }
+
+    public function getLastLogAttribute()
+    {
+        $last_log = $this->logs->last();
+        if ($last_log && substr($last_log->created_at, 0, 10) == date('Y-m-d')) {
+            return $last_log;
+        }
+        return null;
     }
 
     public function traces()

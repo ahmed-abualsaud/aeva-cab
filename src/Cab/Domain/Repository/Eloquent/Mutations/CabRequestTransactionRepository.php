@@ -68,31 +68,8 @@ class CabRequestTransactionRepository extends BaseRepository
         $this->cash_after_wallet = ($request->costs_after_discount > $request->remaining);
         $this->costs = $this->cash_after_wallet? $request->remaining : $request->costs;
 
-        if (is_zero($request->remaining)) {
-            $request->update(['status' => 'Completed', 'paid' => true]);
-            trace(TraceEvents::COMPLETE_CAB_REQUEST);
-            $this->updateDriverWallet($request->driver_id, $request->discount, 0, $request->discount);
-            $trx = new CabRequestTransaction($input);
-            $trx->debt = 0;
-        }
-
-        if ($args['payment_method'] == 'Cash' &&
-            str_contains(strtolower($request->history['sending']['payment_method']), 'cash') &&
-            $request->remaining > 0)
-        {
+        if (($args['payment_method'] == 'Cash' || ($args['payment_method'] == 'Wallet' && $this->cash_after_wallet)) && $request->remaining > 0) {
             $trx = $this->cash($args, $input, $request);
-        }
-
-        if ($args['payment_method'] == 'Wallet' &&
-            str_contains(strtolower($request->history['sending']['payment_method']), 'wallet') &&
-            $request->remaining > 0)
-        {
-            if ($this->cash_after_wallet) {
-                $input['payment_method'] = 'Cash';
-                $trx = $this->cash($args, $input, $request);
-            } else {
-                $trx = $this->wallet($args, $input, $request);
-            }
         }
 
         if ($request->costs > $request->costs_after_discount && !$this->cash_after_wallet) {
@@ -121,33 +98,12 @@ class CabRequestTransactionRepository extends BaseRepository
     protected function cash($args, $input, $request)
     {
         $this->refund = $this->cashPay($args, $request);
+        $input['payment_method'] = 'Cash';
         $trx = $this->model->create($input);
         $request->update(['status' => 'Completed', 'paid' => true, 'remaining' => 0]);
-        trace(TraceEvents::COMPLETE_CAB_REQUEST);
+        trace(TraceEvents::COMPLETE_CAB_REQUEST,$request->id);
         $trx->debt = 0;
         $this->notifyUserOfPayment($request, $this->refund);
-        return $trx;
-    }
-
-    protected function wallet($args, $input, $request)
-    {
-        $paid = $this->walletPay($args, $request);
-
-        if ($paid < $args['costs']) {
-            $input['costs'] = $paid;
-        }
-
-        $trx = $this->model->create($input);
-        $trx->debt = $args['costs'] - $paid;
-
-        if ($paid == $args['costs']) {
-            $request->update(['status' => 'Completed', 'paid' => true, 'remaining' => 0]);
-            trace(TraceEvents::COMPLETE_CAB_REQUEST);
-        } else {
-            $request->update(['remaining' => $trx->debt]);
-        }
-
-        $this->notifyUserOfPayment($request, 0);
         return $trx;
     }
 
@@ -155,99 +111,10 @@ class CabRequestTransactionRepository extends BaseRepository
     {
         $refund = $args['costs'] - $request->remaining;
         $driver_wallet = $this->cash_after_wallet? -$refund : $request->discount - $refund;
-        $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_wallet), $args['costs'], $driver_wallet);
+        $this->updateDriverWallet($request->driver_id, ($args['costs'] + $driver_wallet), $args['costs'], $driver_wallet, $this->costs);
         $this->updateUserWallet($request->user_id, $refund, 'Aevacab Refund', $args['uuid'].'-refund');
         $this->updateUserWallet($request->user_id, $args['costs'], 'Cash', $args['uuid']);
         return $refund;
-    }
-
-    protected function walletPay($args, $request)
-    {
-        $paid = $this->updateUserWallet($request->user_id, $args['costs'], 'Aevapay User Wallet', $args['uuid']);
-        $driver_wallet = $request->discount + $paid;
-        $this->updateDriverWallet($request->driver_id, $driver_wallet, 0, $driver_wallet);
-        return $paid;
-    }
-
-    protected function updateUserWallet($user_id, $costs, $type, $uuid)
-    {
-        try {
-            $user = User::findOrFail($user_id);
-        } catch (\Exception $e) {
-            throw new CustomException(__('lang.user_not_found'));
-        }
-
-        if ($type == 'Aevacab Refund' && is_zero($costs)) { return; }
-
-        if ($type == 'Aevapay User Wallet' && is_zero($user->wallet)) {
-            throw new CustomException(__('lang.empty_user_wallet'));
-        }
-
-        if ($type == 'Aevapay User Wallet' && $user->wallet < $costs) {
-            $costs = $user->wallet;
-        }
-
-        try {
-            $this->pay([
-                'user_id' => $user_id,
-                'amount' => $costs,
-                'type' => $type,
-                'uuid' => $uuid
-            ]);
-        } catch (\Exception $e) {
-            throw new CustomException($this->parseErrorMessage($e->getMessage(), 'status"'));
-        }
-
-        return $costs;
-    }
-
-    protected function updateDriverWallet($driver_id, $earnings, $cash, $wallet)
-    {
-        try {
-            $stats = DriverStats::where('driver_id', $driver_id)->firstOrFail();
-        } catch (\Exception $e) {
-            throw new CustomException(__('lang.driver_not_found'));
-        }
-
-        if($stats->wallet + $wallet < 0) {
-            throw new CustomException(__('lang.insufficient_driver_wallet_balance', ['cash_amount' => $stats->wallet + $this->costs]));
-        }
-
-        $stats->update([
-            'cash' => DB::raw('cash + '.$cash),
-            'wallet' => DB::raw('wallet + '.$wallet),
-            'earnings' => DB::raw('earnings + '.$earnings)
-        ]);
-
-        DriverLog::log([
-            'driver_id' => $driver_id,
-            'cash' => $cash,
-            'wallet' => $wallet,
-            'earnings' => $earnings
-        ]);
-    }
-
-    protected function notifyUserOfPayment($request, $refund)
-    {
-        $socket_request = $request->toArray();
-        $socket_request['refund'] = $refund;
-        SendPushNotification::dispatch(
-            $this->userToken($socket_request['user_id']),
-            __('lang.ride_completed_body'),
-            __('lang.ride_completed'),
-            ['view' => 'RideCompleted', 'id' => $socket_request['id']]
-        );
-
-        broadcast(new CabRequestStatusChanged($socket_request));
-    }
-
-    protected function parseErrorMessage($err_mesg, $needle)
-    {
-        $index = strpos($err_mesg, $needle);
-        if($index) {
-            return json_decode(substr($err_mesg, $index - 2))->message;
-        }
-        return $err_mesg;
     }
 
     public function destroy(array $args)
@@ -285,7 +152,7 @@ class CabRequestTransactionRepository extends BaseRepository
         $cashout = $this->model->create([
             'driver_id' => $args['driver_id'],
             //'merchant_id' => $args['merchant_id'],
-            'merchant_name' => optional($args)['merchant_name'],
+            'merchant_name' => $args['merchant_name'],
             'costs' => $args['amount'],
             'payment_method' => 'Cashout',
             'uuid' => Str::orderedUuid()

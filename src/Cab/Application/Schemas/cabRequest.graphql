@@ -57,6 +57,9 @@ type CabRequest {
   discount: Float
   notes: String
   missed_drivers: [Driver]
+  remaining: Float
+  amount_paid: Float
+  totally_paid: Boolean
 }
 
 type CabRequestHistory {

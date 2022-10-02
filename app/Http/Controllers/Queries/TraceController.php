@@ -9,7 +9,7 @@ class TraceController
 
     public function index()
     {
-        $traces = Trace::searchApplied()->paginate(50);
+        $traces = Trace::searchApplied()->with('cabRequest')->paginate(50);
         return dashboard_info('traces',compact('traces'));
     }
 }

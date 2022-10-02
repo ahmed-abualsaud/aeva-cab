@@ -33,7 +33,7 @@ trait Filterable
             default:
                 if (str_contains($period, ',')) {
                     list($from, $to) = explode(',', $period);
-                    return $result->whereBetween($field, [db_date($from),db_date($to,'endOfDay')]);
+                    return $result->whereBetween($field, [db_date($from,true,'startOfDay'),db_date($to,true,'endOfDay')]);
                 } else {
                     return $result->whereDate($field, '=', $period);
                 }
