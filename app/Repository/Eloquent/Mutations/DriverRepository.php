@@ -169,8 +169,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         if (array_key_exists('active_status',$args) && $args['active_status']){
 
             if ($args['active_status'] == 'Suspended') {
-                if (!(array_key_exists('suspension_period',$args) && $args['suspension_period'])){
-                    throw new CustomException('suspension_period is required');
+                if (!(array_key_exists('suspension_till',$args) && $args['suspension_till'])){
+                    throw new CustomException('suspension_till is required');
                 }
                 $input['suspended_at'] = date('Y-m-d H:i:s');
             }
@@ -182,7 +182,7 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
 
             if (in_array($args['active_status'] , ['Active', 'Blocked'])) {
                 $input['suspended_at'] = null;
-                $input['suspension_period'] = null;
+                $input['suspension_till'] = null;
                 $input['suspension_reason'] = null;
             }
 
@@ -217,14 +217,13 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         }
 
         if ($driver->active_status == 'Suspended') {
-            $still_suspended = ((time() - strtotime($driver->suspended_at)) / 3600) < $driver->suspension_period? true : false;
-            if ($still_suspended) {
+            if (time() < strtotime($driver->suspension_till)) {
                 throw new CustomException(__('lang.your_account_is_still_suspended'));
             } else {
                 $driver->update([
                     'active_status' => 'Active',
                     'suspended_at' => null,
-                    'suspension_period' => null,
+                    'suspension_till' => null,
                     'suspension_reason' => null
                 ]);
             }

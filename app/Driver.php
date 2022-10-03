@@ -184,11 +184,11 @@ class Driver extends Authenticatable implements JWTSubject
     {
         if (array_key_exists('active_status', $args) && !empty_graph_ql_value($args['active_status'])) {
             $update_query = clone $query;
-            $update_query->whereRaw('DATE_ADD(suspended_at, INTERVAL (suspension_period * 3600) SECOND) < ?', [date('Y-m-d H:i:s')])
+            $update_query->whereRaw('suspension_till < ?', [date('Y-m-d H:i:s')])
                 ->update([
                     'active_status' => 'Active',
                     'suspended_at' => null,
-                    'suspension_period' => null,
+                    'suspension_till' => null,
                     'suspension_reason' => null
                 ]);
 
