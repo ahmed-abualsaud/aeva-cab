@@ -80,7 +80,7 @@ class CancellationReasonCategoryRepository
     public function show($category, $locale)
     {
         if ($locale == 'ar') {
-            $query = $this->model->with('reasons:id,category_id,reason_ar');
+            $query = $this->model->with('reasons:id,category_id,reason_ar as reason');
         } else {
             $query = $this->model->with('reasons:id,category_id,reason');
         }
