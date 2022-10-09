@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\CancellationReasonController;
 use App\Http\Controllers\Queries\DriverController;
 use App\Http\Controllers\Queries\Create\CreateDriverTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportCabRequestsController;
