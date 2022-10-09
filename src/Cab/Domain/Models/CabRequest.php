@@ -239,4 +239,14 @@ class CabRequest extends Model
         return self::scopeGetLatest($query,$args);
     }
 
+    public function getPaymentMethodAttribute()
+    {
+        $history = $this->history;
+        if (array_key_exists('sending', $history) && $history['sending'] &&
+            array_key_exists('payment_method', $history['sending']) && $history['sending']['payment_method']) {
+            return $history['sending']['payment_method'];
+        }
+
+        return 'unknown';
+    }
 }
