@@ -73,7 +73,8 @@ type CabRequestHistory {
   arrived: HistoryObj
   started: HistoryObj
   ended: HistoryObj
-  cancelled: HistoryObj
+  cancelled_by_user: HistoryObj
+  cancelled_by_driver: HistoryObj
   redirect: HistoryObj
   summary: Summary
 }
