@@ -250,10 +250,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.request_already_accepted_by_another_driver'));
         }
 
-        DriverStats::where('driver_id', $args['driver_id'])->increment('accepted_cab_requests', 1);
-        DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
-        trace(TraceEvents::ACCEPT_CAB_REQUEST,$request->id);
-
         $vehicles = $request->history['searching']['result']['vehicles'];
 
         if ( !array_key_exists('vehicle_id', $args) || $args['vehicle_id'] == null ) {
@@ -280,9 +276,20 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $args['status'] = 'Accepted';
         $args['history'] = array_merge($request->history, $payload);
 
-        $request = $this->updateRequest($request, $args);
+        try {
+            DB::beginTransaction();
 
-        $this->updateDriverStatus($args['driver_id'], 'Riding');
+            $request = $this->updateRequest($request, $args);
+            $this->updateDriverStatus($args['driver_id'], 'Riding');
+            DriverStats::where('driver_id', $args['driver_id'])->increment('accepted_cab_requests', 1);
+            DriverLog::log(['driver_id' => $args['driver_id'], 'accepted_cab_requests' => 1]);
+            trace(TraceEvents::ACCEPT_CAB_REQUEST,$request->id);
+
+            DB::commit();
+        } catch(\Exception $e) {
+            DB::rollback();
+            throw new CustomException(__('lang.accept_request_failed_try_again_later'));
+        }
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
