@@ -11,6 +11,8 @@ use App\Traits\Query;
 use App\Traits\Filterable;
 use App\Traits\Searchable;
 
+use Carbon\Carbon;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -259,5 +261,17 @@ class CabRequest extends Model
         }
 
         return 'unknown';
+    }
+
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::createFromTimestamp(strtotime($value))
+            ->timezone(env('APP_TIMEZONE', date_default_timezone_get()));
+    }
+
+    public function getUpdatedAtAttribute($value)
+    {
+        return Carbon::createFromTimestamp(strtotime($value))
+            ->timezone(env('APP_TIMEZONE', date_default_timezone_get()));
     }
 }
