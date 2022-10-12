@@ -10,8 +10,6 @@ use App\Driver;
 use App\DriverLog;
 use App\DriverStats;
 
-use App\Repository\Eloquent\Mutations\DriverTransactionRepository;
-
 use App\Jobs\SendPushNotification;
 
 use Aeva\Cab\Domain\Models\CabRequest;
@@ -38,12 +36,9 @@ class CabRequestTransactionRepository extends BaseRepository
     protected $refund;
     protected $cash_after_wallet;
 
-    private $driverTransactionRepository;
-
-    public function __construct(CabRequestTransaction $model, DriverTransactionRepository $driverTransactionRepository)
+    public function __construct(CabRequestTransaction $model)
     {
         parent::__construct($model);
-        $this->driverTransactionRepository = $driverTransactionRepository;
 
     }
 
@@ -150,13 +145,18 @@ class CabRequestTransactionRepository extends BaseRepository
             return null;
         }
 
-        $cashout = $this->driverTransactionRepository->create([
+        $cashout = $this->model->create([
             'driver_id' => $args['driver_id'],
             'merchant_name' => $args['merchant_name'],
             'amount' => $args['amount'],
             'type' => $args['type'],
             'reference_number' => $args['reference_number'],
             'insertion_uuid' => Str::orderedUuid()
+        ]);
+
+        $stats->update([
+            'wallet' => DB::raw('wallet - '.$args['amount']),
+            'earnings' => DB::raw('earnings - '.$args['amount'])
         ]);
 
         DriverLog::log([
