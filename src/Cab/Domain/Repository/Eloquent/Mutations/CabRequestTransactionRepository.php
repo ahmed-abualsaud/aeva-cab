@@ -151,7 +151,7 @@ class CabRequestTransactionRepository extends BaseRepository
             'costs' => $args['amount'],
             'payment_method' => $args['type'],
             'reference_number' => $args['reference_number'],
-            'insertion_uuid' => Str::orderedUuid()
+            'uuid' => Str::orderedUuid()
         ]);
 
         $stats->update([
