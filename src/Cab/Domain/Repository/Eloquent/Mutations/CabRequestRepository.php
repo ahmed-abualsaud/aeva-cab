@@ -584,6 +584,15 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.cancel_cab_request_failed'));
         }
 
+        $payload = [
+            'cancelled' => [
+                'at' => date("Y-m-d H:i:s"),
+                'by' => $args['cancelled_by'],
+                'reason' => array_key_exists('cancel_reason', $args) ? $args['cancel_reason'] : "Unknown"
+            ]
+        ];
+        $args['history'] = array_merge($request->history, $payload);
+
         if($request->driver_id) {
             $this->updateDriverStatus($request->driver_id, 'Online');
         }
@@ -601,14 +610,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 ]);
             }
             $args['status'] = 'Cancelled';
-            $payload = [
-                'cancelled_by_user' => [
-                    'at' => date("Y-m-d H:i:s"),
-                    'user' => User::find($request->user_id),
-                    'reason' => array_key_exists('cancel_reason', $args) ? $args['cancel_reason'] : "Unknown"
-                ]
-            ];
-            $args['history'] = array_merge($request->history, $payload);
             $request = $this->updateRequest($request, $args);
             if ($request->driver_id) {
                 $token = $this->driversToken($request->driver_id);
@@ -628,15 +629,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 ]);
                 trace(TraceEvents::CANCEL_CAB_REQUEST,$request->id);
             }
-            $payload = [
-                'cancelled_by_driver' => [
-                    'at' => date("Y-m-d H:i:s"),
-                    'driver' => $request->driver_id ? Driver::with('stats')->find($request->driver_id) : null,
-                    'reason' => array_key_exists('cancel_reason', $args) ? $args['cancel_reason'] : "Unknown"
-                ]
-            ];
-            $args['history'] = array_merge($request->history, $payload);
-            $request = $this->updateRequest($request, $args);
             $request = $this->searchExistedRequest($args);
             $token = $this->userToken($request->user_id);
         }
