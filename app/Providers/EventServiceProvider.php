@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Observers\SettingsObserver;
-use App\Settings;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -30,7 +28,6 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
-        Settings::observe(SettingsObserver::class);
         //
     }
 }

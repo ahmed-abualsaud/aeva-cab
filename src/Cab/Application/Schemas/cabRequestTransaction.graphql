@@ -13,11 +13,12 @@ type CabRequestTransaction {
   user: CabUser @BelongsTo(relation: "user")
   driver: Driver @BelongsTo
   costs: Float
-  payment_method: String @rules(apply: ["in:Cash,Card,Wallet"])
+  payment_method: String @rules(apply: ["in:Cash,Card,Wallet,Cashout,Refund,Cancel Fees,Promo Code Remaining"])
   created_at: String
   debt: Float
   merchant_id: Float
   merchant_name: String
+  reference_number: String
 }
 
 type TransactionStats {

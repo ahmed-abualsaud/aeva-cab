@@ -26,8 +26,10 @@ class CreateCabRequestTransactionsTable extends Migration
                 'Cashout',
                 'Refund',
                 'Cancel Fees',
+                'Scan And Pay',
                 'Promo Code Remaining'
             ]);
+            $table->string('reference_number')->nullable();
             $table->string('uuid')->nullable();
             $table->timestamps();
             $table->softDeletes();

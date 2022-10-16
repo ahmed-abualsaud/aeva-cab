@@ -54,8 +54,12 @@ class CabRequestRepository extends BaseRepository
 
         [$dates, $requests] = Arr::divide($ret->toArray());
 
-        foreach ($requests as $key => $request) {
-            $requests[$key] = CabRequest::hydrate($request);
+        foreach ($requests as $key => $reqs) {
+            foreach ($reqs as $reqKey => $req) {
+                $reqs[$reqKey]['history'] = json_encode($req['history']);
+            }
+
+            $requests[$key] = CabRequest::hydrate($reqs);
         }
 
         return $requests;

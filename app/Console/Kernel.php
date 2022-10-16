@@ -3,12 +3,9 @@
 namespace App\Console;
 
 use App\Console\Commands\ChangeDriverStatus;
-use App\Console\Commands\DriverScanAndPayCashback;
-use App\Console\Commands\UpdateDriverTransactionTypesEnum;
 use App\Driver;
 use App\Events\AllDriversLocations;
 
-use App\Jobs\DriverScanAndPayCashback as CashbackJob;
 use Carbon\Carbon;
 
 use Illuminate\Support\Stringable;
@@ -25,8 +22,6 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         ChangeDriverStatus::class,
-        DriverScanAndPayCashback::class,
-        UpdateDriverTransactionTypesEnum::class,
     ];
 
     /**
@@ -63,7 +58,6 @@ class Kernel extends ConsoleKernel
 */
 
         $schedule->command('change:driver-status')->everyThirtyMinutes();
-        $schedule->command('scan-and-pay:driver-cashback')->dailyAt(CashbackJob::dailyAt());
     }
 
     /**
