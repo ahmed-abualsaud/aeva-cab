@@ -19,6 +19,19 @@ Route::get('{type}/password/reset/{token}?email={email}', 'Auth\ResetPasswordCon
 
 Route::get('/test', function() {
 
+    return Aeva\Cab\Domain\Models\CabRequest::selectRaw('
+            cab_requests.user_id,
+            promo_codes.id as promo_code_id,
+            promo_codes.name as promo_code_name,
+            COUNT(promo_codes.id) as promo_code_count
+        ')
+        ->with('user')
+        ->join('promo_codes', 'cab_requests.promo_code_id', 'promo_codes.id')
+        ->where('status', 'Completed')
+        ->where('user_id', 4660)
+        ->groupBy('promo_codes.id', 'user_id')
+        ->get();
+
     return App\PromoCodeUsage::selectRaw('
         promo_codes.id,
         promo_codes.name,
@@ -116,7 +129,7 @@ Route::get('/test', function() {
         ],
         [
             'id' => 4,
-            'latitude' => 31.28182849252743, 
+            'latitude' => 31.28182849252743,
             'longitude' => 30.022813529788703
         ],
         [
@@ -126,12 +139,12 @@ Route::get('/test', function() {
         ],
         // [
         //     'id' => 7,
-        //     'latitude' => 31.28499129846048, 
+        //     'latitude' => 31.28499129846048,
         //     'longitude' => 30.029660830973967
         // ],
         // [
         //     'id' => 9,
-        //     'latitude' => 31.285132841833082, 
+        //     'latitude' => 31.285132841833082,
         //     'longitude' => 30.02964741991849
         // ]
     ];
@@ -160,7 +173,7 @@ Route::get('/test', function() {
         ],
         [
             'id' => 4,
-            'latitude' => 31.284939150847983, 
+            'latitude' => 31.284939150847983,
             'longitude' => 30.029354388610187
         ],
         [
@@ -232,10 +245,10 @@ Route::get('/test', function() {
 
     //return ['distance' => 0, 'duration' => 0];
     //return App\DriverStats::where('driver_id', 21)->increment('accepted_cab_requests', 1);
-    
+
     // $promo_code =  App\PromoCodeUsage::selectRaw('
-    //     promo_codes.id, 
-    //     promo_codes.name, 
+    //     promo_codes.id,
+    //     promo_codes.name,
     //     COUNT(promo_codes.id) as count
     // ')
     // ->join('promo_codes', 'promo_code_usages.promo_code_id', 'promo_codes.id')

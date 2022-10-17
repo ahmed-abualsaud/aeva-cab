@@ -151,6 +151,10 @@ class CabRequest extends Model
 
     public function scopeFilter(Builder $query, $args)
     {
+        if (array_key_exists('promo_code_id', $args) && !empty_graph_ql_value($args['promo_code_id'])) {
+            $query = $query->where('promo_code_id', $args['promo_code_id']);
+        }
+
         if (array_key_exists('driver_id', $args) && !empty_graph_ql_value($args['driver_id'])) {
             $query = $query->where('driver_id', $args['driver_id']);
         }
@@ -205,6 +209,20 @@ class CabRequest extends Model
     public function scopeGetLatest($query, $args)
     {
         return $query->latest();
+    }
+
+    public function scopeUsage($query, $args)
+    {
+        return $query->selectRaw('
+            cab_requests.user_id,
+            promo_codes.id as promo_code_id,
+            promo_codes.name as promo_code_name,
+            COUNT(promo_codes.id) as promo_code_count
+        ')
+        ->join('promo_codes', 'cab_requests.promo_code_id', 'promo_codes.id')
+        ->where('status', 'Completed')
+        ->where('user_id', 4663)
+        ->groupBy('promo_codes.id', 'user_id');
     }
 
     public function getCostsAfterDiscountAttribute()

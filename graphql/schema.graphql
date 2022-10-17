@@ -489,7 +489,7 @@ extend type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["archived", "period", "search"])
 
   promoCodeUsages: [PromoCodeUsage]
-    @paginate(scopes: ["usage"])
+    @paginate(scopes: ["usage"], model: "Aeva\\Cab\\Domain\\Models\\CabRequest")
 }
 
 # Manager Guard

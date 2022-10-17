@@ -1,5 +1,4 @@
 type PromoCodeUsage {
-    user_id: ID
     promo_code_id: ID
     promo_code_name: String
     promo_code_count: Float
