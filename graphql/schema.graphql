@@ -487,6 +487,9 @@ extend type Query @guard(with: ["admin"]) {
     @paginate(scopes: ["status", "period", "search", "zone"])
   workRequestsArchive(searchFor: String, searchQuery: String, period: String): [WorkRequest]
     @paginate(scopes: ["archived", "period", "search"])
+
+  promoCodeUsages: [PromoCodeUsage]
+    @paginate(scopes: ["usage"])
 }
 
 # Manager Guard
@@ -740,6 +743,7 @@ extend type Query @guard(with: ["admin", "partner", "manager", "user", "driver"]
 #import communication.graphql
 #import document.graphql
 #import promoCode.graphql
+#import promoCodeUsage.graphql
 #import ondemandRequest.graphql
 #import school.graphql
 #import city.graphql
