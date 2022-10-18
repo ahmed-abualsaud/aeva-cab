@@ -221,7 +221,6 @@ class CabRequest extends Model
         ')
         ->join('promo_codes', 'cab_requests.promo_code_id', 'promo_codes.id')
         ->where('status', 'Completed')
-        ->where('user_id', 4663)
         ->groupBy('promo_codes.id', 'user_id');
     }
 
