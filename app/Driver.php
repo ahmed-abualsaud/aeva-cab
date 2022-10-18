@@ -183,8 +183,7 @@ class Driver extends Authenticatable implements JWTSubject
     public function scopeActiveStatus($query, $args)
     {
         if (array_key_exists('active_status', $args) && !empty_graph_ql_value($args['active_status'])) {
-            $update_query = clone $query;
-            $update_query->whereRaw('suspension_till < ?', [date('Y-m-d H:i:s')])
+            Driver::whereRaw('suspension_till < ?', [date('Y-m-d H:i:s')])
                 ->update([
                     'active_status' => 'Active',
                     'suspended_at' => null,
