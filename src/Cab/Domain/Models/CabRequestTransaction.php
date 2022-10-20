@@ -8,6 +8,8 @@ use App\Driver;
 use App\Traits\Filterable;
 use App\Traits\Searchable;
 
+use App\Exceptions\CustomException;
+
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -20,6 +22,17 @@ class CabRequestTransaction extends Model
 
     protected $guarded = [];
     protected $connection ='mysql';
+
+    public static function create($data)
+    {
+        if (!in_array($data['payment_method'], ['Cashout', 'Scan And Pay']) &&
+            parent::where('payment_method', $data['payment_method'])->where('request_id', $data['request_id'])->exists())
+        {
+            throw new CustomException(__('lang.trx_exists'));
+        }
+
+        return static::query()->create($data);
+    }
 
     public function user()
     {
