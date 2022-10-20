@@ -174,5 +174,6 @@ return [
     'scanAndPayCashbackBody' => 'رجعلك كاش باك لانك استخدمت المحفظة فى تعاملاتك اليومية',
     'your_account_is_still_suspended' => 'حسابك لا يزال معلقا',
     'accept_request_failed_try_again_later' => 'فشل قبول الطلب , حاول مرة أخري',
+    'trx_exists' => 'توجد بالفعل معاملة دفع لهذه الرحلة',
 
 ];

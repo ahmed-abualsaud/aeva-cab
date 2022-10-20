@@ -174,4 +174,5 @@ return [
     'scanAndPayCashbackBody' => 'you have a cashback as a gift for using our wallet',
     'your_account_is_still_suspended' => 'Your account is still suspended',
     'accept_request_failed_try_again_later' => 'Accept request failed, Try again later',
+    'trx_exists' => 'There is already a payment transaction for this trip',
 ];

@@ -457,50 +457,66 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
                 ->update(['used' => true]);
         }
 
-        if ($input['costs'] > $input['remaining']) {
-            $trx['payment_method'] = 'Promo Code Remaining';
-            $trx['costs'] = $input['costs'] - $input['remaining'];
-            $trx['uuid'] = $this->uuid;
-            $trx['request_id'] = $request->id;
-            $trx['user_id'] = $request->user_id;
-            $trx['driver_id'] = $request->driver_id;
-            CabRequestTransaction::create($trx);
-        }
+        try {
+            DB::beginTransaction();
 
-        if (is_zero($input['remaining'])) {
-            $paid_amount = 0;
-            $totally_paid = true;
-            $input['paid'] = true;
-            $input['status'] = 'Completed';
-            trace(TraceEvents::COMPLETE_CAB_REQUEST);
-            $this->updateDriverWallet($request->driver_id, $input['costs'], 0, $input['costs']);
-            $this->updateDriverStatus($request->driver_id, 'Online');
-        }
-
-        if (str_contains(strtolower($request->history['sending']['payment_method']), 'wallet') && $input['remaining'] > 0) {
-            $totally_paid = false;
-            $paid_amount = $this->wallet($input['remaining'], $request);
-
-            if ($paid_amount == $input['remaining']) {
+            if (is_zero($input['remaining'])) {
+                $paid_amount = 0;
                 $totally_paid = true;
                 $input['paid'] = true;
-                $input['remaining'] = 0;
                 $input['status'] = 'Completed';
                 trace(TraceEvents::COMPLETE_CAB_REQUEST);
+                $this->updateDriverWallet($request->driver_id, $input['costs'], 0, $input['costs']);
                 $this->updateDriverStatus($request->driver_id, 'Online');
             }
 
-            if ($paid_amount < $input['remaining']) {
-                $input['remaining'] -= $paid_amount;
+            $promo_remaining = $input['remaining'];
+
+            if (str_contains(strtolower($request->history['sending']['payment_method']), 'wallet') && $input['remaining'] > 0) {
+                $totally_paid = false;
+                try {
+                    $paid_amount = $this->wallet($input['remaining'], $request);
+                } catch (\Exception $e) {
+                    if($e->getMessage() == __('lang.empty_user_wallet')) goto skip_rest;
+                }
+
+                if ($paid_amount == $input['remaining']) {
+                    $totally_paid = true;
+                    $input['paid'] = true;
+                    $input['remaining'] = 0;
+                    $input['status'] = 'Completed';
+                    trace(TraceEvents::COMPLETE_CAB_REQUEST);
+                    $this->updateDriverStatus($request->driver_id, 'Online');
+                }
+
+                if ($paid_amount < $input['remaining']) {
+                    $input['remaining'] -= $paid_amount;
+                }
             }
-        }
 
-        if (empty($paid_amount) && $input['remaining'] > 0) {
-            $paid_amount = 0;
-            $totally_paid = false;
-        }
+            if ($input['costs'] > $promo_remaining) {
+                $trx['payment_method'] = 'Promo Code Remaining';
+                $trx['costs'] = $input['costs'] - $promo_remaining;
+                $trx['uuid'] = $this->uuid;
+                $trx['request_id'] = $request->id;
+                $trx['user_id'] = $request->user_id;
+                $trx['driver_id'] = $request->driver_id;
+                CabRequestTransaction::create($trx);
+            }
 
-        $request = $this->updateRequest($request, $input);
+            skip_rest:
+            if (empty($paid_amount) && $input['remaining'] > 0) {
+                $paid_amount = 0;
+                $totally_paid = false;
+            }
+
+            $request = $this->updateRequest($request, $input);
+
+            DB::commit();
+        }catch (\Exception $e){
+            DB::rollBack();
+            throw new CustomException($e->getMessage());
+        }
 
         SendPushNotification::dispatch(
             $this->userToken($request->user_id),
