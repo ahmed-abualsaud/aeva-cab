@@ -131,6 +131,11 @@ class CabRequestTransactionRepository extends BaseRepository
             throw new CustomException(__('lang.insufficient_balance'));
         }
 
+        DriverLog::log([
+            'driver_id' => $args['driver_id'],
+            'cashout_amount' => $args['amount']
+        ]);
+
         try {
             $response = $this->cashout([
                 'reference_number' => $args['reference_number']
@@ -159,10 +164,6 @@ class CabRequestTransactionRepository extends BaseRepository
             'earnings' => DB::raw('earnings - '.$args['amount'])
         ]);
 
-        DriverLog::log([
-            'driver_id' => $args['driver_id'],
-            'cashout_amount' => $args['amount']
-        ]);
         trace(TraceEvents::CASHOUT);
 
         $cashout->wallet = DriverStats::select('wallet')->where('driver_id', $args['driver_id'])->first()->wallet;
