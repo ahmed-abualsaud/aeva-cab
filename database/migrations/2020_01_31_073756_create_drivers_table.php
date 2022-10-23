@@ -30,6 +30,7 @@ class CreateDriversTable extends Migration
             $table->string('vehicle')->nullable();
             $table->unsignedBigInteger('fleet_id')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
+            $table->unsignedBigInteger('supplier_id')->nullable();
             $table->unsignedBigInteger('car_type_id')->nullable();
             $table->unsignedBigInteger('referrer_id')->nullable();
             $table->double('latitude', 15, 8)->nullable();
