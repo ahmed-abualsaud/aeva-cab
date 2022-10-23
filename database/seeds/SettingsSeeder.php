@@ -70,6 +70,11 @@ class SettingsSeeder extends Seeder
                 'name' => 'Cashout Amount Limit',
                 'value' => 200,
                 'description' => 'restrict the cashout amount a driver can withdraw per day'
+            ],
+            [
+                'name' => 'Location Acceptance Period',
+                'value' => 1,
+                'description' => 'The permissible period during which we can accept the driver\'s location in the search result'
             ]
         ]);
     }
