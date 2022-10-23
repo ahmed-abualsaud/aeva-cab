@@ -31,6 +31,12 @@ class CabRequestTransaction extends Model
             throw new CustomException(__('lang.trx_exists'));
         }
 
+        if (in_array($data['payment_method'], ['Cashout', 'Scan And Pay']) &&
+            parent::where('payment_method', $data['payment_method'])->where('reference_number', $data['reference_number'])->exists())
+        {
+            throw new CustomException(__('lang.trx_exists'));
+        }
+
         return static::query()->create($data);
     }
 
