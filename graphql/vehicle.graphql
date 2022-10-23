@@ -9,6 +9,7 @@ input CreateVehicleInput @validator {
   seats: Int! @rules(apply: ["required"])
   photo: Upload
   partner_id: ID
+  supplier_id: ID
   terminal_id: ID
   device_id: ID
   driver_id: ID
@@ -32,6 +33,7 @@ input UpdateVehicleInput @validator {
   seats: Int
   photo: Upload
   partner_id: ID
+  supplier_id: ID
   terminal_id: ID
   device_id: ID
   code: String
@@ -51,6 +53,7 @@ type Vehicle {
   seats: Int
   photo: String
   partner_id: ID
+  supplier_id: ID
   terminal_id: ID
   device_id: ID
   code: String

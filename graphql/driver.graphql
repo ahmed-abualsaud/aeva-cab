@@ -13,6 +13,7 @@ input CreateDriverInput @validator {
   vehicle: String
   active_status: String
   partner_id: ID
+  supplier_id: ID
   car_type_id: ID
   code: String
   wallet: Float
@@ -39,6 +40,7 @@ input UpdateDriverInput @validator {
   active_status: String
   device_id: String
   partner_id: ID
+  supplier_id: ID
   code: String
   latitude: Float
   longitude: Float
@@ -87,6 +89,7 @@ type Driver {
   city: String
   vehicle: String
   partner_id: ID
+  supplier_id: ID
   code: String
   created_at: String
   updated_at: String

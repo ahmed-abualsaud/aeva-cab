@@ -153,6 +153,14 @@ class Driver extends Authenticatable implements JWTSubject
         return $query;
     }
 
+    public function scopeSupplier($query, $args)
+    {
+        if (array_key_exists('supplier_id', $args) && $args['supplier_id']) {
+            $query = $query->where('supplier_id', $args['supplier_id']);
+        }
+        return $query;
+    }
+
     public function scopeAssigned($query, $args)
     {
         return $query->whereIn('id', PartnerDriver::byPartner($args))->latest();

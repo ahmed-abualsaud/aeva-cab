@@ -446,9 +446,10 @@ extend type Query @guard(with: ["admin"]) {
     stats__total_working_hours:Float,
     logs__created_at:String,
     logs__total_working_hours:Float,
-    active_status: String
+    active_status: String,
+    supplier_id: ID
   ): [Driver]
-    @paginate(scopes: ["approved", "fleet", "search", "title", "cabStatus", "getLatest", "logsTotalWorkingHours", "statsTotalWorkingHours", "activeStatus"])
+    @paginate(scopes: ["approved", "fleet", "search", "title", "cabStatus", "getLatest", "logsTotalWorkingHours", "statsTotalWorkingHours", "activeStatus", "supplier"])
 
   # Fleet
   fleets: [Fleet] @all
@@ -522,7 +523,7 @@ extend type Query @guard(with: ["admin", "partner", "manager"]) {
     @paginate(scopes: ["notAssigned", "partner", "search", "getLatest"])
 
   # Vehicle
-  vehicles(partner_id: ID, searchFor: String, searchQuery: String): [Vehicle]
+  vehicles(partner_id: ID, searchFor: String, searchQuery: String, supplier_id: ID): [Vehicle]
     @paginate(scopes: ["search", "partner", "getLatest"])
   vehiclesHaveTerminals(partner_id: ID): [Vehicle] @all(scopes: ["partner", "haveTerminal", "getLatest"])
 

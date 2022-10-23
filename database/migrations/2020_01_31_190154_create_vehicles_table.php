@@ -25,6 +25,7 @@ class CreateVehiclesTable extends Migration
             $table->unsignedSmallInteger('seats')->default(4);
             $table->string('photo')->nullable();
             $table->unsignedBigInteger('partner_id')->nullable();
+            $table->unsignedBigInteger('supplier_id')->nullable();
             $table->unsignedBigInteger('terminal_id')->nullable();
             $table->unsignedBigInteger('device_id')->nullable();
             $table->string('code')->nullable();
@@ -35,7 +36,7 @@ class CreateVehiclesTable extends Migration
 
             $table->index('partner_id');
             $table->index('terminal_id');
-            
+
             $table->foreign('car_make_id')->references('id')->on('car_makes')->onDelete('set null');
             $table->foreign('car_type_id')->references('id')->on('car_types')->onDelete('set null');
             $table->foreign('car_model_id')->references('id')->on('car_models')->onDelete('set null');
