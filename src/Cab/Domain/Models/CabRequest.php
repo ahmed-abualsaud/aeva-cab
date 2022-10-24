@@ -213,6 +213,17 @@ class CabRequest extends Model
 
     public function scopeUsage($query, $args)
     {
+        if(array_key_exists('show_per_user', $args) && !$args['show_per_user']) {
+            return $query->selectRaw('
+                promo_codes.id as promo_code_id,
+                promo_codes.name as promo_code_name,
+                COUNT(promo_codes.id) as promo_code_count
+            ')
+            ->join('promo_codes', 'cab_requests.promo_code_id', 'promo_codes.id')
+            ->where('status', 'Completed')
+            ->groupBy('promo_codes.id');
+        }
+
         return $query->selectRaw('
             cab_requests.user_id,
             promo_codes.id as promo_code_id,
