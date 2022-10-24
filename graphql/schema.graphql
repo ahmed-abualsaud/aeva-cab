@@ -488,7 +488,7 @@ extend type Query @guard(with: ["admin"]) {
   workRequestsArchive(searchFor: String, searchQuery: String, period: String): [WorkRequest]
     @paginate(scopes: ["archived", "period", "search"])
 
-  promoCodeUsages: [PromoCodeUsage]
+  promoCodeUsages(show_per_user: Boolean): [PromoCodeUsage]
     @paginate(scopes: ["usage"], model: "Aeva\\Cab\\Domain\\Models\\CabRequest")
 }
 
