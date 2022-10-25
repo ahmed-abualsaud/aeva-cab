@@ -112,4 +112,20 @@ class CabRequestTransaction extends Model
 
         return self::scopeGetLatest($query,$args)->with('driver');
     }
+
+    public function scopeScanAndPay($query)
+    {
+        $args = request()->query();
+        $optional = optional($args);
+
+        $query = $query->where('payment_method','=','Scan And Pay');
+        self::scopeSearch($query,$args);
+        self::scopeDriver($query,$args);
+        self::scopePeriodFilter($query,$args);
+
+        !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
+        !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
+
+        return self::scopeGetLatest($query,$args)->with('driver');
+    }
 }

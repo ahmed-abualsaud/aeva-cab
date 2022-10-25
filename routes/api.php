@@ -9,6 +9,7 @@ use App\Http\Controllers\Queries\Exports\ExportDriversController;
 use App\Http\Controllers\Queries\Exports\ExportDriverTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportVehiclesController;
 use App\Http\Controllers\Queries\Index\IndexingCashOutTransactionsController;
+use App\Http\Controllers\Queries\Index\IndexingScanAndPayTransactionsController;
 use App\Http\Controllers\Queries\PartnerController;
 use App\Http\Controllers\Queries\TraceController;
 use Illuminate\Support\Facades\Route;
@@ -112,7 +113,7 @@ Route::group([
 
 Route::group([
     'prefix' => 'cab-request-transactions',
-    'middleware' => ['auth:admin'],
+    //'middleware' => ['auth:admin'],
     'as' => 'cab-request-transactions.'
     ], function () {
 
@@ -120,6 +121,10 @@ Route::group([
     //cashout
     Route::get('cash-out', [IndexingCashOutTransactionsController::class,'__invoke']);
     Route::get('cash-out/export', [ExportCashOutTransactionsController::class,'__invoke']);
+
+    //scan and pay
+    Route::get('scan-and-pay', [IndexingScanAndPayTransactionsController::class,'__invoke']);
+
 });
 
 Route::group([
