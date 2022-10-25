@@ -8,14 +8,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
-class IndexingCashOutTransactionsController extends Controller
+class IndexingCabTransactionsController extends Controller
 {
     /**
      * @return JsonResponse
      */
     public function __invoke()
     {
-        $cashout_transactions = CabRequestTransaction::cashOut()->paginate(50);
-        return dashboard_info('Cash Out Transactions',compact('cashout_transactions'));
+        $cab_transactions = CabRequestTransaction::indexTrxs()->paginate(50);
+        return dashboard_info('Cab Transactions',compact('cab_transactions'));
     }
 }
