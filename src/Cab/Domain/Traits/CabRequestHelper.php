@@ -241,6 +241,8 @@ trait CabRequestHelper
             ->whereNotIn('id', $except)
             ->having('distance', '<=', $radius)
             ->where('cab_status', 'Online')
+            ->where('active_status', 'Active')
+            ->where('approved', true)
             ->orderBy('distance','asc')
             ->take(15)
             ->get();
