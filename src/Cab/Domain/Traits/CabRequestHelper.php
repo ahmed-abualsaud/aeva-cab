@@ -240,6 +240,8 @@ trait CabRequestHelper
             )
             ->whereNotIn('id', $except)
             ->where('cab_status', 'Online')
+            ->where('active_status', 'Active')
+            ->where('approved', true)
             ->whereRaw('TIMESTAMPDIFF(MINUTE, location_updated_at, NOW()) <= ?', [$this->settings('Location Acceptance Period')])
             ->having('distance', '<=', $radius)
             ->orderBy('distance','asc')
