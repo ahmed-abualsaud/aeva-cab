@@ -71,7 +71,7 @@ extend type Query @guard(with: ["admin"]) {
   cabRequests(driver_id: ID, user_id: ID, user_name:String ,user_phone:String, status: String, period: String, searchFor: String, searchQuery: String): [CabRequest]
     @paginate(scopes: ["filter", "search", "getLatest"])
   cabRequestTransactions(period: String, searchFor: String, searchQuery: String, driver_id: ID): [CabRequestTransaction]
-    @paginate(scopes: ["filter", "search", "getLatest", "driver","cashoutExcluded"])
+    @paginate(scopes: ["filter", "search", "getLatest", "driver", "excludedTransactions"])
   cabRequestTransactionsStats(period: String): TransactionStats
     @field(resolver: "CabRequestTransactionResolver@stats")
   missedCabRequests(user_id: ID): [CabRequest]

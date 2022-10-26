@@ -62,9 +62,9 @@ class CabRequestTransaction extends Model
         return $query;
     }
 
-    public function scopeCashoutExcluded($query, $args)
+    public function scopeExcludedTransactions($query, $args)
     {
-        $query = $query->where('payment_method','!=','Cashout');
+        $query = $query->whereNotIn('payment_method', ['Cashout', 'Scan And Pay']);
         return $query;
     }
 
