@@ -524,7 +524,7 @@ extend type Query @guard(with: ["admin", "partner", "manager"]) {
 
   # Vehicle
   vehicles(partner_id: ID, searchFor: String, searchQuery: String, supplier_id: ID): [Vehicle]
-    @paginate(scopes: ["search", "partner", "getLatest"])
+    @paginate(scopes: ["search", "partner", "getLatest", "supplier"])
   vehiclesHaveTerminals(partner_id: ID): [Vehicle] @all(scopes: ["partner", "haveTerminal", "getLatest"])
 
   # Car Make
