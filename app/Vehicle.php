@@ -43,6 +43,11 @@ class Vehicle extends Model
                     ->withPivot('active');
     }
 
+    public function supplier()
+    {
+        return $this->belongsTo(Admin::class, 'supplier_id');
+    }
+
     public function scopeSupplier($query, $args)
     {
         if (array_key_exists('supplier_id', $args) && $args['supplier_id']) {
@@ -108,5 +113,10 @@ class Vehicle extends Model
         $args = request()->query();
         $query = self::scopeSearch($query,$args);
         return self::scopeGetLatest($query,$args);
+    }
+
+    public function getSupplierNameAttribute()
+    {
+        return $this->supplier? $this->supplier->full_name: null;
     }
 }

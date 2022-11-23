@@ -140,9 +140,19 @@ class Driver extends Authenticatable implements JWTSubject
         return $this->hasMany(DriverLog::class, 'driver_id');
     }
 
+    public function supplier()
+    {
+        return $this->belongsTo(Admin::class, 'supplier_id');
+    }
+
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = ucwords($value);
+    }
+
+    public function getSupplierNameAttribute()
+    {
+        return $this->supplier? $this->supplier->full_name: null;
     }
 
     public function scopeFleet($query, $args)

@@ -90,6 +90,7 @@ type Driver {
   vehicle: String
   partner_id: ID
   supplier_id: ID
+  supplier_name: String
   code: String
   created_at: String
   updated_at: String
