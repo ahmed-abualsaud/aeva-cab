@@ -54,6 +54,7 @@ type Vehicle {
   photo: String
   partner_id: ID
   supplier_id: ID
+  supplier_name: String
   terminal_id: ID
   device_id: ID
   code: String
