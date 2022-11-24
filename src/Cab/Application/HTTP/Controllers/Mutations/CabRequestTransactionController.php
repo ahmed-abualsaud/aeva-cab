@@ -25,8 +25,8 @@ class CabRequestTransactionController
             'driver_id' => ['required'],
             'amount' => ['required'],
             'merchant_name' => ['required'],
-            'reference_number' => ['required'],
-            'type' => ['required', Rule::in(['Cashout', 'Scan And Pay'])]
+            'reference_number' => ['required']
+            //'type' => ['required', Rule::in(['Cashout', 'Scan And Pay'])]
         ]);
 
         if ($validator->fails()) {
