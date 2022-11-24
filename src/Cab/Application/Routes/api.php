@@ -6,7 +6,7 @@
 |--------------------------------------------------------------------------
 |
 */
-/*
+
 Route::group([
         'prefix' => 'rest',
         'middleware' => ['api', 'auth:driver'],
@@ -14,7 +14,7 @@ Route::group([
     ], function () {
         Route::post('/confirm/cashout', 'CabRequestTransactionController@confirmCashout');
 });
-*/
+
 Route::group([
     'prefix' => 'rest',
     'namespace' => 'Aeva\Cab\Application\HTTP\Controllers\Queries'

@@ -176,7 +176,7 @@ class CabRequestTransactionRepository extends BaseRepository
         return array_key_exists('success', $response) && $response['success'] &&
             array_key_exists('code', $response) && $response['code'] == 200 &&
             array_key_exists('data', $response) &&
-            array_key_exists('amount', $response['data']) && $response['data']['amount'] == $args['amount'] &&
-            array_key_exists('driverId', $response['data']) && $response['data']['driverId'] == $args['driver_id'];
+            array_key_exists('amount', $response['data']) && $response['data']['amount'] == $args['amount'];
+            //array_key_exists('driverId', $response['data']) && $response['data']['driverId'] == $args['driver_id'];
     }
 }
