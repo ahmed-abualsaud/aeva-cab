@@ -245,7 +245,7 @@ trait CabRequestHelper
             ->whereRaw('TIMESTAMPDIFF(MINUTE, location_updated_at, NOW()) <= ?', [$this->settings('Location Acceptance Period')])
             ->having('distance', '<=', $radius)
             ->orderBy('distance','asc')
-            ->take(15)
+            ->take(7)
             ->get();
 
         return $drivers;
