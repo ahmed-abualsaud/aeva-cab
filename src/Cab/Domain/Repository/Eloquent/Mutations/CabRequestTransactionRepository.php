@@ -150,11 +150,16 @@ class CabRequestTransactionRepository extends BaseRepository
             return null;
         }
 
+        $trx_type = 'Cashout';
+        if (array_key_exists('type', $args) && $args['type']) {
+            $trx_type = $args['type'];
+        }
+
         $cashout = $this->model->create([
             'driver_id' => $args['driver_id'],
             'merchant_name' => $args['merchant_name'],
             'costs' => $args['amount'],
-            'payment_method' => $args['type'],
+            'payment_method' => $trx_type,
             'reference_number' => $args['reference_number'],
             'uuid' => Str::orderedUuid()
         ]);
