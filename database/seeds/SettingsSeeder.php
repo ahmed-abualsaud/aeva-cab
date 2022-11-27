@@ -75,6 +75,11 @@ class SettingsSeeder extends Seeder
                 'name' => 'Location Acceptance Period',
                 'value' => 1,
                 'description' => 'The permissible period during which we can accept the driver\'s location in the search result'
+            ],
+            [
+                'name' => 'Pickup Radius',
+                'value' => 200,
+                'description' => 'Pickup radius in meters to control the driver arrival to the pickup point'
             ]
         ]);
     }
