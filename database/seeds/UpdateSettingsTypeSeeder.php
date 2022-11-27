@@ -40,6 +40,7 @@ class UpdateSettingsTypeSeeder extends Seeder
             "Referral Count",
             "Show Acceptance Dialog",
             "Acceptable Online Duration",
+            "Pickup Radius",
         ];
 
         $time = [

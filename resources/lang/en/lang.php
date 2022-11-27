@@ -175,4 +175,5 @@ return [
     'your_account_is_still_suspended' => 'Your account is still suspended',
     'accept_request_failed_try_again_later' => 'Accept request failed, Try again later',
     'trx_exists' => 'There is already a payment transaction for this trip',
+    'too_far_from_pickup_point' => 'Too far from the pickup point!',
 ];
