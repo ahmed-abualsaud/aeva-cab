@@ -447,7 +447,8 @@ extend type Query @guard(with: ["admin"]) {
     logs__created_at:String,
     logs__total_working_hours:Float,
     active_status: String,
-    supplier_id: ID
+    supplier_id: ID,
+    supplier_name: String
   ): [Driver]
     @paginate(scopes: ["approved", "fleet", "search", "title", "cabStatus", "getLatest", "logsTotalWorkingHours", "statsTotalWorkingHours", "activeStatus", "supplier"])
 
