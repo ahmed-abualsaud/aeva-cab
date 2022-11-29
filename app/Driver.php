@@ -173,7 +173,7 @@ class Driver extends Authenticatable implements JWTSubject
             $supplier_id = Admin::select('id')->where('full_name', $args['supplier_name'])->first()->id;
         }
 
-        if($supplier_id)
+        if(!empty($supplier_id))
             return $query->where('supplier_id', $supplier_id);
 
         return $query;
