@@ -550,6 +550,11 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
         $input['user_id'] = $request->user_id;
         $input['driver_id'] = $request->driver_id;
 
+        if (CabRequestTransaction::where('payment_method', 'Wallet')->where('request_id', $input['request_id'])->exists())
+        {
+            throw new CustomException(__('lang.trx_exists'));
+        }
+
         $paid = $this->updateUserWallet($request->user_id, $input['costs'], 'Aevapay User Wallet', $input['uuid']);
         $driver_wallet = $request->discount + $paid;
         $this->updateDriverWallet($request->driver_id, $driver_wallet, 0, $driver_wallet);
