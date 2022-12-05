@@ -140,9 +140,19 @@ class Driver extends Authenticatable implements JWTSubject
         return $this->hasMany(DriverLog::class, 'driver_id');
     }
 
+    public function supplier()
+    {
+        return $this->belongsTo(Admin::class, 'supplier_id');
+    }
+
     public function setNameAttribute($value)
     {
         $this->attributes['name'] = ucwords($value);
+    }
+
+    public function getSupplierNameAttribute()
+    {
+        return $this->supplier? $this->supplier->full_name: null;
     }
 
     public function scopeFleet($query, $args)
@@ -156,8 +166,17 @@ class Driver extends Authenticatable implements JWTSubject
     public function scopeSupplier($query, $args)
     {
         if (array_key_exists('supplier_id', $args) && $args['supplier_id']) {
-            $query = $query->where('supplier_id', $args['supplier_id']);
+            $supplier_id = $args['supplier_id'];
         }
+
+        if (array_key_exists('supplier_name', $args) && $args['supplier_name']) {
+            $supplier = Admin::select('id')->where('full_name', $args['supplier_name'])->first();
+            $supplier_id = $supplier ? $supplier->id : -1;
+        }
+
+        if(!empty($supplier_id))
+            return $query->where('supplier_id', $supplier_id);
+
         return $query;
     }
 
