@@ -324,13 +324,6 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.update_request_status_failed'));
         }
 
-        $driver = Driver::select('latitude', 'longitude')->find($request->driver_id);
-        $route = $this->calculateEstimatedRoute($driver->latitude, $driver->longitude, $request->s_lat, $request->s_lng);
-
-        if ( $route['distance'] > $this->settings('Pickup Radius') ) {
-            throw new CustomException(__('lang.too_far_from_pickup_point'));
-        }
-
         $payload = [
             'arrived' => [
                 'at' => date("Y-m-d H:i:s"),
