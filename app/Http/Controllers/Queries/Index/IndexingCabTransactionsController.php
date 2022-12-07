@@ -15,7 +15,7 @@ class IndexingCabTransactionsController extends Controller
      */
     public function __invoke()
     {
-        $cab_transactions = CabRequestTransaction::indexTrxs()->paginate(50);
+        $cab_transactions = CabRequestTransaction::searchApplied()->paginate(50);
         return dashboard_info('Cab Transactions',compact('cab_transactions'));
     }
 }
