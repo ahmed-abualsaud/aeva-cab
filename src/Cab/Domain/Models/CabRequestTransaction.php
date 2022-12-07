@@ -106,7 +106,7 @@ class CabRequestTransaction extends Model
         $args = request()->query();
         $optional = optional($args);
 
-        self::scopeCashoutExcluded($query,$args);
+        self::scopeExcludedTransactions($query,$args);
         self::scopeSearch($query,$args);
         self::scopeFilter($query,$args);
 
