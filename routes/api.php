@@ -4,7 +4,6 @@ use App\Http\Controllers\Queries\DriverController;
 use App\Http\Controllers\Queries\Create\CreateDriverTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportCabRequestsController;
 use App\Http\Controllers\Queries\Exports\ExportCabRequestTransactionsController;
-use App\Http\Controllers\Queries\Exports\ExportCashOutTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportDriversController;
 use App\Http\Controllers\Queries\Exports\ExportDriverTransactionsController;
 use App\Http\Controllers\Queries\Exports\ExportVehiclesController;
@@ -117,10 +116,7 @@ Route::group([
     ], function () {
 
     Route::get('export', [ExportCabRequestTransactionsController::class,'__invoke']);
-    //cashout
     Route::get('index', [IndexingCabTransactionsController::class,'__invoke']);
-    Route::get('cash-out/export', [ExportCashOutTransactionsController::class,'__invoke']);
-
 });
 
 Route::group([

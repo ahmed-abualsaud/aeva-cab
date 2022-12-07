@@ -18,6 +18,6 @@ class ExportDriverTransactionsController extends Controller
      */
     public function __invoke(Request $request)
     {
-        return (new DriverTransactionsExport(DriverTransaction::searchApplied()))->download();
+        return (new DriverTransactionsExport(DriverTransaction::searchApplied()->with(['driver','admin:id,full_name,phone,email'])))->download();
     }
 }

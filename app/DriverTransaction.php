@@ -77,7 +77,7 @@ class DriverTransaction extends Model
     public function scopeType($query, $args)
     {
         if (array_key_exists('type', $args) && !empty_graph_ql_value($args['type'])) {
-            return $query->where('type', $args['type']);
+            return $query->whereIn('type',explode(',',$args['type']));
         }
 
         return $query;
