@@ -106,32 +106,15 @@ class CabRequestTransaction extends Model
         $args = request()->query();
         $optional = optional($args);
 
-        self::scopeExcludedTransactions($query,$args);
+        !empty_graph_ql_value($optional['payment_method']) and $query = $query->whereIn('payment_method', explode(',', $optional['payment_method']));
+
         self::scopeSearch($query,$args);
         self::scopeFilter($query,$args);
-
-        !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
-        !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
-
-        return self::scopeGetLatest($query,$args)->with('user','driver');
-    }
-
-    public function scopeIndexTrxs($query)
-    {
-        $args = request()->query();
-        $optional = optional($args);
-
-        if (!empty_graph_ql_value($optional['payment_method'])) {
-            $query = $query->whereIn('payment_method', explode(',', $optional['payment_method']));
-        }
-
-        self::scopeSearch($query,$args);
-        self::scopeDriver($query,$args);
         self::scopePeriodFilter($query,$args);
 
         !empty_graph_ql_value($optional['created_at']) and $query = self::dateFilter($optional['created_at'],$query,self::getTable().'.created_at');
         !empty_graph_ql_value($optional['updated_at']) and $query = self::dateFilter($optional['updated_at'],$query,self::getTable().'.updated_at');
 
-        return self::scopeGetLatest($query,$args)->with('driver');
+        return self::scopeGetLatest($query,$args)->with('user','driver');
     }
 }
