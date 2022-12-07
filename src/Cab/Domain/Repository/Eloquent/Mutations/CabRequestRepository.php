@@ -242,12 +242,12 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
     {
         $request = $this->findRequest($args['id']);
 
-        if ( $request->status != 'Sending' ) {
-            throw new CustomException(__('lang.accept_request_failed'));
-        }
-
         if ( $request->status == 'Accepted' && $request->driver_id ) {
             throw new CustomException(__('lang.request_already_accepted_by_another_driver'));
+        }
+
+        if ( $request->status != 'Sending' ) {
+            throw new CustomException(__('lang.accept_request_failed'));
         }
 
         $vehicles = $request->history['searching']['result']['vehicles'];
