@@ -71,6 +71,11 @@ class CabRequestTransactionRepository extends BaseRepository
         $this->costs = $this->cash_after_wallet? $request->remaining : $request->costs;
 
         if (($args['payment_method'] == 'Cash' || ($args['payment_method'] == 'Wallet' && $this->cash_after_wallet)) && $request->remaining > 0) {
+            if ($this->model->where('payment_method', 'Cash')->where('request_id', $input['request_id'])->exists())
+            {
+                throw new CustomException(__('lang.trx_exists'));
+            }
+
             $trx = $this->cash($args, $input, $request);
         }
 
