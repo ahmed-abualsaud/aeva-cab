@@ -259,8 +259,6 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             ]);
 
             SendOtp::dispatch($args['phone'], $message);
-
-            $driver->verification_code = $verification_code;
         }
 
         if (array_key_exists('device_id', $args)
@@ -269,6 +267,8 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
         {
             $driver->update(['device_id' => $args['device_id']]);
         }
+
+        $driver->verification_code = @$verification_code;
 
         try {
             $this->handleAccessTokenCache('driver', $driver, $token);
