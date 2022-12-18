@@ -97,6 +97,7 @@ Route::group([
 
     Route::get('export', [ExportDriversController::class,'__invoke']);
     Route::get('blocked-logout', [DriverController::class,'BlockedLoggedOut']);
+    Route::get('all-logout', [DriverController::class,'AllLoggedOut']);
 });
 
 Route::group([

@@ -80,6 +80,11 @@ class SettingsSeeder extends Seeder
                 'name' => 'Pickup Radius',
                 'value' => 200,
                 'description' => 'Pickup radius in meters to control the driver arrival to the pickup point'
+            ],
+            [
+                'name' => 'Mobile Version',
+                'value' => 11,
+                'description' => 'The current release version of the mobile application'
             ]
         ]);
     }

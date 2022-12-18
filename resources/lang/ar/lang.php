@@ -176,5 +176,5 @@ return [
     'accept_request_failed_try_again_later' => 'فشل قبول الطلب , حاول مرة أخري',
     'trx_exists' => 'توجد بالفعل معاملة دفع لهذه الرحلة',
     'too_far_from_pickup_point' => 'أنت بعيد جدًا عن نقطة الالتقاء!',
-
+    'update_app_version' => 'يرجى تحديث التطبيق إلى أحدث إصدار!',
 ];

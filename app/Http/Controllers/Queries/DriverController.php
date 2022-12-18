@@ -103,4 +103,11 @@ class DriverController
         $blocked_ids->each(fn($id) => $this->logOutOldDevices('driver',$id));
         return dashboard_success('Blocked drivers tokens invalidated');
     }
+
+    public function AllLoggedOut()
+    {
+        $all_ids = Driver::query()->select('id')->cursor()->pluck('id');
+        $all_ids->each(fn($id) => $this->logOutOldDevices('driver',$id));
+        return dashboard_success('All drivers tokens invalidated');
+    }
 }

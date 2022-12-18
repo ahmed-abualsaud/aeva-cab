@@ -176,4 +176,5 @@ return [
     'accept_request_failed_try_again_later' => 'Accept request failed, Try again later',
     'trx_exists' => 'There is already a payment transaction for this trip',
     'too_far_from_pickup_point' => 'Too far from the pickup point!',
+    'update_app_version' => 'Please update the app to the latest version',
 ];

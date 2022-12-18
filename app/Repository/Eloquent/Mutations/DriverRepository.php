@@ -5,6 +5,7 @@ namespace App\Repository\Eloquent\Mutations;
 use App\Driver;
 use App\Helpers\TraceEvents;
 use App\Vehicle;
+use App\Settings;
 use App\Document;
 use App\DriverStats;
 use App\DriverVehicle;
@@ -210,6 +211,10 @@ class DriverRepository extends BaseRepository implements DriverRepositoryInterfa
             $driver = Driver::where('phone', $args['phone'])->firstOrFail();
         } catch (ModelNotFoundException $e) {
             throw new CustomException(__('lang.driver_not_found'));
+        }
+
+        if (!(array_key_exists('mobile_version', $args) && $args['mobile_version'] == Settings::where('name', 'Mobile Version')->first()->value)) {
+            throw new CustomException(__('lang.update_app_version'));
         }
 
         if ($driver->active_status == 'Blocked') {

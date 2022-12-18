@@ -10,6 +10,7 @@ input PhoneLoginInput {
   password: String! @rules(apply: ["required"])
   platform: String @rules(apply: ["in:android,ios"])
   device_id: String
+  mobile_version: String
 }
 
 input SocialLoginInput {

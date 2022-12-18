@@ -47,6 +47,10 @@ class UpdateSettingsTypeSeeder extends Seeder
             "Driver Scan And Pay Cashback Daily At",
         ];
 
-        collect(compact('float','bool','int','time'))->each(fn($names,$type) => Settings::query()->whereIn('name',$names)->update(compact('type')));
+        $string = [
+            "Mobile Version",
+        ];
+
+        collect(compact('float','bool','int','time','string'))->each(fn($names,$type) => Settings::query()->whereIn('name',$names)->update(compact('type')));
     }
 }
