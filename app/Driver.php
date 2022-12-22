@@ -245,7 +245,8 @@ class Driver extends Authenticatable implements JWTSubject
             ->having('distance', '<=', $radius)
             ->where('cab_status', 'Online')
             ->groupBy('id')
-            ->orderBy('distance','asc');
+            ->orderBy('distance','asc')
+            ->take(5);
         endif;
         return $query;
     }
