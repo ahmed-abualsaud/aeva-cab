@@ -40,6 +40,7 @@ return [
 
             // Custom middlewares
             \App\Http\Middleware\ConfigureAppLanguage::class,
+            \App\Http\Middleware\UnblockedUsers::class,
         ],
 
         /*
