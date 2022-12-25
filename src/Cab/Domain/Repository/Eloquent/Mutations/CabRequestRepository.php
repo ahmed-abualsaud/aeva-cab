@@ -389,6 +389,10 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
             throw new CustomException(__('lang.end_ride_failed'));
         }
 
+        if ($request->status == 'Ended') {
+            throw new CustomException(__('lang.request_already_ended'));
+        }
+
         // $distance = 0;
         // $last_location = CabRequestEntry::getLastLocation($args['id']);
         // if (array_key_exists('locations', $args) && is_array($args['locations']) && !empty($args['locations']))
