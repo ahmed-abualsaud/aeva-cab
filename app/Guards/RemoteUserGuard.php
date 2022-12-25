@@ -68,4 +68,16 @@ class RemoteUserGuard implements Guard
     public function validate(array $credentials = []) 
     {
     }
+
+    public function isBlocked()
+    {
+        try {
+            $user = User::findOrFail($this->jwt->payload()->get('sub'));
+            if (!$user->is_active) {
+                return true;
+            }
+        } catch (\Exception $e) {}
+
+        return false;
+    }
 }
