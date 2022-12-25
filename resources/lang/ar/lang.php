@@ -177,4 +177,6 @@ return [
     'trx_exists' => 'توجد بالفعل معاملة دفع لهذه الرحلة',
     'too_far_from_pickup_point' => 'أنت بعيد جدًا عن نقطة الالتقاء!',
     'update_app_version' => 'يرجى تحديث التطبيق إلى أحدث إصدار!',
+    'request_already_ended' => 'لقد تم انهاء الرحلة بالفعل',
+
 ];

@@ -177,4 +177,6 @@ return [
     'trx_exists' => 'There is already a payment transaction for this trip',
     'too_far_from_pickup_point' => 'Too far from the pickup point!',
     'update_app_version' => 'Please update the app to the latest version',
+    'request_already_ended' => 'Request has already been ended',
+    
 ];
