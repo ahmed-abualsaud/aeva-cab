@@ -36,14 +36,6 @@ class RemoteUserGuard implements Guard
             return $this->user;
         }
 
-        if ($this->jwt->setRequest($this->request)->getToken() && $this->jwt->check()) 
-        {
-            $id = $this->jwt->payload()->get('sub');
-            $this->user = new User();
-            $this->user->id = $id;
-            return $this->user;
-        }
-
         return null;
     }
 
@@ -71,13 +63,10 @@ class RemoteUserGuard implements Guard
 
     public function isBlocked()
     {
-        try {
-            $user = User::findOrFail($this->jwt->payload()->get('sub'));
-            if (!$user->is_active) {
+        $user = $this->user();
+        if ($user && !$user->is_active) {
                 return true;
-            }
-        } catch (\Exception $e) {}
-
+        }
         return false;
     }
 }
