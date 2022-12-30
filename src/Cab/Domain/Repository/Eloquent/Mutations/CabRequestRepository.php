@@ -676,14 +676,17 @@ class CabRequestRepository extends BaseRepository implements CabRequestRepositor
 
     public function reset(array $args)
     {
-        $this->model->where($args['issuer_type'].'_id', $args['issuer_id'])
+        if (array_key_exists('issuer_id', $args) && !empty_graph_ql_value($args['issuer_id']) && $args['issuer_id'] > 0 &&
+            array_key_exists('issuer_type', $args) && !empty_graph_ql_value($args['issuer_type'] && $args['issuer_type'] != "")) {
+            $this->model->where($args['issuer_type'].'_id', $args['issuer_id'])
             ->where(function ($query) {
                 $query->where('status', 'Searching')
                         ->orWhere('status', 'Sending');
             })
             ->update(['status' => 'Cancelled']);
+        }
 
-            return true;
+        return true;
     }
 
     public function redirect(array $args)

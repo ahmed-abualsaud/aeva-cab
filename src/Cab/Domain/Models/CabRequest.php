@@ -108,7 +108,7 @@ class CabRequest extends Model
 
     public function scopeUserLive($query, $args)
     {
-        if (array_key_exists('user_id', $args) && !empty_graph_ql_value($args['user_id'])) {
+        if (array_key_exists('user_id', $args) && !empty_graph_ql_value($args['user_id']) && $args['user_id'] > 0) {
             return $query->where('user_id', $args['user_id'])
                 ->whereNotIn('status' , ['Scheduled', 'Cancelled', 'Completed', 'Ended'])
                 ->orWhere(function ($query) {
