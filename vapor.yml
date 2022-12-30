@@ -2,12 +2,16 @@ id: 29856
 name: aeva-mobility
 environments:
     production:
-        timeout: 30
-        memory: 1024
-        cli-memory: 512
-        queue-memory: 1024
+        timeout: 300
+        memory: 2048
+        cli-memory: 1536
+        cli-timeout : 300
+        cli-tmp-storage: 1536
+        queue-memory: 1536
         queue-timeout: 300
         queue-concurrency: 300
+        queue-tmp-storage: 1536
+        tmp-storage: 1536
         runtime: 'php-8.1:al2'
         cache: mobility-cache
         storage: aeva-mobility
