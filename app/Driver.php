@@ -165,6 +165,12 @@ class Driver extends Authenticatable implements JWTSubject
 
     public function scopeSupplier($query, $args)
     {
+        if (array_key_exists('supplier_id', $args) && !$args['supplier_id'] || 
+            array_key_exists('supplier_name', $args) && !$args['supplier_name']) {
+
+                return $query->where('supplier_id', null);
+        }
+
         if (array_key_exists('supplier_id', $args) && $args['supplier_id']) {
             $supplier_id = $args['supplier_id'];
         }
